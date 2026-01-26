@@ -101,6 +101,7 @@ MODULE UBYTE getblue(int whichcolourset, int whichpen);
 
 // CODE-------------------------------------------------------------------
 
+#ifndef LIBRETRO
 JNIEXPORT jbyteArray JNICALL Java_com_amigan_droidarcadia_OptionsActivity_savescreenshot(JNIEnv* env, jobject this)
 {   TRANSIENT UBYTE*     TheBody;
     TRANSIENT int        bodysize,
@@ -196,6 +197,7 @@ PERSIST UBYTE gif_header[13] =
     
     return rc;
 }
+#endif /* !LIBRETRO */
 
 MODULE void write_gif_line(GifEncoder* encoder, int width)
 {   int            current_code, new_code,

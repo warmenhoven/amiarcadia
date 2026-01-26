@@ -4,7 +4,9 @@
 #define MINORVERSION   0x42
 #define INTEGERVERSION "4.42" // for RetroAchievements
 
+#ifndef LIBRETRO
 #include <jni.h>
+#endif
 
 // DEFINES----------------------------------------------------------------
 
@@ -835,8 +837,8 @@ EXPORT void engine_reset(void);
 EXPORT void update_margins(void);
 EXPORT void play_any(int guestchan, float hertz, int volume);
 EXPORT void configure(FLAG same, FLAG all);
-EXPORT void generate_crc32table(void);
-EXPORT ULONG crc32(const UBYTE* address, int thesize);
+EXPORT void da_generate_crc32table(void);
+EXPORT ULONG da_crc32(const UBYTE* address, int thesize);
 // EXPORT void crc64(UBYTE* address, int thesize);
 EXPORT void generate_autotext(void);
 EXPORT void patchrom(void);
@@ -897,6 +899,7 @@ EXPORT void zaccaria_emuinput(void);
 EXPORT void lb_setmemmap(void);
 EXPORT void lb_drawscreen(void);
 
+#ifndef LIBRETRO
 // Java-accessible functions for MainActivity.java
 JNIEXPORT jboolean   JNICALL Java_com_amigan_droidarcadia_MainActivity_canpause(         JNIEnv* env, jobject this);
 JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_MainActivity_cgetoptions1(     JNIEnv* env, jobject this);
@@ -980,3 +983,4 @@ JNIEXPORT jstring    JNICALL Java_com_amigan_droidarcadia_RAActivity_getgamegfxu
 JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_RAActivity_getgameid(              JNIEnv *env, jobject this);
 JNIEXPORT jboolean   JNICALL Java_com_amigan_droidarcadia_RAActivity_jsetravars(             JNIEnv* env, jobject this, jstring jusername, jstring jpassword, jboolean jcheevos, jboolean jhardcore);
 JNIEXPORT void       JNICALL Java_com_amigan_droidarcadia_RAActivity_showachievements(       JNIEnv* env, jobject this);
+#endif /* !LIBRETRO */

@@ -11,7 +11,7 @@ INCLUDES--------------------------------------------------------------- */
 #ifdef AMIGA
     #include "amiga.h"
 #endif
-#ifdef WIN32
+#if defined(WIN32) && !defined(LIBRETRO)
     #include "ibm.h"
 #endif
 

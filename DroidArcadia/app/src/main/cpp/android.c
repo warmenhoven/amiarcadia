@@ -130,8 +130,12 @@ EXPORT TEXT       fn_game[1024 + 1];
 EXPORT ASCREEN    screen[MAXBOXWIDTH][MAXBOXHEIGHT];
 EXPORT UBYTE*     IOBuffer;
 EXPORT UWORD*     display;
+EXPORT SWORD      SoundBuffer[TOTALCHANNELS][SOUNDLENGTH * 2];
+EXPORT int        filesize;
 
+#ifndef LIBRETRO
 EXPORT JavaVM*    g_vm;
+#endif
 
 // IMPORTED VARIABLES-----------------------------------------------------
 
@@ -197,12 +201,11 @@ MODULE UBYTE      chan_volume[GUESTCHANNELS],
                   fgtable[BOXHEIGHT][BOXWIDTH],
                   oldguestvolume[GUESTCHANNELS];
 MODULE SWORD      downvol_16[GUESTCHANNELS],
-                  SoundBuffer[TOTALCHANNELS][SOUNDLENGTH * 2],
                   upvol_16[GUESTCHANNELS];
 MODULE UWORD      oldguestpitch[GUESTCHANNELS],
                   stars[MAXBOXHEIGHT][MAXBOXWIDTH];
 MODULE ULONG      cheevos_buffer_size,
-                  crc32_table[256],
+                  da_crc32_table[256],
                   bangfrom,
                   rc1,
                   rc2;
@@ -211,7 +214,6 @@ MODULE int        autocoin     = TRUE,
                   chan_status[TOTALCHANNELS],
                   cheevosize,
                   enhancestars = FALSE,
-                  filesize,
                   hostvol      = 8,
                   lock         = TRUE,
                   post         = FALSE,
@@ -423,7 +425,9 @@ MODULE void achievement_triggered(const rc_client_achievement_t* achievement);
 MODULE void event_handler(const rc_client_event_t* event, rc_client_t* client);
 MODULE void rainit(void);
 MODULE void cshutdownraclient(void);
+#ifndef LIBRETRO
 MODULE void csetravars(JNIEnv* env, jstring jusername, jstring jpassword, jboolean jcheevos, jboolean jhardcore);
+#endif
 MODULE void identifyragame(void);
 
 // CODE-------------------------------------------------------------------
@@ -556,12 +560,13 @@ MODULE int resolvegame(void)
     return -1;
 }
 
+#ifndef LIBRETRO
 JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_MainActivity_setframebuffer(JNIEnv* env, jobject this, jobject oBuf)
 {   int i, x, y;
 
     display = (UWORD*) (*env)->GetDirectBufferAddress(env, oBuf);
 
-    generate_crc32table();
+    da_generate_crc32table();
     
     SoundLength[GUESTCHANNELS + SAMPLE_EXPLOSION] = LEN_EXPLOSION;
     SoundLength[GUESTCHANNELS + SAMPLE_SHOOT    ] = LEN_SHOOT;
@@ -671,6 +676,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_MainActivity_getstarting(JNI
 JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_MainActivity_getstopping(JNIEnv* env, jobject this)
 {   return (jint) rc2;
 }
+#endif /* !LIBRETRO */
 
 EXPORT void changepixel(int x, int y, int colour)
 {   if (screen[x][y] != (UBYTE) colour)
@@ -744,6 +750,7 @@ EXPORT void update_margins(void)
         absxmax = absymax = 255;
 }   }
 
+#ifndef LIBRETRO
 JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_MainActivity_emulate(JNIEnv* env, jobject this)
 {   switch (machine)
     {
@@ -761,6 +768,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_MainActivity_getgame(JNIEnv*
 JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_OptionsActivity_getgame(JNIEnv* env, jobject this)
 {   return (jint) whichgame;
 }
+#endif /* !LIBRETRO */
 
 EXPORT void engine_reset(void)
 {   int i;
@@ -861,6 +869,7 @@ EXPORT void engine_reset(void)
     {   rc_client_reset(g_client);
 }   }
 
+#ifndef LIBRETRO
 JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_MainActivity_loadgame(JNIEnv* env, jobject this, jstring passedname, jint length, jbyteArray ptr)
 {   int rc;
     const char* utfChars = (*env)->GetStringUTFChars(env, passedname, 0);
@@ -879,6 +888,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_MainActivity_loadgame(JNIEnv
     {   (*env)->ReleaseByteArrayElements(env, ptr, IOBuffer2, JNI_ABORT);
         return (jint) FALSE;
 }   }
+#endif /* !LIBRETRO */
 
 EXPORT int parse_bytes(FLAG reconfigure)
 {   TRANSIENT FLAG  same;
@@ -1257,6 +1267,7 @@ EXPORT void serialize_byte(UBYTE* var)
         *var = ReadByte();
 }   }
 
+#ifndef LIBRETRO
 JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_MainActivity_setinput(JNIEnv* env, jobject this, jint player, jint thekeypad, jint cx, jint cy)
 {   int cplayer;
 
@@ -1265,6 +1276,7 @@ JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_MainActivity_setinput(JNIEnv
     hx[cplayer]     = (UBYTE) ((jint) cx / 256);
     hy[cplayer]     = (UBYTE) ((jint) cy / 256);
 }
+#endif /* !LIBRETRO */
 
 EXPORT void playsound(FLAG force)
 {   FAST          FLAG   firstchan;
@@ -1732,6 +1744,7 @@ EXPORT void set_volumes(int guestchan, int volume)
         downvol_16[guestchan] = -(volume_3to16[volume] * hostvol / 8);
 }   }
 
+#ifndef LIBRETRO
 JNIEXPORT jshortArray JNICALL Java_com_amigan_droidarcadia_MainActivity_getsoundbuffer(JNIEnv* env, jobject this, jint whichchan)
 {   jintArray rc;
     int       cwhichchan;
@@ -1743,6 +1756,7 @@ JNIEXPORT jshortArray JNICALL Java_com_amigan_droidarcadia_MainActivity_getsound
 
     return rc;
 }
+#endif /* !LIBRETRO */
 
 EXPORT void play_any(int guestchan, float hertz, int volume)
 {   FAST ULONG change; // same as a DWORD
@@ -1778,6 +1792,7 @@ EXPORT void play_any(int guestchan, float hertz, int volume)
     guestplaying[guestchan] = TRUE;
 }
 
+#ifndef LIBRETRO
 JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_OptionsActivity_csetoptions(JNIEnv* env, jobject this, jint options1, jint options2)
 {   int coptions,
         newmachine,
@@ -1966,6 +1981,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_OptionsActivity_cgetoptions2
 
     return (jint) coptions;
 }
+#endif /* !LIBRETRO */
 
 EXPORT void changemachine(int whichmachine, int whichmemmap, FLAG user, FLAG force, FLAG same)
 {   int x, y;
@@ -2167,7 +2183,7 @@ MODULE FLAG autosense(int thesize, FLAG same)
         return FALSE;
     }
 
-    thecrc32 = crc32(IOBuffer + offset, thesize);
+    thecrc32 = da_crc32(IOBuffer + offset, thesize);
     // crc64(IOBuffer + offset, thesize);
 
     for (i = 0; i < KNOWNGAMES; i++)
@@ -2186,7 +2202,7 @@ MODULE FLAG autosense(int thesize, FLAG same)
     return FALSE;
 }
 
-EXPORT void generate_crc32table(void)
+EXPORT void da_generate_crc32table(void)
 {   ULONG crc;
     int   i, j;
 
@@ -2198,15 +2214,15 @@ EXPORT void generate_crc32table(void)
             } else
             {   crc >>= 1;
         }   }
-        crc32_table[i] = crc;
+        da_crc32_table[i] = crc;
 }   }
 
-EXPORT ULONG crc32(const UBYTE* address, int thesize)
+EXPORT ULONG da_crc32(const UBYTE* address, int thesize)
 {   ULONG crc = 0xFFFFFFFF;
     int   i;
 
     for (i = 0; i < thesize; i++)
-    {   crc = ((crc >> 8) & 0x00FFFFFF) ^ crc32_table[(         crc        ^ *(address + i)) & 0xFF];
+    {   crc = ((crc >> 8) & 0x00FFFFFF) ^ da_crc32_table[(         crc        ^ *(address + i)) & 0xFF];
     }
     return crc ^ 0xFFFFFFFF;
 }
@@ -2939,6 +2955,7 @@ MODULE void make_stars(void)
                                                               + ((smlmoonimagery[(y * SMLMOONWIDTH) + x] & 0x000000F8) >> 3); // blue  rrrrrrrr,gggggggg,BBBBBbbb -> rrrrrggg,gggBBBBB
 }   }   }   }   }   }
 
+#ifndef LIBRETRO
 JNIEXPORT jboolean JNICALL Java_com_amigan_droidarcadia_OptionsActivity_skiplevel(JNIEnv* env, jobject this)
 {   int i;
 
@@ -3099,6 +3116,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_amigan_droidarcadia_OptionsActivity_csavec
 
     return rc;
 }
+#endif /* !LIBRETRO */
 
 EXPORT void serialize_cos(void)
 {   int i,
@@ -3241,6 +3259,7 @@ EXPORT void serialize_cos(void)
                 // offset += 4 + cheevos_buffer_size;
 }   }   }   }
 
+#ifndef LIBRETRO
 JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_OptionsActivity_creset(JNIEnv* env, jobject this)
 {   engine_reset();
 }
@@ -3504,6 +3523,7 @@ JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_OptionsActivity_redrawscreen
                 } else
                 {   *(display + (y * MAXBOXWIDTH) + x) = stars[y][x];
 }   }   }   }   }
+#endif /* !LIBRETRO */
 
 EXPORT UBYTE readport(int port)
 {   UBYTE t;
@@ -3538,6 +3558,7 @@ EXPORT void writeport(int port, UBYTE data)
     case  ZACCARIA: zaccaria_writeport(port, data);
 }   }
 
+#ifndef LIBRETRO
 JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getglyph(JNIEnv* env, jobject this)
 {   switch (whichgame)
     {
@@ -3759,6 +3780,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
 
     return (jint) rc;
 }
+#endif /* !LIBRETRO */
 
 EXPORT void command_changemachine(int whichmachine, int whichmemmap)
 {   if (memmap != whichmemmap)
@@ -3825,6 +3847,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_amigan_droidarcadia_MainActivity_csavenvra
     return rc;
 } */
 
+#ifndef LIBRETRO
 JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_DIPsActivity_cgetdips(JNIEnv* env, jobject this)
 {   int rc;
 
@@ -4378,6 +4401,7 @@ JNIEXPORT jboolean JNICALL Java_com_amigan_droidarcadia_MainActivity_isbadgegfx(
     } // implied else
     return (jboolean) FALSE;
 }
+#endif /* !LIBRETRO */
 
 EXPORT void set_cpl(int newcpl)
 {   // assert(newcpl <= 227);

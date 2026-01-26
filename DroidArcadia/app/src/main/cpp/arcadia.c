@@ -6,7 +6,7 @@
     #include <stdlib.h>
     #include <proto/locale.h> // GetCatalogStr()
 #endif
-#ifdef WIN32
+#if defined(WIN32) && !defined(LIBRETRO)
     #include "ibm.h"
     #define EXEC_TYPES_H
 #endif

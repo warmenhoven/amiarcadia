@@ -1,0 +1,20 @@
+# Build artifacts
+*.o
+*.so
+*.dylib
+*.dll
+obj/
+venv/
+
+# Source archives
+*.rar
+
+# Test ROMs
+Emerson - Arcadia 2001/
+Interton - VC 4000/
+Elektor TV Games Computer/
+test/__pycache__/
+
+# IDE
+.vscode/
+*.swp

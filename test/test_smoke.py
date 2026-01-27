@@ -61,6 +61,45 @@ class TestRomLoading:
 class TestEmulation:
     """Test emulation execution."""
 
+    def test_game_actually_loaded(self):
+        """Verify game ROM is actually loaded, not just broken/wiped state.
+
+        This catches regressions where the ROM gets wiped after loading
+        (e.g., by calling setmemmap() after parse_bytes()). The broken
+        state shows a distinctive pattern: ~50% bright green, ~50% black.
+        A properly loaded game has a dominant background color (>70%).
+        """
+        with session("Alien Invaders*.bin") as s:
+            # Run frames to let the game initialize
+            for _ in range(60):
+                s.run()
+
+            frame = s.video.screenshot()
+            assert frame is not None, "No video frame"
+
+            frame_bytes = bytes(frame.data) if hasattr(frame, 'data') else frame.tobytes()
+
+            # Count pixel colors
+            colors = {}
+            for i in range(0, len(frame_bytes), 2):
+                pixel = frame_bytes[i] | (frame_bytes[i+1] << 8)
+                colors[pixel] = colors.get(pixel, 0) + 1
+
+            total_pixels = len(frame_bytes) // 2
+
+            # Check 1: A loaded game has a dominant background color (>70% of pixels)
+            # The broken state is ~50% green, ~50% black (no dominant color)
+            most_common_count = max(colors.values())
+            dominant_pct = most_common_count / total_pixels
+            assert dominant_pct > 0.70, \
+                f"No dominant background color ({dominant_pct:.1%}) - ROM may not have loaded"
+
+            # Check 2: Black should not dominate (broken state has ~48% black)
+            black_count = colors.get(0, 0)
+            black_pct = black_count / total_pixels
+            assert black_pct < 0.30, \
+                f"Too much black ({black_pct:.1%}) - ROM may have been wiped"
+
     def test_run_frames(self):
         """Run multiple frames without crashing."""
         with session("Alien Invaders*.bin") as s:

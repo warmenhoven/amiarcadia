@@ -132,6 +132,9 @@ EXPORT UBYTE*     IOBuffer;
 EXPORT UWORD*     display;
 EXPORT SWORD      SoundBuffer[TOTALCHANNELS][SOUNDLENGTH * 2];
 EXPORT int        filesize;
+EXPORT UBYTE      chan_volume[GUESTCHANNELS];
+EXPORT int        chan_status[TOTALCHANNELS];
+EXPORT float      chan_hertz[GUESTCHANNELS];
 
 #ifndef LIBRETRO
 EXPORT JavaVM*    g_vm;
@@ -196,8 +199,7 @@ MODULE FLAG       badgemode    = FALSE,
                   cheevos      = FALSE, // must be FALSE!
                   hardcore     = TRUE,
                   spring       = TRUE;
-MODULE UBYTE      chan_volume[GUESTCHANNELS],
-                  cheevomem[12 * KILOBYTE],
+MODULE UBYTE      cheevomem[12 * KILOBYTE],
                   fgtable[BOXHEIGHT][BOXWIDTH],
                   oldguestvolume[GUESTCHANNELS];
 MODULE SWORD      downvol_16[GUESTCHANNELS],
@@ -211,7 +213,6 @@ MODULE ULONG      cheevos_buffer_size,
                   rc2;
 MODULE int        autocoin     = TRUE,
                   autofire2    = 0,
-                  chan_status[TOTALCHANNELS],
                   cheevosize,
                   enhancestars = FALSE,
                   hostvol      = 8,
@@ -220,7 +221,6 @@ MODULE int        autocoin     = TRUE,
                   sameplayer   = TRUE,
                   sensitivity  = SENSITIVITY_DEFAULT,
                   speed        = SPEED_4QUARTERS;
-MODULE float      chan_hertz[GUESTCHANNELS];
 
 // RetroAchievements
 MODULE      TEXT               badgegfxurl[128    ] = "",

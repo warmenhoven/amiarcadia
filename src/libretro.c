@@ -47,6 +47,7 @@ extern void uvi(void);
 extern void newpvi(void);
 extern void oldpvi(void);
 extern void serialize_cos(void);
+extern void play_any(int, float, int);
 
 /* Serialization globals */
 extern int serializemode;
@@ -55,6 +56,11 @@ extern int offset;
 /* Memory arrays for RetroAchievements support */
 extern UBYTE memory[32768];
 extern UWORD mirror_r[32768];
+
+/* Sound channel state (from android.c) */
+extern UBYTE chan_volume[GUESTCHANNELS];
+extern int   chan_status[TOTALCHANNELS];
+extern float chan_hertz[GUESTCHANNELS];
 
 /* Core options */
 extern ULONG demultiplex;
@@ -650,6 +656,41 @@ static void update_input(void)
     hy[1] = (UBYTE)p_y[1];
 }
 
+/*
+ * Process pending sound channel requests.
+ * Called at end of frame to convert chan_status[] requests into actual audio.
+ */
+static void process_audio_channels(void)
+{
+    for (int i = 0; i < TOTALCHANNELS; i++)
+    {
+        if (sound)
+        {
+            if (chan_status[i] == CHAN_PLAY)
+            {
+                if (i >= GUESTCHANNELS)
+                    play_any(i, 0, 0);
+                else
+                    play_any(i, chan_hertz[i], chan_volume[i]);
+                chan_status[i] = CHAN_OK;
+            }
+            else if (chan_status[i] == CHAN_PLAYTHENSTOP)
+            {
+                if (i >= GUESTCHANNELS)
+                    play_any(i, 0, 0);
+                else
+                    play_any(i, chan_hertz[i], chan_volume[i]);
+                chan_status[i] = CHAN_STOP;
+            }
+            else if (chan_status[i] == CHAN_STOP)
+            {
+                guestplaying[i] = FALSE;
+                chan_status[i] = CHAN_OK;
+            }
+        }
+    }
+}
+
 void retro_run(void)
 {
     bool updated = false;
@@ -675,6 +716,9 @@ void retro_run(void)
     }
 
     frames++;
+
+    /* Process pending sound channel requests (generates audio into SoundBuffer) */
+    process_audio_channels();
 
     video_cb(framebuffer, current_width, current_height, MAXBOXWIDTH * sizeof(UWORD));
 

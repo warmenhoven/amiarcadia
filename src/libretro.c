@@ -115,6 +115,26 @@ static int option_machine = ARCADIA;
 static ULONG keyboard_input = 0;
 
 /*
+ * Shadow buffer for Interton RetroAchievements memory.
+ *
+ * Interton uses mirror_r[] for address translation, but libretro's memory
+ * interface expects a direct pointer. We solve this by maintaining a shadow
+ * buffer that gets updated each frame with the properly mirrored values.
+ *
+ * Layout (matches rcheevos _rc_memory_regions_interton_vc_4000):
+ *   Bytes 0x000-0x3FF: memory[mirror_r[0x1800 + offs]] (1024 bytes)
+ *   Bytes 0x400-0x5FF: memory[0x1E00 + offs] (512 bytes, direct)
+ *
+ * Total: 0x600 bytes (1536 bytes)
+ *
+ * This matches WinArcadia's RA_InstallMemoryBank() setup:
+ *   Bank 0: IByteReader1 for 0x400 bytes -> memory[mirror_r[0x1800 + offs]]
+ *   Bank 1: IByteReader2 for 0x200 bytes -> memory[0x1E00 + offs]
+ */
+#define INTERTON_RCHEEVOS_SIZE 0x600
+static UBYTE interton_rcheevos_buffer[INTERTON_RCHEEVOS_SIZE];
+
+/*
  * Right analog stick maps to keypad keys 1-9 (excluding 5) in 8 directions:
  *   7 8 9      ↖ ↑ ↗
  *   4   6  =   ←   →
@@ -297,6 +317,37 @@ void retro_set_video_refresh(retro_video_refresh_t cb) { video_cb = cb; }
 
 static void setup_memory_maps(void);
 
+/*
+ * Update Interton shadow buffer for RetroAchievements.
+ *
+ * This copies memory values through mirror_r[] indirection, exactly like
+ * WinArcadia's IByteReader1() and IByteReader2() functions.
+ *
+ * Called once per frame in retro_run() when machine == INTERTON.
+ */
+static void update_interton_rcheevos_buffer(void)
+{
+    int offs;
+
+    /*
+     * Bank 0: 0x400 bytes via mirror_r[] indirection
+     * IByteReader1(offs) = memory[mirror_r[0x1800 + offs]]
+     */
+    for (offs = 0; offs < 0x400; offs++)
+    {
+        interton_rcheevos_buffer[offs] = memory[mirror_r[0x1800 + offs]];
+    }
+
+    /*
+     * Bank 1: 0x200 bytes direct access
+     * IByteReader2(offs) = memory[0x1E00 + offs]
+     */
+    for (offs = 0; offs < 0x200; offs++)
+    {
+        interton_rcheevos_buffer[0x400 + offs] = memory[0x1E00 + offs];
+    }
+}
+
 static void reload_with_machine(int new_machine)
 {
     if (!rom_data || rom_size == 0)
@@ -328,6 +379,10 @@ static void reload_with_machine(int new_machine)
             framebuffer[(y * MAXBOXWIDTH) + x] = pencolours[colourset][GREY1];
         }
 
+    /* Initialize Interton shadow buffer if needed */
+    if (machine == INTERTON)
+        update_interton_rcheevos_buffer();
+
     /* Update memory maps for RetroAchievements */
     setup_memory_maps();
 }
@@ -335,6 +390,9 @@ static void reload_with_machine(int new_machine)
 /*
  * Set up memory maps for RetroAchievements.
  * Matches WinArcadia's RA_InstallMemoryBank() layout exactly.
+ *
+ * rcheevos uses these descriptors to map RA addresses to memory regions.
+ * The 'start' field is the real hardware address that rcheevos expects.
  */
 static void setup_memory_maps(void)
 {
@@ -346,8 +404,11 @@ static void setup_memory_maps(void)
     switch (machine)
     {
     case ARCADIA:
-        /* Arcadia: $1800-$1AFF (768 bytes) */
-        descs[0].ptr    = memory;
+        /*
+         * Arcadia: $1800-$1AFF (768 bytes)
+         * Direct memory access - AByteReader(offs) = memory[0x1800 + offs]
+         */
+        descs[0].ptr    = &memory[0x1800];
         descs[0].start  = 0x1800;
         descs[0].len    = 0x300;
         mmap.descriptors = descs;
@@ -355,11 +416,22 @@ static void setup_memory_maps(void)
         break;
 
     case INTERTON:
-        /* Interton: $1800-$1BFF (1024 bytes) + $1E00-$1FFF (512 bytes) */
-        descs[0].ptr    = memory;
+        /*
+         * Interton: Uses shadow buffer for mirror_r[] indirection
+         *
+         * rcheevos expects (from consoleinfo.c):
+         *   RA $0000-$03FF -> real $1800-$1BFF (1024 bytes)
+         *   RA $0400-$04FF -> real $1E00-$1EFF (I/O, 256 bytes)
+         *   RA $0500-$05FF -> real $1F00-$1FFF (256 bytes)
+         *
+         * Shadow buffer layout:
+         *   Bytes 0x000-0x3FF: memory[mirror_r[0x1800 + offs]]
+         *   Bytes 0x400-0x5FF: memory[0x1E00 + offs]
+         */
+        descs[0].ptr    = &interton_rcheevos_buffer[0];
         descs[0].start  = 0x1800;
         descs[0].len    = 0x400;
-        descs[1].ptr    = memory;
+        descs[1].ptr    = &interton_rcheevos_buffer[0x400];
         descs[1].start  = 0x1E00;
         descs[1].len    = 0x200;
         mmap.descriptors = descs;
@@ -367,8 +439,11 @@ static void setup_memory_maps(void)
         break;
 
     case ELEKTOR:
-        /* Elektor: $0800-$1FFF (6144 bytes) */
-        descs[0].ptr    = memory;
+        /*
+         * Elektor: $0800-$1FFF (6144 bytes)
+         * Direct memory access - EByteReader(offs) = memory[0x0800 + offs]
+         */
+        descs[0].ptr    = &memory[0x0800];
         descs[0].start  = 0x0800;
         descs[0].len    = 0x1800;
         mmap.descriptors = descs;
@@ -533,6 +608,10 @@ bool retro_load_game(const struct retro_game_info *info)
         { 0 },
     };
     environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, desc);
+
+    /* Initialize Interton shadow buffer if needed */
+    if (machine == INTERTON)
+        update_interton_rcheevos_buffer();
 
     /* Set up memory maps for RetroAchievements */
     setup_memory_maps();
@@ -717,6 +796,10 @@ void retro_run(void)
 
     frames++;
 
+    /* Update Interton shadow buffer for RetroAchievements (must be after frame) */
+    if (machine == INTERTON)
+        update_interton_rcheevos_buffer();
+
     /* Process pending sound channel requests (generates audio into SoundBuffer) */
     process_audio_channels();
 
@@ -840,11 +923,16 @@ bool retro_unserialize(const void *data, size_t size)
 /*
  * RetroAchievements memory exposure - matches WinArcadia's RA_InstallMemoryBank() layout:
  *
- * Arcadia:  $1800-$1AFF (768 bytes = 0x300) - single bank
- * Interton: $1800-$1BFF (1024 bytes = 0x400) via mirror_r + $1E00-$1FFF (512 bytes = 0x200)
- *           Note: Interton uses address mirroring which we can't fully replicate with a
- *           simple pointer, so we expose $1800-$1BFF directly (works for most cases)
- * Elektor:  $0800-$1FFF (6144 bytes = 0x1800)
+ * Arcadia:  $1800-$1AFF (768 bytes = 0x300) - single bank, direct access
+ *           AByteReader(offs) = memory[0x1800 + offs]
+ *
+ * Interton: Uses shadow buffer with mirror_r[] indirection
+ *           Bank 0: 0x400 bytes via IByteReader1 -> memory[mirror_r[0x1800 + offs]]
+ *           Bank 1: 0x200 bytes via IByteReader2 -> memory[0x1E00 + offs]
+ *           Total: 0x600 bytes (1536 bytes) matching rcheevos expectations
+ *
+ * Elektor:  $0800-$1FFF (6144 bytes = 0x1800) - single bank, direct access
+ *           EByteReader(offs) = memory[0x0800 + offs]
  */
 void *retro_get_memory_data(unsigned id)
 {
@@ -856,7 +944,8 @@ void *retro_get_memory_data(unsigned id)
     case ARCADIA:
         return &memory[0x1800];
     case INTERTON:
-        return &memory[0x1800];
+        /* Use shadow buffer that accounts for mirror_r[] indirection */
+        return interton_rcheevos_buffer;
     case ELEKTOR:
         return &memory[0x0800];
     default:
@@ -874,7 +963,7 @@ size_t retro_get_memory_size(unsigned id)
     case ARCADIA:
         return 0x300;  /* $1800-$1AFF */
     case INTERTON:
-        return 0x400;  /* $1800-$1BFF (primary bank only) */
+        return INTERTON_RCHEEVOS_SIZE;  /* 0x600: Bank 0 (0x400) + Bank 1 (0x200) */
     case ELEKTOR:
         return 0x1800; /* $0800-$1FFF */
     default:

@@ -223,14 +223,7 @@ else ifeq ($(platform), miyoo)
 	CFLAGS += -mcpu=arm926ej-s -ffast-math
 
 # Windows (MinGW)
-else ifeq ($(platform), win)
-	TARGET := $(TARGET_NAME)_libretro.dll
-	SHARED := -shared -static-libgcc -static-libstdc++ -Wl,--no-undefined
-	LDFLAGS += -lws2_32
-	LIBS :=
-
-# Windows 32-bit (MinGW)
-else ifeq ($(platform), win32)
+else ifneq (,$(findstring win,$(platform)))
 	TARGET := $(TARGET_NAME)_libretro.dll
 	SHARED := -shared -static-libgcc -static-libstdc++ -Wl,--no-undefined
 	LDFLAGS += -lws2_32

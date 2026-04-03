@@ -515,7 +515,6 @@ EXPORT const struct TODStruct tods[TIPSOFDAYS] = {
               " about what is under the mouse pointer."                                       },
 { MSG_TOD12,  "Holding the Ctrl and Left Shift keys down shows a magnified view of"           \
               " what is under the mouse pointer."                                             },
-// spare
 { MSG_TOD14,  "You can set a masked watchpoint in the debugger by specifying"                 \
               " WP <address>:<mask> , eg. WP $1234:56 ."                                      },
 { MSG_TOD15,  "In the debugger, giving a ? after a command will tell the usage, for"          \
@@ -527,6 +526,8 @@ EXPORT const struct TODStruct tods[TIPSOFDAYS] = {
               " palette editor."                                                              },
 { MSG_TOD19,  "Ctrl+' will make the emulator run at 1 FPS while held down."                   },
 // MSG_TOD20 is at the start of the array
+{ MSG_TOD13,  "In the \"Help|Opodes...\" subwindow, you can click on an opcode to open the"   \
+              "corresponding page of the CPU manual."                                         },
 #ifdef WIN32
 { MSG_TODW1,  "You can drag and drop a file onto the main window to load it, or drag and"     \
               " drop a directory onto the main window to change the sidebar to that"          \

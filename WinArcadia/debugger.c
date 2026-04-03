@@ -40,14 +40,15 @@
 
 // EXPORTED VARIABLES-----------------------------------------------------
 
-EXPORT       TEXT                     arg1[MAX_PATH + 80 + 1],
-                                      arg2[MAX_PATH + 80 + 1],
-                                      arg3[MAX_PATH + 80 + 1],
-                                      arg4[MAX_PATH + 80 + 1],
-                                      arg5[MAX_PATH + 80 + 1],
-                                      arg6[MAX_PATH + 80 + 1],
-                                      arg7[MAX_PATH + 80 + 1],
-                                      fn_asm[MAX_PATH + 1],
+EXPORT       FLAG                     forcedollar                  = FALSE;
+EXPORT       TEXT                     arg1[     MAX_PATH + 80 + 1],
+                                      arg2[     MAX_PATH + 80 + 1],
+                                      arg3[     MAX_PATH + 80 + 1],
+                                      arg4[     MAX_PATH + 80 + 1],
+                                      arg5[     MAX_PATH + 80 + 1],
+                                      arg6[     MAX_PATH + 80 + 1],
+                                      arg7[     MAX_PATH + 80 + 1],
+                                      fn_asm[   MAX_PATH      + 1],
                                       userinput[MAX_PATH + 80 + 1] = "";
 EXPORT       int                      drawmode  = 0, // INTERTON/ELEKTOR/MALZAK: 0..3, ARCADIA/PIPBIN/CD2650/TWIN/PHUNSY/SELBST/ZACCARIA: 0..1
                                       foundequiv,
@@ -80,6 +81,11 @@ EXPORT const STRPTR ccstring[STYLES][4] =
     ",LT",
     "   "
   },
+  { ",EQ",
+    ",GT",
+    ",LT",
+    "   "
+  },
   { "EQ",
     "GT",
     "LT",
@@ -87,13 +93,14 @@ EXPORT const STRPTR ccstring[STYLES][4] =
 } };
 
 EXPORT const TEXT pswbit[STYLES][9 + 1] =
-{ "SFIDRWOMC", "SFIDRWOMC", "IOFHBWVLC", "SFIDRWOMC"
+{ "SFIDRWOMC", "SFIDRWOMC", "IOFHBWVLC", "IOFHBWVLC", "SFIDRWOMC"
 };
 
 // IMPORTED VARIABLES-----------------------------------------------------
 
 IMPORT       FLAG                     assembling,
-                                      multimode;
+                                      multimode,
+                                      yank;
 IMPORT       UBYTE                    banked,
                                       cc,
                                       coverage_io[258],
@@ -188,6 +195,7 @@ IMPORT       int                      base,
                                       useguideray,
                                       userlabels,
                                       verbosity,
+                                      warn,
                                       watchreads,
                                       watchwrites,
                                       whichgame;
@@ -199,6 +207,7 @@ IMPORT       STRPTR                   colourname[8],
                                       timeunitstr2;
 IMPORT const UBYTE                    from_a[16];
 IMPORT const STRPTR                   coveragename[32],
+                                      hexchars[STYLES],
                                       tokenname[LASTTOKEN - FIRSTTOKEN + 1][STYLES];
 IMPORT const TEXT                     arcadia_chars[64 + 1],
                                       astrowars_chars[256 + 1],
@@ -1011,6 +1020,12 @@ EXPORT FLAG debug_command(void)
                     {   close_subwindow(SUBWINDOW_MONITOR_CPU);
                         view_monitor(SUBWINDOW_MONITOR_CPU);
                     }
+#ifdef AMIGA
+                    if (SubWindowPtr[SUBWINDOW_OPCODES])
+                    {   close_subwindow(SUBWINDOW_OPCODES);
+                        view_monitor(SUBWINDOW_OPCODES);
+                    }
+#endif
                     zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_CPUISNOW, "CPU is now %s.\n\n"), "2650/2650A");
                 } elif (!strcmp((const char*) arg2, "1"))
                 {   supercpu = 1;
@@ -1020,6 +1035,12 @@ EXPORT FLAG debug_command(void)
                     {   close_subwindow(SUBWINDOW_MONITOR_CPU);
                         view_monitor(SUBWINDOW_MONITOR_CPU);
                     }
+#ifdef AMIGA
+                    if (SubWindowPtr[SUBWINDOW_OPCODES])
+                    {   close_subwindow(SUBWINDOW_OPCODES);
+                        view_monitor(SUBWINDOW_OPCODES);
+                    }
+#endif
                     zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_CPUISNOW, "CPU is now %s.\n\n"), "2650B");
                 } else
                 {   zprintf(TEXTPEN_CLIOUTPUT, "CPU 0: %s\n" \
@@ -2570,12 +2591,14 @@ EXPORT FLAG debug_command(void)
         {   zprintf(TEXTPEN_CLIOUTPUT, "N 0: %s\n" \
                                        "N 1: %s\n" \
                                        "N 2: %s\n" \
-                                       "N 3: %s\n",
+                                       "N 3: %s\n" \
+                                       "N 4: %s\n",
                                        LLL(menuinfo2[MENUOPT_N_0].desc_id, menuinfo2[MENUOPT_N_0].desc_str),
                                        LLL(menuinfo2[MENUOPT_N_1].desc_id, menuinfo2[MENUOPT_N_1].desc_str),
                                        LLL(menuinfo2[MENUOPT_N_2].desc_id, menuinfo2[MENUOPT_N_2].desc_str),
-                                       LLL(menuinfo2[MENUOPT_N_3].desc_id, menuinfo2[MENUOPT_N_3].desc_str));
-            zprintf(TEXTPEN_CLIOUTPUT, "%s: N 0|1|2|3\n\n", LLL(MSG_USAGE, "Usage"));
+                                       LLL(menuinfo2[MENUOPT_N_3].desc_id, menuinfo2[MENUOPT_N_3].desc_str),
+                                       LLL(menuinfo2[MENUOPT_N_4].desc_id, menuinfo2[MENUOPT_N_4].desc_str));
+            zprintf(TEXTPEN_CLIOUTPUT, "%s: N 0|1|2|3|4\n\n", LLL(MSG_USAGE, "Usage"));
         } else
         {   if (allowable(TRUE))
             {   if     (!strcmp((const char*) arg2, "0"))
@@ -2587,23 +2610,29 @@ EXPORT FLAG debug_command(void)
                     zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_NOTATION_SIG2, "Notation is now extended Signetics.\n\n"    ));
                     update_notation();
                 } elif (!strcmp((const char*) arg2, "2"))
-                {   style = STYLE_CALM;
-                    zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_NOTATION_CALM, "Notation is now CALM.\n\n"                  ));
+                {   style = STYLE_OLDCALM;
+                    zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_NOTATION_OLDCALM, "Notation is now old CALM.\n\n"           ));
                     update_notation();
                 } elif (!strcmp((const char*) arg2, "3"))
+                {   style = STYLE_NEWCALM;
+                    zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_NOTATION_NEWCALM, "Notation is now new CALM.\n\n"           ));
+                    update_notation();
+                } elif (!strcmp((const char*) arg2, "4"))
                 {   style = STYLE_IEEE;
                     zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_NOTATION_IEEE, "Notation is now IEEE-694.\n\n"              ));
                     update_notation();
                 } else
                 {   zprintf(TEXTPEN_CLIOUTPUT, "N 0: %s\n" \
-                                               "N 1: %s\n" \
-                                               "N 2: %s\n" \
-                                               "N 3: %s\n",
-                                               LLL(menuinfo2[MENUOPT_N_0].desc_id, menuinfo2[MENUOPT_N_0].desc_str),
-                                               LLL(menuinfo2[MENUOPT_N_1].desc_id, menuinfo2[MENUOPT_N_1].desc_str),
-                                               LLL(menuinfo2[MENUOPT_N_2].desc_id, menuinfo2[MENUOPT_N_2].desc_str),
-                                               LLL(menuinfo2[MENUOPT_N_3].desc_id, menuinfo2[MENUOPT_N_3].desc_str));
-                    zprintf(TEXTPEN_CLIOUTPUT, "%s: N 0|1|2|3\n\n", LLL(MSG_USAGE, "Usage"));
+                                       "N 1: %s\n" \
+                                       "N 2: %s\n" \
+                                       "N 3: %s\n" \
+                                       "N 4: %s\n",
+                                       LLL(menuinfo2[MENUOPT_N_0].desc_id, menuinfo2[MENUOPT_N_0].desc_str),
+                                       LLL(menuinfo2[MENUOPT_N_1].desc_id, menuinfo2[MENUOPT_N_1].desc_str),
+                                       LLL(menuinfo2[MENUOPT_N_2].desc_id, menuinfo2[MENUOPT_N_2].desc_str),
+                                       LLL(menuinfo2[MENUOPT_N_3].desc_id, menuinfo2[MENUOPT_N_3].desc_str),
+                                       LLL(menuinfo2[MENUOPT_N_4].desc_id, menuinfo2[MENUOPT_N_4].desc_str));
+                    zprintf(TEXTPEN_CLIOUTPUT, "%s: N 0|1|2|3|4\n\n", LLL(MSG_USAGE, "Usage"));
     }   }   }   }
     elif (!stricmp((const char*) arg1, "PB"))
     {   if (allowable(TRUE))
@@ -2628,11 +2657,13 @@ EXPORT FLAG debug_command(void)
         {   zprintf(TEXTPEN_CLIOUTPUT, "%s\n", LLL(menuinfo1[MENUITEM_EQUALS].desc_id, menuinfo1[MENUITEM_EQUALS].desc_str));
             zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_USAGE_EQUALS, "Usage: = [<address>]\n\n"));
         } elif (allowable(TRUE))
-        {   if (arg3[0])
-            {   zprintf(TEXTPEN_CLIOUTPUT, "%s\n", LLL(menuinfo1[MENUITEM_EQUALS].desc_id, menuinfo1[MENUITEM_EQUALS].desc_str));
-                zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_USAGE_EQUALS, "Usage: = [<address>]\n\n"));
-            } elif (arg2[0])
-            {   address1 = parse_expression((STRPTR) arg2, MAX_ADDR, FALSE);
+        {   if (arg2[0])
+            {   if (arg3[0]) { strcat(arg2, " "); strcat(arg2, arg3); }
+                if (arg4[0]) { strcat(arg2, " "); strcat(arg2, arg4); }
+                if (arg5[0]) { strcat(arg2, " "); strcat(arg2, arg5); }
+                if (arg6[0]) { strcat(arg2, " "); strcat(arg2, arg6); }
+                if (arg7[0]) { strcat(arg2, " "); strcat(arg2, arg7); }
+                address1 = parse_expression((STRPTR) arg2, MAX_ADDR, FALSE); // or address1 = parsenumber(arg2));
                 if (address1 == OUTOFRANGE)
                 {   zprintf
                     (   TEXTPEN_CLIOUTPUT,
@@ -3451,6 +3482,18 @@ EXPORT FLAG debug_command(void)
                 acase 1: zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_VB_1, "Table tracing mode.\n\n"));
                 acase 2: zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_VB_2, "Maximum verbosity.\n\n" ));
     }   }   }   }
+    elif (!stricmp((const char*) arg1, "WARN"))
+    {   if (machine == PONG || machine == TYPERIGHT)
+        {   zprintf(TEXTPEN_CLIOUTPUT, "%s\n\n", LLL(MSG_WRONGGUEST, "Wrong guest machine!"));
+        } else
+        {   zprintf
+            (   TEXTPEN_CLIOUTPUT,
+                LLL(
+                    MSG_DEBUG_ASMWARNINGS,
+                    "Assembler warnings"
+            )   );
+            fliplog(&warn);
+    }   }
     elif (!stricmp((const char*) arg1, "WC") || !stricmp((const char*) arg1, "DT"))
     {   if (ASKUSAGE)
         {   zprintf(TEXTPEN_CLIOUTPUT, "%s\n", LLL(menuinfo1[MENUITEM_WC].desc_id, menuinfo1[MENUITEM_WC].desc_str));
@@ -3926,7 +3969,8 @@ MODULE void help_commands(int which)
 "N 0|1|2                         change notation\n"\
 "SPR 0|1|2                       change sprite display mode\n"\
 "TU 0|1|2                        change time unit\n"\
-"VB|VERBOSE 0|1|2                change verbosity\n\n"
+"VB|VERBOSE 0|1|2                change verbosity\n"\
+"WARN                            assembler warnings on/off\n\n"
         ));
     acase 11:
         zprintf
@@ -5527,7 +5571,7 @@ EXPORT int parse_expression(STRPTR thestring, int max, FLAG maskable)
     i = parsenumber(thestring);
     return ((i > max) ? OUTOFRANGE: i);
 }
-    
+
 EXPORT TEXT getfriendly(int number)
 {   return number_to_friendly(number, (STRPTR) friendly, TRUE, 0);
 }
@@ -5663,7 +5707,11 @@ EXPORT TEXT number_to_friendly(int number, STRPTR thestring, FLAG both, int mult
         {   return 'D';
     }   }
 
-    sprintf(thestring, "$%X", (unsigned int) number);
+    if (forcedollar)
+    {   sprintf(thestring, "$%X", (unsigned int) number);
+    } else
+    {   sprintf(thestring, "%s%X", hexchars[style], (unsigned int) number);
+    }
     foundequiv = -1;
     return EOS;
 }
@@ -6168,8 +6216,12 @@ EXPORT TEXT guestchar(UBYTE input)
          ||  input >= 128
 #endif
         )
-        {   thechar = (TEXT) '·';
-        } else
+        {   if (machine == TWIN && input >= 128 + 'A' && input <= 128 + 'Z')
+            {   thechar = input & 0x7F; // for easier viewing of strings where the high bit is set
+            } else
+            {   thechar = (TEXT) '·';
+        }   }
+        else
         {   thechar = input;
         }
     acase INSTRUCTOR:
@@ -7209,6 +7261,7 @@ EXPORT void view_bios_ram(void)
         {   zprintf(TEXTPEN_CLIOUTPUT, "%s\n\n", LLL(MSG_WRONGGUEST, "Wrong guest machine!")); // wrong DOS really
         }
     acase CD2650:
+        zprintf(TEXTPEN_VIEW, "BIOS RAM: \n");
         zprintf
         (   TEXTPEN_VIEW,
             "ADD:  $%04X BKP:  $%04X BPD:  $%04X CUR:  $%04X\n",
@@ -7223,6 +7276,48 @@ EXPORT void view_bios_ram(void)
             memory[C_LENT],
             memory[C_SUMC]
         );
+        if (cd2650_dosver == DOS_P1DOS)
+        {   zprintf(TEXTPEN_VIEW, "P1 DOS RAM:\n");
+            zprintf(TEXTPEN_VIEW, "VersionCode:    %d.%d\n"        , (memory[0x6003] & 0xF0) >> 4, (memory[0x6003] & 0x0F));
+            zstrncpy(gtempstring, (const char*) &memory[0x6050], 8);
+            zprintf(TEXTPEN_VIEW, "ParsedFilename: \"%s\"\n"       , gtempstring);
+            zstrncpy(gtempstring, (const char*)  &memory[0x6058], 4);
+            zprintf(TEXTPEN_VIEW, "ParsedType:     \"%s\"\n"       , gtempstring);
+            zstrncpy(gtempstring, (const char*)  &memory[0x605C], 8);
+            zprintf(TEXTPEN_VIEW, "PFName2:        \"%s\"\n"       , gtempstring);
+            zstrncpy(gtempstring, (const char*)  &memory[0x6064], 4);
+            zprintf(TEXTPEN_VIEW, "PFTyp2:         \"%s\"\n"       , gtempstring);
+            zprintf(TEXTPEN_VIEW, "FileUnit        %d\n"           , memory[0x6068]);
+            zprintf(TEXTPEN_VIEW, "OpenFilePtr:    $%02X%02X\n"    , memory[0x6069], memory[0x606A]);
+            zstrncpy(gtempstring, (const char*)  &memory[0x606B], 8);
+            zprintf(TEXTPEN_VIEW, "Codeword:       \"%s\"\n",        gtempstring);
+            zstrncpy(gtempstring, (const char*)  &memory[0x6073], 8);
+            zprintf(TEXTPEN_VIEW, "EntrCodeWord:   \"%s\"\n",        gtempstring);
+            zstrncpy(gtempstring, (const char*)  &memory[0x607B], 64);
+            zprintf(TEXTPEN_VIEW, "CmdLine:        \"%s\"\n",        gtempstring);
+            zprintf(TEXTPEN_VIEW, "CursorAddr:     $%02X%02X\n"    , memory[0x60BC], memory[0x60BD]);
+            zprintf(TEXTPEN_VIEW, "NumUnits:       %d\n"           , memory[0x60BE]);
+            zprintf(TEXTPEN_VIEW, "LastUnit:       %d\n"           , memory[0x60BF]);
+            zprintf(TEXTPEN_VIEW, "DefaultUnit:    %d\n"           , memory[0x60C0]);
+            if (yank)
+            {   zstrncpy(gtempstring, (const char*) &memory[0x60C1], 8);
+                zprintf(TEXTPEN_VIEW, "CurrDate:       \"%s\" (MM-DD-YY)\n", gtempstring);
+            } else
+            {   zprintf(TEXTPEN_VIEW, "CurrDate:       \"%c%c/%c%c/%c%c\" (DD/MM/YY)\n",
+                memory[0x60C4], memory[0x60C5],
+                memory[0x60C1], memory[0x60C2],
+                memory[0x60C7], memory[0x60C8]);
+            }
+            zstrncpy(gtempstring, (const char*)  &memory[0x60C9], 8);
+            zprintf(TEXTPEN_VIEW, "CurrSignon:     \"%s\"\n",        gtempstring);
+            zprintf(TEXTPEN_VIEW, "CmdLinePtr:     %d\n"           , memory[0x60D1]);
+            if (memory[0x60D2])
+            {   zprintf(TEXTPEN_VIEW, "PrivilegedMode: %d (supervisor)\n", memory[0x60D2]);
+            } else
+            {   zprintf(TEXTPEN_VIEW, "PrivilegedMode: 0 (normal user)\n");
+            }
+            zprintf(TEXTPEN_VIEW, "TargetAddr:     $%02X%02X\n"    , memory[0x60D3], memory[0x60D4]);
+        }
     acase PHUNSY:
         zprintf(TEXTPEN_VIEW, "MDCR RAM ($C00..$E40): \n");
         for (i = 0xC00; i <= 0xE40; i += 16) // it would be better to omit $E41..$E4F but dumprow() doesn't allow this
@@ -7367,7 +7462,7 @@ EXPORT void view_bios_ram(void)
         }
     adefault: // eg. ARCADIA, INTERTON, BINBUG, coin-ops, PONG, MIKIT, TYPERIGHT
         zprintf(TEXTPEN_CLIOUTPUT, "%s\n\n", LLL(MSG_WRONGGUEST, "Wrong guest machine!"));
-}   }   
+}   }
 
 EXPORT void clearcoverage(void)
 {   int i;
@@ -7409,7 +7504,7 @@ EXPORT void view_cpu_2650(FLAG newline)
 
     switch (style)
     {
-    case STYLE_CALM:
+    case STYLE_OLDCALM:
         zprintf
         (   TEXTPEN_VIEW,
             "%-11s %s  A: $%02X  B: $%02X  C: $%02X  D: $%02X   U: %s  SP: %d\n",
@@ -7507,20 +7602,35 @@ EXPORT void view_cpu_2650(FLAG newline)
             pslbits,
             ccstring[style][(psl & 0xC0) >> 6] // %11000000 -> %00000011
         );
-        zprintf
-        (   TEXTPEN_VIEW,
-            "    RAS: $%04X $%04X $%04X $%04X $%04X $%04X $%04X $%04X  IAR: $%04X\n",
-            ras[0],
-            ras[1],
-            ras[2],
-            ras[3],
-            ras[4],
-            ras[5],
-            ras[6],
-            ras[7],
-            iar
-        );
-    }
+        if (style == STYLE_NEWCALM)
+        {   zprintf
+            (   TEXTPEN_VIEW,
+                "    RAS: $%04X $%04X $%04X $%04X $%04X $%04X $%04X $%04X  PC:  $%04X\n",
+                ras[0],
+                ras[1],
+                ras[2],
+                ras[3],
+                ras[4],
+                ras[5],
+                ras[6],
+                ras[7],
+                iar
+            );
+        } else
+        {   zprintf
+            (   TEXTPEN_VIEW,
+                "    RAS: $%04X $%04X $%04X $%04X $%04X $%04X $%04X $%04X  IAR: $%04X\n",
+                ras[0],
+                ras[1],
+                ras[2],
+                ras[3],
+                ras[4],
+                ras[5],
+                ras[6],
+                ras[7],
+                iar
+            );
+    }   }
 
     if (newline)
     {   zprintf(TEXTPEN_VIEW, "\n");

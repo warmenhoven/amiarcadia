@@ -185,12 +185,6 @@ EXPORT struct KindStruct filekind[KINDS] =
     NULL,
     NULL
   },
-  { ".avi", NULL,
-    "RIFF AVI Animation (*.AVI)\0*.AVI\0All files (*.*)\0*.*\0",
-    FALSE,
-    NULL,
-    NULL
-  },
   { ".mid", ".midi",
     "Musical Instrument Digital Interface (*.MID, *.MIDI)\0*.MID;*.MIDI\0All files (*.*)\0*.*\0",
     FALSE,

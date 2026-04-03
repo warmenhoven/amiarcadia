@@ -158,7 +158,7 @@ typedef void*               APTR;
 #define UNASSIGNED      511 // unused scan code
 #define SCANCODES       512
 
-#define TIPSOFDAYS       24 // 19 shared + 5 WinArcadia-only
+#define TIPSOFDAYS       25 // 20 shared + 5 WinArcadia-only
 #define CODEPAGE_ENG    1252 // for Western European languages (English/Dutch/French/German/Italian/Spanish). 28605 is another possibility.
 #define PRINTERDEVICE   "LPT1" // NB. no colon!
 #define STRING_ROOT     "\\"
@@ -226,7 +226,7 @@ typedef void*               APTR;
 #define EMUPEN_WHITE         0x00FFFFFF
 #define EMUPEN_BLACK         0x00000000
 #define EMUPEN_DARKRED       0x000000CC
-#define EMUPEN_DARKBLUE      0x00FF8888
+#define EMUPEN_DARKBLUE      0x00FF6666
 #define EMUPEN_DARKGREEN     0x0000CC00
 #define EMUPEN_DARKYELLOW    0x0066CCCC
 #define EMUPEN_DARKORANGE    0x000066CC
@@ -246,7 +246,7 @@ typedef void*               APTR;
 #define EMURGBPEN_WHITE      0x00FFFFFF
 #define EMURGBPEN_BLACK      0x00000000
 #define EMURGBPEN_DARKRED    0x00CC0000
-#define EMURGBPEN_DARKBLUE   0x008888FF
+#define EMURGBPEN_DARKBLUE   0x006666FF
 #define EMURGBPEN_DARKGREEN  0x0000CC00
 #define EMURGBPEN_DARKORANGE 0x00CC6600
 #define EMURGBPEN_DARKPURPLE 0x00CC00CC

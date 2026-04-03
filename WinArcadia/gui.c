@@ -83,7 +83,7 @@ EXPORT const struct MenuStruct menuinfo1[MENUITEMS] = {
 { "MACRO.RESTARTPLAYBACK"          , 0                        , ""                                               },
 { "MACRO.STOP"                     , 0                        , ""                                               },
 { "MACRO.LOOP"                     , 0                        , ""                                               }, //  50
-{ "MACRO.ANIMS.AVI"                , 0                        , ""                                               },
+{ ""                               , MSG_MENUHELP_WARN        , "Assembler warnings on/off"                      }, // MENUITEM_WARN
 { "MACRO.ANIMS.ANIM"               , 0                        , ""                                               },
 { "MACRO.ANIMS.GIF"                , 0                        , ""                                               },
 { "MACRO.ANIMS.MNG"                , 0                        , ""                                               },
@@ -288,7 +288,7 @@ EXPORT const struct MenuStruct menuinfo1[MENUITEMS] = {
 { ""                               , 0                        , ""                                               }, // MENUFAKE_REGION
 { ""                               , 0                        , ""                                               }, // MENUFAKE_PRIORITY
 { "SETTINGS.SPRITES.COLLISIONS"    , 0                        , ""                                               }, // MENUITEM_COLLISIONS
-{ "SETTINGS.SPRITES.DEMULTIPLEX"   , 0                        , ""                                               }, // MENUITEM_DEMULTIPLEX
+{ ""                               , 0                        , ""                                               }, // MENUFAKE_DEMULTIPLEX
 { "SETTINGS.TRAINERS.CHEATLIVES"   , 0                        , ""                                               }, // MENUITEM_CHEATLIVES
 { "SETTINGS.TRAINERS.CHEATTIME"    , 0                        , ""                                               }, // MENUITEM_CHEATTIME
 { "SETTINGS.TRAINERS.INVINCIBILITY", 0                        , ""                                               }, // MENUITEM_INVINCIBILITY
@@ -340,7 +340,7 @@ EXPORT const struct MenuStruct menuinfo1[MENUITEMS] = {
 { ""                               , 0                        , ""                                               }, // MENUMENU_TRAINERS
 { ""                               , 0                        , ""                                               }, // MENUMENU_VDU            306
 // new ones
-{ "SETTINGS.EMULATOR.FRAMEBASED"   , 0                        , ""                                               }, // MENUITEM_FRAMEBASED     307
+{ ""                               , 0                        , ""                                               }, // MENUFAKE_FRAMEBASED     307
 { ""                               , MSG_MENUHELP_INJECT      , "Inject file onto floppy disk"                   }, // MENUITEM_INJECT         308
 { ""                               , MSG_MENUHELP_RENAME      , "Rename file on floppy disk"                     }, // MENUITEM_RENAME         309
 { ""                               , 0                        , ""                                               }, // MENUMENU_DEBUG_DISK     310
@@ -371,8 +371,8 @@ EXPORT const struct MenuStruct menuinfo1[MENUITEMS] = {
 { ""                               , MSG_MENUHELP_CPU_1       , "Set CPU to 2650B"                               }, // MENUOPT_CPU_1
 { ""                               , MSG_MENUHELP_N_0         , "Set notation to non-extended Signetics"         }, // MENUOPT_N_0
 { ""                               , MSG_MENUHELP_N_1         , "Set notation to extended Signetics"             }, // MENUOPT_N_1
-{ ""                               , MSG_MENUHELP_N_2         , "Set notation to CALM"                           }, // MENUOPT_N_2
-{ ""                               , MSG_MENUHELP_N_3         , "Set notation to IEEE-694"                       }, // MENUOPT_N_3
+{ ""                               , MSG_MENUHELP_N_2         , "Set notation to old CALM"                       }, // MENUOPT_N_2
+{ ""                               , MSG_MENUHELP_N_3         , "Set notation to new CALM"                       }, // MENUOPT_N_3
 { ""                               , MSG_MENUHELP_TU_0        , "Set time unit to cycles"                        }, // MENUOPT_TU_0             20
 { ""                               , MSG_MENUHELP_TU_1        , "Set time unit to clocks"                        }, // MENUOPT_TU_1
 { ""                               , MSG_MENUHELP_TU_2        , "Set time unit to pixels"                        }, // MENUOPT_TU_2
@@ -510,8 +510,14 @@ EXPORT const struct MenuStruct menuinfo1[MENUITEMS] = {
 { "SETTINGS.VDU.CHESSMEN"          , 0                        , ""                                               },
 { "SETTINGS.VDU.LOWERCASE"         , 0                        , ""                                               }, // MENUOPT_LOWERCASEVDU    155
 // new ones
-{ ""                               , MSG_MENUHELP_DRIVE_2     , "Change debugger drive to unit 2"                }, // MENUOPT_DRIVE_2         156
-{ ""                               , MSG_MENUHELP_DRIVE_3     , "Change debugger drive to unit 3"                }, // MENUOPT_DRIVE_3         157
+{ ""                               , MSG_MENUHELP_DRIVE_2     , "Change debugger drive to unit 2"                }, // MENUOPT_DRIVE_2                 156
+{ ""                               , MSG_MENUHELP_DRIVE_3     , "Change debugger drive to unit 3"                }, // MENUOPT_DRIVE_3                 157
+{ "SETTINGS.SPRITES.MULTIPLEX"     , 0                        , ""                                               }, // MENUOPT_DEMULTIPLEX_MULTIPLEX   158
+{ "SETTINGS.SPRITES.TRANSPARENT"   , 0                        , ""                                               }, // MENUOPT_DEMULTIPLEX_TRANSPARENT 159
+{ "SETTINGS.SPRITES.OPAQUE"        , 0                        , ""                                               }, // MENUOPT_DEMULTIPLEX_OPAQUE      160
+{ "SETTINGS.EMULATOR.FRAMEBASED"   , 0                        , ""                                               }, // MENUOPT_FRAMEBASED              161
+{ "SETTINGS.EMULATOR.PIXELBASED"   , 0                        , ""                                               }, // MENUOPT_PIXELBASED              162
+{ ""                               , MSG_MENUHELP_N_4         , "Set notation to IEEE-694"                       }, // MENUOPT_N_4                     163
 };
 
 // IMPORTED VARIABLES-----------------------------------------------------
@@ -550,7 +556,6 @@ IMPORT     int                        aifffile,
                                       autocoin,
                                       autopause,
                                       autosave,
-                                      avianims,
                                       base,
                                       binbug_biosver,
                                       binbug_dosver,
@@ -662,6 +667,7 @@ IMPORT     int                        aifffile,
                                       usestubs,
                                       verbosity,
                                       viewspeedas,
+                                      warn,
                                       watchreads,
                                       watchwrites,
                                       wavfile,
@@ -921,11 +927,6 @@ EXPORT void updatemenu(int which)
         ghost(MENUITEM_STOP           , crippled || recmode == RECMODE_NORMAL);
     acase MENUITEM_LOOP:
         tick(which, loop);
-#ifdef WIN32
-    acase MENUITEM_AVIANIMS:
-        ghost(which, recmode != RECMODE_NORMAL);
-        tick(which, avianims);
-#endif
     acase MENUITEM_APNG:
         ghost(which, recmode != RECMODE_NORMAL);
         tick(which, apnganims);
@@ -1266,28 +1267,39 @@ EXPORT void updatemenu(int which)
         enable2(MENUOPT_N_1, allowable(FALSE));
         enable2(MENUOPT_N_2, allowable(FALSE));
         enable2(MENUOPT_N_3, allowable(FALSE));
+        enable2(MENUOPT_N_4, allowable(FALSE));
         switch (style)
         {
         case STYLE_SIGNETICS1:
-              checkmx(MENUOPT_N_0, MENUOPT_N_0, MENUOPT_N_3);
+              checkmx(MENUOPT_N_0, MENUOPT_N_0, MENUOPT_N_4);
             uncheckmx(MENUOPT_N_1);
             uncheckmx(MENUOPT_N_2);
             uncheckmx(MENUOPT_N_3);
+            uncheckmx(MENUOPT_N_4);
         acase STYLE_SIGNETICS2:
             uncheckmx(MENUOPT_N_0);
-              checkmx(MENUOPT_N_1, MENUOPT_N_0, MENUOPT_N_3);
+              checkmx(MENUOPT_N_1, MENUOPT_N_0, MENUOPT_N_4);
             uncheckmx(MENUOPT_N_2);
             uncheckmx(MENUOPT_N_3);
-        acase STYLE_CALM:
+            uncheckmx(MENUOPT_N_4);
+        acase STYLE_OLDCALM:
             uncheckmx(MENUOPT_N_0);
             uncheckmx(MENUOPT_N_1);
-              checkmx(MENUOPT_N_2, MENUOPT_N_0, MENUOPT_N_3);
+              checkmx(MENUOPT_N_2, MENUOPT_N_0, MENUOPT_N_4);
             uncheckmx(MENUOPT_N_3);
+            uncheckmx(MENUOPT_N_4);
+        acase STYLE_NEWCALM:
+            uncheckmx(MENUOPT_N_0);
+            uncheckmx(MENUOPT_N_1);
+            uncheckmx(MENUOPT_N_2);
+              checkmx(MENUOPT_N_3, MENUOPT_N_0, MENUOPT_N_4);
+            uncheckmx(MENUOPT_N_4);
         acase STYLE_IEEE:
             uncheckmx(MENUOPT_N_0);
             uncheckmx(MENUOPT_N_1);
             uncheckmx(MENUOPT_N_2);
-              checkmx(MENUOPT_N_3, MENUOPT_N_0, MENUOPT_N_3);
+            uncheckmx(MENUOPT_N_3);
+              checkmx(MENUOPT_N_4, MENUOPT_N_0, MENUOPT_N_4);
         }
     acase MENUFAKE_TU:
         enable2(MENUOPT_TU_0, allowable(FALSE));
@@ -1336,6 +1348,9 @@ EXPORT void updatemenu(int which)
          || machine == PHUNSY
         ));
         tick(which, useguideray);
+    acase MENUITEM_WARN:
+        ghost(which, machine == PONG || machine == TYPERIGHT);
+        tick(which, warn);
     // "Debug|Graphics »" submenu
     acase MENUFAKE_DRAW:
         enable2(MENUOPT_DRAW_0, machine != INSTRUCTOR && machine != MIKIT    && machine != PONG    && machine != TYPERIGHT);
@@ -1989,12 +2004,12 @@ EXPORT void updatemenu(int which)
         ghost(which, machine != ARCADIA);
         tick(which, flagline);
     acase MENUFAKE_COLOURSET:
-        enable2(MENUOPT_AMBER      , (recmode != RECMODE_RECORD || !avianims) && SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
-        enable2(MENUOPT_GREEN      , (recmode != RECMODE_RECORD || !avianims) && SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
-        enable2(MENUOPT_GREYSCALE  , (recmode != RECMODE_RECORD || !avianims) && SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
-        enable2(MENUOPT_PURECOLOURS, (recmode != RECMODE_RECORD || !avianims) && SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
-        enable2(MENUOPT_PVICOLOURS , (recmode != RECMODE_RECORD || !avianims) && SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
-        enable2(MENUOPT_UVICOLOURS , (recmode != RECMODE_RECORD || !avianims) && SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
+        enable2(MENUOPT_AMBER      , SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
+        enable2(MENUOPT_GREEN      , SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
+        enable2(MENUOPT_GREYSCALE  , SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
+        enable2(MENUOPT_PURECOLOURS, SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
+        enable2(MENUOPT_PVICOLOURS , SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
+        enable2(MENUOPT_UVICOLOURS , SubWindowPtr[SUBWINDOW_PALETTE] == NULL);
         switch (colourset)
         {
         case AMBERSCALE:
@@ -2079,9 +2094,6 @@ EXPORT void updatemenu(int which)
     acase MENUITEM_EMUID:
         ghost(which, machine == PONG || machine == TYPERIGHT);
         tick(which, emuid);
-    acase MENUITEM_FRAMEBASED:
-        ghost(which, crippled || (machine != ARCADIA && machine != BINBUG && machine != CD2650 && machine != PHUNSY));
-        tick(which, framebased);
     acase MENUITEM_POST:
         ghost(which, machine != TWIN && (machine != PIPBUG || pipbug_biosver != PIPBUG_PIPBUG2BIOS) && !machines[machine].coinop);
         tick(which, post);
@@ -2100,6 +2112,16 @@ EXPORT void updatemenu(int which)
     acase MENUITEM_USESTUBS:
         ghost(which, machine != ARCADIA && machine != INTERTON);
         tick(which, usestubs);
+    acase MENUFAKE_FRAMEBASED:
+        enable2(MENUOPT_FRAMEBASED, machine == ARCADIA || machine == BINBUG || machine == CD2650 || machine == PHUNSY);
+        enable2(MENUOPT_PIXELBASED, machine == ARCADIA || machine == BINBUG || machine == CD2650 || machine == PHUNSY);
+        if (framebased)
+        {     checkmx(MENUOPT_FRAMEBASED, MENUOPT_FRAMEBASED, MENUOPT_PIXELBASED);
+            uncheckmx(MENUOPT_PIXELBASED);
+        } else
+        {   uncheckmx(MENUOPT_FRAMEBASED);
+              checkmx(MENUOPT_PIXELBASED, MENUOPT_FRAMEBASED, MENUOPT_PIXELBASED);
+        }
     acase MENUFAKE_LOGTOFILE:
         switch (logfile)
         {
@@ -2159,9 +2181,9 @@ EXPORT void updatemenu(int which)
 #endif
 #ifdef WIN32
     acase MENUFAKE_STRETCHING:
-        enable2(MENUOPT_UNSTRETCHED,  filter != FILTER_3D && (recmode != RECMODE_RECORD || !avianims));
-        enable2(MENUOPT_STRETCH43,    filter != FILTER_3D && (recmode != RECMODE_RECORD || !avianims));
-        enable2(MENUOPT_STRETCHTOFIT, filter != FILTER_3D && (recmode != RECMODE_RECORD || !avianims));
+        enable2(MENUOPT_UNSTRETCHED,  filter != FILTER_3D);
+        enable2(MENUOPT_STRETCH43,    filter != FILTER_3D);
+        enable2(MENUOPT_STRETCHTOFIT, filter != FILTER_3D);
         switch (stretching)
         {
         case 0:
@@ -2180,12 +2202,12 @@ EXPORT void updatemenu(int which)
 #endif
     // "Settings|Graphics »" submenu
     acase MENUFAKE_SIZE:
-        enable2(MENUOPT_1XSIZE, !fullscreen && (recmode != RECMODE_RECORD || !avianims));
-        enable2(MENUOPT_2XSIZE, !fullscreen && (recmode != RECMODE_RECORD || !avianims));
-        enable2(MENUOPT_3XSIZE, !fullscreen && (recmode != RECMODE_RECORD || !avianims));
-        enable2(MENUOPT_4XSIZE, !fullscreen && (recmode != RECMODE_RECORD || !avianims));
-        enable2(MENUOPT_5XSIZE, !fullscreen && (recmode != RECMODE_RECORD || !avianims));
-        enable2(MENUOPT_6XSIZE, !fullscreen && (recmode != RECMODE_RECORD || !avianims));
+        enable2(MENUOPT_1XSIZE, !fullscreen);
+        enable2(MENUOPT_2XSIZE, !fullscreen);
+        enable2(MENUOPT_3XSIZE, !fullscreen);
+        enable2(MENUOPT_4XSIZE, !fullscreen);
+        enable2(MENUOPT_5XSIZE, !fullscreen);
+        enable2(MENUOPT_6XSIZE, !fullscreen);
         if (size == 1)
             checkmx(   MENUOPT_1XSIZE, MENUOPT_1XSIZE, MENUOPT_6XSIZE);
         else uncheckmx(MENUOPT_1XSIZE);
@@ -2218,14 +2240,10 @@ EXPORT void updatemenu(int which)
         ));
         tick(which, usemargins);
     acase MENUITEM_FULLSCREEN:
-        ghost(which, avianims && (recmode == RECMODE_RECORD || (recmode == RECMODE_PLAY && generate)));
         tick(which, fullscreen);
     acase MENUITEM_NARROW:
         ghost(which,
             fullscreen
-#ifdef WIN32
-         || (avianims && (recmode == RECMODE_RECORD || (recmode == RECMODE_PLAY && generate)))
-#endif
          || GIFHandle
          || ANIMHandle
          || PNGHandle
@@ -2499,9 +2517,25 @@ EXPORT void updatemenu(int which)
 #endif
         );
         tick(which, (int) collisions);
-    acase MENUITEM_DEMULTIPLEX:
-        ghost(which, machine != ARCADIA && machine != INTERTON && machine != ELEKTOR);
-        tick(which, (int) demultiplex);
+    acase MENUFAKE_DEMULTIPLEX:
+        enable2(MENUOPT_DEMULTIPLEX_MULTIPLEX  , machine == ARCADIA || machine == INTERTON || machine == ELEKTOR);
+        enable2(MENUOPT_DEMULTIPLEX_TRANSPARENT, machine == ARCADIA || machine == INTERTON || machine == ELEKTOR);
+        enable2(MENUOPT_DEMULTIPLEX_OPAQUE     , machine == ARCADIA || machine == INTERTON || machine == ELEKTOR);
+        switch (demultiplex)
+        {
+        case 0:
+              checkmx(MENUOPT_DEMULTIPLEX_MULTIPLEX  , MENUOPT_DEMULTIPLEX_MULTIPLEX, MENUOPT_DEMULTIPLEX_OPAQUE);
+            uncheckmx(MENUOPT_DEMULTIPLEX_TRANSPARENT);
+            uncheckmx(MENUOPT_DEMULTIPLEX_OPAQUE);
+        acase 1:
+            uncheckmx(MENUOPT_DEMULTIPLEX_MULTIPLEX);
+              checkmx(MENUOPT_DEMULTIPLEX_TRANSPARENT, MENUOPT_DEMULTIPLEX_MULTIPLEX, MENUOPT_DEMULTIPLEX_OPAQUE);
+            uncheckmx(MENUOPT_DEMULTIPLEX_OPAQUE);
+        acase 2:
+            uncheckmx(MENUOPT_DEMULTIPLEX_MULTIPLEX);
+            uncheckmx(MENUOPT_DEMULTIPLEX_TRANSPARENT);
+              checkmx(MENUOPT_DEMULTIPLEX_OPAQUE     , MENUOPT_DEMULTIPLEX_MULTIPLEX, MENUOPT_DEMULTIPLEX_OPAQUE);
+        }
     // "Settings|Sound »" submenu
     acase MENUITEM_SOUND:
         tick(which, (int) sound);
@@ -2957,8 +2991,6 @@ EXPORT void handle_menu(int command)
         flipbool(&mnganims, command, FALSE);
     acase MENUITEM_IFFANIMS:
         flipbool(&iffanims, command, FALSE);
-    acase MENUITEM_AVIANIMS:
-        flipbool(&avianims, command, FALSE);
     acase MENUITEM_GIFANIMS:
         flipbool(&gifanims, command, FALSE);
     acase MENUITEM_GENERATE8SVX:
@@ -3039,6 +3071,7 @@ EXPORT void handle_menu(int command)
     acase MENUITEM_L_N:        debugger_full(   "L N"       );
     acase MENUITEM_L_S:        debugger_full(   "L S"       );
     acase MENUITEM_PL:         debugger_full(   "PL"        );
+    acase MENUITEM_T:          debugger_full(   "T"         );
     // "Debug »|Run" submenu
     acase MENUITEM_G:          if (machine == PONG || machine == TYPERIGHT)
                                {   debugger_full("G");
@@ -3086,7 +3119,7 @@ EXPORT void handle_menu(int command)
     acase MENUITEM_TRAIN:      debugger_partial("TRAIN "    );
     // "Debug »|Options" submenu
     acase MENUITEM_GR:         debugger_full(   "GR"        );
-    acase MENUITEM_T:          debugger_full(   "T"         );
+    acase MENUITEM_WARN:       debugger_full(   "WARN"      );
     // "Tools" menu
     acase MENUITEM_CONTROLS:
 #ifdef WIN32
@@ -3297,8 +3330,6 @@ EXPORT void handle_menu(int command)
 #endif
     acase MENUITEM_EMUID:
         flipbool(&emuid, command, FALSE);
-    acase MENUITEM_FRAMEBASED:
-        flipbool(&framebased, command, FALSE);
     acase MENUITEM_POST:
         flipbool(&post, command, FALSE);
         if (machines[machine].coinop)
@@ -3478,8 +3509,6 @@ EXPORT void handle_menu(int command)
     // "Settings|Sprites »" submenu
     acase MENUITEM_COLLISIONS:
         flipbool((int*) &collisions, command, TRUE);
-    acase MENUITEM_DEMULTIPLEX:
-        flipbool((int*) &demultiplex, command, TRUE);
     // "Settings|Sound »" submenu
     acase MENUITEM_SOUND:
         flipbool((int*) &sound, command, TRUE);
@@ -3667,6 +3696,7 @@ EXPORT void handle_menu2(int command)
     acase MENUOPT_N_1:             debugger_full("N 1"    );
     acase MENUOPT_N_2:             debugger_full("N 2"    );
     acase MENUOPT_N_3:             debugger_full("N 3"    );
+    acase MENUOPT_N_4:             debugger_full("N 4"    );
     acase MENUOPT_TU_0:            debugger_full("TU 0"   );
     acase MENUOPT_TU_1:            debugger_full("TU 1"   );
     acase MENUOPT_TU_2:            debugger_full("TU 2"   );
@@ -3870,14 +3900,17 @@ EXPORT void handle_menu2(int command)
         {   cd2650_biosver = CD2650_SUPERVISOR;
         }
         cd2650_changebios(); // calls updatemenus() for us
-    acase MENUOPT_DOS_EXOS:      twin_dosver = TWIN_EXOS;
-    acase MENUOPT_DOS_SDOS20:    twin_dosver = TWIN_SDOS20;
-    acase MENUOPT_DOS_SDOS40:    twin_dosver = TWIN_SDOS40;
-    acase MENUOPT_DOS_SDOS42:    twin_dosver = TWIN_SDOS42;
-    acase MENUOPT_DOS_TOS:       twin_dosver = TWIN_TOS;
-    acase MENUOPT_DOS_UDOS:      twin_dosver = TWIN_UDOS;
-    acase MENUOPT_DOS_NOTWINDOS: twin_dosver = TWIN_NODOS;
+    acase MENUOPT_DOS_EXOS:      twin_dosver = TWIN_EXOS;   twin_dir_disk(TRUE, 0);
+    acase MENUOPT_DOS_SDOS20:    twin_dosver = TWIN_SDOS20; twin_dir_disk(TRUE, 0);
+    acase MENUOPT_DOS_SDOS40:    twin_dosver = TWIN_SDOS40; twin_dir_disk(TRUE, 0);
+    acase MENUOPT_DOS_SDOS42:    twin_dosver = TWIN_SDOS42; twin_dir_disk(TRUE, 0);
+    acase MENUOPT_DOS_TOS:       twin_dosver = TWIN_TOS;    twin_dir_disk(TRUE, 0);
+    acase MENUOPT_DOS_UDOS:      twin_dosver = TWIN_UDOS;   twin_dir_disk(TRUE, 0);
+    acase MENUOPT_DOS_NOTWINDOS: twin_dosver = TWIN_NODOS;  twin_dir_disk(TRUE, 0);
     // "Settings|Emulator »" submenu
+    acase MENUOPT_FRAMEBASED:
+    case  MENUOPT_PIXELBASED:
+        flipbool(&framebased, command, FALSE);
     acase MENUOPT_APPEND:
         if (logfile != LOGFILE_APPEND)
         {   logfile_close();
@@ -4104,6 +4137,16 @@ EXPORT void handle_menu2(int command)
         changesoundoutput();
         sound_on(FALSE);
 #endif
+    // "Settings|Sprites »" submenu
+    acase MENUOPT_DEMULTIPLEX_MULTIPLEX:
+        demultiplex = 0;
+        redrawscreen();
+    acase MENUOPT_DEMULTIPLEX_TRANSPARENT:
+        demultiplex = 1;
+        redrawscreen();
+    acase MENUOPT_DEMULTIPLEX_OPAQUE:
+        demultiplex = 2;
+        redrawscreen();
     // "Settings|VDU »" submenu
     acase MENUOPT_ELEKTERMINAL:
         docommand2(MENUOPT_ELEKTERMINAL);
@@ -4514,11 +4557,6 @@ EXPORT void docommand(int which)
     acase MENUITEM_COLLISIONS:
         updatesmlgad(GADPOS_COLLISIONS, collisions, TRUE);
         updatemenu(MENUITEM_COLLISIONS);
-    acase MENUITEM_DEMULTIPLEX:
-        updatemenu(MENUITEM_DEMULTIPLEX);
-        if (paused)
-        {   redrawscreen();
-        }
     // "Settings|Trainers »" submenu
     acase MENUITEM_LEVELSKIP:
         switch (memmap)

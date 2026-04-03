@@ -143,7 +143,7 @@ EXPORT const ULONG defpencolours[COLOURSETS][GUESTCOLOURS] = {
 },
 { // greyscale
     0x00FFFFFF, // white       $FF = 255
-    0x00E2E2E2, // yellow      $E2 = 226
+    0x00D8D8D8, // yellow      $D8 = 216 (was $E2 until V36.02)
     0x00686868, // purple      $68 = 104
     0x004C4C4C, // red         $4C =  76 (same as dark purple!)
     0x00B2B2B2, // cyan        $B2 = 178
@@ -250,6 +250,7 @@ EXPORT const ULONG defpencolours[COLOURSETS][GUESTCOLOURS] = {
 
 IMPORT       int                  ambient,
                                   cpux, cpuy,
+                                  demultiplex,
                                   drawcorners,
                                   drawunlit,
                                   echoconsole,
@@ -407,8 +408,11 @@ DARKRED , DARKRED , DARKRED , DARKRED , DARKRED , DARKRED , DARKRED , DARKRED , 
 
 // FUNCTION POINTERS------------------------------------------------------
 
-EXPORT void (* drawpixel  ) (int x, int y, int colour);
-EXPORT void (* drawbgpixel) (int x, int y, int colour);
+EXPORT void (* drawpixel   ) (int x, int y, int   colour);
+EXPORT void (* drawbgpixel ) (int x, int y, int   colour);
+#ifdef WIN32
+EXPORT void (* drawrawpixel) (int x, int y, ULONG colour);
+#endif
 
 // MODULE FUNCTIONS-------------------------------------------------------
 
@@ -424,7 +428,10 @@ EXPORT void draw_guide_ray(FLAG erasing)
 {   PERSIST int guideray_x,
                 guideray_y = -1;
 
-    if (erasing && guideray_y == -1)
+    if
+    (   ( erasing && guideray_y == -1)
+     || (!erasing && guideray_y != -1)
+    )
     {   return;
     }
 
@@ -2598,7 +2605,12 @@ EXPORT void changepixel(int x, int y, int colour)
     }
 #endif
 
-    if (screen[x][y] != (UBYTE) colour)
+    if
+    (   screen[x][y] != (UBYTE) colour
+#ifdef WIN32
+     || demultiplex == 1 // needed for Space Squadron
+#endif
+    )
     {   screen[x][y] = (UBYTE) colour;
         drawpixel(x, y, colour);
 #ifdef WIN32
@@ -2622,7 +2634,12 @@ EXPORT void changebgpixel(int x, int y, int colour)
     }
 #endif
 
-    if (screen[x][y] != (UBYTE) colour)
+    if
+    (   screen[x][y] != (UBYTE) colour
+#ifdef WIN32
+     || demultiplex == 1 // needed for Grand Slam Tennis
+#endif
+    )
     {   screen[x][y] = (UBYTE) colour;
 #ifdef AMIGA
         drawpixel(x, y, colour);

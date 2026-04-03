@@ -277,26 +277,26 @@ RAS, IAR/PC are not shown.
 */
 
 EXPORT const STRPTR tokenname[LASTTOKEN - FIRSTTOKEN + 1][STYLES] = {
-{ "R0"  , "R0"  , "A"    , ".0"    },
-{ "R1"  , "R1"  , "B"    , ".1"    },
-{ "R2"  , "R2"  , "C"    , ".2"    },
-{ "R3"  , "R3"  , "D"    , ".3"    },
-{ "R4"  , "R4"  , "B'"   , ".4"    },
-{ "R5"  , "R5"  , "C'"   , ".5"    },
-{ "R6"  , "R6"  , "D'"   , ".6"    },
-{ "PSU" , "PSU" , "U"    , ".U"    }, // should support R8 for this (like TVGC book)
-{ "PSL" , "PSL" , "L"    , ".L"    }, // should support R7 for this (like TVGC book)
-{ "SP"  , "SP"  , "STACK", ".SP"   },
-{ "CC"  , "CC"  , "CC"   , ".CC"   },
-{ "IAR" , "IAR" , "PC"   , ".PC"   },
-{ "RAS0", "RAS0", "RAS0" , ".RAS0" },
-{ "RAS1", "RAS1", "RAS1" , ".RAS1" },
-{ "RAS2", "RAS2", "RAS2" , ".RAS2" },
-{ "RAS3", "RAS3", "RAS3" , ".RAS3" },
-{ "RAS4", "RAS4", "RAS4" , ".RAS4" },
-{ "RAS5", "RAS5", "RAS5" , ".RAS5" },
-{ "RAS6", "RAS6", "RAS6" , ".RAS6" },
-{ "RAS7", "RAS7", "RAS7" , ".RAS7" },
+{ "R0"  , "R0"  , "A"    , "R0",   ".0"    },
+{ "R1"  , "R1"  , "B"    , "R1",   ".1"    },
+{ "R2"  , "R2"  , "C"    , "R2",   ".2"    },
+{ "R3"  , "R3"  , "D"    , "R3",   ".3"    },
+{ "R4"  , "R4"  , "B'"   , "R4",   ".4"    },
+{ "R5"  , "R5"  , "C'"   , "R5",   ".5"    },
+{ "R6"  , "R6"  , "D'"   , "R6",   ".6"    },
+{ "PSU" , "PSU" , "U"    , "PSU",  ".U"    }, // should support R8 for this (like TVGC book)
+{ "PSL" , "PSL" , "L"    , "PSL",  ".L"    }, // should support R7 for this (like TVGC book)
+{ "SP"  , "SP"  , "STACK", "SP",   ".SP"   },
+{ "CC"  , "CC"  , "CC"   , "CC",   ".CC"   },
+{ "IAR" , "IAR" , "PC"   , "PC",   ".PC"   },
+{ "RAS0", "RAS0", "RAS0" , "RAS0", ".RAS0" },
+{ "RAS1", "RAS1", "RAS1" , "RAS1", ".RAS1" },
+{ "RAS2", "RAS2", "RAS2" , "RAS2", ".RAS2" },
+{ "RAS3", "RAS3", "RAS3" , "RAS3", ".RAS3" },
+{ "RAS4", "RAS4", "RAS4" , "RAS4", ".RAS4" },
+{ "RAS5", "RAS5", "RAS5" , "RAS5", ".RAS5" },
+{ "RAS6", "RAS6", "RAS6" , "RAS6", ".RAS6" },
+{ "RAS7", "RAS7", "RAS7" , "RAS7", ".RAS7" },
 };
 
 // IMPORTED VARIABLES-----------------------------------------------------

@@ -277,7 +277,6 @@ IMPORT       ULONG                    arcadia_bigctrls,
                                       coverage[32768],
                                       cpb,
                                       cycles_2650,
-                                      demultiplex,
                                       elektor_bigctrls,
                                       frames,
                                       interton_bigctrls,
@@ -392,8 +391,7 @@ IMPORT const STRPTR                   ccstring[4][4],
     IMPORT       FLAG                  capslock,
                                        incli,
                                        repaintmemmap;
-    IMPORT       int                   avianims,
-                                       bezel,
+    IMPORT       int                   bezel,
                                        CatalogPtr, // APTR doesn't work
                                        cheevos;
     IMPORT       HBRUSH                hBrush[EMUBRUSHES],
@@ -431,7 +429,10 @@ MODULE       ULONG  monitorcycles_2650,
                     monitorframes;
 MODULE       int    monitorx, monitory;
 #if defined(AMIGA) && !defined(__MORPHOS__)
-MODULE       ULONG  monitorsecs;
+    MODULE   ULONG  monitorsecs;
+#endif
+#ifdef WIN32
+    MODULE   FLAG   capslockdown = FALSE;
 #endif
 
 /* MODULE STRUCTURES------------------------------------------------------
@@ -2523,9 +2524,6 @@ EXPORT FLAG is_drawable(void)
     if
     (   limitrefreshes
      && (turbo || speedup > SPEED_4QUARTERS)
-#ifdef WIN32
-     && (recmode != RECMODE_RECORD || !avianims)
-#endif
     )
     {   drawtime = thetime();
         if (drawtime < drawwaittill)
@@ -3949,7 +3947,10 @@ EXPORT void handle_keydown(UWORD code)
     if (code == SCAN_CAPSLOCK)
     {
 #ifdef WIN32
-        capslock = capslock ? FALSE : TRUE;
+        if (!capslockdown)
+        {   capslockdown = TRUE;
+            capslock = capslock ? FALSE : TRUE;
+        }
 #endif
 #ifdef AMIGA
         KeyMatrix[code / 8] |= (1 << (code % 8));
@@ -4215,6 +4216,11 @@ EXPORT void handle_keydown(UWORD code)
         if (ctrl() && shift())
         {   command_changemachine(    TYPERIGHT,  MEMMAP_TYPERIGHT);
         }
+    acase SCAN_F11:
+        if (!ctrl() && !shift())
+        {   fullscreen = fullscreen ? FALSE : TRUE;
+            docommand(MENUITEM_FULLSCREEN);
+        }
     acase SCAN_FFWD:
         // foo = ~foo; doesn't work!
         if (turbo) turbo = FALSE; else turbo = TRUE;
@@ -4327,6 +4333,11 @@ EXPORT void handle_keyup(UWORD code)
     {   capslock = FALSE;
         update_capslock();
         return;
+    }
+#endif
+#ifdef WIN32
+    if (code == SCAN_CAPSLOCK)
+    {   capslockdown = FALSE;
     }
 #endif
 

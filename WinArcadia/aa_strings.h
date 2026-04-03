@@ -1205,206 +1205,214 @@
 #define MSG_MENUHELP_N_0 1170
 #define MSG_MENUHELP_N_1 1171
 #define MSG_MENUHELP_N_2 1172
-#define MSG_MENUHELP_SPR_0 1173
-#define MSG_MENUHELP_SPR_1 1174
-#define MSG_MENUHELP_SPR_2 1175
-#define MSG_MENUHELP_TU_0 1176
-#define MSG_MENUHELP_TU_1 1177
-#define MSG_MENUHELP_TU_2 1178
-#define MSG_DEFCPL 1179
-#define MSG_DEFCPL_80 1180
-#define MSG_DEFCPL_132 1181
-#define MSG_RIBBON 1182
-#define MSG_USAGE_DELETE 1183
-#define MSG_MENUHELP_DELETE 1184
-#define MSG_TSBC 1185
-#define MSG_TCSBC 1186
-#define MSG_SWAPDISKS 1187
-#define MSG_INVALIDDRIVENUMBER 1188
-#define MSG_EMPTYREAD 1189
-#define MSG_ILLEGALTRACKREAD 1190
-#define MSG_ILLEGALSECTORREAD 1191
-#define MSG_EMPTYWRITE 1192
-#define MSG_ILLEGALTRACKWRITE 1193
-#define MSG_ILLEGALSECTORWRITE 1194
-#define MSG_CURRENTDRIVEIS 1195
-#define MSG_PATHNAMEISTOOLONG 1196
-#define MSG_CPUISNOW 1197
-#define MSG_ENGINE_CLEAREDIPS 1198
-#define MSG_INVALIDLOADSTARTADDR 1199
-#define MSG_INVALIDLOADENDADDR 1200
-#define MSG_UNEXPECTEDCHUNKSIZE 1201
-#define MSG_ADDIP 1202
-#define MSG_ADDIPBITS 1203
-#define MSG_ADDIPCOND 1204
-#define MSG_BITSONLY 1205
-#define MSG_NUMBERMUSTBE 1206
-#define MSG_NOTATION_SIG1 1207
-#define MSG_NOTATION_SIG2 1208
-#define MSG_NOTATION_CALM 1209
-#define MSG_MASTERTOSLAVE 1210
-#define MSG_SLAVETOMASTER 1211
-#define MSG_ENGINE_YES4 1212
-#define MSG_ENGINE_NO4 1213
-#define MSG_AUDITBUTTONS 1214
-#define MSG_NOTFORLOADING 1215
-#define MSG_MENUHELP_VB_0 1216
-#define MSG_MENUHELP_VB_1 1217
-#define MSG_MENUHELP_VB_2 1218
-#define MSG_SETTINGS_CONFIRM2 1219
-#define MSG_SETTINGS_CONFIRM3 1220
-#define MSG_USAGE_SAVEBPNF 1221
-#define MSG_USAGE_SAVESMS 1222
-#define MSG_MENUHELP_SAVEBPNF 1223
-#define MSG_MENUHELP_SAVESMS 1224
-#define MSG_VB_0 1225
-#define MSG_VB_1 1226
-#define MSG_VB_2 1227
-#define MSG_HAIL_BPNF 1228
-#define MSG_INPUT_QUEUEKEYSTROKES 1229
-#define MSG_ENGINE_CCUN 1230
-#define MSG_CANTLOCK_FILE 1231
-#define MSG_1STDRIVE 1232
-#define MSG_2NDDRIVE 1233
-#define MSG_TOOLS_PAPERTAPE 1234
-#define MSG_HAIL_PAPERTAPE 1235
-#define MSG_CREATEPAPERTAPE 1236
-#define MSG_HAIL_CREATEPAPERTAPE 1237
-#define MSG_INSERTPAPERTAPE 1238
-#define MSG_HAIL_INSERTPAPERTAPE 1239
-#define MSG_MENU_PERIPHERALS 1240
-#define MSG_HAIL_PAPERTAPES 1241
-#define MSG_TSB 1242
-#define MSG_TCSB 1243
-#define MSG_FILENAME 1244
-#define MSG_MENUHELP_N_3 1245
-#define MSG_NOTATION_IEEE 1246
-#define MSG_ANINTERRUPTPENDING 1247
-#define MSG_NOINTERRUPTPENDING 1248
-#define MSG_INTERRUPTSENABLED 1249
-#define MSG_INTERRUPTSDISABLED 1250
-#define MSG_TABTOACTIVATE 1251
-#define MSG_MENUHELP_DRAW_0 1252
-#define MSG_MENUHELP_DRAW_1 1253
-#define MSG_MENUHELP_DRAW_2 1254
-#define MSG_MENUHELP_DRAW_3 1255
-#define MSG_MENUHELP_DRAW_4 1256
-#define MSG_DEBUGHELP11 1257
-#define MSG_EMULATOR_FRAMEBASED 1258
-#define MSG_USAGE_INJECT 1259
-#define MSG_USAGE_RENAME 1260
-#define MSG_MENUHELP_INJECT 1261
-#define MSG_MENUHELP_RENAME 1262
-#define MSG_MENU_DISK 1263
-#define MSG_SPEED_EXACT 1264
-#define MSG_MENUHELP_DRIVE_2 1265
-#define MSG_MENUHELP_DRIVE_3 1266
-#define MSG_DRIVE 1267
-#define MSG_BACKGROUND 1268
-#define MSG_HAIL_BACKGROUND 1269
-#define MSG_FILENAMEISTOOLONG 1270
-#define MSG_EXTENSIONISTOOLONG 1271
-#define MSG_CANTOPENFILEFORINPUT 1272
-#define MSG_DISKISTOOFULL 1273
-#define MSG_NOTCONTIGUOUS 1274
-#define MSG_FILEALREADYEXISTS 1275
-#define MSG_NOFREEENTRIES 1276
-#define MSG_ILLEGALFILENAME 1277
-#define MSG_ILLEGALEXTENSION 1278
-#define MSG_QUESTION 1279
-#define MSG_RECORDORPLAY1 1280
-#define MSG_RECORDORPLAY2 1281
-#define MSG_RECORDORPLAY3 1282
-#define MSG_CLUSTERUNDERUSED 1283
-#define MSG_CLUSTEROVERUSED1 1284
-#define MSG_CLUSTEROVERUSED2 1285
-#define MSG_BADCLUSTERUSED 1286
-#define MSG_TODW5 1287
-#define MSG_TODA6 1288
-#define MSG_EDIT_MEMORY 1289
-#define MSG_EDIT_SCREEN 1290
-#define MSG_EDIT_SPRITES 1291
-#define MSG_MACRO_GENERATE 1292
-#define MSG_MACRO_ANIMS 1293
-#define MSG_MACRO_SOUNDS 1294
-#define MSG_ACHIEVEDBY 1295
-#define MSG_EACHPAGE 1296
-#define MSG_PAGE 1297
-#define MSG_UNVOICEDVOLUME 1298
-#define MSG_VOICEDVOLUME 1299
-#define MSG_ENUNCIATION 1300
-#define MSG_ACCENT 1301
-#define MSG_ENTHUSIASM 1302
-#define MSG_QUAVERING 1303
-#define MSG_DECIBELS 1304
-#define MSG_PHONEME_IY 1305
-#define MSG_PHONEME_IH 1306
-#define MSG_PHONEME_EH 1307
-#define MSG_PHONEME_AE 1308
-#define MSG_PHONEME_AA 1309
-#define MSG_PHONEME_AH 1310
-#define MSG_PHONEME_AO 1311
-#define MSG_PHONEME_OW 1312
-#define MSG_PHONEME_UH 1313
-#define MSG_PHONEME_ER 1314
-#define MSG_PHONEME_UW 1315
-#define MSG_VOICE 1316
-#define MSG_INPUT_ERASEDELETED 1317
-#define MSG_PERIPHERALS_INDUSTRIAL 1318
-#define MSG_HAIL_INDUSTRIAL 1319
-#define MSG_WFC 1320
-#define MSG_FIELDCURRENT 1321
-#define MSG_PITCHSPEED 1322
-#define MSG_YAWSPEED 1323
-#define MSG_ROTORSPEED 1324
-#define MSG_PITCHANGLE 1325
-#define MSG_YAWSENSORDIRECTION 1326
-#define MSG_WINDSPEED 1327
-#define MSG_WINDDIRECTION 1328
-#define MSG_MV 1329
-#define MSG_RPM 1330
-#define MSG_DEGREES 1331
-#define MSG_MPH 1332
-#define MSG_MOTORMODE_DAMP 1333
-#define MSG_MOTORMODE_DRIVE 1334
-#define MSG_ANTICLOCKWISE 1335
-#define MSG_CLOCKWISE 1336
-#define MSG_OUTPUTS 1337
-#define MSG_INPUTS 1338
-#define MSG_COPYSELECTEDTEXT 1339
-#define MSG_GENERATEDPOWER 1340
-#define MSG_MECHPOWER 1341
-#define MSG_ELECPOWER 1342
-#define MSG_KW 1343
-#define MSG_LINEARIZATION 1344
-#define MSG_PERIPHERAL 1345
-#define MSG_VM 1346
-#define MSG_EAPRINTER 1347
-#define MSG_TOGGLESUBWINDOW 1348
-#define MSG_MAGNETICX 1349
-#define MSG_MAGNETICY 1350
-#define MSG_MAGNETICZ 1351
-#define MSG_PLANEPITCH 1352
-#define MSG_PLANEROLL 1353
-#define MSG_MG 1354
-#define MSG_RESETTODEFAULTS3 1355
-#define MSG_FEATHERING 1356
-#define MSG_UNFEATHERING 1357
-#define MSG_EARTHX 1358
-#define MSG_EARTHY 1359
-#define MSG_EARTHZ 1360
-#define MSG_PLANEYAW 1361
-#define MSG_LATITUDE1 1362
-#define MSG_LATITUDE2 1363
-#define MSG_DECLINATE 1364
-#define MSG_TOD12 1365
-#define MSG_GRAPHICS_FULLSCREEN 1366
-#define MSG_ALL 1367
-#define MSG_INVERT 1368
-#define MSG_CLEARWINDOW 1369
-#define MSG_NORTH 1370
-#define MSG_SOUTH 1371
-#define MSG_VECTORCALLED 1372
+#define MSG_MENUHELP_N_3 1173
+#define MSG_MENUHELP_N_4 1174
+#define MSG_MENUHELP_SPR_0 1175
+#define MSG_MENUHELP_SPR_1 1176
+#define MSG_MENUHELP_SPR_2 1177
+#define MSG_MENUHELP_TU_0 1178
+#define MSG_MENUHELP_TU_1 1179
+#define MSG_MENUHELP_TU_2 1180
+#define MSG_DEFCPL 1181
+#define MSG_DEFCPL_80 1182
+#define MSG_DEFCPL_132 1183
+#define MSG_RIBBON 1184
+#define MSG_USAGE_DELETE 1185
+#define MSG_MENUHELP_DELETE 1186
+#define MSG_TSBC 1187
+#define MSG_TCSBC 1188
+#define MSG_SWAPDISKS 1189
+#define MSG_INVALIDDRIVENUMBER 1190
+#define MSG_EMPTYREAD 1191
+#define MSG_ILLEGALTRACKREAD 1192
+#define MSG_ILLEGALSECTORREAD 1193
+#define MSG_EMPTYWRITE 1194
+#define MSG_ILLEGALTRACKWRITE 1195
+#define MSG_ILLEGALSECTORWRITE 1196
+#define MSG_CURRENTDRIVEIS 1197
+#define MSG_PATHNAMEISTOOLONG 1198
+#define MSG_CPUISNOW 1199
+#define MSG_ENGINE_CLEAREDIPS 1200
+#define MSG_INVALIDLOADSTARTADDR 1201
+#define MSG_INVALIDLOADENDADDR 1202
+#define MSG_UNEXPECTEDCHUNKSIZE 1203
+#define MSG_ADDIP 1204
+#define MSG_ADDIPBITS 1205
+#define MSG_ADDIPCOND 1206
+#define MSG_BITSONLY 1207
+#define MSG_NUMBERMUSTBE 1208
+#define MSG_NOTATION_SIG1 1209
+#define MSG_NOTATION_SIG2 1210
+#define MSG_NOTATION_OLDCALM 1211
+#define MSG_NOTATION_NEWCALM 1212
+#define MSG_NOTATION_IEEE 1213
+#define MSG_MASTERTOSLAVE 1214
+#define MSG_SLAVETOMASTER 1215
+#define MSG_ENGINE_YES4 1216
+#define MSG_ENGINE_NO4 1217
+#define MSG_AUDITBUTTONS 1218
+#define MSG_NOTFORLOADING 1219
+#define MSG_MENUHELP_VB_0 1220
+#define MSG_MENUHELP_VB_1 1221
+#define MSG_MENUHELP_VB_2 1222
+#define MSG_SETTINGS_CONFIRM2 1223
+#define MSG_SETTINGS_CONFIRM3 1224
+#define MSG_USAGE_SAVEBPNF 1225
+#define MSG_USAGE_SAVESMS 1226
+#define MSG_MENUHELP_SAVEBPNF 1227
+#define MSG_MENUHELP_SAVESMS 1228
+#define MSG_VB_0 1229
+#define MSG_VB_1 1230
+#define MSG_VB_2 1231
+#define MSG_HAIL_BPNF 1232
+#define MSG_INPUT_QUEUEKEYSTROKES 1233
+#define MSG_ENGINE_CCUN 1234
+#define MSG_CANTLOCK_FILE 1235
+#define MSG_1STDRIVE 1236
+#define MSG_2NDDRIVE 1237
+#define MSG_TOOLS_PAPERTAPE 1238
+#define MSG_HAIL_PAPERTAPE 1239
+#define MSG_CREATEPAPERTAPE 1240
+#define MSG_HAIL_CREATEPAPERTAPE 1241
+#define MSG_INSERTPAPERTAPE 1242
+#define MSG_HAIL_INSERTPAPERTAPE 1243
+#define MSG_MENU_PERIPHERALS 1244
+#define MSG_HAIL_PAPERTAPES 1245
+#define MSG_TSB 1246
+#define MSG_TCSB 1247
+#define MSG_FILENAME 1248
+#define MSG_ANINTERRUPTPENDING 1249
+#define MSG_NOINTERRUPTPENDING 1250
+#define MSG_INTERRUPTSENABLED 1251
+#define MSG_INTERRUPTSDISABLED 1252
+#define MSG_TABTOACTIVATE 1253
+#define MSG_MENUHELP_DRAW_0 1254
+#define MSG_MENUHELP_DRAW_1 1255
+#define MSG_MENUHELP_DRAW_2 1256
+#define MSG_MENUHELP_DRAW_3 1257
+#define MSG_MENUHELP_DRAW_4 1258
+#define MSG_DEBUGHELP11 1259
+#define MSG_EMULATOR_FRAMEBASED 1260
+#define MSG_USAGE_INJECT 1261
+#define MSG_USAGE_RENAME 1262
+#define MSG_MENUHELP_INJECT 1263
+#define MSG_MENUHELP_RENAME 1264
+#define MSG_MENU_DISK 1265
+#define MSG_SPEED_EXACT 1266
+#define MSG_MENUHELP_DRIVE_2 1267
+#define MSG_MENUHELP_DRIVE_3 1268
+#define MSG_DRIVE 1269
+#define MSG_BACKGROUND 1270
+#define MSG_HAIL_BACKGROUND 1271
+#define MSG_FILENAMEISTOOLONG 1272
+#define MSG_EXTENSIONISTOOLONG 1273
+#define MSG_CANTOPENFILEFORINPUT 1274
+#define MSG_DISKISTOOFULL 1275
+#define MSG_NOTCONTIGUOUS 1276
+#define MSG_FILEALREADYEXISTS 1277
+#define MSG_NOFREEENTRIES 1278
+#define MSG_ILLEGALFILENAME 1279
+#define MSG_ILLEGALEXTENSION 1280
+#define MSG_QUESTION 1281
+#define MSG_RECORDORPLAY1 1282
+#define MSG_RECORDORPLAY2 1283
+#define MSG_RECORDORPLAY3 1284
+#define MSG_CLUSTERUNDERUSED 1285
+#define MSG_CLUSTEROVERUSED1 1286
+#define MSG_CLUSTEROVERUSED2 1287
+#define MSG_BADCLUSTERUSED 1288
+#define MSG_TODW5 1289
+#define MSG_TODA6 1290
+#define MSG_EDIT_MEMORY 1291
+#define MSG_EDIT_SCREEN 1292
+#define MSG_EDIT_SPRITES 1293
+#define MSG_MACRO_GENERATE 1294
+#define MSG_MACRO_ANIMS 1295
+#define MSG_MACRO_SOUNDS 1296
+#define MSG_ACHIEVEDBY 1297
+#define MSG_EACHPAGE 1298
+#define MSG_PAGE 1299
+#define MSG_UNVOICEDVOLUME 1300
+#define MSG_VOICEDVOLUME 1301
+#define MSG_ENUNCIATION 1302
+#define MSG_ACCENT 1303
+#define MSG_ENTHUSIASM 1304
+#define MSG_QUAVERING 1305
+#define MSG_DECIBELS 1306
+#define MSG_PHONEME_IY 1307
+#define MSG_PHONEME_IH 1308
+#define MSG_PHONEME_EH 1309
+#define MSG_PHONEME_AE 1310
+#define MSG_PHONEME_AA 1311
+#define MSG_PHONEME_AH 1312
+#define MSG_PHONEME_AO 1313
+#define MSG_PHONEME_OW 1314
+#define MSG_PHONEME_UH 1315
+#define MSG_PHONEME_ER 1316
+#define MSG_PHONEME_UW 1317
+#define MSG_VOICE 1318
+#define MSG_INPUT_ERASEDELETED 1319
+#define MSG_PERIPHERALS_INDUSTRIAL 1320
+#define MSG_HAIL_INDUSTRIAL 1321
+#define MSG_WFC 1322
+#define MSG_FIELDCURRENT 1323
+#define MSG_PITCHSPEED 1324
+#define MSG_YAWSPEED 1325
+#define MSG_ROTORSPEED 1326
+#define MSG_PITCHANGLE 1327
+#define MSG_YAWSENSORDIRECTION 1328
+#define MSG_WINDSPEED 1329
+#define MSG_WINDDIRECTION 1330
+#define MSG_MV 1331
+#define MSG_RPM 1332
+#define MSG_DEGREES 1333
+#define MSG_MPH 1334
+#define MSG_MOTORMODE_DAMP 1335
+#define MSG_MOTORMODE_DRIVE 1336
+#define MSG_ANTICLOCKWISE 1337
+#define MSG_CLOCKWISE 1338
+#define MSG_OUTPUTS 1339
+#define MSG_INPUTS 1340
+#define MSG_COPYSELECTEDTEXT 1341
+#define MSG_GENERATEDPOWER 1342
+#define MSG_MECHPOWER 1343
+#define MSG_ELECPOWER 1344
+#define MSG_KW 1345
+#define MSG_LINEARIZATION 1346
+#define MSG_PERIPHERAL 1347
+#define MSG_VM 1348
+#define MSG_EAPRINTER 1349
+#define MSG_TOGGLESUBWINDOW 1350
+#define MSG_MAGNETICX 1351
+#define MSG_MAGNETICY 1352
+#define MSG_MAGNETICZ 1353
+#define MSG_PLANEPITCH 1354
+#define MSG_PLANEROLL 1355
+#define MSG_MG 1356
+#define MSG_RESETTODEFAULTS3 1357
+#define MSG_FEATHERING 1358
+#define MSG_UNFEATHERING 1359
+#define MSG_EARTHX 1360
+#define MSG_EARTHY 1361
+#define MSG_EARTHZ 1362
+#define MSG_PLANEYAW 1363
+#define MSG_LATITUDE1 1364
+#define MSG_LATITUDE2 1365
+#define MSG_DECLINATE 1366
+#define MSG_TOD12 1367
+#define MSG_GRAPHICS_FULLSCREEN 1368
+#define MSG_ALL 1369
+#define MSG_INVERT 1370
+#define MSG_CLEARWINDOW 1371
+#define MSG_NORTH 1372
+#define MSG_SOUTH 1373
+#define MSG_VECTORCALLED 1374
+#define MSG_MULTIPLEX 1375
+#define MSG_OPAQUE 1376
+#define MSG_DEBUG_ASMWARNINGS 1377
+#define MSG_MENUHELP_WARN 1378
+#define MSG_EMULATOR_PIXELBASED 1379
+#define MSG_TOD13 1380
 
 #endif /* CATCOMP_NUMBERS */
 
@@ -2480,7 +2488,7 @@
 #define MSG_DEBUGHELP7_STR "Breakpoints:\nBC|FC|IC|WC [<start-addr> [<end-addr>]]\n                                clear bp/fp/ip/wp from address/port range\nBL|FL|IL|WL                     list all breakpoints/watchpoints\nBP|WP <start-addr> [<end-addr>] [<addr/reg> <condition> <value>]\n                                add bp/wp to address range\nFP <start-addr> [<end-addr>]    add disk watchpoint to address range\nIP [<start-port> [<end-port>] [<addr/reg> <condition> <value>]]\n                                add I/O port wp to port range\nPB                              pause after breakpoints/watchpoints on/off\nWR                              watch reads on/off\nWW NONE|SOME|ALL                watch none/some/all writes\n\n"
 #define MSG_DEBUGHELP8_STR "Symbols:\nCLEARSYM [<label>]              clear symbol(s)\nDEFSYM <label> <address> [C|D|P|U]\n                                define symbol\nLOADSYM [<filename>]            load symbol table from filename\nSAVESYM <filename>              save symbol table as filename\n\n"
 #define MSG_DEBUGHELP9_STR "Tools:\nCO|COMP <1st-start> <1st-end> <2nd-start>\n                                compare memory blocks\nCOPY|MOVE <source-start> <source-end> <target-start>\n                                copy memory from source to target\nFILL <start-addr> <end-addr> <value>\n                                fill address range with value\nFIND [[<start-addr> <end-addr>] <value>]\n                                find value in address range\nREL <source-addr> [*]<target-addr>\n                                calculate relative offset of target-addr\nSWAP <1st-start> <1st-end> <2nd-start>\n                                swap memory blocks\nTRAIN [<value>]                 make trainer\n\n"
-#define MSG_DEBUGHELP10_STR "Options:\nBASE [2|8|10|16|%%|@|!|$]        set default input base\nCPU 0|1                         change CPU (2650/2650A vs. 2650B)\nGR                              use guide ray on/off\nN 0|1|2|3                       change notation\nTU 0|1|2                        change time unit\nVB|VERBOSE 0|1|2                change verbosity\n\n"
+#define MSG_DEBUGHELP10_STR "Options:\nBASE [2|8|10|16|%%|@|!|$]        set default input base\nCPU 0|1                         change CPU (2650/2650A vs. 2650B)\nGR                              use guide ray on/off\nN 0|1|2|3|4                     change notation\nTU 0|1|2                        change time unit\nVB|VERBOSE 0|1|2                change verbosity\nWARN                            assembler warnings on/off\n\n"
 #define MSG_MENU_DEBUG_STR "Debug"
 #define MSG_MENU_GENERAL_STR "General"
 #define MSG_MENU_LOG_STR "Log"
@@ -2586,7 +2594,9 @@
 #define MSG_MENUHELP_CPU_1_STR "Set CPU to 2650B"
 #define MSG_MENUHELP_N_0_STR "Set notation to non-extended Signetics"
 #define MSG_MENUHELP_N_1_STR "Set notation to extended Signetics"
-#define MSG_MENUHELP_N_2_STR "Set notation to CALM"
+#define MSG_MENUHELP_N_2_STR "Set notation to old CALM"
+#define MSG_MENUHELP_N_3_STR "Set notation to new CALM"
+#define MSG_MENUHELP_N_4_STR "Set notation to IEEE-694"
 #define MSG_MENUHELP_SPR_0_STR "Set sprite mode to invisible"
 #define MSG_MENUHELP_SPR_1_STR "Set sprite mode to visible"
 #define MSG_MENUHELP_SPR_2_STR "Set sprite mode to numbered"
@@ -2623,7 +2633,9 @@
 #define MSG_NUMBERMUSTBE_STR "<number> must be %d-%d!\n\n"
 #define MSG_NOTATION_SIG1_STR "Notation is now non-extended Signetics.\n\n"
 #define MSG_NOTATION_SIG2_STR "Notation is now extended Signetics.\n\n"
-#define MSG_NOTATION_CALM_STR "Notation is now CALM.\n\n"
+#define MSG_NOTATION_OLDCALM_STR "Notation is now old CALM.\n\n"
+#define MSG_NOTATION_NEWCALM_STR "Notation is now new CALM.\n\n"
+#define MSG_NOTATION_IEEE_STR "Notation is now IEEE-694.\n\n"
 #define MSG_MASTERTOSLAVE_STR "Switching from master IAR $%X to slave IAR $%X!\n\n"
 #define MSG_SLAVETOMASTER_STR "Switching from slave IAR $%X to master IAR $%X!\n\n"
 #define MSG_ENGINE_YES4_STR "_Yes"
@@ -2659,8 +2671,6 @@
 #define MSG_TSB_STR "Track: %d\nSector: %d\nByte: $%X"
 #define MSG_TCSB_STR "Track: %d\nCluster: %s\nSector: %d\nByte: $%X"
 #define MSG_FILENAME_STR "Filename:"
-#define MSG_MENUHELP_N_3_STR "Set notation to IEEE-694"
-#define MSG_NOTATION_IEEE_STR "Notation is now IEEE-694.\n\n"
 #define MSG_ANINTERRUPTPENDING_STR "An interrupt is pending!\n\n"
 #define MSG_NOINTERRUPTPENDING_STR "No interrupt is pending.\n\n"
 #define MSG_INTERRUPTSENABLED_STR "%s at $%04X (rastline %d): interrupts are now disinhibited (enabled)."
@@ -2672,7 +2682,7 @@
 #define MSG_MENUHELP_DRAW_3_STR "Show CHARLINE table (Arcadia) or DMA read table (Interton/Elektor) or both grids (Malzak)"
 #define MSG_MENUHELP_DRAW_4_STR "Show DMA write table (Interton/Elektor)"
 #define MSG_DEBUGHELP11_STR "Graphics:\nDRAW 0|1|2|3|4                  change drawing mode\nSPR 0|1|2                       change sprite display mode\n\n"
-#define MSG_EMULATOR_FRAMEBASED_STR "Frame/line-based emulation?"
+#define MSG_EMULATOR_FRAMEBASED_STR "Frame/line-based emulation"
 #define MSG_USAGE_INJECT_STR "Usage: INJECT <filename>\n\n"
 #define MSG_USAGE_RENAME_STR "Usage: REN|RENAME <oldname> <newname>\n\n"
 #define MSG_MENUHELP_INJECT_STR "Inject file onto floppy disk"
@@ -2787,6 +2797,12 @@
 #define MSG_NORTH_STR "N"
 #define MSG_SOUTH_STR "S"
 #define MSG_VECTORCALLED_STR "%s vector at %s was called by game code at $%X.\n"
+#define MSG_MULTIPLEX_STR "Multiplex"
+#define MSG_OPAQUE_STR "Opaque"
+#define MSG_DEBUG_ASMWARNINGS_STR "Assembler warnings"
+#define MSG_MENUHELP_WARN_STR "Assembler warnings on/off"
+#define MSG_EMULATOR_PIXELBASED_STR "Pixel-based emulation"
+#define MSG_TOD13_STR "In the \"Help|Opcodes...\" subwindow, you can click on an opcode to open the corresponding page of the CPU manual from the website."
 
 #endif /* CATCOMP_STRINGS */
 
@@ -3977,6 +3993,8 @@ static const struct CatCompArrayType CatCompArray[] =
     {MSG_MENUHELP_N_0,(STRPTR)MSG_MENUHELP_N_0_STR},
     {MSG_MENUHELP_N_1,(STRPTR)MSG_MENUHELP_N_1_STR},
     {MSG_MENUHELP_N_2,(STRPTR)MSG_MENUHELP_N_2_STR},
+    {MSG_MENUHELP_N_3,(STRPTR)MSG_MENUHELP_N_3_STR},
+    {MSG_MENUHELP_N_4,(STRPTR)MSG_MENUHELP_N_4_STR},
     {MSG_MENUHELP_SPR_0,(STRPTR)MSG_MENUHELP_SPR_0_STR},
     {MSG_MENUHELP_SPR_1,(STRPTR)MSG_MENUHELP_SPR_1_STR},
     {MSG_MENUHELP_SPR_2,(STRPTR)MSG_MENUHELP_SPR_2_STR},
@@ -4013,7 +4031,9 @@ static const struct CatCompArrayType CatCompArray[] =
     {MSG_NUMBERMUSTBE,(STRPTR)MSG_NUMBERMUSTBE_STR},
     {MSG_NOTATION_SIG1,(STRPTR)MSG_NOTATION_SIG1_STR},
     {MSG_NOTATION_SIG2,(STRPTR)MSG_NOTATION_SIG2_STR},
-    {MSG_NOTATION_CALM,(STRPTR)MSG_NOTATION_CALM_STR},
+    {MSG_NOTATION_OLDCALM,(STRPTR)MSG_NOTATION_OLDCALM_STR},
+    {MSG_NOTATION_NEWCALM,(STRPTR)MSG_NOTATION_NEWCALM_STR},
+    {MSG_NOTATION_IEEE,(STRPTR)MSG_NOTATION_IEEE_STR},
     {MSG_MASTERTOSLAVE,(STRPTR)MSG_MASTERTOSLAVE_STR},
     {MSG_SLAVETOMASTER,(STRPTR)MSG_SLAVETOMASTER_STR},
     {MSG_ENGINE_YES4,(STRPTR)MSG_ENGINE_YES4_STR},
@@ -4049,8 +4069,6 @@ static const struct CatCompArrayType CatCompArray[] =
     {MSG_TSB,(STRPTR)MSG_TSB_STR},
     {MSG_TCSB,(STRPTR)MSG_TCSB_STR},
     {MSG_FILENAME,(STRPTR)MSG_FILENAME_STR},
-    {MSG_MENUHELP_N_3,(STRPTR)MSG_MENUHELP_N_3_STR},
-    {MSG_NOTATION_IEEE,(STRPTR)MSG_NOTATION_IEEE_STR},
     {MSG_ANINTERRUPTPENDING,(STRPTR)MSG_ANINTERRUPTPENDING_STR},
     {MSG_NOINTERRUPTPENDING,(STRPTR)MSG_NOINTERRUPTPENDING_STR},
     {MSG_INTERRUPTSENABLED,(STRPTR)MSG_INTERRUPTSENABLED_STR},
@@ -4177,6 +4195,12 @@ static const struct CatCompArrayType CatCompArray[] =
     {MSG_NORTH,(STRPTR)MSG_NORTH_STR},
     {MSG_SOUTH,(STRPTR)MSG_SOUTH_STR},
     {MSG_VECTORCALLED,(STRPTR)MSG_VECTORCALLED_STR},
+    {MSG_MULTIPLEX,(STRPTR)MSG_MULTIPLEX_STR},
+    {MSG_OPAQUE,(STRPTR)MSG_OPAQUE_STR},
+    {MSG_DEBUG_ASMWARNINGS,(STRPTR)MSG_DEBUG_ASMWARNINGS_STR},
+    {MSG_MENUHELP_WARN,(STRPTR)MSG_MENUHELP_WARN_STR},
+    {MSG_EMULATOR_PIXELBASED,(STRPTR)MSG_EMULATOR_PIXELBASED_STR},
+    {MSG_TOD13,(STRPTR)MSG_TOD13_STR},
 };
 
 #endif /* CATCOMP_ARRAY */

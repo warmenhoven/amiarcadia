@@ -432,6 +432,10 @@ SOURCE=".\box-BlackJackPoker.bmp"
 # End Source File
 # Begin Source File
 
+SOURCE=".\box-book.bmp"
+# End Source File
+# Begin Source File
+
 SOURCE=".\box-Boxing.bmp"
 # End Source File
 # Begin Source File
@@ -480,6 +484,14 @@ SOURCE=".\box-Escape.bmp"
 # End Source File
 # Begin Source File
 
+SOURCE=".\box-essrecord.bmp"
+# End Source File
+# Begin Source File
+
+SOURCE=".\box-esstape.bmp"
+# End Source File
+# Begin Source File
+
 SOURCE=".\box-Frogger.bmp"
 # End Source File
 # Begin Source File
@@ -500,7 +512,15 @@ SOURCE=".\box-Gundam.bmp"
 # End Source File
 # Begin Source File
 
+SOURCE=".\box-hobbymodule.bmp"
+# End Source File
+# Begin Source File
+
 SOURCE=".\box-Hobo.bmp"
+# End Source File
+# Begin Source File
+
+SOURCE=".\box-hocosoft.bmp"
 # End Source File
 # Begin Source File
 
@@ -1685,6 +1705,10 @@ SOURCE=".\o-BreakAway.bmp"
 # Begin Source File
 
 SOURCE=".\o-Capture.bmp"
+# End Source File
+# Begin Source File
+
+SOURCE=".\o-CatTrack.bmp"
 # End Source File
 # Begin Source File
 

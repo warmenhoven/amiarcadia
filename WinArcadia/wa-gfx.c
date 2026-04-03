@@ -77,6 +77,7 @@ IMPORT       FLAG      d3d,
                        sizing;
 IMPORT       ASCREEN   screen[BOXWIDTH][BOXHEIGHT];
 IMPORT       TEXT      coords[128 + 1];
+IMPORT       UBYTE     bgc;
 IMPORT       ULONG     animframe,
                        frames,
                        mikit_bigctrls,
@@ -87,7 +88,6 @@ IMPORT       ULONG     animframe,
                        turbo;
 IMPORT       int       anims,
                        apnganims,
-                       avianims,
                        bezel,
                        bezelwidth,
                        bezelheight,
@@ -184,7 +184,6 @@ IMPORT const int                      memmap_to_smlimage[MEMMAPS],
                                       mikit_digitxloc[6],
                                       selbst_digitxloc[6];
 IMPORT const ULONG                    defpencolours[COLOURSETS][GUESTCOLOURS];
-IMPORT       LPBITMAPINFOHEADER       AnimInfo;
 IMPORT       struct HostMachineStruct hostmachines[MACHINES];
 IMPORT       struct LangStruct        langs[LANGUAGES];
 IMPORT       struct MachineStruct     machines[MACHINES];
@@ -196,8 +195,9 @@ IMPORT       struct
 } CanvasBitMapInfo[CANVASES];
 
 // function pointers
-IMPORT void (* drawpixel  ) (int x, int y, int colour);
-IMPORT void (* drawbgpixel) (int x, int y, int colour);
+IMPORT void (* drawpixel   ) (int x, int y, int   colour);
+IMPORT void (* drawbgpixel ) (int x, int y, int   colour);
+IMPORT void (* drawrawpixel) (int x, int y, ULONG colour);
 
 // MODULE VARIABLES-------------------------------------------------------
 
@@ -439,29 +439,30 @@ MODULE const ULONG bigmoonimagery[BIGMOONHEIGHT * BIGMOONWIDTH] = {
 
 // MODULE FUNCTIONS-------------------------------------------------------
 
-MODULE void drawpixel_0(        int x, int y, int colour); // 1*1
-MODULE void drawpixel_0_rot(    int x, int y, int colour);
-MODULE void drawpixel_1(        int x, int y, int colour); // 2*1
-MODULE void drawpixel_1_rot(    int x, int y, int colour);
-MODULE void drawpixel_2(        int x, int y, int colour); // 2*2
-MODULE void drawpixel_2_rot(    int x, int y, int colour);
-MODULE void drawpixel_3(        int x, int y, int colour); // 4*2
-MODULE void drawpixel_3_rot(    int x, int y, int colour);
-MODULE void drawpixel_4(        int x, int y, int colour); // 3*3
-MODULE void drawpixel_4_rot(    int x, int y, int colour);
-MODULE void drawpixel_5(        int x, int y, int colour); // 6*3
-MODULE void drawpixel_5_rot(    int x, int y, int colour);
-MODULE void drawpixel_6(        int x, int y, int colour); // 4*4
-MODULE void drawpixel_6_rot(    int x, int y, int colour);
-MODULE void drawpixel_7(        int x, int y, int colour); // 8*4
-MODULE void drawpixel_7_rot(    int x, int y, int colour);
-MODULE void drawpixel_8(        int x, int y, int colour); // 5*5
-MODULE void drawpixel_8_rot(    int x, int y, int colour);
+MODULE void drawpixel_0(        int x, int y, int colour); //  1*1
+MODULE void drawpixel_1(        int x, int y, int colour); //  2*1
+MODULE void drawpixel_2(        int x, int y, int colour); //  2*2
+MODULE void drawpixel_3(        int x, int y, int colour); //  4*2
+MODULE void drawpixel_4(        int x, int y, int colour); //  3*3
+MODULE void drawpixel_5(        int x, int y, int colour); //  6*3
+MODULE void drawpixel_6(        int x, int y, int colour); //  4*4
+MODULE void drawpixel_7(        int x, int y, int colour); //  8*4
+MODULE void drawpixel_8(        int x, int y, int colour); //  5*5
 MODULE void drawpixel_9(        int x, int y, int colour); // 10*5
-MODULE void drawpixel_9_rot(    int x, int y, int colour);
-MODULE void drawpixel_10(       int x, int y, int colour); // 6*6
-MODULE void drawpixel_10_rot(   int x, int y, int colour);
+MODULE void drawpixel_10(       int x, int y, int colour); //  6*6
 MODULE void drawpixel_11(       int x, int y, int colour); // 12*6
+
+MODULE void drawpixel_0_rot(    int x, int y, int colour);
+MODULE void drawpixel_1_rot(    int x, int y, int colour);
+MODULE void drawpixel_2_rot(    int x, int y, int colour);
+MODULE void drawpixel_3_rot(    int x, int y, int colour);
+MODULE void drawpixel_4_rot(    int x, int y, int colour);
+MODULE void drawpixel_5_rot(    int x, int y, int colour);
+MODULE void drawpixel_6_rot(    int x, int y, int colour);
+MODULE void drawpixel_7_rot(    int x, int y, int colour);
+MODULE void drawpixel_8_rot(    int x, int y, int colour);
+MODULE void drawpixel_9_rot(    int x, int y, int colour);
+MODULE void drawpixel_10_rot(   int x, int y, int colour);
 MODULE void drawpixel_11_rot(   int x, int y, int colour);
 
 MODULE void drawbgpixel_0(      int x, int y, int colour); //  1*1
@@ -477,7 +478,19 @@ MODULE void drawbgpixel_9(      int x, int y, int colour); // 10*5
 MODULE void drawbgpixel_10(     int x, int y, int colour); //  6*6
 MODULE void drawbgpixel_11(     int x, int y, int colour); // 12*6
 
-MODULE HANDLE MakeDib(HBITMAP hbitmap, UINT bits);
+MODULE void drawrawpixel_0(     int x, int y, ULONG colour); //  1*1
+MODULE void drawrawpixel_1(     int x, int y, ULONG colour); //  2*1
+MODULE void drawrawpixel_2(     int x, int y, ULONG colour); //  2*2
+MODULE void drawrawpixel_3(     int x, int y, ULONG colour); //  4*2
+MODULE void drawrawpixel_4(     int x, int y, ULONG colour); //  3*3
+MODULE void drawrawpixel_5(     int x, int y, ULONG colour); //  6*3
+MODULE void drawrawpixel_6(     int x, int y, ULONG colour); //  4*4
+MODULE void drawrawpixel_7(     int x, int y, ULONG colour); //  8*4
+MODULE void drawrawpixel_8(     int x, int y, ULONG colour); //  5*5
+MODULE void drawrawpixel_9(     int x, int y, ULONG colour); // 10*5
+MODULE void drawrawpixel_10(    int x, int y, ULONG colour); //  6*6
+MODULE void drawrawpixel_11(    int x, int y, ULONG colour); // 12*6
+
 MODULE void updatescreen_3d(void);
 MODULE ULONG filter_colour(ULONG value);
 MODULE HBITMAP rotate_bezel(HBITMAP hOldBitmap);
@@ -676,20 +689,31 @@ EXPORT void drawpixel_null(int x, int y, int colour) { ; }
 MODULE void drawpixel_0(int x, int y, int colour) // 1*1
 {   display[x    + (nextrow2 * y)] = pencolours[colourset][colour];
 }
+MODULE void drawrawpixel_0(int x, int y, ULONG colour)
+{   display[x    + (nextrow2 * y)] = colour;
+}
 MODULE void drawpixel_0_rot(int x, int y, int colour)
 {   ROTATEPIXEL;
 
     display[x    + (nextrow2 * y)] = pencolours[colourset][colour];
 }
 MODULE void drawpixel_1(int x, int y, int colour) // 2*1
-{   PERSIST int px;
+{   FAST int px;
 
     px = (x * 2) + (nextrow2 * y);
     display[px    ] =                                // 0,0
     display[px + 1] = pencolours[colourset][colour]; // 1,0
 }
+MODULE void drawrawpixel_1(int x, int y, ULONG colour) // 2*1
+{   FAST int px;
+
+    px = (x * 2) + (nextrow2 * y);
+    display[px    ] =                                // 0,0
+    display[px + 1] = colour;                        // 1,0
+}
 MODULE void drawpixel_1_rot(int x, int y, int colour)
-{   PERSIST int px;
+{   FAST int px;
+
     ROTATEPIXEL;
 
     px = (x * 2) + (nextrow2 * y);
@@ -697,7 +721,7 @@ MODULE void drawpixel_1_rot(int x, int y, int colour)
     display[px + 1] = pencolours[colourset][colour]; // 1,0
 }
 MODULE void drawpixel_2(int x, int y, int colour) // 2*2
-{   PERSIST int px;
+{   FAST int px;
 
     px = (x * 2) + (nextrow2 * y);
     display[px    ] =
@@ -706,8 +730,19 @@ MODULE void drawpixel_2(int x, int y, int colour) // 2*2
     display[px    ] =
     display[px + 1] = pencolours[colourset][colour];
 }
+MODULE void drawrawpixel_2(int x, int y, ULONG colour) // 2*2
+{   FAST int px;
+
+    px = (x * 2) + (nextrow2 * y);
+    display[px    ] =
+    display[px + 1] = colour;
+    px += nextrow;
+    display[px    ] =
+    display[px + 1] = colour;
+}
 MODULE void drawpixel_2_rot(int x, int y, int colour)
-{   PERSIST int px;
+{   FAST int px;
+
     ROTATEPIXEL;
 
     px = (x * 2) + (nextrow2 * y);
@@ -718,7 +753,7 @@ MODULE void drawpixel_2_rot(int x, int y, int colour)
     display[px + 1] = pencolours[colourset][colour];
 }
 MODULE void drawpixel_3(int x, int y, int colour) // 4*2
-{   PERSIST int px;
+{   FAST int px;
 
     px = (x * 4) + (nextrow2 * y);
     display[px    ] =                          // 0,0
@@ -731,8 +766,23 @@ MODULE void drawpixel_3(int x, int y, int colour) // 4*2
     display[px + 2] =                          // 2,1
     display[px + 3] = pencolours[colourset][colour]; // 3,1
 }
+MODULE void drawrawpixel_3(int x, int y, ULONG colour) // 4*2
+{   FAST int px;
+
+    px = (x * 4) + (nextrow2 * y);
+    display[px    ] =                          // 0,0
+    display[px + 1] =                          // 1,0
+    display[px + 2] =                          // 2,0
+    display[px + 3] = colour;                  // 3,0
+    px += nextrow;
+    display[px    ] =                          // 0,1
+    display[px + 1] =                          // 1,1
+    display[px + 2] =                          // 2,1
+    display[px + 3] = colour;                  // 3,1
+}
 MODULE void drawpixel_3_rot(int x, int y, int colour)
-{   PERSIST int px;
+{   FAST int px;
+
     ROTATEPIXEL;
 
     px = (x * 4) + (nextrow2 * y);
@@ -747,7 +797,7 @@ MODULE void drawpixel_3_rot(int x, int y, int colour)
     display[px + 3] = pencolours[colourset][colour]; // 3,1
 }
 MODULE void drawpixel_4(int x, int y, int colour) // 3*3
-{   PERSIST int px;
+{   FAST int px;
 
     px = (x * 3) + (nextrow2 * y);
     display[px    ] =                          // 0,0
@@ -762,8 +812,25 @@ MODULE void drawpixel_4(int x, int y, int colour) // 3*3
     display[px + 1] =                          // 1,2
     display[px + 2] = pencolours[colourset][colour]; // 2,2
 }
+MODULE void drawrawpixel_4(int x, int y, ULONG colour) // 3*3
+{   FAST int px;
+
+    px = (x * 3) + (nextrow2 * y);
+    display[px    ] =                          // 0,0
+    display[px + 1] =                          // 1,0
+    display[px + 2] = colour;                  // 2,0
+    px += nextrow;
+    display[px    ] =                          // 0,1
+    display[px + 1] =                          // 1,1
+    display[px + 2] = colour;                  // 2,1
+    px += nextrow;
+    display[px    ] =                          // 0,2
+    display[px + 1] =                          // 1,2
+    display[px + 2] = colour;                  // 2,2
+}
 MODULE void drawpixel_4_rot(int x, int y, int colour)
-{   PERSIST int px;
+{   FAST int px;
+
     ROTATEPIXEL;
 
     px = (x * 3) + (nextrow2 * y);
@@ -780,7 +847,7 @@ MODULE void drawpixel_4_rot(int x, int y, int colour)
     display[px + 2] = pencolours[colourset][colour]; // 2,2
 }
 MODULE void drawpixel_5(int x, int y, int colour) // 6*3
-{   PERSIST int px;
+{   FAST int px;
 
     px = (x * 6) + (nextrow2 * y);
     display[px    ] =                          // 0,0
@@ -804,8 +871,34 @@ MODULE void drawpixel_5(int x, int y, int colour) // 6*3
     display[px + 4] =                          // 4,2
     display[px + 5] = pencolours[colourset][colour]; // 5,2
 }
+MODULE void drawrawpixel_5(int x, int y, ULONG colour) // 6*3
+{   FAST int px;
+
+    px = (x * 6) + (nextrow2 * y);
+    display[px    ] =                          // 0,0
+    display[px + 1] =                          // 1,0
+    display[px + 2] =                          // 2,0
+    display[px + 3] =                          // 3,0
+    display[px + 4] =                          // 4,0
+    display[px + 5] = colour;                  // 5,0
+    px += nextrow;
+    display[px    ] =                          // 0,1
+    display[px + 1] =                          // 1,1
+    display[px + 2] =                          // 2,1
+    display[px + 3] =                          // 3,1
+    display[px + 4] =                          // 4,1
+    display[px + 5] = colour;                  // 5,1
+    px += nextrow;
+    display[px    ] =                          // 0,2
+    display[px + 1] =                          // 1,2
+    display[px + 2] =                          // 2,2
+    display[px + 3] =                          // 3,2
+    display[px + 4] =                          // 4,2
+    display[px + 5] = colour;                  // 5,2
+}
 MODULE void drawpixel_5_rot(int x, int y, int colour)
-{   PERSIST int px;
+{   FAST int px;
+
     ROTATEPIXEL;
 
     px = (x * 6) + (nextrow2 * y);
@@ -831,7 +924,7 @@ MODULE void drawpixel_5_rot(int x, int y, int colour)
     display[px + 5] = pencolours[colourset][colour]; // 5,2
 }
 MODULE void drawpixel_6(int x, int y, int colour) // 4*4
-{   PERSIST int px;
+{   FAST int px;
 
     px = (x * 4) + (nextrow2 * y);
     display[px    ] =                          // 0,0
@@ -854,8 +947,33 @@ MODULE void drawpixel_6(int x, int y, int colour) // 4*4
     display[px + 2] =                          // 2,3
     display[px + 3] = pencolours[colourset][colour]; // 3,3
 }
+MODULE void drawrawpixel_6(int x, int y, ULONG colour) // 4*4
+{   FAST int px;
+
+    px = (x * 4) + (nextrow2 * y);
+    display[px    ] =                          // 0,0
+    display[px + 1] =                          // 1,0
+    display[px + 2] =                          // 2,0
+    display[px + 3] = colour;                  // 3,0
+    px += nextrow;
+    display[px    ] =                          // 0,1
+    display[px + 1] =                          // 1,1
+    display[px + 2] =                          // 2,1
+    display[px + 3] = colour;                  // 3,1
+    px += nextrow;
+    display[px    ] =                          // 0,2
+    display[px + 1] =                          // 1,2
+    display[px + 2] =                          // 2,2
+    display[px + 3] = colour;                  // 3,2
+    px += nextrow;
+    display[px    ] =                          // 0,3
+    display[px + 1] =                          // 1,3
+    display[px + 2] =                          // 2,3
+    display[px + 3] = colour;                  // 3,3
+}
 MODULE void drawpixel_6_rot(int x, int y, int colour)
-{   PERSIST int px;
+{   FAST int px;
+
     ROTATEPIXEL;
 
     px = (x * 4) + (nextrow2 * y);
@@ -880,7 +998,7 @@ MODULE void drawpixel_6_rot(int x, int y, int colour)
     display[px + 3] = pencolours[colourset][colour]; // 3,3
 }
 MODULE void drawpixel_7(int x, int y, int colour) // 8*4
-{   PERSIST int px;
+{   FAST int px;
 
     px = (x * 8) + (nextrow2 * y);
     display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5] = display[px + 6] = display[px + 7] = pencolours[colourset][colour];
@@ -891,8 +1009,21 @@ MODULE void drawpixel_7(int x, int y, int colour) // 8*4
     px += nextrow;
     display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5] = display[px + 6] = display[px + 7] = pencolours[colourset][colour];
 }
+MODULE void drawrawpixel_7(int x, int y, ULONG colour) // 8*4
+{   FAST int px;
+
+    px = (x * 8) + (nextrow2 * y);
+    display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5] = display[px + 6] = display[px + 7] = colour;
+    px += nextrow;
+    display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5] = display[px + 6] = display[px + 7] = colour;
+    px += nextrow;
+    display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5] = display[px + 6] = display[px + 7] = colour;
+    px += nextrow;
+    display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5] = display[px + 6] = display[px + 7] = colour;
+}
 MODULE void drawpixel_7_rot(int x, int y, int colour)
-{   PERSIST int px;
+{   FAST int px;
+
     ROTATEPIXEL;
 
     px = (x * 8) + (nextrow2 * y);
@@ -905,7 +1036,7 @@ MODULE void drawpixel_7_rot(int x, int y, int colour)
     display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5] = display[px + 6] = display[px + 7] = pencolours[colourset][colour];
 }
 MODULE void drawpixel_8(int x, int y, int colour) // 5*5
-{   PERSIST int px;
+{   FAST int px;
 
     px = (x * 5) + (nextrow2 * y);
     display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                       = pencolours[colourset][colour];
@@ -918,8 +1049,23 @@ MODULE void drawpixel_8(int x, int y, int colour) // 5*5
     px += nextrow;
     display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                       = pencolours[colourset][colour];
 }
+MODULE void drawrawpixel_8(int x, int y, ULONG colour) // 5*5
+{   FAST int px;
+
+    px = (x * 5) + (nextrow2 * y);
+    display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                       = colour;
+    px += nextrow;
+    display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                       = colour;
+    px += nextrow;
+    display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                       = colour;
+    px += nextrow;
+    display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                       = colour;
+    px += nextrow;
+    display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                       = colour;
+}
 MODULE void drawpixel_8_rot(int x, int y, int colour)
-{   PERSIST int px;
+{   FAST int px;
+
     ROTATEPIXEL;
 
     px = (x * 5) + (nextrow2 * y);
@@ -934,7 +1080,7 @@ MODULE void drawpixel_8_rot(int x, int y, int colour)
     display[px] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                       = pencolours[colourset][colour];
 }
 MODULE void drawpixel_9(int x, int y, int colour) // 10*5
-{   PERSIST int px;
+{   FAST int px;
 
     px = (x * 10) + (nextrow2 * y);
     display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                   =
@@ -952,8 +1098,28 @@ MODULE void drawpixel_9(int x, int y, int colour) // 10*5
     display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                   =
     display[px + 5] = display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9]                                                   = pencolours[colourset][colour];
 }
+MODULE void drawrawpixel_9(int x, int y, ULONG colour) // 10*5
+{   FAST int px;
+
+    px = (x * 10) + (nextrow2 * y);
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                   =
+    display[px + 5] = display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9]                                                   = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                   =
+    display[px + 5] = display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9]                                                   = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                   =
+    display[px + 5] = display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9]                                                   = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                   =
+    display[px + 5] = display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9]                                                   = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4]                                                   =
+    display[px + 5] = display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9]                                                   = colour;
+}
 MODULE void drawpixel_9_rot(int x, int y, int colour)
-{   PERSIST int px;
+{   FAST int px;
+
     ROTATEPIXEL;
 
     px = (x * 10) + (nextrow2 * y);
@@ -973,7 +1139,7 @@ MODULE void drawpixel_9_rot(int x, int y, int colour)
     display[px + 5] = display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9]                                                   = pencolours[colourset][colour];
 }
 MODULE void drawpixel_10(int x, int y, int colour) // 6*6
-{   PERSIST int px;
+{   FAST int px;
 
     px = (x * 6) + (nextrow2 * y);
     display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5]                                 = pencolours[colourset][colour];
@@ -988,8 +1154,25 @@ MODULE void drawpixel_10(int x, int y, int colour) // 6*6
     px += nextrow;
     display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5]                                 = pencolours[colourset][colour];
 }
+MODULE void drawrawpixel_10(int x, int y, ULONG colour) // 6*6
+{   FAST int px;
+
+    px = (x * 6) + (nextrow2 * y);
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5]                                 = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5]                                 = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5]                                 = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5]                                 = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5]                                 = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5]                                 = colour;
+}
 MODULE void drawpixel_10_rot(int x, int y, int colour)
-{   PERSIST int px;
+{   FAST int px;
+
     ROTATEPIXEL;
 
     px = (x * 6) + (nextrow2 * y);
@@ -1006,56 +1189,79 @@ MODULE void drawpixel_10_rot(int x, int y, int colour)
     display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px + 4] = display[px + 5]                                 = pencolours[colourset][colour];
 }
 MODULE void drawpixel_11(int x, int y, int colour) // 12*6
-{   PERSIST int px;
+{   FAST int px;
 
     px = (x * 12) + (nextrow2 * y);
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
     px += nextrow;
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
     px += nextrow;
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
     px += nextrow;
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
     px += nextrow;
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
     px += nextrow;
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
 }
+MODULE void drawrawpixel_11(int x, int y, ULONG colour) // 12*6
+{   FAST int px;
+
+    px = (x * 12) + (nextrow2 * y);
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
+    display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
+    display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
+    display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
+    display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
+    display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = colour;
+    px += nextrow;
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
+    display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = colour;
+}
 MODULE void drawpixel_11_rot(int x, int y, int colour)
-{   PERSIST int px;
+{   FAST int px;
+
     ROTATEPIXEL;
 
     px = (x * 12) + (nextrow2 * y);
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
     px += nextrow;
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
     px += nextrow;
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
     px += nextrow;
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
     px += nextrow;
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
     px += nextrow;
-    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               = pencolours[colourset][colour];
+    display[px    ] = display[px + 1] = display[px + 2] = display[px + 3] = display[px +  4] = display[px +  5]                               =
     display[px + 6] = display[px + 7] = display[px + 8] = display[px + 9] = display[px + 10] = display[px + 11]                               = pencolours[colourset][colour];
 }
 
 EXPORT void apply_scanlines(void)
-{   FAST int    gc, gr, // guest column, row
-                rowwidth,
-                x, xx, y, yy, yyy;
-    FAST ULONG  colour;
+{   FAST int   gc, gr, // guest column, row
+               rowwidth,
+               x, xx, y, yy, yyy;
+    FAST ULONG colour;
 
     if
     (   !scanlines
@@ -1950,11 +2156,12 @@ EXPORT void drawpixelroutine(void)
     {
     case 0:
         if (rotating)
-        {   drawpixel   = drawpixel_0_rot;
-            drawbgpixel = enhancestars ? drawbgpixel_0_rot : drawpixel_0_rot;
+        {   drawpixel    = drawpixel_0_rot;
+            drawbgpixel  = enhancestars ? drawbgpixel_0_rot : drawpixel_0_rot;
         } else
-        {   drawpixel   = drawpixel_0;
-            drawbgpixel = enhancestars ? drawbgpixel_0     : drawpixel_0;
+        {   drawpixel    = drawpixel_0;
+            drawbgpixel  = enhancestars ? drawbgpixel_0     : drawpixel_0;
+            drawrawpixel = drawrawpixel_0;
         }
     acase 1:
         if (rotating)
@@ -1963,6 +2170,7 @@ EXPORT void drawpixelroutine(void)
         } else
         {   drawpixel   = drawpixel_1;
             drawbgpixel = enhancestars ? drawbgpixel_1     : drawpixel_1;
+            drawrawpixel = drawrawpixel_1;
         }
     acase 2:
         if (rotating)
@@ -1971,6 +2179,7 @@ EXPORT void drawpixelroutine(void)
         } else
         {   drawpixel   = drawpixel_2;
             drawbgpixel = enhancestars ? drawbgpixel_2     : drawpixel_2;
+            drawrawpixel = drawrawpixel_2;
         }
     acase 3:
         if (rotating)
@@ -1979,6 +2188,7 @@ EXPORT void drawpixelroutine(void)
         } else
         {   drawpixel   = drawpixel_3;
             drawbgpixel = enhancestars ? drawbgpixel_3     : drawpixel_3;
+            drawrawpixel = drawrawpixel_3;
         }
     acase 4:
         if (rotating)
@@ -1987,6 +2197,7 @@ EXPORT void drawpixelroutine(void)
         } else
         {   drawpixel   = drawpixel_4;
             drawbgpixel = enhancestars ? drawbgpixel_4     : drawpixel_4;
+            drawrawpixel = drawrawpixel_4;
         }
     acase 5:
         if (rotating)
@@ -1995,6 +2206,7 @@ EXPORT void drawpixelroutine(void)
         } else
         {   drawpixel   = drawpixel_5;
             drawbgpixel = enhancestars ? drawbgpixel_5     : drawpixel_5;
+            drawrawpixel = drawrawpixel_5;
         }
     acase 6:
         if (rotating)
@@ -2003,6 +2215,7 @@ EXPORT void drawpixelroutine(void)
         } else
         {   drawpixel   = drawpixel_6;
             drawbgpixel = enhancestars ? drawbgpixel_6     : drawpixel_6;
+            drawrawpixel = drawrawpixel_6;
         }
     acase 7:
         if (rotating)
@@ -2011,6 +2224,7 @@ EXPORT void drawpixelroutine(void)
         } else
         {   drawpixel   = drawpixel_7;
             drawbgpixel = enhancestars ? drawbgpixel_7     : drawpixel_7;
+            drawrawpixel = drawrawpixel_7;
         }
     acase 8:
         if (rotating)
@@ -2019,6 +2233,7 @@ EXPORT void drawpixelroutine(void)
         } else
         {   drawpixel   = drawpixel_8;
             drawbgpixel = enhancestars ? drawbgpixel_8     : drawpixel_8;
+            drawrawpixel = drawrawpixel_8;
         }
     acase 9:
         if (rotating)
@@ -2027,6 +2242,7 @@ EXPORT void drawpixelroutine(void)
         } else
         {   drawpixel   = drawpixel_9;
             drawbgpixel = enhancestars ? drawbgpixel_9     : drawpixel_9;
+            drawrawpixel = drawrawpixel_9;
         }
     acase 10:
         if (rotating)
@@ -2035,6 +2251,7 @@ EXPORT void drawpixelroutine(void)
         } else
         {   drawpixel   = drawpixel_10;
             drawbgpixel = enhancestars ? drawbgpixel_10     : drawpixel_10;
+            drawrawpixel = drawrawpixel_10;
         }
     acase 11:
         if (rotating)
@@ -2043,8 +2260,8 @@ EXPORT void drawpixelroutine(void)
         } else
         {   drawpixel   = drawpixel_11;
             drawbgpixel = enhancestars ? drawbgpixel_11     : drawpixel_11;
-        }
-    }
+            drawrawpixel = drawrawpixel_11;
+    }   }
 
     if
     (   filter == FILTER_3D
@@ -2105,221 +2322,6 @@ EXPORT void clearscreen(void)
 
     DISCARD ReleaseDC(MainWindowPtr, OnScreenRastPort);
 }
-
-EXPORT void AddAVIAnim(void)
-{	HDC     hdc;
-	HDC     hdcMem;
-	HBITMAP hbitmap,
-            hbitmapOld;
-
-	hdc = GetDC(NULL);
-	hdcMem = CreateCompatibleDC(NULL);
-	hbitmap = CreateCompatibleBitmap(hdc, destwidth, destheight);
-
-	hbitmapOld = SelectBitmap(hdcMem, hbitmap);
-    DISCARD StretchDIBits
-    (   hdcMem,
-        0,              // dest leftx
-        0,              // dest topy
-        destwidth,      // dest width
-        destheight,     // dest height
-        0,              // source leftx
-        0,              // source topy
-        sourcewidth,    // source width
-        sourceheight,   // source height
-        display,        // pointer to the bits
-        (const struct tagBITMAPINFO*) &MainBitMapInfo, // pointer to BITMAPINFO structure
-        DIB_RGB_COLORS, // format of data
-        SRCCOPY         // blit mode
-    );
-    DISCARD SelectBitmap(hdcMem, hbitmapOld);
-
-	// Make this into a DIB and stuff it into the array
-	AnimInfo = (LPBITMAPINFOHEADER) GlobalLock(MakeDib(hbitmap, 4)); // 4 bitplanes
-	// assert(AnimInfo); (should check return code!)
-
-	if (firstanim)
-    {   DISCARD AVIStreamSetFormat
-        (   psCompressed,
-            0,
-			AnimInfo,          // stream format
-			(LONG) (AnimInfo->biSize + // format size
-			        AnimInfo->biClrUsed * sizeof(RGBQUAD))
-        ); // should check return code! (to be zero)
-        firstanim = FALSE;
-    }
-
-	DISCARD AVIStreamWrite
-    (   psCompressed,            // stream pointer
-		frameno++,               // time of this frame
-		1,                       // number to write
-		(LPBYTE) AnimInfo +      // pointer to data
-		AnimInfo->biSize +
-		AnimInfo->biClrUsed * sizeof(RGBQUAD),
-		(LONG) AnimInfo->biSizeImage, // size of this frame
-		AVIIF_KEYFRAME,          // flags....
-		NULL,
-        NULL
-    ); // should check return code! (to be zero)
-
-	// Select all the old objects back and delete resources
-	DeleteBitmap(hbitmap);
-	DeleteObject(hdcMem);
-	ReleaseDC(NULL, hdc);
-}
-
-MODULE HANDLE MakeDib(HBITMAP hbitmap, UINT bits)
-{	HANDLE              hdib;
-	HDC                 hdc;
-	BITMAP              bitmap;
-	UINT                wLineLen;
-	DWORD               dwSize;
-	DWORD               wColSize;
-	LPBITMAPINFOHEADER  lpbi;
-	LPBYTE              lpBits;
-
-	DISCARD GetObject(hbitmap, sizeof(BITMAP), &bitmap) ;
-
-	// Longword-align the width of the DIB
-	// Figure out the size of the colour table
-	// Calculate the size of the DIB
-	wLineLen = (((bitmap.bmWidth * bits) + 31) / 32) * 4;
-	wColSize = sizeof(RGBQUAD)*((bits <= 8) ? 1<<bits : 0);
-	dwSize   = sizeof(BITMAPINFOHEADER)
-             + wColSize
-             + (DWORD)(UINT)wLineLen
-             * (DWORD)(UINT)bitmap.bmHeight;
-
-	// Allocate room for a DIB and set the LPBI fields
-	hdib = GlobalAlloc(GHND, dwSize);
-	if (!hdib)
-    {   return hdib;
-    }
-	lpbi = (LPBITMAPINFOHEADER) GlobalLock(hdib);
-	lpbi->biSize          = sizeof(BITMAPINFOHEADER);
-	lpbi->biWidth         = bitmap.bmWidth;
-	lpbi->biHeight        = bitmap.bmHeight;
-	lpbi->biPlanes        = 1;
-	lpbi->biBitCount      = (WORD) bits;
-	lpbi->biCompression   = BI_RGB;
-	lpbi->biSizeImage     = dwSize - sizeof(BITMAPINFOHEADER) - wColSize;
-	lpbi->biXPelsPerMeter = 0;
-	lpbi->biYPelsPerMeter = 0;
-	lpbi->biClrUsed       = (bits <= 8) ? 1<<bits : 0;
-	lpbi->biClrImportant  = 0;
-
-	// Get the bits from the bitmap and stuff them after the LPBI
-	lpBits = (LPBYTE) (lpbi + 1) + wColSize;
-
-	hdc = CreateCompatibleDC(NULL);
-
-	DISCARD GetDIBits
-    (   hdc,
-        hbitmap,
-        0,
-        (UINT) (bitmap.bmHeight),
-        lpBits,
-        (LPBITMAPINFO) lpbi,
-        DIB_RGB_COLORS
-    );
-
-	// Fix this if GetDIBits messed it up...
-	lpbi->biClrUsed = (bits <= 8) ? 1<<bits : 0;
-
-	DeleteDC(hdc);
-	GlobalUnlock(hdib);
-
-	return hdib;
-}
-
-EXPORT void OpenAVIAnim(STRPTR name)
-{	HRESULT                  hr;
-	AVISTREAMINFO            strhdr;
-	AVICOMPRESSOPTIONS       opts;
-//	AVICOMPRESSOPTIONS FAR * aopts[1] = {&opts};
-    int                      rowsize;
-
-    AVIFileInit();
-
-	// Open the movie file for writing....
-
-	hr = AVIFileOpen(&pfile,		 // returned file pointer
-		       name,    	         // file name
-		       OF_WRITE | OF_CREATE, // mode to open file with
-		       NULL);			     // use handler determined
-						             // from file extension....
-    if (hr != AVIERR_OK)
-        goto error;
-
-	// Fill in the header for the video stream....
-
-	_fmemset(&strhdr, 0, sizeof(strhdr));
-	strhdr.fccType                = streamtypeVIDEO;// stream type
-	strhdr.fccHandler             = 0;
-	strhdr.dwScale                = 1;
-	if (region == REGION_NTSC)
-    {   strhdr.dwRate             = 60;
-    } else
-    {   // assert(region == REGION_PAL);
-        strhdr.dwRate             = 50;
-	}
-    rowsize = destwidth / 2;
-    if (rowsize % 4)
-    {   rowsize += 4 - (rowsize % 4);
-    }
-    strhdr.dwSuggestedBufferSize  = (DWORD) (rowsize * destheight);
-	DISCARD SetRect
-    (   &strhdr.rcFrame,
-        0, 0,                       // rectangle for stream
-	    destwidth,
-	    destheight
-    );
-
-	// And create the stream
-	hr = AVIFileCreateStream(pfile,	// file pointer
-			         &ps,		    // returned stream pointer
-			         &strhdr);	    // stream header
-	if (hr != AVIERR_OK)
-    {   goto error;
-    }
-
-	_fmemset(&opts, 0, sizeof(opts));
-    opts.fccType    = streamtypeVIDEO; // stream type
-    opts.fccHandler = mmioFOURCC('D', 'I', 'B', ' '); // no others seem to work :-(
-
-    hr = AVIMakeCompressedStream(&psCompressed, ps, &opts, NULL);
-    if (hr != AVIERR_OK)
-    {   goto error;
-    }
-
-    firstanim = TRUE;
-    frameno = 1;
-    return;
-
-error:
-    CloseAVIAnim();
-}
-
-EXPORT void CloseAVIAnim(void)
-{	if (ps)
-    {   DISCARD AVIStreamClose(ps);
-        ps = NULL;
-    }
-	if (psCompressed)
-	{	DISCARD AVIStreamClose(psCompressed);
-        psCompressed = NULL;
-    }
-	if (pfile)
-	{	DISCARD AVIFileClose(pfile);
-        pfile = NULL;
-    }
-
-	AVIFileExit();
-
-	if (AnimInfo)
-    {   DISCARD GlobalFreePtr(AnimInfo);
-        AnimInfo = NULL;
-}   }
 
 EXPORT UBYTE getred(int colourset, int whichpen)
 {   return (UBYTE) ((pencolours[colourset][whichpen] & 0x00FF0000) >> 16);
@@ -2711,9 +2713,6 @@ EXPORT void updatescreen(void)
         }
         if (gifanims)
         {   writegifframe();
-        }
-        if (avianims)
-        {   AddAVIAnim();
         }
         writepsgfile();
         writeymfile();

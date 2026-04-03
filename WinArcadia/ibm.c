@@ -182,6 +182,8 @@ EXPORT       int                bottomheight,
                                 sourcewidth,
                                 sourceheight,
                                 statusbarheight,
+                                storedmenu1          = -1,
+                                storedmenu2          = -1;
                                 stretch43            = FALSE,
                                 subwinx[SUBWINDOWS],
                                 subwiny[SUBWINDOWS],
@@ -237,7 +239,6 @@ EXPORT       TEXT               consolestring[OUTPUTLENGTH + 1],
                                 username[MAX_USERNAMELEN + 1];
 EXPORT       HDC                OurhDC               = NULL;
 EXPORT       HINSTANCE          InstancePtr          = NULL;
-EXPORT       LPBITMAPINFOHEADER AnimInfo             = NULL;
 EXPORT       struct RTCStruct   rtc;
 EXPORT const DWORD              joyfires[8]          = { JOYFIRE1, JOYFIRE2, JOYFIRE3, JOYFIRE4, JOYA, JOYB, JOYAUTOFIRE, JOYPAUSE };
 
@@ -345,7 +346,7 @@ EXPORT const int menucode[MENUITEMS] = {
     ID_MACRO_RESTARTPLAYBACK,
     ID_MACRO_STOP,
     ID_MACRO_LOOP,               //  50
-    ID_MACRO_AVIANIMS,
+    ID_DEBUG_WARN,
     ID_MACRO_IFFANIMS,
     ID_MACRO_GIF,
     ID_MACRO_MNG,
@@ -636,7 +637,7 @@ EXPORT const int menucode[MENUITEMS] = {
     -1, // MENUMENU_TRAINERS
     -1, // MENUMENU_VDU             306
 // new ones
-    ID_EMULATOR_FRAMEBASED,      // 307
+    -1, // MENUFAKE_FRAMEBASED      307
     ID_DEBUG_INJECT,             // 308
     ID_DEBUG_REN,                // 309
     -1, // MENUMENU_DEBUG_DISK      310
@@ -808,6 +809,12 @@ EXPORT const int menucode[MENUITEMS] = {
 // new ones
     ID_DEBUG_DRIVE_2,            // 156
     ID_DEBUG_DRIVE_3,            // 157
+    ID_DEMULTIPLEX_MULTIPLEX,    // 158
+    ID_DEMULTIPLEX_TRANSPARENT,  // 159
+    ID_DEMULTIPLEX_OPAQUE,       // 160
+    ID_EMULATOR_FRAMEBASED,      // 161
+    ID_EMULATOR_PIXELBASED,      // 162
+    ID_DEBUG_N_4,                // 163
 };
 
 // MODULE VARIABLES ------------------------------------------------------
@@ -831,9 +838,7 @@ MODULE int                     highestid           = 0,
 #endif
                                newgame             = -1,
                             // promptheight,
-                               setting_fullscreen,
-                               storedmenu1         = -1,
-                               storedmenu2         = -1;
+                               setting_fullscreen;
 MODULE STRPTR                  error;
 MODULE HANDLE                  ProcessPtr          = NULL,
                                MainThreadPtr       = NULL,
@@ -1053,7 +1058,6 @@ IMPORT       int                         ambient,
                                          ay[4],
                                          autopause,
                                          autosave,
-                                         avianims,
                                          base,
                                          bezel,
                                          cd2650_biosver,
@@ -1076,6 +1080,7 @@ IMPORT       int                         ambient,
                                          frameskip,
                                          fullscreen,
                                          game,
+                                         generate,
                                          gifanims,
                                          guestrmb,
                                          gx[2], gy[2],
@@ -1475,6 +1480,7 @@ MODULE void RebuildMenu(void);
 MODULE void ResetEmulator(void);
 MODULE void LoadROM(const char* sFullPath);
 MODULE void go_hardcore(void);
+MODULE void go_softcore(void);
 
 LRESULT CALLBACK CustomEditProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK MagnifierWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -1898,7 +1904,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                     zprintf(TEXTPEN_VERBOSE, "RA_InvokeDialog()\n");
 #endif
                     RA_InvokeDialog(LOWORD(wParam));
-        }   }   }
+                    if (!RA_HardcoreModeIsActive())
+                    {   go_softcore();
+        }   }   }   }
     acase WM_NOTIFY:
         switch (((LPNMHDR) lParam)->code)
         {
@@ -3392,6 +3400,8 @@ EXPORT void calc_size(void)
             }   }
             if
             (   machine == ARCADIA
+             || machine == INTERTON
+             || machine == ELEKTOR
              || machine == PONG
             )
             {   ratiox     = (wide == 2) ?  4 : 2; // 2:3 (narrow) or  4:3 (wide)
@@ -4841,7 +4851,7 @@ EXPORT void process_code(void)
             docommand(MENUITEM_TITLEBAR);
         }
     acase SCAN_F:
-        if (ctrl() && !shift() && !AnimInfo)
+        if (ctrl() && !shift())
         {   fullscreen = fullscreen ? FALSE : TRUE;
             docommand(MENUITEM_FULLSCREEN);
         }
@@ -4908,8 +4918,9 @@ EXPORT void process_code(void)
         (   ctrl()
          && !shift()
          && !fullscreen
-         && (recmode != RECMODE_RECORD || (!apnganims && !iffanims && !gifanims && !mnganims && !avianims))
-        )
+         && (   (recmode == RECMODE_NORMAL || (recmode == RECMODE_PLAY && !generate))
+             || (!apnganims && !iffanims && !gifanims && !mnganims)
+        )   )
         {   if (wide == 1)
             {   wide = realwide = 2;
             } else
@@ -5202,6 +5213,9 @@ EXPORT void process_code(void)
     acase SCAN_F11:
         if (ctrl() && shift())
         {   command_changemachine(    TYPERIGHT,  MEMMAP_TYPERIGHT);
+        } elif (!ctrl() && !shift())
+        {   fullscreen = fullscreen ? FALSE : TRUE;
+            docommand(MENUITEM_FULLSCREEN);
         }
     acase SCAN_FFWD:
         if (!ctrl() && !shift())
@@ -5360,7 +5374,6 @@ EXPORT void process_code(void)
         )
         {   sidebar_down();
     }   }
-
     storedcode = 0;
 
     switch (storedaltcode)
@@ -5375,7 +5388,8 @@ EXPORT void process_code(void)
         }
     acase SCAN_L:
         if (!crippled)
-        {   docommand(MENUITEM_QUICKLOAD);
+        {   storedaltcode = 0; // important!
+            docommand(MENUITEM_QUICKLOAD);
         }
     acase SCAN_R:
         if (!crippled)
@@ -5390,18 +5404,16 @@ EXPORT void process_code(void)
         docommand(MENUITEM_TURBO);
     acase SCAN_AE:
     case SCAN_NE:
-        if (!ctrl() && !shift() && !AnimInfo)
+        if (!ctrl() && !shift())
         {   fullscreen = fullscreen ? FALSE : TRUE;
             docommand(MENUITEM_FULLSCREEN);
     }   }
-
     storedaltcode = 0;
 
     if (storedmenu1 != -1)
     {   handle_menu(storedmenu1);
         storedmenu1 = -1;
     }
-
     if (storedmenu2 != -1)
     {   handle_menu2(storedmenu2);
         storedmenu2 = -1;
@@ -7928,7 +7940,9 @@ EXPORT void init_cheevos(void)
     randomizememory = FALSE;  
     if (RA_HardcoreModeIsActive())
     {   go_hardcore();
-    }
+    } /* else
+    {   go_softcore();
+    } */
 
     #ifdef LOGCHEEVOS
         zprintf(TEXTPEN_VERBOSE, "1: RA_OnLoadNewRom(memory, %d)\n", cheevosize);
@@ -7998,8 +8012,12 @@ MODULE void ResetEmulator(void)
 {   project_reset(FALSE);
 
     // we may have just gone into hardcore mode
-    if (cheevos && RA_HardcoreModeIsActive())
-    {   go_hardcore();
+    if (cheevos)
+    {   if (RA_HardcoreModeIsActive())
+        {   go_hardcore();
+        } /* else
+        {   go_softcore();
+        } */
 }   }
 
 EXPORT void remove_cheevos(FLAG full)
@@ -8058,6 +8076,13 @@ MODULE void go_hardcore(void)
         docommand(MENUITEM_VIEWDEBUGGER);
     }
     showdebugger[wsm ? 0 : 1] = FALSE; // the other one
+}
+
+MODULE void go_softcore(void)
+{   macro_stop(); // unnecessary?
+    updatemenus(); // unnecessary?
+    updatebiggads(); // unnecessary?
+    updatesmlgads(); // important
 }
 
 EXPORT UBYTE AByteReader( unsigned int nOffs                    ) { return memory[         0x1800 + nOffs ]       ; }

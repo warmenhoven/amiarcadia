@@ -114,6 +114,7 @@ IMPORT       int                      ambient,
                                       drawmode,
                                       drawunlit,
                                       drive_mode,
+                                      drive_idmode,
                                       editscreen,
                                       framebased,
                                       game,
@@ -2192,6 +2193,9 @@ EXPORT void binbug_serialize_cos(void)
     }
     serialize_byte_int((int*) &curdrive);
     serialize_byte_int(&drive_mode);
+    if (cosversion >= 44)
+    {   serialize_byte_int(&drive_idmode);
+    }
     serialize_byte_int(&stepdir);
     if (stepdir == 0xFF)
     {   stepdir = -1;

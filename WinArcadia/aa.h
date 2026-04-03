@@ -1,15 +1,15 @@
-#define DECIMALVERSION      "35.9"
-#define INTEGERVERSION      "35.90"
-#define MAJORVERSION        0x35
-#define MINORVERSION        0x90
-#define VERSIONSTRING       "\0$VER: AmiArcadia " INTEGERVERSION " (14.1.2026)" // d.m.yyyy format
-#define RELEASEDATE         "14-01-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE            "14 January 2026" // full month and year
-#define COPYRIGHT           "© 2006-2026 James Jacobs of Amigan Software"
+#define DECIMALVERSION       "36.1"
+#define INTEGERVERSION       "36.10"
+#define MAJORVERSION         0x36
+#define MINORVERSION         0x10
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (29.3.2026)" // d.m.yyyy format
+#define RELEASEDATE          "29-03-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "29 March 2026" // full month and year
+#define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
-#define NEWCONFIGVERSION     "35.9"  // V35.9+
-#define OLDCONFIGVERSION     "35.8"  // V35.8  beta  -V35.81
-#define VERYOLDCONFIGVERSION "35.71" // V35.71 beta 1-beta 2
+#define NEWCONFIGVERSION     "36.1" // V36.1+
+#define OLDCONFIGVERSION     "36.0" // V36.0 beta-36.04
+#define VERYOLDCONFIGVERSION "35.9" // V35.9
 #define RELEASING
 // comment this out during development
 
@@ -196,6 +196,7 @@ aa:
 #define HIGHPTR        'P' // high (more significant) byte of a pointer
 #define POINTER        'P'
 #define UNKNOWN        'U'
+#define STRING         DATA
 
 #define WATCH_NONE 0
 #define WATCH_SOME 1 // only watch writes that change the contents
@@ -454,8 +455,8 @@ C306C:
 #define MINIHEIGHT           18 // SI50_MINIHEIGHT, MIKIT_MINIHEIGHT
 #define AXESWIDTH            96
 #define AXESHEIGHT           96
-#define INDUSTRIALWIDTH     128
-#define INDUSTRIALHEIGHT    128
+#define INDUSTRIALWIDTH     192
+#define INDUSTRIALHEIGHT    192
 #define MAGNIFIERWIDTH      192
 #define MAGNIFIERHEIGHT     192
 #define PREVIEWWIDTH         24 // must be a multiple of 4
@@ -598,25 +599,24 @@ C306C:
 #define KIND_8SVX              19
 #define KIND_AIFF              20
 #define KIND_MNG               21
-#define KIND_AVIANIM           22
-#define KIND_MIDI              23
-#define KIND_SMUS              24
-#define KIND_ASCII             25
-#define KIND_TVC               26
-#define KIND_MDCR              27
-#define KIND_RAW               28
-#define KIND_CMD               29
-#define KIND_IMG               30
-#define KIND_TWIN              31
-#define KIND_MOD               32
-#define KIND_SYM               33
-#define KIND_IMAG              34
-#define KIND_ICON              35
-#define KIND_16SV              36
-#define KIND_BPNF              37
-#define KIND_SMS               38
-#define KIND_PAP               39
-#define KINDS                  40 // counting from 1
+#define KIND_MIDI              22
+#define KIND_SMUS              23
+#define KIND_ASCII             24
+#define KIND_TVC               25
+#define KIND_MDCR              26
+#define KIND_RAW               27
+#define KIND_CMD               28
+#define KIND_IMG               29
+#define KIND_TWIN              30
+#define KIND_MOD               31
+#define KIND_SYM               32
+#define KIND_IMAG              33
+#define KIND_ICON              34
+#define KIND_16SV              35
+#define KIND_BPNF              36
+#define KIND_SMS               37
+#define KIND_PAP               38
+#define KINDS                  39 // counting from 1
 #define KIND_NIL               (KINDS + 1)
 
 #define ELEKTOR_PHILIPS         0
@@ -800,9 +800,10 @@ typedef UWORD MEMFLAG;
 
 #define STYLE_SIGNETICS1        0
 #define STYLE_SIGNETICS2        1
-#define STYLE_CALM              2
-#define STYLE_IEEE              3
-#define STYLES                  4
+#define STYLE_OLDCALM           2
+#define STYLE_NEWCALM           3
+#define STYLE_IEEE              4
+#define STYLES                  5
 
 #define TOKEN_R0       65536
 #define TOKEN_R1       65537
@@ -1296,12 +1297,12 @@ typedef UWORD MEMFLAG;
 #define MENUITEM_BUILTIN           44
 #define MENUFAKE_SORTBY            45
 #define MENUFAKE_SPEEDINDICATOR    46
-// "Macros" menu
+// "Macros" menu (mostly)
 #define MENUITEM_STARTRECORDING    47
 #define MENUITEM_RESTARTPLAYBACK   48
 #define MENUITEM_STOP              49
 #define MENUITEM_LOOP              50
-#define MENUITEM_AVIANIMS          51
+#define MENUITEM_WARN              51
 #define MENUITEM_IFFANIMS          52
 #define MENUITEM_GIFANIMS          53
 #define MENUITEM_MNG               54
@@ -1535,7 +1536,7 @@ typedef UWORD MEMFLAG;
 #define MENUFAKE_PRIORITY         254
 // "Settings|Sprites »" submenu
 #define MENUITEM_COLLISIONS       255
-#define MENUITEM_DEMULTIPLEX      256
+#define MENUFAKE_DEMULTIPLEX      256
 // "Settings|Trainers »" submenu
 #define MENUITEM_CHEATLIVES       257
 #define MENUITEM_CHEATTIME        258
@@ -1592,7 +1593,7 @@ typedef UWORD MEMFLAG;
 #define MENUMENU_TRAINERS         305
 #define MENUMENU_VDU              306
 // new ones
-#define MENUITEM_FRAMEBASED       307 // new for V34.7
+#define MENUFAKE_FRAMEBASED       307 // new for V34.7
 #define MENUITEM_INJECT           308 // new for V34.7
 #define MENUITEM_RENAME           309 // new for V34.7
 #define MENUMENU_DEBUG_DISK       310 // new for V34.7
@@ -1782,9 +1783,15 @@ typedef UWORD MEMFLAG;
 #define MENUOPT_CHESSMEN          154
 #define MENUOPT_LOWERCASEVDU      155
 // new ones
-#define MENUOPT_DRIVE_2           156
-#define MENUOPT_DRIVE_3           157
-#define MENUOPTS                  158 // counting from 1 (ie. last entry is [MENUOPTS - 1])
+#define MENUOPT_DRIVE_2                 156
+#define MENUOPT_DRIVE_3                 157
+#define MENUOPT_DEMULTIPLEX_MULTIPLEX   158
+#define MENUOPT_DEMULTIPLEX_TRANSPARENT 159
+#define MENUOPT_DEMULTIPLEX_OPAQUE      160
+#define MENUOPT_FRAMEBASED              161
+#define MENUOPT_PIXELBASED              162
+#define MENUOPT_N_4                     163
+#define MENUOPTS                        164 // counting from 1 (ie. last entry is [MENUOPTS - 1])
 
 // small gadget positions, left to right, on GID_SB2
 // input
@@ -1965,8 +1972,8 @@ typedef UWORD MEMFLAG;
 #define FIRSTCPUEQUIV             4156
 #define  LASTCPUEQUIV             4169
 #define FIRSTP1DOSEQUIV           4170
-#define  LASTP1DOSEQUIV           4205
-#define FIRSTGAMEEQUIV            4206
+#define  LASTP1DOSEQUIV           4224
+#define FIRSTGAMEEQUIV            4225
 #define EQUIVALENTS               (FIRSTGAMEEQUIV + 2554 + 1)
 
 #define FIRSTHOBBYMODULECODECOMMENT  -1
@@ -2021,7 +2028,7 @@ typedef UWORD MEMFLAG;
 #define  LASTDATACOMMENT09          283
 #define FIRSTDATACOMMENT20          284
 #define  LASTDATACOMMENT20          304
-// more here
+// SI50 and Arcadia hardware are here
 #define FIRSTGBUGDATACOMMENT        383
 #define  LASTGBUGDATACOMMENT        412
 #define FIRSTVHSDOSDATACOMMENT      413
@@ -2034,7 +2041,9 @@ typedef UWORD MEMFLAG;
 #define  LASTBINBUG61DATACOMMENT    618
 #define FIRSTPIPBUG2DATACOMMENT     619
 #define  LASTPIPBUG2DATACOMMENT     631
-#define FIRSTGAMEDATACOMMENT        632
+#define FIRSTP1DOSDATACOMMENT       632
+#define  LASTP1DOSDATACOMMENT       650
+#define FIRSTGAMEDATACOMMENT        651
 
 #define BUILTIN_MIN                 2
 #define BUILTIN_MAX                10
@@ -2223,7 +2232,7 @@ typedef UWORD MEMFLAG;
 #define MAZESPOS              236
 #define CIRCLEDRIVEPOS1       237
 #define COSMICADVENTUREPOS1   249
-#define COSMICADVENTUREPOS2   250
+#define COSMICADVENTUREPOS2   253
 #define ROCKETSHOOTINGPOS     263
 #define SPACESHOOTOUTPOS      268
 #define UFOSHOOTINGPOS        286
@@ -3204,7 +3213,7 @@ EXPORT struct KnownStruct
     UBYTE  sensitivity,
            demultiplex,
            spriteflips; // PIPBUG: pipbug_biosver, SI50: s_id
-    SBYTE  udcflips,    // SI50: s_is
+    SBYTE  udgflips,    // SI50: s_is
            firstrow,
            lastrow;
     FLAG   swapped;
@@ -3313,6 +3322,9 @@ EXPORT struct OpcodeStruct
            rflags,
            wflags,
            cc;
+#ifdef WIN32
+    RECT   rect;
+#endif
 };
 EXPORT struct PaletteStruct
 {   ULONG red,
@@ -4383,6 +4395,7 @@ EXPORT FLAG twin_rename_file(int whichfile, int whichdrive, STRPTR newname);
 EXPORT void twin_reset(void);
 EXPORT void twin_inject_file(STRPTR thefilename);
 EXPORT void twin_view_dos(void);
+EXPORT void twin_get_commands(int whichdrive, int whichfile, FLAG multiline);
 // exos.c
 EXPORT void exos_to_disk(int whichdrive);
 EXPORT void exos_to_ram(void);
@@ -4570,9 +4583,6 @@ EXPORT void closewindow_3d(void);
 EXPORT void make_display(void);
 EXPORT void openwindow_3d(void);
 EXPORT void update_menuheight(void);
-EXPORT void OpenAVIAnim(STRPTR name);
-EXPORT void AddAVIAnim(void);
-EXPORT void CloseAVIAnim(void);
 
 // wa-modal.c
 EXPORT BOOL CALLBACK   RearrangeDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);

@@ -3913,26 +3913,27 @@ EXPORT void pipbug_redrawleds(void)
         drawdigit(  12, (UBYTE)  ((255 - ioport[8].contents) & 0x0F));
 }   }
 
-#define FURNACECENTREX  64
-#define FURNACECENTREY  64
-#define LINEARCENTREX   64
-#define LINEARCENTREY   64
-#define VECTORCENTREX   32
-#define VECTORCENTREY   32
-#define EARTHCENTREX    96
-#define EARTHCENTREY    32
-#define SIDECENTREX     32
-#define SIDECENTREY     96
-#define TOPCENTREX      64
-#define TOPCENTREY      64
-#define BACKCENTREX     96
-#define BACKCENTREY     96
+#define FURNACECENTREX  (INDUSTRIALWIDTH  / 2)
+#define FURNACECENTREY  (INDUSTRIALHEIGHT / 2)
+#define LINEARCENTREX   (INDUSTRIALWIDTH  / 2)
+#define LINEARCENTREY   (INDUSTRIALHEIGHT / 2)
+#define VECTORCENTREX   (INDUSTRIALWIDTH  / 4)
+#define VECTORCENTREY   (INDUSTRIALHEIGHT / 3)
+#define EARTHCENTREX    (INDUSTRIALWIDTH  * 3 / 4)
+#define EARTHCENTREY    (INDUSTRIALHEIGHT / 3)
+#define SIDECENTREX     (INDUSTRIALWIDTH  / 6)
+#define SIDECENTREY     (INDUSTRIALHEIGHT * 5 / 6)
+#define TOPCENTREX      (INDUSTRIALWIDTH  / 2)
+#define TOPCENTREY      (INDUSTRIALHEIGHT * 5 / 6)
+#define BACKCENTREX     (INDUSTRIALWIDTH  * 5 / 6)
+#define BACKCENTREY     (INDUSTRIALHEIGHT * 5 / 6)
 EXPORT void redraw_furnace(void)
 {   FAST double  a1_deg,    a1_rad,
                  angle_deg, angle_rad,
                  arrowlen,
                  mag;
-    FAST int     x1, x2, x3, x4,
+    FAST int     i,
+                 x1, x2, x3, x4,
                  y1, y2, y3, y4;
 #ifdef WIN32
     FAST HDC     IndustrialRastPtr;
@@ -3941,15 +3942,47 @@ EXPORT void redraw_furnace(void)
 #ifdef AMIGA
     FAST UBYTE   windcolour;
 #endif
-
-    for (y1 = 0; y1 < INDUSTRIALHEIGHT; y1++)
-    {   for (x1 = 0; x1 < INDUSTRIALWIDTH; x1++)
-        {   DRAWINDUSTRIALPIXEL(x1, y1, EMURGBPEN_BLACK);
-    }   }
+PERSIST const TEXT captions[5][5][29 + 1] = { {
+//01234567890123456789012
+ "...#.....#####.#####.#####...",
+ "...#.....#.....#.......#.....",
+ "...#.....####..####....#.....",
+ "...#.....#.....#.......#.....",
+ "...#####.#####.#.......#.....",
+}, {
+ "....#####..###..####.........",
+ "......#...#...#.#...#........",
+ "......#...#...#.####.........",
+ "......#...#...#.#............",
+ "......#....###..#............",
+}, {
+ "...####...###...###..#...#...",
+ "...#...#.#...#.#...#.#.##....",
+ "...####..#####.#.....##......",
+ "...#...#.#...#.#...#.#.##....",
+ "...####..#...#..###..#...#...",
+}, {
+ "####..#......###..#...#.#####",
+ "#...#.#.....#...#.##..#.#....",
+ "####..#.....#####.#.#.#.####.",
+ "#.....#.....#...#.#..##.#....",
+ "#.....#####.#...#.#...#.#####",
+}, {
+ "#####..###..####..#####.#...#",
+ "#.....#...#.#...#...#...#...#",
+ "####..#####.####....#...#####",
+ "#.....#...#.#..#....#...#...#",
+ "#####.#...#.#...#...#...#...#",
+} };
 
     switch (pipbug_periph)
     {
     case PERIPH_FURNACE:
+        for (y1 = 0; y1 < INDUSTRIALHEIGHT; y1++)
+        {   for (x1 = 0; x1 < INDUSTRIALWIDTH; x1++)
+            {   DRAWINDUSTRIALPIXEL(x1, y1, EMURGBPEN_BLACK);
+        }   }
+
         // Hub------------------------------------------------------------
 
         angle_deg = (yawsensordir / 255.0) * 360.0;
@@ -4087,19 +4120,96 @@ EXPORT void redraw_furnace(void)
         y4 = y1 + (int) (10.0 * cos(a1_rad));
         draw_line(x1, y1, x4, y4, windcolour);
     acase PERIPH_LINEARISATIE:
+        for (y1 = 0; y1 < INDUSTRIALHEIGHT; y1++)
+        {   for (x1 = 0; x1 < INDUSTRIALWIDTH; x1++)
+            {   DRAWINDUSTRIALPIXEL(x1, y1, EMURGBPEN_BLACK);
+        }   }
+
         for (y1 = -2; y1 <= 2; y1++)
         {   for (x1 = -2; x1 <= 2; x1++)
-            {   x2 = LINEARCENTREX + x1 + (int) ((linearx - 2048.0) * 0.488 * 0.064);
-                y2 = LINEARCENTREY + y1 - (int) ((lineary - 2048.0) * 0.488 * 0.064);
+            {   x2 = LINEARCENTREX + x1 + (int) ((linearx - 2048.0) / (4096 / (INDUSTRIALWIDTH  - 6)));
+                y2 = LINEARCENTREY + y1 - (int) ((lineary - 2048.0) / (4096 / (INDUSTRIALHEIGHT - 6)));
                 DRAWINDUSTRIALPIXEL(x2, y2, EMURGBPEN_RED);
         }   }
         for (y1 = -2; y1 <= 2; y1++)
         {   for (x1 = -2; x1 <= 2; x1++)
-            {   x2 = LINEARCENTREX + x1 + (int) ((linearu - 2048.0) * 0.488 * 0.064);
-                y2 = LINEARCENTREY + y1 - (int) ((linearv - 2048.0) * 0.488 * 0.064);
+            {   x2 = LINEARCENTREX + x1 + (int) ((linearu - 2048.0) / (4096 / (INDUSTRIALWIDTH  - 6)));
+                y2 = LINEARCENTREY + y1 - (int) ((linearv - 2048.0) / (4096 / (INDUSTRIALHEIGHT - 6)));
                 DRAWINDUSTRIALPIXEL(x2, y2, EMURGBPEN_BLUE);
         }   }
     acase PERIPH_MAGNETOMETER:
+        for (y1 = 0; y1 < INDUSTRIALHEIGHT * 2 / 3; y1++)
+        {   for (x1 = 0; x1 < INDUSTRIALWIDTH; x1++)
+            {   DRAWINDUSTRIALPIXEL(x1, y1, EMURGBPEN_BLACK);
+        }   }
+        for (y1 = INDUSTRIALHEIGHT * 2 / 3; y1 < INDUSTRIALHEIGHT * 5 / 6; y1++)
+        {   for (x1 = 0; x1 < INDUSTRIALHEIGHT / 3; x1++)
+            {   DRAWINDUSTRIALPIXEL(x1, y1, EMURGBPEN_DARKBLUE);
+        }   }
+        for (y1 = INDUSTRIALHEIGHT * 5 / 6; y1 < INDUSTRIALHEIGHT; y1++)
+        {   for (x1 = 0; x1 < INDUSTRIALHEIGHT / 3; x1++)
+            {   DRAWINDUSTRIALPIXEL(x1, y1, EMURGBPEN_DARKORANGE);
+        }   }
+        for (y1 = INDUSTRIALHEIGHT * 2 / 3; y1 < INDUSTRIALHEIGHT; y1++)
+        {   for (x1 = INDUSTRIALWIDTH / 3; x1 < INDUSTRIALWIDTH * 2 / 3; x1++)
+            {   DRAWINDUSTRIALPIXEL(x1, y1, EMURGBPEN_DARKORANGE);
+        }   }
+        for (y1 = INDUSTRIALHEIGHT * 2 / 3; y1 < INDUSTRIALHEIGHT * 5 / 6; y1++)
+        {   for (x1 = INDUSTRIALWIDTH * 2 / 3; x1 < INDUSTRIALWIDTH; x1++)
+            {   DRAWINDUSTRIALPIXEL(x1, y1, EMURGBPEN_DARKBLUE);
+        }   }
+        for (y1 = INDUSTRIALHEIGHT * 5 / 6; y1 < INDUSTRIALHEIGHT; y1++)
+        {   for (x1 = INDUSTRIALWIDTH * 2 / 3; x1 < INDUSTRIALWIDTH; x1++)
+            {   DRAWINDUSTRIALPIXEL(x1, y1, EMURGBPEN_DARKORANGE);
+        }   }
+
+        for (i = 0; i < 3; i++)
+        {   for (y1 = 0; y1 < 5; y1++)
+            {   for (x1 = 0; x1 < 29; x1++)
+                {   if (captions[i][y1][x1] == '#')
+                    {   DRAWINDUSTRIALPIXEL
+                        (   (i * (INDUSTRIALWIDTH / 3)) + (INDUSTRIALWIDTH / 6) - 15 + x1,
+                            INDUSTRIALHEIGHT - 6 + y1,
+                            EMURGBPEN_BLACK
+                        );
+        }   }   }   }
+        for (i = 3; i < 5; i++)
+        {   for (y1 = 0; y1 < 5; y1++)
+            {   for (x1 = 0; x1 < 29; x1++)
+                {   if (captions[i][y1][x1] == '#')
+                    {   DRAWINDUSTRIALPIXEL
+                        (   ((i - 3) * (INDUSTRIALWIDTH / 2)) + (INDUSTRIALWIDTH / 4) - 15 + x1,
+                            1 + y1,
+                            EMURGBPEN_WHITE
+                        );
+        }   }   }   }
+        for (y1 = 0; y1 < INDUSTRIALHEIGHT * 2 / 3; y1++)
+        {   DRAWINDUSTRIALPIXEL
+            (   INDUSTRIALWIDTH / 2,
+                y1,
+                EMURGBPEN_WHITE
+            );
+        }
+        for (x1 = 0; x1 < INDUSTRIALWIDTH; x1++)
+        {   DRAWINDUSTRIALPIXEL
+            (   x1,
+                INDUSTRIALHEIGHT * 2 / 3,
+                EMURGBPEN_WHITE
+            );
+        }
+        for (y1 = INDUSTRIALHEIGHT * 2 / 3; y1 < INDUSTRIALHEIGHT; y1++)
+        {   DRAWINDUSTRIALPIXEL
+            (   INDUSTRIALWIDTH / 3,
+                y1,
+                EMURGBPEN_WHITE
+            );
+            DRAWINDUSTRIALPIXEL
+            (   INDUSTRIALWIDTH * 2 / 3,
+                y1,
+                EMURGBPEN_WHITE
+            );
+        }
+
         // Plane (side view)----------------------------------------------
 
         // fuselage: pitch only
@@ -4108,7 +4218,7 @@ EXPORT void redraw_furnace(void)
         x2 = SIDECENTREX + (int) (24.0 * cos(planepitch_rad));
         y2 = SIDECENTREY + (int) (24.0 * sin(planepitch_rad));
         draw_line(SIDECENTREX, SIDECENTREY, x1, y1, EMURGBPEN_YELLOW);
-        draw_line(SIDECENTREX, SIDECENTREY, x2, y2, EMURGBPEN_DARKBLUE);
+        draw_line(SIDECENTREX, SIDECENTREY, x2, y2, EMURGBPEN_BLUE);
 
         // wings: pitch and roll
         angle_rad = planepitch_rad + PI / 2.0;
@@ -4128,7 +4238,7 @@ EXPORT void redraw_furnace(void)
         x1 = (int) ( 24.0 * sin(planeyaw_rad));
         y1 = (int) (-24.0 * cos(planeyaw_rad));
         draw_line(TOPCENTREX, TOPCENTREY, TOPCENTREX + x1, TOPCENTREY + y1, EMURGBPEN_YELLOW);
-        draw_line(TOPCENTREX, TOPCENTREY, TOPCENTREX - x1, TOPCENTREY - y1, EMURGBPEN_DARKBLUE);
+        draw_line(TOPCENTREX, TOPCENTREY, TOPCENTREX - x1, TOPCENTREY - y1, EMURGBPEN_BLUE);
 
         // wings: yaw and roll
         arrowlen = 18.0 * cos(planeroll_rad);
@@ -4149,7 +4259,7 @@ EXPORT void redraw_furnace(void)
         x2 = BACKCENTREX + x3;
         y2 = BACKCENTREY + y3;
         draw_line(BACKCENTREX, BACKCENTREY, x1, y1, EMURGBPEN_YELLOW);
-        draw_line(BACKCENTREX, BACKCENTREY, x2, y2, EMURGBPEN_DARKBLUE);
+        draw_line(BACKCENTREX, BACKCENTREY, x2, y2, EMURGBPEN_BLUE);
 
         // wings: roll only
         x3 = (int) (18.0 * cos(planeroll_rad));

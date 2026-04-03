@@ -171,7 +171,7 @@ EXPORT TEXT asciiname_short[259][3 + 1] =
     "HT",  // $09 Horizontal Tab
     "LF",  // $0A Line Feed
     "VT",  // $0B Vertical Tab
-    "FF",  // $0C Form Feed
+    "ZFF", // $0C Form Feed (normally FF but that can cause confusion with $FF)
     "CR",  // $0D Carriage Return
     "SO",  // $0E Shift Out
     "SI",  // $0F Shift In

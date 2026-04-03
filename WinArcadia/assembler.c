@@ -57,6 +57,7 @@ IMPORT       int                      base,
                                       supercpu,
                                       userlabels,
                                       verbosity,
+                                      warn,
                                       whichgame;
 IMPORT       MEMFLAG                  memflags[ALLTOKENS];
 IMPORT const STRPTR                   hexchars[STYLES],
@@ -80,20 +81,23 @@ IMPORT       struct OpcodeStruct      opcodes[3][256];
 
 // MODULE VARIABLES-------------------------------------------------------
 
-MODULE       FLAG                     comma,
-                                      commenting,
+MODULE       FLAG                     commenting,
                                       ended,
                                       equmode        = FALSE,
                                       including      = FALSE,
                                       orgy,
                                       specified;
-MODULE       UBYTE                    emitbuf[3];
+MODULE       UBYTE                    emitbuf[3],
+                                      gopcode,
+                                      gbyte1st,
+                                      gbyte2nd;
 MODULE       TEXT                     equstring[LABELLIMIT + 1],
                                       entirestring[256 + 1],
                                       fn_inc[MAX_PATH + 1],
                                       GraphBuffer[16 * KILOBYTE], // arbitrary size
                                       LineBuffer[256 + 1];
-MODULE       STRPTR                   AsmBuffer      = NULL;
+MODULE       STRPTR                   AsmBuffer      = NULL,
+                                      evalstring;
 MODULE       int                      asmsize2,
                                       asmstart,
                                       defasmbase,
@@ -109,23 +113,25 @@ MODULE       FILE*                    ListFileHandle = NULL;
 
 // MODULE ARRAYS/STRUCTURES-----------------------------------------------
 
-MODULE const STRPTR                   apcchars[STYLES] = { "$", "$", "APC", "*" },
-                                      indchars[STYLES] = { "*", "*", "@"  , "@" };
+MODULE const STRPTR                   apcchars[STYLES] = { "$", "$", "APC", "APC", "*" },
+                                      indchars[STYLES] = { "*", "*", "@"  , "{"  , "@" };
 
 // MODULE FUNCTIONS-------------------------------------------------------
 
-MODULE FLAG asm_calm(void);
+MODULE FLAG asm_oldcalm(void);
+MODULE FLAG asm_newcalm(void);
+MODULE FLAG asm_calmdirective(void);
 MODULE FLAG asm_ieee(void);
 MODULE FLAG asmline(void);
 MODULE FLAG asm_signetics(void);
 MODULE void asmwarning(STRPTR errorstring);
 MODULE FLAG compareit(STRPTR target, FLAG needspace);
-MODULE UBYTE dorel(int wherefrom);
+MODULE UBYTE dorel(int wherefrom, FLAG indirect);
 MODULE void emit(int data);
 MODULE int findlabel(STRPTR passedstring, int length, FLAG allowall);
 MODULE void getaddress(UBYTE offset);
 MODULE UBYTE getcc_signetics(FLAG unallowed);
-MODULE UBYTE getcc_calm(FLAG unallowed);
+MODULE UBYTE getcc_calm(void);
 MODULE void getdbx(void);
 MODULE UBYTE getreg_signetics(int r0allowed, FLAG r1r2allowed);
 MODULE UBYTE getreg_calm(int r0allowed, FLAG r1r2allowed);
@@ -134,18 +140,23 @@ MODULE void getimmediate(FLAG skipthem);
 MODULE void getimmediatebytes(void);
 MODULE void getimmediatewords(FLAG swap);
 MODULE void getabsolute_nonbranch_signetics(UBYTE firstopcode, int reg);
-MODULE void getabsolute_nonbranch_calm(UBYTE firstopcode);
+MODULE void getabsolute_nonbranch_oldcalm(UBYTE firstopcode);
+MODULE FLAG ganb_newcalm(FLAG allpages);
 MODULE void getabsolute_nonbranch_ieee(UBYTE firstopcode, int thereg);
 MODULE void getabsolute_branch(void);
 MODULE void getabsolute_indexed_signetics(UBYTE firstopcode);
-MODULE void getrelative(void);
-MODULE void getzeropage(void);
+MODULE void getrelative(FLAG indirect);
+MODULE void getzeropage(FLAG indirect);
 MODULE int parseonenumber(STRPTR passedstring, int length);
+MODULE UBYTE saveimmediate(FLAG skipthem);
 MODULE FLAG skipblanks(FLAG mandatory);
 MODULE FLAG includebin(void);
 MODULE FLAG includefile(void);
 MODULE FLAG ishexdigit(TEXT which);
 MODULE int fiximmediate(int value);
+MODULE int expr(void);
+MODULE int factor(void);
+MODULE FLAG isterminator(TEXT thechar);
 
 // CODE-------------------------------------------------------------------
 
@@ -222,7 +233,8 @@ EXPORT void assemble(void)
     {
     case  STYLE_SIGNETICS1: zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_ASSEMBLING, "Assembling %s as %s...\n"), fn_asm, "non-extended Signetics");
     acase STYLE_SIGNETICS2: zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_ASSEMBLING, "Assembling %s as %s...\n"), fn_asm, "extended Signetics");
-    acase STYLE_CALM:       zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_ASSEMBLING, "Assembling %s as %s...\n"), fn_asm, "CALM");
+    acase STYLE_OLDCALM:    zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_ASSEMBLING, "Assembling %s as %s...\n"), fn_asm, "old CALM");
+    acase STYLE_NEWCALM:    zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_ASSEMBLING, "Assembling %s as %s...\n"), fn_asm, "new CALM");
     acase STYLE_IEEE:       zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_ASSEMBLING, "Assembling %s as %s...\n"), fn_asm, "IEEE-694");
     }
 
@@ -399,9 +411,10 @@ DONE1:
     if (!ended)
     {   switch (style)
         {
-        acase STYLE_CALM: asmwarning("missing .END directive");
-        acase STYLE_IEEE: asmwarning("missing END directive");
-        adefault:         asmwarning("missing END/.END directive");
+        acase STYLE_OLDCALM:
+        case  STYLE_NEWCALM: asmwarning("missing .END directive");
+        acase STYLE_IEEE:    asmwarning("missing END directive");
+        adefault:            asmwarning("missing END/.END directive");
     }   }
 
 DONE2:
@@ -517,9 +530,10 @@ MODULE FLAG asmline(void)
 
     switch (style)
     {
-    case  STYLE_CALM: rc = asm_calm();
-    acase STYLE_IEEE: rc = asm_ieee();
-    adefault:         rc = asm_signetics();
+    case  STYLE_OLDCALM: rc = asm_oldcalm();
+    acase STYLE_NEWCALM: rc = asm_newcalm();
+    acase STYLE_IEEE:    rc = asm_ieee();
+    adefault:            rc = asm_signetics();
     }
 
     if (pass == 2)
@@ -561,7 +575,9 @@ START:
 
     // Directives (except Equates)----------------------------------------
 
-    if (LineBuffer[linecursor] == EOS) ;
+    if   (LineBuffer[linecursor] == EOS)
+    {   ;
+    }
     elif (compareit("CEJE"  , TRUE)) asmwarning("ignoring directive CEJE"  ); // Conditional EJEct (Signetics Relocatable Assembler)
     elif (compareit("CSECT" , TRUE)) asmwarning("ignoring directive CSECT" ); //                   (Signetics)
     elif (compareit("ENTRY" , TRUE)) asmwarning("ignoring directive ENTRY" ); //                   (Signetics)
@@ -649,7 +665,7 @@ START:
             specified = TRUE;
         }
         ended = TRUE;
-        return FALSE;
+        return TRUE;
     } elif (compareit(".OCT", TRUE)) // X2650 cross-asm
     {   defasmbase = BASE_OCTAL;
     } elif (compareit(".HEX", TRUE)) // X2650 cross-asm
@@ -744,7 +760,7 @@ START:
         getimmediate(TRUE);
     } elif (compareit("LODR,",   FALSE)) // $08..$0B
     {   emit(0x08 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("LODA,",   FALSE)) // $0C..$0F
     {   getabsolute_nonbranch_signetics(0x0C, -1);
     } elif (compareit("LODA",    TRUE)) // $0C
@@ -773,10 +789,10 @@ START:
     {   emit(0x17);
     } elif (compareit("BCTR,",   FALSE)) // $18..$1B
     {   emit(0x18 + getcc_signetics(TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("BCTR",    TRUE )) // $1B
     {   emit(0x1B);
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("BCTA,",   FALSE)) // $1C..$1F
     {   emit(0x1C + getcc_signetics(TRUE));
         getabsolute_branch();
@@ -799,7 +815,7 @@ START:
         getimmediate(TRUE);
     } elif (compareit("EORR,",   FALSE) || compareit("XORR,",   FALSE)) // $28..$2B
     {   emit(0x28 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("EORA,",   FALSE) || compareit("XORA,",   FALSE)) // $2C..$2F
     {   getabsolute_nonbranch_signetics(0x2C, -1);
     } elif (compareit("EORA",    TRUE)) // $2C
@@ -812,10 +828,10 @@ START:
     {   emit(0x37);
     } elif (compareit("BSTR,",   FALSE)) // $38..$3B
     {   emit(0x38 + getcc_signetics(TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("BSTR",    TRUE )) // $3B
     {   emit(0x3B);
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("BSTA,",   FALSE)) // $3C..$3F
     {   emit(0x3C + getcc_signetics(TRUE));
         getabsolute_branch();
@@ -838,7 +854,7 @@ START:
         getimmediate(TRUE);
     } elif (compareit("ANDR,",   FALSE)) // $48..$4B
     {   emit(0x48 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("ANDA,",   FALSE)) // $4C..$4F
     {   getabsolute_nonbranch_signetics(0x4C, -1);
     } elif (compareit("ANDA",    TRUE)) // $4C
@@ -850,7 +866,7 @@ START:
         getimmediate(TRUE);
     } elif (compareit("BRNR,",   FALSE)) // $58..$5B
     {   emit(0x58 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("BRNA,",   FALSE)) // $5C..$5F
     {   emit(0x5C + getreg_signetics(2, TRUE));
         getabsolute_branch();
@@ -870,7 +886,7 @@ START:
         getimmediate(TRUE);
     } elif (compareit("IORR,",   FALSE)) // $68..$6B
     {   emit(0x68 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("IORA,",   FALSE)) // $6C..$6F
     {   getabsolute_nonbranch_signetics(0x6C, -1);
     } elif (compareit("IORA",    TRUE)) // $6C
@@ -891,7 +907,7 @@ START:
         getimmediate(TRUE);
     } elif (compareit("BSNR,",   FALSE)) // $78..$7B
     {   emit(0x78 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("BSNA,",   FALSE)) // $7C..$7F
     {   emit(0x7C + getreg_signetics(2, TRUE));
         getabsolute_branch();
@@ -911,7 +927,7 @@ START:
         getimmediate(TRUE);
     } elif (compareit("ADDR,",   FALSE)) // $88..$8B
     {   emit(0x88 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("ADDA,",   FALSE)) // $8C..$8F
     {   getabsolute_nonbranch_signetics(0x8C, -1);
     } elif (compareit("ANDA",    TRUE)) // $8C
@@ -924,11 +940,11 @@ START:
     {   emit(0x94 + getreg_signetics(2, TRUE));
     } elif (compareit("BCFR,",   FALSE)) // $98..$9A
     {   emit(0x98 + getcc_signetics(FALSE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("ZBRR",    TRUE )) // $9B
     {   emit(0x9B);
         skipblanks(TRUE);
-        getzeropage();
+        getzeropage(FALSE);
     } elif (compareit("BCFA,",   FALSE)) // $9C..$9E
     {   emit(0x9C + getcc_signetics(FALSE));
         getabsolute_branch();
@@ -953,7 +969,7 @@ START:
         getimmediate(TRUE);
     } elif (compareit("SUBR,",   FALSE)) // $A8..$AB
     {   emit(0xA8 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("SUBA,",   FALSE)) // $AC..$AF
     {   getabsolute_nonbranch_signetics(0xAC, -1);
     } elif (compareit("SUBA",    TRUE)) // $AC
@@ -968,11 +984,11 @@ START:
         getimmediate(TRUE);
     } elif (compareit("BSFR,",   FALSE)) // $B8..$BA
     {   emit(0xB8 + getcc_signetics(FALSE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("ZBSR",    TRUE )) // $BB
     {   emit(0xBB);
         skipblanks(TRUE);
-        getzeropage();
+        getzeropage(FALSE);
     } elif (compareit("BSFA,",   FALSE)) // $BC..$BE
     {   emit(0xBC + getcc_signetics(FALSE));
         getabsolute_branch();
@@ -994,7 +1010,7 @@ START:
         emit(0xC0 + getreg_signetics(0, TRUE));
     } elif (compareit("STRR,",   FALSE)) // $C8..$CB
     {   emit(0xC8 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("STRA,",   FALSE)) // $CC..$CF
     {   getabsolute_nonbranch_signetics(0xCC, -1);
     } elif (compareit("STRA",    TRUE)) // $CC
@@ -1006,7 +1022,7 @@ START:
         getimmediate(TRUE);
     } elif (compareit("BIRR,",   FALSE)) // $D8..$DB
     {   emit(0xD8 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("BIRA,",   FALSE)) // $DC..$DF
     {   emit(0xDC + getreg_signetics(2, TRUE));
         getabsolute_branch();
@@ -1026,7 +1042,7 @@ START:
         getimmediate(TRUE);
     } elif (compareit("COMR,",   FALSE)) // $E8..$EB
     {   emit(0xE8 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("COMA,",   FALSE)) // $EC..$EF
     {   getabsolute_nonbranch_signetics(0xEC, -1);
     } elif (compareit("COMA",    TRUE)) // $EC
@@ -1038,7 +1054,7 @@ START:
         getimmediate(TRUE);
     } elif (compareit("BDRR,",   FALSE)) // $F8..$FB
     {   emit(0xF8 + getreg_signetics(2, TRUE));
-        getrelative();
+        getrelative(FALSE);
     } elif (compareit("BDRA,",   FALSE)) // $FC..$FF
     {   emit(0xFC + getreg_signetics(2, TRUE));
         getabsolute_branch();
@@ -1047,19 +1063,19 @@ START:
     // Extended instruction set (supported by Signetics RASM assembler)---
 
     elif (style == STYLE_SIGNETICS2 && (compareit("RET" , TRUE)                                                     )) { emit(0x17);                       } // RETC,un
-    elif (style == STYLE_SIGNETICS2 && (compareit("BER" , TRUE) || compareit("BZR" , TRUE) || compareit("BOR", TRUE))) { emit(0x18); getrelative();        } // BCTR,eq
-    elif (style == STYLE_SIGNETICS2 && (compareit("BHR" , TRUE) || compareit("BPR" , TRUE)                          )) { emit(0x19); getrelative();        } // BCTR,gt
-    elif (style == STYLE_SIGNETICS2 && (compareit("BLR" , TRUE) || compareit("BMR" , TRUE)                          )) { emit(0x1A); getrelative();        } // BCTR,lt
-    elif (style == STYLE_SIGNETICS2 && (compareit("BR"  , TRUE)                                                     )) { emit(0x1B); getrelative();        } // BCTR,un
+    elif (style == STYLE_SIGNETICS2 && (compareit("BER" , TRUE) || compareit("BZR" , TRUE) || compareit("BOR", TRUE))) { emit(0x18); getrelative(FALSE);        } // BCTR,eq
+    elif (style == STYLE_SIGNETICS2 && (compareit("BHR" , TRUE) || compareit("BPR" , TRUE)                          )) { emit(0x19); getrelative(FALSE);        } // BCTR,gt
+    elif (style == STYLE_SIGNETICS2 && (compareit("BLR" , TRUE) || compareit("BMR" , TRUE)                          )) { emit(0x1A); getrelative(FALSE);        } // BCTR,lt
+    elif (style == STYLE_SIGNETICS2 && (compareit("BR"  , TRUE)                                                     )) { emit(0x1B); getrelative(FALSE);        } // BCTR,un
     elif (style == STYLE_SIGNETICS2 && (compareit("BEA" , TRUE) || compareit("BZA" , TRUE) || compareit("BOA", TRUE))) { emit(0x1C); getabsolute_branch(); } // BCTA,eq
     elif (style == STYLE_SIGNETICS2 && (compareit("BHA" , TRUE) || compareit("BPA" , TRUE)                          )) { emit(0x1D); getabsolute_branch(); } // BCTA,gt
     elif (style == STYLE_SIGNETICS2 && (compareit("BLA" , TRUE) || compareit("BMA" , TRUE)                          )) { emit(0x1E); getabsolute_branch(); } // BCTA,lt
     elif (style == STYLE_SIGNETICS2 && (compareit("BA"  , TRUE)                                                     )) { emit(0x1F); getabsolute_branch(); } // BCTA,un
-    elif (style == STYLE_SIGNETICS2 && (compareit("BSR" , TRUE)                                                     )) { emit(0x3B); getrelative();        } // BSTR,un
+    elif (style == STYLE_SIGNETICS2 && (compareit("BSR" , TRUE)                                                     )) { emit(0x3B); getrelative(FALSE);        } // BSTR,un
     elif (style == STYLE_SIGNETICS2 && (compareit("BSA" , TRUE)                                                     )) { emit(0x3F); getabsolute_branch(); } // BSTA,un
-    elif (style == STYLE_SIGNETICS2 && (compareit("BNER", TRUE) || compareit("BNZR", TRUE)                          )) { emit(0x98); getrelative();        } // BCFR,eq
-    elif (style == STYLE_SIGNETICS2 && (compareit("BNHR", TRUE) || compareit("BNPR", TRUE)                          )) { emit(0x99); getrelative();        } // BCFR,gt
-    elif (style == STYLE_SIGNETICS2 && (compareit("BNLR", TRUE) || compareit("BNMR", TRUE)                          )) { emit(0x9A); getrelative();        } // BCFR,lt
+    elif (style == STYLE_SIGNETICS2 && (compareit("BNER", TRUE) || compareit("BNZR", TRUE)                          )) { emit(0x98); getrelative(FALSE);        } // BCFR,eq
+    elif (style == STYLE_SIGNETICS2 && (compareit("BNHR", TRUE) || compareit("BNPR", TRUE)                          )) { emit(0x99); getrelative(FALSE);        } // BCFR,gt
+    elif (style == STYLE_SIGNETICS2 && (compareit("BNLR", TRUE) || compareit("BNMR", TRUE)                          )) { emit(0x9A); getrelative(FALSE);        } // BCFR,lt
     elif (style == STYLE_SIGNETICS2 && (compareit("BNEA", TRUE) || compareit("BNZA", TRUE)                          )) { emit(0x9C); getabsolute_branch(); } // BCFA,eq
     elif (style == STYLE_SIGNETICS2 && (compareit("BNHA", TRUE) || compareit("BNPA", TRUE)                          )) { emit(0x9D); getabsolute_branch(); } // BCFA,gt
     elif (style == STYLE_SIGNETICS2 && (compareit("BNLA", TRUE) || compareit("BNMA", TRUE)                          )) { emit(0x9E); getabsolute_branch(); } // BCFA,lt
@@ -1116,31 +1132,644 @@ START:
     return TRUE;
 }
 
-MODULE FLAG asm_calm(void)
+MODULE FLAG asm_oldcalm(void)
+{   FAST UBYTE byte1st,
+               byte2nd,
+               reg1, reg2;
+    FAST int   i,
+               value1;
+
+    equstring[0] = EOS;
+
+START:
+    if (asm_calmdirective())
+    {   return TRUE;
+    }
+
+    // Opcodes------------------------------------------------------------
+
+    if (compareit("NOT", TRUE))                        // NOT reg -> XOR reg,$FF (EORI,reg $FF)
+    {   skipblanks(TRUE);
+        emit(0x24 + getreg_calm(2, TRUE));
+        emit(0xFF);
+    } elif (compareit("LOAD", TRUE))
+    {   skipblanks(TRUE);
+        if     (compareit("U,A", TRUE))                // LOAD U,A (LPSU)
+        {   emit(0x92);
+        } elif (compareit("L,A", TRUE))                // LOAD L,A (LPSL)
+        {   emit(0x93);
+        } elif (compareit("A,U", TRUE))                // LOAD A,U (SPSU)
+        {   emit(0x12);
+        } elif (compareit("A,L", TRUE))                // LOAD A,L (SPSL)
+        {   emit(0x13);
+        } elif (compareit("L,", FALSE))                // LOAD L,abs (LDPL abs)
+        {   emit(0x10);
+            getabsolute_branch(); // yes, branch!
+            if (!supercpu)
+            {   asmerror("2650B only");
+        }   }
+        elif   (compareit("$CTRL,", FALSE))            // LOAD $CTRL,reg (WRTC reg)
+        {   emit(0xB0 + getreg_calm(2, TRUE));
+        } elif (compareit("$DATA,", FALSE))            // LOAD $DATA,reg (WRTD reg)
+        {   emit(0xF0 + getreg_calm(2, TRUE));
+        } elif (compareit("$", FALSE))                 // LOAD $port,reg (WRTE,reg)
+        {   value1 = fiximmediate(parsenumber(&LineBuffer[linecursor]));
+            if (value1 < 0 || value1 > 255)
+            {   asmerror("immediate value out of range");
+                value1 = 0;
+            }
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg1 = getreg_calm(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0xD4 + reg1);
+            emit((UBYTE) value1);
+        } elif (compareit("@.+", FALSE))               // LOAD @.+rel,reg (STRR,reg *rel)
+        {   byte1st = dorel(2, TRUE);
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            emit(0xC8 + getreg_calm(2, TRUE));
+            emit(byte1st);
+        } elif (compareit(".+", FALSE))                // LOAD .+rel,reg (STRR,reg rel)
+        {   byte1st = dorel(2, FALSE);
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            emit(0xC8 + getreg_calm(2, TRUE));
+            emit(byte1st);
+        } else
+        {   reg1 = getreg_calm(2, TRUE);
+            if (reg1 <= 3)
+            {   if (!compareit(",", FALSE))
+                {   asmerror("comma expected");
+                }
+                if (compareit("#", FALSE))                 // LOAD reg,#imm
+                {   emit(0x04 + reg1);
+                    getimmediate(FALSE);
+                } elif (compareit("@.+", FALSE))           // LOAD reg,@.+rel (LODR)
+                {   emit(0x08 + reg1);
+                    getrelative(TRUE);
+                } elif (compareit(".+", FALSE))            // LOAD reg,.+rel (LODR)
+                {   emit(0x08 + reg1);
+                    getrelative(FALSE);
+                } elif (compareit("$CTRL", TRUE))          // LOAD reg,$CTRL (REDC)
+                {   emit(0x30 + reg1);
+                } elif (compareit("$DATA", TRUE))          // LOAD reg,$DATA (REDD)
+                {   emit(0x70 + reg1);
+                } elif (compareit("$", FALSE))             // LOAD reg,$port (REDE)
+                {   emit(0x54 + reg1);
+                    getimmediate(FALSE);
+                } else
+                {   reg2 = getreg_calm(2, TRUE);
+                    if (reg2 <= 3)
+                    {   if (reg1 == 0 && reg2 == 0)        // LOAD A,A (LODZ/STRZ)
+                        {   emit(0x00);
+                            asmwarning("indeterminate opcode");
+                        } elif (reg1 == 0)
+                        {   emit(0x00 + reg2);             // LOAD A,reg (LODZ)
+                        } elif (reg2 == 0)
+                        {   emit(0xC0 + reg1);             // LOAD reg,A (STRZ)
+                        } else
+                        {   asmerror("one register must be A");
+                    }   }
+                    else
+                    {   getabsolute_nonbranch_oldcalm((UBYTE) (0x0C + reg1)); // LOAD reg,abs (LODA)
+            }   }   }
+            else
+            {   // This resolves it as a non-branch absolute address (assumes STRA),
+                // but STPL is actually meant to be resolved as a branch absolute address.
+                if     (compareit("(-", FALSE))
+                {   byte1st = 0x40;
+                } elif (compareit("(+", FALSE))
+                {   byte1st = 0x20;
+                } elif (compareit("(",  FALSE))
+                {   byte1st = 0x60;
+                } else
+                {   byte1st = 0;
+                }
+                reg1 = 4;
+                if (byte1st)
+                {   reg1 = getreg_calm(2, TRUE);
+                    if (!compareit(")+", FALSE))
+                    {   asmerror(")+ expected");
+                }   }
+                if (compareit("@", FALSE))
+                {   byte1st |= 0x80;
+                }
+                value1  =  parsenumber(&LineBuffer[linecursor]);
+                byte1st |= (value1 / 256);
+                byte2nd =  (value1 % 256);
+                if (!compareit(",", FALSE))
+                {   asmerror("comma expected");
+                }
+                if (compareit("L", TRUE))         // LOAD abs,L (STPL)
+                {   emit(0x12);
+                    emit(byte1st);
+                    emit(byte2nd);
+                    if (!supercpu)
+                    {   asmerror("2650B only");
+                }   }
+                else
+                {   reg2 = getreg_calm(2, TRUE);   // LOAD abs,reg (STRA)
+                    if (reg1 <= 3)
+                    {   emit(0xCC + reg1);
+                        if (reg2 != 0)
+                        {   asmerror("bad operand");
+                    }   }
+                    elif (reg2 <= 3)
+                    {   emit(0xCC + reg2);
+                    } else
+                    {   emit(0xCC);
+                        asmerror("register expected");
+                    }
+                    emit(byte1st);
+                    emit(byte2nd);
+    }   }   }   }
+    elif (compareit("RET", TRUE))
+    {   emit(0x17);
+    } elif (compareit("RET,", FALSE))
+    {   emit(0x14 + getcc_calm());
+    } elif (compareit("JUMP,", FALSE))
+    {   if     (compareit("ANE", TRUE))
+        {   getaddress(0x58);
+        } elif (compareit("BNE", TRUE) || compareit("B'NE", TRUE))
+        {   getaddress(0x59);
+        } elif (compareit("CNE", TRUE) || compareit("C'NE", TRUE))
+        {   getaddress(0x5A);
+        } elif (compareit("DNE", TRUE) || compareit("D'NE", TRUE))
+        {   getaddress(0x5B);
+        } elif (compareit("EQ", TRUE))
+        {   getaddress(0x18);
+        } elif (compareit("GT", TRUE))
+        {   getaddress(0x19);
+        } elif (compareit("LT", TRUE))
+        {   getaddress(0x1A);
+        } elif (compareit("NE", TRUE))
+        {   getaddress(0x98);
+        } elif (compareit("LE", TRUE))
+        {   getaddress(0x99);
+        } elif (compareit("GE", TRUE))
+        {   getaddress(0x9A);
+    }   }
+    elif (compareit("JUMP", TRUE))
+    {   skipblanks(TRUE);
+        if (compareit("(D)+", FALSE))
+        {   emit(0x9F);
+            getabsolute_branch();
+        } elif (compareit("@0+", FALSE))
+        {   emit(0x9B);
+            getzeropage(TRUE);
+        } elif (compareit("0+", FALSE))
+        {   emit(0x9B);
+            getzeropage(FALSE);
+        } elif (compareit("@.+", FALSE))
+        {   emit(0x1B);
+            getrelative(TRUE);
+        } elif (compareit(".+", FALSE))
+        {   emit(0x1B);
+            getrelative(FALSE);
+        } else
+        {   emit(0x1F);
+            getabsolute_branch();
+    }   }
+    elif (compareit("CLR", TRUE))
+    {   skipblanks(TRUE);
+        if   (compareit("A"        , TRUE))   emit(0x20);               // CLR A is same as XOR A,A
+        elif (compareit("STACK"    , TRUE)) { emit(0x74); emit(0x07); }
+        elif (compareit("IOF"      , TRUE)) { emit(0x74); emit(0x20); } // CLR IOF is same as ION
+        elif (compareit("OUTPUT"   , TRUE)) { emit(0x74); emit(0x40); }
+        elif (compareit("INPUT"    , TRUE)) { emit(0x74); emit(0x80); }
+        elif (compareit("CARRY"    , TRUE)) { emit(0x75); emit(0x01); } // CLR CARRY is same as CLRC
+        elif (compareit("LOGICOMP" , TRUE)) { emit(0x75); emit(0x02); }
+        elif (compareit("OVERFLOW" , TRUE)) { emit(0x75); emit(0x04); } // CLR OVERFLOW is same as CLRV
+        elif (compareit("WITHCARRY", TRUE)) { emit(0x75); emit(0x08); }
+        elif (compareit("BANK", TRUE) || compareit("BANK1", TRUE))
+                                            { emit(0x75); emit(0x10); }
+        elif (compareit("HALFCARRY", TRUE)) { emit(0x75); emit(0x20); }
+        else                                { emit(0x75); emit(0x00);
+                                              asmerror("bad operand"); }
+    } elif (compareit("CLRC", TRUE)) // CLRC is same as CLR CARRY
+    {   emit(0x75);
+        emit(0x01);
+    } elif (compareit("CLRV", TRUE)) // CLRV is same as CLR OVERFLOW
+    {   emit(0x75);
+        emit(0x04);
+    } elif (compareit("ION", TRUE)) // ION is same as CLR IOF
+    {   emit(0x74);
+        emit(0x20);
+    } elif (compareit("SET", TRUE))
+    {   skipblanks(TRUE);
+        if   (compareit("IOF"      , TRUE)) { emit(0x76); emit(0x20); } // SET IOF is same as IOF
+        elif (compareit("OUTPUT"   , TRUE)) { emit(0x76); emit(0x40); }
+        elif (compareit("INPUT"    , TRUE)) { emit(0x76); emit(0x80); }
+        elif (compareit("CARRY"    , TRUE)) { emit(0x77); emit(0x01); } // SET CARRY is same as SETC
+        elif (compareit("LOGICOMP" , TRUE)) { emit(0x77); emit(0x02); }
+        elif (compareit("OVERFLOW" , TRUE)) { emit(0x77); emit(0x04); } // SET OVERFLOW is same as SETV
+        elif (compareit("WITHCARRY", TRUE)) { emit(0x77); emit(0x08); }
+        elif (compareit("BANK"     , TRUE) || compareit("BANK1", TRUE))
+                                            { emit(0x77); emit(0x10); }
+        elif (compareit("HALFCARRY", TRUE)) { emit(0x77); emit(0x20); }
+        else                                { emit(0x76); emit(0x00);
+                                              asmerror("bad operand"); }
+    } elif (compareit("SETC", TRUE)) // SETC is same as SET CARRY
+    {   emit(0x77);
+        emit(0x01);
+    } elif (compareit("SETV", TRUE)) // SETV is same as SET OVERFLOW
+    {   emit(0x77);
+        emit(0x04);
+    } elif (compareit("IOF", TRUE)) // IOF is same as SET IOF
+    {   emit(0x76);
+        emit(0x20);
+    } elif (compareit("XOR", TRUE))
+    {   skipblanks(TRUE);
+        reg1 = getreg_calm(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        if (!compareit(",", FALSE))
+        {   asmerror("comma expected");
+        }
+        if (compareit("#", FALSE))
+        {   emit(0x24 + reg1);
+            getimmediate(FALSE);
+        } elif (compareit("@.+", FALSE))
+        {   emit(0x28 + reg1);
+            getrelative(TRUE);
+        } elif (compareit(".+", FALSE))
+        {   emit(0x28 + reg1);
+            getrelative(FALSE);
+        } else
+        {   reg2 = 4;
+            if (reg1 == 0)
+            {   reg2 = getreg_calm(2, TRUE);
+                if (reg2 <= 3)
+                {   emit(0x20 + reg2);
+            }   }
+            if (reg2 == 4)
+            {   getabsolute_nonbranch_oldcalm((UBYTE) (0x2C + reg1));
+    }   }   }
+    elif (compareit("RETION", TRUE))
+    {   emit(0x37);
+    } elif (compareit("RETION,", FALSE))
+    {   emit(0x34 + getcc_calm());
+    } elif (compareit("CALL,", FALSE))
+    {   if     (compareit("ANE", TRUE))
+        {   getaddress(0x78);
+        } elif (compareit("BNE", TRUE) || compareit("B'NE", TRUE))
+        {   getaddress(0x79);
+        } elif (compareit("CNE", TRUE) || compareit("C'NE", TRUE))
+        {   getaddress(0x7A);
+        } elif (compareit("DNE", TRUE) || compareit("D'NE", TRUE))
+        {   getaddress(0x7B);
+        } elif (compareit("EQ", TRUE))
+        {   getaddress(0x38);
+        } elif (compareit("GT", TRUE))
+        {   getaddress(0x39);
+        } elif (compareit("LT", TRUE))
+        {   getaddress(0x3A);
+        } elif (compareit("NE", TRUE))
+        {   getaddress(0xB8);
+        } elif (compareit("LE", TRUE))
+        {   getaddress(0xB9);
+        } elif (compareit("GE", TRUE))
+        {   getaddress(0xBA);
+    }   }
+    elif (compareit("CALL", TRUE))
+    {   skipblanks(TRUE);
+        if (compareit("(D)+", FALSE))
+        {   emit(0xBF);
+            getabsolute_branch();
+        } elif (compareit("@0+", FALSE))
+        {   emit(0xBB);
+            getzeropage(TRUE);
+        } elif (compareit("0+", FALSE))
+        {   emit(0xBB);
+            getzeropage(FALSE);
+        } elif (compareit("@.+", FALSE))
+        {   emit(0x3B);
+            getrelative(TRUE);
+        } elif (compareit(".+", FALSE))
+        {   emit(0x3B);
+            getrelative(FALSE);
+        } else
+        {   emit(0x3F);
+            getabsolute_branch();
+    }   }
+    elif (compareit("WAIT", TRUE))
+    {   emit(0x40);
+    } elif (compareit("AND", TRUE))
+    {   skipblanks(TRUE);
+        reg1 = getreg_calm(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        if (!compareit(",", FALSE))
+        {   asmerror("comma expected");
+        }
+        if (compareit("#", FALSE))
+        {   emit(0x44 + reg1);
+            getimmediate(FALSE);
+        } elif (compareit("@.+", FALSE))
+        {   emit(0x48 + reg1);
+            getrelative(TRUE);
+        } elif (compareit(".+", FALSE))
+        {   emit(0x48 + reg1);
+            getrelative(FALSE);
+        } else
+        {   reg2 = 4;
+            if (reg1 == 0)
+            {   reg2 = getreg_calm(0, TRUE);
+                if (reg2 <= 3)
+                {   emit(0x40 + reg2);
+            }   }
+            if (reg2 == 4)
+            {   getabsolute_nonbranch_oldcalm((UBYTE) (0x4C + reg1));
+    }   }   }
+    elif (compareit("RR", TRUE) || compareit("RRC", TRUE) || compareit("SR", TRUE))
+    {   skipblanks(TRUE);
+        emit(0x50 + getreg_calm(2, TRUE));
+    } elif (compareit("OR", TRUE))
+    {   skipblanks(TRUE);
+        reg1 = getreg_calm(2, TRUE);
+        if (reg1 == 4)
+        {   skipblanks(TRUE);
+            if (compareit("U,#", FALSE))
+            {   emit(0x76);
+                getimmediate(FALSE);
+            } elif (compareit("L,#", FALSE))
+            {   emit(0x77);
+                getimmediate(FALSE);
+            } else
+            {   emit(0x76);
+                asmerror("bad operand");
+        }   }
+        else
+        {   if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            if (compareit("#", FALSE))
+            {   emit(0x64 + reg1);
+                getimmediate(FALSE);
+            } elif (compareit("@.+", FALSE))
+            {   emit(0x68 + reg1);
+                getrelative(TRUE);
+            } elif (compareit(".+", FALSE))
+            {   emit(0x68 + reg1);
+                getrelative(FALSE);
+            } else
+            {   reg2 = 4;
+                if (reg1 == 0)
+                {   reg2 = getreg_calm(2, TRUE);
+                    if (reg2 <= 3)
+                    {   emit(0xA0 + reg2);
+                }   }
+                if (reg2 == 4)
+                {   getabsolute_nonbranch_oldcalm((UBYTE) (0x6C + reg1));
+    }   }   }   }
+    elif (compareit("BIC", TRUE))
+    {   skipblanks(TRUE);
+        if (compareit("U,#", FALSE))
+        {   emit(0x74);
+            getimmediate(FALSE);
+        } elif (compareit("L,#", FALSE))
+        {   emit(0x75);
+            getimmediate(FALSE);
+    }   }
+    elif (compareit("ADD", TRUE) || compareit("ADDC", TRUE))
+    {   skipblanks(TRUE);
+        reg1 = getreg_calm(2, TRUE);
+        if (reg1 == 4)
+        {   reg1 = 0;
+            asmerror("register expected");
+        }
+        if (!compareit(",", FALSE))
+        {   asmerror("comma expected");
+        }
+        if (compareit("#", FALSE))
+        {   emit(0x84 + reg1);
+            getimmediate(FALSE);
+        } elif (compareit("@.+", FALSE))
+        {   emit(0x88 + reg1);
+            getrelative(TRUE);
+        } elif (compareit(".+", FALSE))
+        {   emit(0x88 + reg1);
+            getrelative(FALSE);
+        } else
+        {   reg2 = 4;
+            if (reg1 == 0)
+            {   reg2 = getreg_calm(2, TRUE);
+                if (reg2 <= 3)
+                {   emit(0x80 + reg2);
+            }   }
+            if (reg2 == 4)
+            {   getabsolute_nonbranch_oldcalm((UBYTE) (0x8C + reg1));
+    }   }   }
+    elif (compareit("DA", TRUE))
+    {   skipblanks(TRUE);
+        emit(0x94 + getreg_calm(2, TRUE));
+    } elif (compareit("SUB", TRUE) || compareit("SUBB", TRUE))
+    {   skipblanks(TRUE);
+        reg1 = getreg_calm(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        if (!compareit(",", FALSE))
+        {   asmerror("comma expected");
+        }
+        if (compareit("#", FALSE))
+        {   emit(0xA4 + reg1);
+            getimmediate(FALSE);
+        } elif (compareit("@.+", FALSE))
+        {   emit(0xA8 + reg1);
+            getrelative(TRUE);
+        } elif (compareit(".+", FALSE))
+        {   emit(0xA8 + reg1);
+            getrelative(FALSE);
+        } else
+        {   reg2 = 4;
+            if (reg1 == 0)
+            {   reg2 = getreg_calm(2, TRUE);
+                if (reg2 <= 3)
+                {   emit(0xA0 + reg2);
+            }   }
+            if (reg2 == 4)
+            {   getabsolute_nonbranch_oldcalm((UBYTE) (0xAC + reg1));
+    }   }   }
+    elif (compareit("TEST", TRUE))
+    {   skipblanks(TRUE);
+        if   (compareit("IOF"      , TRUE)) { emit(0xB4); emit(0x20); }
+        elif (compareit("OUTPUT"   , TRUE)) { emit(0xB4); emit(0x40); }
+        elif (compareit("INPUT"    , TRUE)) { emit(0xB4); emit(0x80); }
+        elif (compareit("CARRY"    , TRUE)) { emit(0xB5); emit(0x01); }
+        elif (compareit("LOGICOMP" , TRUE)) { emit(0xB5); emit(0x02); }
+        elif (compareit("OVERFLOW" , TRUE)) { emit(0xB5); emit(0x04); }
+        elif (compareit("WITHCARRY", TRUE)) { emit(0xB5); emit(0x08); }
+        elif (compareit("BANK", TRUE) || compareit("BANK1", TRUE))
+                                            { emit(0xB5); emit(0x10); }
+        elif (compareit("HALFCARRY", TRUE)) { emit(0xB5); emit(0x20); }
+        elif (compareit("U,#", FALSE))
+        {   emit(0xB4);
+            getimmediate(FALSE);
+        } elif (compareit("L,#", FALSE))
+        {   emit(0xB5);
+            getimmediate(FALSE);
+        } else
+        {   emit(0xF4 + getreg_calm(2, TRUE)); // $F4..F7
+            if (!compareit(",#", FALSE))
+            {   asmerror(",# expected");
+            }
+            getimmediate(FALSE);
+    }   }
+    elif (compareit("NOP", TRUE))
+    {   emit(0xC0);
+    } elif (compareit("RL", TRUE) || compareit("RLC", TRUE) || compareit("SL", TRUE) || compareit("ASL", TRUE))
+    {   skipblanks(TRUE);
+        emit(0xD0 + getreg_calm(2, TRUE));
+    } elif (compareit("INCJ,NE", TRUE))
+    {   skipblanks(TRUE);
+        reg1 = getreg_calm(2, TRUE);
+        if (!compareit(",", FALSE))
+        {   asmerror("comma expected");
+        }
+        if (compareit("@.+", FALSE))
+        {   emit(0xD8 + reg1);
+            getrelative(TRUE);
+        } elif (compareit(".+", FALSE))
+        {   emit(0xD8 + reg1);
+            getrelative(FALSE);
+        } else
+        {   emit(0xDC + reg1);
+            getabsolute_branch();
+    }   }
+    elif (compareit("INC", TRUE))
+    {   skipblanks(TRUE);
+        emit(0xD8 + getreg_calm(2, TRUE));
+        emit(0x00);
+    } elif (compareit("COMP", TRUE))
+    {   skipblanks(TRUE);
+        reg1 = getreg_calm(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        if (!compareit(",", FALSE))
+        {   asmerror("comma expected");
+        }
+        if (compareit("#", FALSE))
+        {   emit(0xE4 + reg1);
+            getimmediate(FALSE);
+        } elif (compareit("@.+", FALSE))
+        {   emit(0xE8 + reg1);
+            getrelative(TRUE);
+        } elif (compareit(".+", FALSE))
+        {   emit(0xE8 + reg1);
+            getrelative(FALSE);
+        } else
+        {   reg2 = 4;
+            if (reg1 == 0)
+            {   reg2 = getreg_calm(2, TRUE);
+                if (reg2 <= 3)
+                {   emit(0xE0 + reg2);
+            }   }
+            if (reg2 == 4)
+            {   getabsolute_nonbranch_oldcalm((UBYTE) (0xEC + reg1));
+    }   }   }
+    elif (compareit("DECJ,NE", TRUE))
+    {   skipblanks(TRUE);
+        reg1 = getreg_calm(2, TRUE);
+        if (!compareit(",", FALSE))
+        {   asmerror("comma expected");
+        }
+        if (compareit("@.+", FALSE))
+        {   emit(0xF8 + reg1);
+            getrelative(TRUE);
+        } elif (compareit(".+", FALSE))
+        {   emit(0xF8 + reg1);
+            getrelative(FALSE);
+        } else
+        {   emit(0xFC + reg1);
+            getabsolute_branch();
+    }   }
+    elif (compareit("DEC", TRUE))
+    {   skipblanks(TRUE);
+        emit(0xF8 + getreg_calm(2, TRUE));
+        emit(0x00);
+    }
+
+    // Labels and Equates-------------------------------------------------
+
+    elif (equstring[0] || linecursor != 0)
+    {   asmerror("syntax error");
+        return FALSE;
+    } else
+    {   i = 0;
+        while
+        (   LineBuffer[linecursor] != ' '
+         && LineBuffer[linecursor] != HT
+         && LineBuffer[linecursor] != EOS
+         && LineBuffer[linecursor] != ':'
+      // && LineBuffer[linecursor] != ',' (we don't allow this for CALM)
+      // && LineBuffer[linecursor] != '>' (we don't allow this for CALM)
+         && i <= LABELLIMIT
+        )
+        {   equstring[i++] = LineBuffer[linecursor++];
+        }
+        equstring[i] = EOS;
+        if
+        (   LineBuffer[linecursor] == ':' // label with colon
+      // || LineBuffer[linecursor] == ',' // label with comma (X2650 cross-asm) (we don't allow this for CALM)
+      // || LineBuffer[linecursor] == '>' // label with > (PIP4K source code) (we don't allow this for CALM)
+        )
+        {   linecursor++; // to get past it
+        } elif (i > LABELLIMIT)
+        {   asmerror("label too long");
+            return FALSE;
+        }
+
+        skipblanks(FALSE);
+        if (compareit(".EQU", TRUE)) // we don't allow EQU/SET/.SET for CALM
+        {   skipblanks(TRUE);
+            equmode = TRUE;
+            value1 = parsenumber(&LineBuffer[linecursor]);
+            equmode = FALSE;
+            if (pass == 1)
+            {   adduserlabel((STRPTR) equstring, (UWORD) value1, UNKNOWN);
+        }   }
+        else
+        {   adduserlabel((STRPTR) equstring, (UWORD) ocursor, UNKNOWN);
+            goto START;
+    }   }
+
+    return TRUE;
+}
+
+MODULE FLAG asm_calmdirective(void)
 {   FAST UBYTE byte1st,
                byte2nd,
                byte3rd,
                byte4th,
-               reg1, reg2,
                t;
     FAST int   i,
                length,
                value1,
                value2;
 
-    equstring[0] = EOS;
-
-START:
-
     // Directives (except Equates)----------------------------------------
 
     if (compareit(".ENDTEXT",    TRUE))
     {   commenting = FALSE;
-    } elif (commenting)
+    } elif (commenting || LineBuffer[0] == EOS)
     {   ;
     } elif
-    (   LineBuffer[0] == EOS
-     || compareit(".BASE",       TRUE)
+    (   compareit(".BASE",       TRUE)
      || compareit(".CHAP",       TRUE)
      || compareit(".ELSE",       TRUE)
      || compareit(".ENDIF",      TRUE)
@@ -1218,7 +1847,8 @@ START:
     {   skipblanks(TRUE);
         ocursor += parsenumber(&LineBuffer[linecursor]) * 4;
     } elif
-    (   compareit(".DATA.8", TRUE)
+    (   compareit(".DATA", TRUE)
+     || compareit(".DATA.8", TRUE)
      || compareit(".8", TRUE)
     )
     {   getimmediatebytes();
@@ -1234,7 +1864,8 @@ START:
             startaddr_l = value1 % 256;
             specified = TRUE;
         }
-        return FALSE;
+        ended = TRUE;
+        return TRUE;
     } elif (compareit(".EVEN", TRUE))
     {   if (ocursor % 2 == 1)
         {   ocursor++;
@@ -1375,35 +2006,63 @@ START:
     }   }
     elif (compareit(".TEXT",    TRUE))
     {   commenting = TRUE;
+    } else
+    {   return FALSE;
+    }
+
+    return TRUE;
+}
+
+MODULE FLAG asm_newcalm(void)
+{   FAST UBYTE byte1st,
+               reg1, reg2,
+               t;
+    FAST int   i,
+               value1;
+ 
+    equstring[0] = EOS;
+
+START:
+    if (asm_calmdirective())
+    {   return TRUE;
     }
 
     // Opcodes------------------------------------------------------------
 
-    elif (compareit("NOT", TRUE))                      // NOT reg -> XOR reg,$FF (EORI,reg $FF)
+    if (compareit("NOT", TRUE))                        // NOT reg -> XOR reg,$FF (EORI,reg $FF)
     {   skipblanks(TRUE);
-        emit(0x24 + getreg_calm(2, TRUE));
+        reg1 = getreg_signetics(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        emit(0x24 + reg1);
         emit(0xFF);
-    } elif (compareit("LOAD", TRUE))
+    } elif (compareit("MOVE", TRUE))                   // LPSx/SPSx/REDx/WRTx/LDPL/STPL/LODx/STRx
     {   skipblanks(TRUE);
-        if     (compareit("U,A", TRUE))                // LOAD U,A (LPSU)
+        if     (compareit("r0,PSU", TRUE))             // MOVE r0,PSU (LPSU)
         {   emit(0x92);
-        } elif (compareit("L,A", TRUE))                // LOAD L,A (LPSL)
+        } elif (compareit("r0,PSL", TRUE))             // MOVE r0,PSL (LPSL)
         {   emit(0x93);
-        } elif (compareit("A,U", TRUE))                // LOAD A,U (SPSU)
+        } elif (compareit("PSU,r0", TRUE))             // MOVE PSU,r0 (SPSU)
         {   emit(0x12);
-        } elif (compareit("A,L", TRUE))                // LOAD A,L (SPSL)
+        } elif (compareit("PSL,r0", TRUE))             // MOVE PSL,r0 (SPSL)
         {   emit(0x13);
-        } elif (compareit("L,", FALSE))                // LOAD L,abs (LDPL abs)
-        {   emit(0x10);
-            getabsolute_branch(); // yes, branch!
-            if (!supercpu)
-            {   asmerror("2650B only");
-        }   }
-        elif   (compareit("$CTRL,", FALSE))            // LOAD &CTRL,reg (WRTC reg)
-        {   emit(0xB0 + getreg_calm(2, TRUE));
-        } elif (compareit("$DATA,", FALSE))            // LOAD &DATA,reg (WRTD reg)
-        {   emit(0xF0 + getreg_calm(2, TRUE));
-        } elif (compareit("$", FALSE))                 // LOAD &port,reg (WRTE,reg)
+        } elif (compareit("$CTRL,", FALSE))            // MOVE $CTRL,reg (REDC reg)
+        {   reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x30 + reg1);
+        } elif (compareit("$DATA,", FALSE))            // MOVE $DATA,reg (REDD reg)
+        {   reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x70 + reg1);
+        } elif (compareit("$", FALSE))                 // MOVE $port,reg (REDE,reg port)
         {   value1 = fiximmediate(parsenumber(&LineBuffer[linecursor]));
             if (value1 < 0 || value1 > 255)
             {   asmerror("immediate value out of range");
@@ -1412,146 +2071,238 @@ START:
             if (!compareit(",", FALSE))
             {   asmerror("comma expected");
             }
-            reg1 = getreg_calm(2, TRUE);
+            reg1 = getreg_signetics(2, TRUE);
             if (reg1 == 4)
             {   asmerror("register expected");
                 reg1 = 0;
             }
-            emit(0xD4 + reg1);
+            emit(0x54 + reg1);
             emit((UBYTE) value1);
-        } elif (compareit(".+", FALSE))                // LOAD .+rel,reg (STRR,reg rel) (was "^")
-        {   byte1st = dorel(2);
+        } elif
+        (   compareit("PSL,U^", FALSE)
+         || compareit("PSL,"  , FALSE)                 // MOVE PSL,U^abs (STPL abs)
+        )
+        {   emit(0x11);
+            getabsolute_branch(); // yes, branch!
+            if (!supercpu)
+            {   asmerror("2650B only");
+        }   }
+        elif (compareit("R^", FALSE))                  // MOVE R^rel,reg (LODR,reg rel)
+        {   byte1st = dorel(2, FALSE);
             if (!compareit(",", FALSE))
             {   asmerror("comma expected");
             }
-            emit(0xC8 + getreg_calm(2, TRUE));
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x08 + reg1);
             emit(byte1st);
-        } else
-        {   reg1 = getreg_calm(2, TRUE);
-            if (reg1 <= 3)
+        } elif (compareit("U^", FALSE))
+        {   gopcode = 0x0C;
+            if (ganb_newcalm(TRUE))
+            {   if (!compareit(",r0", FALSE))
+                {   asmerror(",r0 expected");
+                }
+                emit(gopcode);
+                gbyte1st &= 0x1F;
+            } else
             {   if (!compareit(",", FALSE))
                 {   asmerror("comma expected");
                 }
-                if (compareit("#", FALSE))                 // LOAD reg,#imm
-                {   emit(0x04 + reg1);
-                    getimmediate(FALSE);
-                } elif (compareit(".+", FALSE))            // LOAD reg,^rel (LODR) (was "^")
-                {   emit(0x08 + reg1);
-                    getrelative();
-                } elif (compareit("$CTRL", TRUE))          // LOAD reg,&CTRL (REDC)
-                {   emit(0x30 + reg1);
-                } elif (compareit("$DATA", TRUE))          // LOAD reg,&DATA (REDD)
-                {   emit(0x70 + reg1);
-                } elif (compareit("$", FALSE))             // LOAD reg,&port (REDE)
-                {   emit(0x54 + reg1);
+                if (!compareit("PSL", TRUE))           // MOVE U^abs,PSL (LDPL abs)
+                {   emit(0x10);
+                    if (!supercpu)
+                    {   asmerror("2650B only");
+                }   }                                  // MOVE U^abs,reg (LODA,reg abs)
+                else
+                {   reg1 = getreg_signetics(2, TRUE);
+                    if (reg1 == 4)
+                    {   if (supercpu)
+                        {   asmerror("PSL or register expected");
+                        } else
+                        {   asmerror("register expected");
+                        }
+                        reg1 = 0;
+                    }
+                    emit(0x0C + reg1);
+                    gbyte1st &= 0x1F;
+                }
+                emit(gbyte1st);
+                emit(gbyte2nd);
+        }   }
+        elif (compareit("#", FALSE))                   // MOVE #imm,reg (LODI,reg imm)
+        {   value1 = parsenumber(&LineBuffer[linecursor]);
+            value1 = fiximmediate(value1);
+            if (value1 < 0 || value1 > 255)
+            {   asmerror("immediate value out of range");
+                value1 = 0;
+            }
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x04 + reg1);
+            emit(value1);
+        } else
+        {   reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("unexpected input");
+            } else
+            {   if (!compareit(",", FALSE))
+                {   asmerror("comma expected");
+                }
+                if (compareit("R^", FALSE))                // MOVE reg,R^rel (STRR,reg rel)
+                {   emit(0xC8 + reg1);
+                    emit(dorel(1, FALSE));
+                } elif (compareit("U^{", FALSE))           // MOVE reg,U^abs (STRA,reg abs)
+                {   gopcode = 0xCC;
+                    if (ganb_newcalm(FALSE))
+                    {   if (!compareit(",r0", FALSE))
+                        {   asmerror(",r0 expected");
+                        }
+                        emit(gopcode);
+                    } else
+                    {   if (!compareit(",", FALSE))
+                        {   asmerror("comma expected");
+                        }
+                        reg1 = getreg_signetics(2, TRUE);
+                        if (reg1 == 4)
+                        {   asmerror("register expected");
+                            reg1 = 0;
+                        }
+                        emit(0xCC + reg1);
+                    }
+                    emit(gbyte1st);
+                    emit(gbyte2nd);
+                } elif (compareit("$CTRL", TRUE))          // MOVE reg,$CTRL (WRTC,reg)
+                {   emit(0xB0 + reg1);
+                } elif (compareit("$DATA", TRUE))          // MOVE reg,$DATA (WRTD,reg)
+                {   emit(0xF0 + reg1);
+                } elif (compareit("$", FALSE))             // MOVE reg,$port (WRTE,reg port)
+                {   emit(0xD4 + reg1);
                     getimmediate(FALSE);
                 } else
                 {   reg2 = getreg_calm(2, TRUE);
-                    if (reg2 <= 3)
-                    {   if (reg1 == 0 && reg2 == 0)        // LOAD A,A (LODZ/STRZ)
-                        {   emit(0x00);
-                            asmerror("indeterminate opcode");
-                        } elif (reg1 == 0)
-                        {   emit(reg2);                    // LOAD A,reg (LODZ)
-                        } else
-                        {   emit(0xC0 + reg1);             // LOAD reg,A (STRZ)
-                    }   }
-                    else
-                    {   getabsolute_nonbranch_calm((UBYTE) (0x0C + reg1)); // LOAD reg,abs (LODA)
-            }   }   }
-            else
-            {   // This resolves it as a non-branch absolute address (assumes STRA),
-                // but STPL is actually meant to be resolved as a branch absolute address.
-                if     (compareit("(-", FALSE))
-                {   byte1st = 0x40;
-                } elif (compareit("(+", FALSE))
-                {   byte1st = 0x20;
-                } elif (compareit("(",  FALSE))
-                {   byte1st = 0x60;
-                } else
-                {   byte1st = 0;
-                }
-                reg1 = 4;
-                if (byte1st)
-                {   reg1 = getreg_calm(2, TRUE);
-                    if (!compareit(")+", FALSE))
-                    {   asmerror(")+ expected");
-                }   }
-                if (compareit("@", FALSE))
-                {   byte1st |= 0x80;
-                }
-                value1  =  parsenumber(&LineBuffer[linecursor]);
-                byte1st |= (value1 / 256);
-                byte2nd =  (value1 % 256);
-                if (!compareit(",", FALSE))
-                {   asmerror("comma expected");
-                }
-                if (compareit("L", TRUE))         // LOAD abs,L (STPL)
-                {   emit(0x12);
-                    emit(byte1st);
-                    emit(byte2nd);
-                    if (!supercpu)
-                    {   asmerror("2650B only");
-                }   }
-                else
-                {   reg2 = getreg_calm(2, TRUE);   // LOAD abs,reg (STRA)
-                    if (reg1 <= 3)
-                    {   emit(0xCC + reg1);
-                        if (reg2 != 0)
-                        {   asmerror("bad operand");
-                    }   }
-                    elif (reg2 <= 3)
-                    {   emit(0xCC + reg2);
+                    if (reg2 == 4)
+                    {   asmerror("unexpected input");
                     } else
-                    {   emit(0xCC);
-                        asmerror("register expected");
-                    }
-                    emit(byte1st);
-                    emit(byte2nd);
-    }   }   }   }
-    elif (compareit("RET,", FALSE))
-    {   emit(0x14 + getcc_calm(TRUE));
+                    {   if (reg1 == 0 && reg2 == 0)        // MOVE r0,r0 (LODZ/STRZ)
+                        {   emit(0x00);
+                            asmwarning("indeterminate opcode");
+                        } elif (reg1 == 0)
+                        {   emit(0xC0 + reg2);             // MOVE r0,reg (STRZ reg)
+                        } elif (reg2 == 0)
+                        {   emit(0x00 + reg1);             // MOVE reg,r0 (LODZ reg)
+                        } else
+                        {   asmerror("one register must be r0");
+    }   }   }   }   }   }
+    elif (compareit("RET", TRUE))
+    {   emit(0x17);
+    } elif (compareit("RET,", FALSE))
+    {   emit(0x14 + getcc_calm());
     } elif (compareit("JUMP,", FALSE))
-    {   if     (compareit("ANE", TRUE))
-        {   getaddress(0x58);
-        } elif (compareit("BNE", TRUE) || compareit("B'NE", TRUE))
-        {   getaddress(0x59);
-        } elif (compareit("CNE", TRUE) || compareit("C'NE", TRUE))
-        {   getaddress(0x5A);
-        } elif (compareit("DNE", TRUE) || compareit("D'NE", TRUE))
-        {   getaddress(0x5B);
-        } elif (compareit("EQ", TRUE))
-        {   getaddress(0x18);
-        } elif (compareit("GT", TRUE))
-        {   getaddress(0x19);
-        } elif (compareit("LT", TRUE))
-        {   getaddress(0x1A);
-        } elif (compareit("NE", TRUE))
-        {   getaddress(0x98);
-        } elif (compareit("LE", TRUE))
-        {   getaddress(0x99);
-        } elif (compareit("GE", TRUE))
-        {   getaddress(0x9A);
-    }   }
+    {   if (compareit("NE", TRUE)) // JUMP,NE
+        {   if (compareit("R^", FALSE)) // JUMP,NE R^rel (BCFR,eq)
+            {   emit(0x98);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // JUMP,NE U^rel (BCFA,eq)
+            {   emit(0x9C);
+                getabsolute_branch();
+            } else
+            {   reg1 = getreg_signetics(2, TRUE);
+                if (reg1 == 4)
+                {   asmerror("R^ or U^ or register expected");
+                } else
+                {   if (!compareit(",", FALSE))
+                    {   asmerror("comma expected");
+                    }
+                    if (compareit("R^", FALSE)) // JUMP,NE reg,R^rel (BRNR,reg rel)
+                    {   emit(0x58 + reg1);
+                        emit(dorel(1, FALSE));
+                    } elif (compareit("U^", FALSE)) // JUMP,NE reg,U^abs (BRNA,reg abs)
+                    {   emit(0x5C + reg1);
+                        getabsolute_branch();
+                    } else
+                    {   asmerror("R^ or U^ expected");
+        }   }   }   }
+        elif (compareit("EQ", TRUE)) // JUMP,EQ
+        {   if (compareit("R^", FALSE)) // JUMP,EQ R^rel (BCTR,eq rel)
+            {   emit(0x18);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // JUMP,EQ U^abs (BCTA,eq abs)
+            {   emit(0x1C);
+                getabsolute_branch();
+            } else
+            {   asmerror("R^ or U^ expected");
+        }   }
+        elif (compareit("GT", TRUE)) // JUMP,GT
+        {   if (compareit("R^", FALSE)) // JUMP,GT R^rel (BCTR,gt rel)
+            {   emit(0x19);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // JUMP,GT U^abs (BCTA,gt abs)
+            {   emit(0x1D);
+                getabsolute_branch();
+            } else
+            {   asmerror("R^ or U^ expected");
+        }   }
+        elif (compareit("LT", TRUE)) // JUMP,LT
+        {   if (compareit("R^", FALSE)) // JUMP,LT R^rel (BCTR,eq rel)
+            {   emit(0x1A);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // JUMP,LT U^abs (BCTA,lt abs)
+            {   emit(0x1E);
+                getabsolute_branch();
+            } else
+            {   asmerror("R^ or U^ expected");
+        }   }
+        elif (compareit("LE", TRUE))
+        {   if (compareit("R^", FALSE)) // JUMP,LE R^rel (BCFR,gt rel)
+            {   emit(0x99);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // JUMP,LE U^abs (BCFA,gt abs)
+            {   emit(0x9D);
+                getabsolute_branch();
+            } else
+            {   asmerror("R^ or U^ expected");
+        }   }
+        elif (compareit("GE", TRUE))
+        {   if (compareit("R^", FALSE)) // JUMP,GE R^rel (BCFR,lt rel)
+            {   emit(0x9A);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // JUMP,GE U^abs (BCFA,lt abs)
+            {   emit(0x9E);
+                getabsolute_branch();
+            } else
+            {   asmerror("R^ or U^ expected");
+    }   }   }
     elif (compareit("JUMP", TRUE))
     {   skipblanks(TRUE);
-        if (compareit("(D)+", FALSE))
-        {   emit(0x9F);
+        if (compareit("U^{r3}+", FALSE) || compareit("U^{r6}+", FALSE)) // JUMP U^{r3}+abs (BXA,r3 abs)
+        {   DISCARD compareit("U^", FALSE); // optional
+            emit(0x9F);
             getabsolute_branch();
-        } elif (compareit("0+", FALSE)) // was "/"
+        } elif (compareit("0+", FALSE)) // JUMP 0+zero (ZBRR zero)
         {   emit(0x9B);
-            getzeropage();
-        } elif (compareit(".+", FALSE)) // was "^"
+            getzeropage(FALSE);
+        } elif (compareit("R^", FALSE)) // JUMP R^rel (BCTR,un rel)
         {   emit(0x1B);
-            getrelative();
-        } else
+            getrelative(FALSE);
+        } elif (compareit("U^", FALSE)) // JUMP U^abs (BCTA,un abs)
         {   emit(0x1F);
             getabsolute_branch();
+        } else
+        {   asmerror("0+ or R^ or U^ expected");
     }   }
     elif (compareit("CLR", TRUE))
     {   skipblanks(TRUE);
-        if   (compareit("A"        , TRUE))   emit(0x20);               // CLR A is same as XOR A,A
-        elif (compareit("STACK"    , TRUE)) { emit(0x74); emit(0x07); }
+        if   (compareit("r0"       , TRUE))   emit(0x20);               // CLR r0 is same as XOR r0,r0
+        elif (compareit("SP"       , TRUE)) { emit(0x74); emit(0x07); }
         elif (compareit("IOF"      , TRUE)) { emit(0x74); emit(0x20); } // CLR IOF is same as ION
         elif (compareit("OUTPUT"   , TRUE)) { emit(0x74); emit(0x40); }
         elif (compareit("INPUT"    , TRUE)) { emit(0x74); emit(0x80); }
@@ -1598,199 +2349,444 @@ START:
         emit(0x20);
     } elif (compareit("XOR", TRUE))
     {   skipblanks(TRUE);
-        reg1 = getreg_calm(2, TRUE);
-        if (reg1 == 4)
-        {   asmerror("register expected");
-            reg1 = 0;
-        }
-        if (!compareit(",", FALSE))
-        {   asmerror("comma expected");
-        }
-        if (compareit("#", FALSE))
-        {   emit(0x24 + reg1);
-            getimmediate(FALSE);
-        } elif (compareit(".+", FALSE)) // was "^"
-        {   emit(0x28 + reg1);
-            getrelative();
-        } else
-        {   reg2 = 4;
-            if (reg1 == 0)
-            {   reg2 = getreg_calm(2, TRUE);
-                if (reg2 <= 3)
-                {   emit(0x20 + reg2);
-            }   }
-            if (reg2 == 4)
-            {   getabsolute_nonbranch_calm((UBYTE) (0x2C + reg1));
-    }   }   }
-    elif (compareit("RETION,", FALSE))
-    {   emit(0x34 + getcc_calm(TRUE));
-    } elif (compareit("CALL,", FALSE))
-    {   if     (compareit("ANE", TRUE))
-        {   getaddress(0x78);
-        } elif (compareit("BNE", TRUE) || compareit("B'NE", TRUE))
-        {   getaddress(0x79);
-        } elif (compareit("CNE", TRUE) || compareit("C'NE", TRUE))
-        {   getaddress(0x7A);
-        } elif (compareit("DNE", TRUE) || compareit("D'NE", TRUE))
-        {   getaddress(0x7B);
-        } elif (compareit("EQ", TRUE))
-        {   getaddress(0x38);
-        } elif (compareit("GT", TRUE))
-        {   getaddress(0x39);
-        } elif (compareit("LT", TRUE))
-        {   getaddress(0x3A);
-        } elif (compareit("NE", TRUE))
-        {   getaddress(0xB8);
-        } elif (compareit("LE", TRUE))
-        {   getaddress(0xB9);
-        } elif (compareit("GE", TRUE))
-        {   getaddress(0xBA);
+        if (compareit("#", FALSE)) // XOR #imm,reg (EORI,reg imm)
+        {   byte1st = saveimmediate(FALSE);
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x24 + reg1);
+            emit(byte1st);
+        } elif (compareit("R^", FALSE)) // XOR R^rel,reg (EORR,reg rel)
+        {   byte1st = dorel(2, FALSE);
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x28 + reg1);
+            emit(byte1st);
+        } elif (compareit("U^", FALSE)) // XOR U^abs,reg (EORA,reg abs)
+        {   gopcode = 0x2C;
+            if (ganb_newcalm(FALSE))
+            {   if (!compareit(",r0", FALSE))
+                {   asmerror(",r0 expected");
+                }
+                emit(gopcode);
+            } else
+            {   if (!compareit(",", FALSE))
+                {   asmerror("comma expected");
+                }
+                reg1 = getreg_signetics(2, TRUE);
+                if (reg1 == 4)
+                {   asmerror("register expected");
+                    reg1 = 0;
+                }
+                emit(0x2C + reg1);
+            }
+            emit(gbyte1st);
+            emit(gbyte2nd);
+        } else // XOR reg,r0 (EORZ reg)
+        {   reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg2 = getreg_signetics(2, TRUE);
+            if (reg2 != 0)
+            {   asmerror("r0 expected");
+            }
+            emit(0x20 + reg1);
     }   }
+    elif (compareit("RETI", TRUE))
+    {   emit(0x37);
+    } elif (compareit("RETI,", FALSE))
+    {   emit(0x34 + getcc_calm());
+    } elif (compareit("CALL,", FALSE))
+    {   if (compareit("NE", TRUE)) // CALL,NE
+        {   if (compareit("R^", FALSE)) // CALL,NE R^rel (BSFR,eq)
+            {   emit(0xB8);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // CALL,NE U^rel (BSFA,eq)
+            {   emit(0xBC);
+                getabsolute_branch();
+            } else
+            {   reg1 = getreg_signetics(2, TRUE);
+                if (reg1 == 4)
+                {   asmerror("R^ or U^ or register expected");
+                } else
+                {   if (!compareit(",", FALSE))
+                    {   asmerror("comma expected");
+                    }
+                    if (compareit("R^", FALSE)) // CALL,NE reg,R^rel (BSNR,reg rel)
+                    {   emit(0x78 + reg1);
+                        emit(dorel(1, FALSE));
+                    } elif (compareit("U^", FALSE)) // CALL,NE reg,U^abs (BSNA,reg abs)
+                    {   emit(0x7C + reg1);
+                        getabsolute_branch();
+                    } else
+                    {   asmerror("R^ or U^ expected");
+        }   }   }   }
+        elif (compareit("EQ", TRUE)) // CALL,EQ
+        {   if (compareit("R^", FALSE)) // CALL,EQ R^rel (BSTR,eq rel)
+            {   emit(0x38);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // CALL,EQ U^abs (BSTA,eq abs)
+            {   emit(0x3C);
+                getabsolute_branch();
+            } else
+            {   asmerror("R^ or U^ expected");
+        }   }
+        elif (compareit("GT", TRUE)) // CALL,GT
+        {   if (compareit("R^", FALSE)) // CALL,GT R^rel (BSTR,gt rel)
+            {   emit(0x39);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // CALL,GT U^abs (BSTA,gt abs)
+            {   emit(0x3D);
+                getabsolute_branch();
+            } else
+            {   asmerror("R^ or U^ expected");
+        }   }
+        elif (compareit("LT", TRUE)) // CALL,LT
+        {   if (compareit("R^", FALSE)) // CALL,LT R^rel (BSTR,eq rel)
+            {   emit(0x3A);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // CALL,LT U^abs (BSTA,lt abs)
+            {   emit(0x3E);
+                getabsolute_branch();
+            } else
+            {   asmerror("R^ or U^ expected");
+        }   }
+        elif (compareit("LE", TRUE))
+        {   if (compareit("R^", FALSE)) // CALL,LE R^rel (BSFR,gt rel)
+            {   emit(0xB9);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // CALL,LE U^abs (BSFA,gt abs)
+            {   emit(0xBD);
+                getabsolute_branch();
+            } else
+            {   asmerror("R^ or U^ expected");
+        }   }
+        elif (compareit("GE", TRUE))
+        {   if (compareit("R^", FALSE)) // CALL,GE R^rel (BSFR,lt rel)
+            {   emit(0xBA);
+                emit(dorel(1, FALSE));
+            } elif (compareit("U^", FALSE)) // CALL,GE U^abs (BSFA,lt abs)
+            {   emit(0xBE);
+                getabsolute_branch();
+            } else
+            {   asmerror("R^ or U^ expected");
+    }   }   }
     elif (compareit("CALL", TRUE))
     {   skipblanks(TRUE);
-        if (compareit("(D)+", FALSE))
-        {   emit(0xBF);
+        if (compareit("U^{r3}+", FALSE) || compareit("U^{r6}+", FALSE)) // CALL U^{r3}+abs (BSXA,r3 abs)
+        {   DISCARD compareit("U^", FALSE); // optional
+            emit(0xBF);
             getabsolute_branch();
-        } elif (compareit("0+", FALSE)) // was "/"
+        } elif (compareit("0+", FALSE)) // CALL 0+zero (ZBSR zero)
         {   emit(0xBB);
-            getzeropage();
-        } elif (compareit(".+", FALSE)) // was "^"
+            getzeropage(FALSE);
+        } elif (compareit("R^", FALSE)) // CALL R^rel (BSTR,un rel)
         {   emit(0x3B);
-            getrelative();
-        } else
+            getrelative(FALSE);
+        } elif (compareit("U^", FALSE)) // CALL U^abs (BSTA,un abs)
         {   emit(0x3F);
             getabsolute_branch();
+        } else
+        {   asmerror("0+ or R^ or U^ expected");
     }   }
-    elif (compareit("WAIT", TRUE))
+    elif (compareit("WAIT", TRUE) || compareit("HALT", TRUE))
     {   emit(0x40);
     } elif (compareit("AND", TRUE))
     {   skipblanks(TRUE);
-        reg1 = getreg_calm(2, TRUE);
+        if (compareit("#", FALSE)) // AND #imm,reg
+        {   byte1st = saveimmediate(FALSE);
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x44 + reg1);
+            emit(byte1st);
+        } elif (compareit("R^", FALSE)) // AND R^rel,reg
+        {   byte1st = dorel(2, FALSE);
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x48 + reg1);
+            emit(byte1st);
+        } elif (compareit("U^", FALSE)) // AND U^abs,reg (ANDA)
+        {   gopcode = 0x4C;
+            if (ganb_newcalm(FALSE))
+            {   if (!compareit(",r0", FALSE))
+                {   asmerror(",r0 expected");
+                }
+                emit(gopcode);
+            } else
+            {   if (!compareit(",", FALSE))
+                {   asmerror("comma expected");
+                }
+                reg1 = getreg_signetics(2, TRUE);
+                if (reg1 == 4)
+                {   asmerror("register expected");
+                    reg1 = 0;
+                }
+                emit(0x4C + reg1);
+            }
+            emit(gbyte1st);
+            emit(gbyte2nd);
+        } else // AND reg,r0
+        {   reg1 = getreg_signetics(2, TRUE);
+            if (reg1 < 1 || reg1 > 3)
+            {   asmerror("r1 or r2 or r3 expected");
+                reg1 = 1;
+            }
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg2 = getreg_signetics(2, TRUE);
+            if (reg2 != 0)
+            {   asmerror("r0 expected");
+                reg1 = 1;
+            }
+            emit(0x40 + reg1);
+    }   }
+    elif (compareit("RR", TRUE) || compareit("RRC", TRUE) || compareit("SR", TRUE))
+    {   skipblanks(TRUE);
+        reg1 = getreg_signetics(2, TRUE);
         if (reg1 == 4)
         {   asmerror("register expected");
             reg1 = 0;
         }
-        if (!compareit(",", FALSE))
-        {   asmerror("comma expected");
-        }
-        if (compareit("#", FALSE))
-        {   emit(0x44 + reg1);
-            getimmediate(FALSE);
-        } elif (compareit(".+", FALSE)) // was "^"
-        {   emit(0x48 + reg1);
-            getrelative();
-        } else
-        {   reg2 = 4;
-            if (reg1 == 0)
-            {   reg2 = getreg_calm(0, TRUE);
-                if (reg2 <= 3)
-                {   emit(0x40 + reg2);
-            }   }
-            if (reg2 == 4)
-            {   getabsolute_nonbranch_calm((UBYTE) (0x4C + reg1));
-    }   }   }
-    elif (compareit("RR", TRUE) || compareit("RRC", TRUE) || compareit("SR", TRUE))
-    {   skipblanks(TRUE);
-        emit(0x50 + getreg_calm(2, TRUE));
+        emit(0x50 + reg1);
     } elif (compareit("OR", TRUE))
     {   skipblanks(TRUE);
-        reg1 = getreg_calm(2, TRUE);
-        if (reg1 == 4)
-        {   skipblanks(TRUE);
-            if (compareit("U,#", FALSE))
-            {   emit(0x76);
-                getimmediate(FALSE);
-            } elif (compareit("L,#", FALSE))
-            {   emit(0x77);
-                getimmediate(FALSE);
-            } else
-            {   emit(0x76);
-                asmerror("bad operand");
-        }   }
-        else
-        {   if (!compareit(",", FALSE))
+        if (compareit("#", FALSE)) // OR #imm,reg (IORI,reg imm)
+        {   byte1st = saveimmediate(FALSE);
+            if (!compareit(",", FALSE))
             {   asmerror("comma expected");
             }
-            if (compareit("#", FALSE))
-            {   emit(0x64 + reg1);
-                getimmediate(FALSE);
-            } elif (compareit(".+", FALSE)) // was "^"
-            {   emit(0x68 + reg1);
-                getrelative();
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x64 + reg1);
+            emit(byte1st);
+        } elif (compareit("R^", FALSE)) // OR R^rel,reg (IORR,reg rel)
+        {   byte1st = dorel(2, FALSE);
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x68 + reg1);
+            emit(byte1st);
+        } elif (compareit("U^", FALSE)) // OR U^abs,reg (IORA,reg abs)
+        {   gopcode = 0x6C;
+            if (ganb_newcalm(FALSE))
+            {   if (!compareit(",r0", FALSE))
+                {   asmerror(",r0 expected");
+                }
+                emit(gopcode);
             } else
-            {   reg2 = 4;
-                if (reg1 == 0)
-                {   reg2 = getreg_calm(2, TRUE);
-                    if (reg2 <= 3)
-                    {   emit(0xA0 + reg2);
-                }   }
-                if (reg2 == 4)
-                {   getabsolute_nonbranch_calm((UBYTE) (0x6C + reg1));
-    }   }   }   }
+            {   if (!compareit(",", FALSE))
+                {   asmerror("comma expected");
+                }
+                if (reg1 == 4)
+                {   asmerror("register expected");
+                    reg1 = 0;
+                }
+                emit(0x6C + reg1);
+            }
+            emit(gbyte1st);
+            emit(gbyte2nd);
+        } else // OR reg,r0 (IORZ reg)
+        {   reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg2 = getreg_signetics(2, TRUE);
+            if (reg2 != 0)
+            {   asmerror("r0 expected");
+            }
+            emit(0x60 + reg1);
+    }   }
     elif (compareit("BIC", TRUE))
     {   skipblanks(TRUE);
-        if (compareit("U,#", FALSE))
+        if (compareit("#", FALSE))
+        {   asmerror("# expected");
+        }
+        byte1st = saveimmediate(FALSE);
+        if (compareit("comma", FALSE))
+        {   asmerror("comma expected");
+        }
+        if (compareit("PSU", TRUE))
         {   emit(0x74);
-            getimmediate(FALSE);
-        } elif (compareit("L,#", FALSE))
+            emit(byte1st);
+        } elif (compareit("PSL", TRUE))
         {   emit(0x75);
-            getimmediate(FALSE);
+            emit(byte1st);
+        } else
+        {   asmerror("PSU or PSL expected");
+            emit(0x00);
+            emit(byte1st);
     }   }
     elif (compareit("ADD", TRUE) || compareit("ADDC", TRUE))
     {   skipblanks(TRUE);
-        reg1 = getreg_calm(2, TRUE);
-        if (reg1 == 4)
-        {   reg1 = 0;
-            asmerror("register expected");
-        }
-        if (!compareit(",", FALSE))
-        {   asmerror("comma expected");
-        }
-        if (compareit("#", FALSE))
-        {   emit(0x84 + reg1);
-            getimmediate(FALSE);
-        } elif (compareit(".+", FALSE)) // was "^"
-        {   emit(0x88 + reg1);
-            getrelative();
-        } else
-        {   reg2 = 4;
-            if (reg1 == 0)
-            {   reg2 = getreg_calm(2, TRUE);
-                if (reg2 <= 3)
-                {   emit(0x80 + reg2);
-            }   }
-            if (reg2 == 4)
-            {   getabsolute_nonbranch_calm((UBYTE) (0x8C + reg1));
-    }   }   }
-    elif (compareit("DA", TRUE))
+        if (compareit("#", FALSE)) // ADD #imm,reg (ADDI)
+        {   byte1st = saveimmediate(FALSE);
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x84 + reg1);
+            emit(byte1st);
+        } elif (compareit("R^", FALSE)) // ADD R^rel,reg (ADDR)
+        {   byte1st = dorel(2, FALSE);
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0x88 + reg1);
+            emit(byte1st);
+        } elif (compareit("U^", FALSE)) // ADD U^abs,reg (ADDA)
+        {   gopcode = 0x8C;
+            if (ganb_newcalm(FALSE))
+            {   if (!compareit(",r0", FALSE))
+                {   asmerror(",r0 expected");
+                }
+                emit(gopcode);
+            } else
+            {   if (!compareit(",", FALSE))
+                {   asmerror("comma expected");
+                }
+                reg1 = getreg_signetics(2, TRUE);
+                if (reg1 == 4)
+                {   asmerror("register expected");
+                    reg1 = 0;
+                }
+                emit(0x8C + reg1);
+            }
+            emit(gbyte1st);
+            emit(gbyte2nd);
+        } else // ADD reg,r0 (ADDZ)
+        {   reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg2 = getreg_signetics(2, TRUE);
+            if (reg2 != 0)
+            {   asmerror("r0 expected");
+            }
+            emit(0x80 + reg1);
+    }   }
+    elif (compareit("DAA", TRUE) || compareit("DAR", TRUE))
     {   skipblanks(TRUE);
-        emit(0x94 + getreg_calm(2, TRUE));
-    } elif (compareit("SUB", TRUE) || compareit("SUBB", TRUE))
-    {   skipblanks(TRUE);
-        reg1 = getreg_calm(2, TRUE);
+        reg1 = getreg_signetics(2, TRUE);
         if (reg1 == 4)
         {   asmerror("register expected");
             reg1 = 0;
         }
-        if (!compareit(",", FALSE))
-        {   asmerror("comma expected");
-        }
-        if (compareit("#", FALSE))
-        {   emit(0xA4 + reg1);
-            getimmediate(FALSE);
-        } elif (compareit(".+", FALSE)) // was "^"
-        {   emit(0xA8 + reg1);
-            getrelative();
-        } else
-        {   reg2 = 4;
-            if (reg1 == 0)
-            {   reg2 = getreg_calm(2, TRUE);
-                if (reg2 <= 3)
-                {   emit(0xA0 + reg2);
-            }   }
-            if (reg2 == 4)
-            {   getabsolute_nonbranch_calm((UBYTE) (0xAC + reg1));
-    }   }   }
+        emit(0x94 + reg1);
+    } elif (compareit("SUB", TRUE) || compareit("SUBC", TRUE))
+    {   skipblanks(TRUE);
+        if (compareit("#", FALSE)) // SUB #imm,reg (SUBI)
+        {   t = saveimmediate(FALSE);
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0xA4 + reg1);
+            emit(t);
+        } elif (compareit("R^", FALSE)) // SUB R^rel,reg (SUBR)
+        {   byte1st = dorel(2, FALSE);
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            emit(0xA8 + reg1);
+            emit(byte1st);
+        } elif (compareit("U^", FALSE)) // SUB U^abs,reg (SUBA)
+        {   gopcode = 0xAC;
+            if (ganb_newcalm(FALSE))
+            {   if (!compareit(",r0", FALSE))
+                {   asmerror(",r0 expected");
+                }
+                emit(gopcode);
+            } else
+            {   if (!compareit(",", FALSE))
+                {   asmerror("comma expected");
+                }
+                reg1 = getreg_signetics(2, TRUE);
+                if (reg1 == 4)
+                {   asmerror("register expected");
+                    reg1 = 0;
+                }
+                emit(0xAC + reg1);
+            }
+            emit(gbyte1st);
+            emit(gbyte2nd);
+        } else // SUB reg,r0 (SUBZ)
+        {   reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("register expected");
+                reg1 = 0;
+            }
+            if (!compareit(",", FALSE))
+            {   asmerror("comma expected");
+            }
+            reg2 = getreg_signetics(2, TRUE);
+            if (reg2 != 0)
+            {   asmerror("r0 expected");
+            }
+            emit(0xA0 + reg1);
+    }   }
     elif (compareit("TEST", TRUE))
     {   skipblanks(TRUE);
         if   (compareit("IOF"      , TRUE)) { emit(0xB4); emit(0x20); }
@@ -1803,16 +2799,21 @@ START:
         elif (compareit("BANK", TRUE) || compareit("BANK1", TRUE))
                                             { emit(0xB5); emit(0x10); }
         elif (compareit("HALFCARRY", TRUE)) { emit(0xB5); emit(0x20); }
-        elif (compareit("U,#", FALSE))
+        elif (compareit("PSU:#", FALSE) || compareit("PSU,#", FALSE))
         {   emit(0xB4);
             getimmediate(FALSE);
-        } elif (compareit("L,#", FALSE))
+        } elif (compareit("PSL:#", FALSE) || compareit("PSL,#", FALSE))
         {   emit(0xB5);
             getimmediate(FALSE);
         } else
-        {   emit(0xF4 + getreg_calm(2, TRUE)); // $F4..F7
-            if (!compareit(",#", FALSE))
-            {   asmerror(",# expected");
+        {   reg1 = getreg_signetics(2, TRUE);
+            if (reg1 == 4)
+            {   asmerror("PSU:# or PSL:# or register expected");
+                reg1 = 0;
+            }
+            emit(0xF4 + reg1);
+            if (!compareit(":#", FALSE) && !compareit(",#", FALSE))
+            {   asmerror(":# expected");
             }
             getimmediate(FALSE);
     }   }
@@ -1820,21 +2821,39 @@ START:
     {   emit(0xC0);
     } elif (compareit("RL", TRUE) || compareit("RLC", TRUE) || compareit("SL", TRUE) || compareit("ASL", TRUE))
     {   skipblanks(TRUE);
-        emit(0xD0 + getreg_calm(2, TRUE));
-    } elif (compareit("INCJ,NE", TRUE))
+        reg1 = getreg_signetics(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        emit(0xD0 + reg1);
+    } elif (compareit("IJ,NE", TRUE))
     {   skipblanks(TRUE);
-        reg1 = getreg_calm(2, TRUE);
-        compareit(",", FALSE);
-        if (compareit(".+", FALSE)) // was "^"
+        reg1 = getreg_signetics(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        if (!compareit(",", FALSE))
+        {   asmerror("comma expected");
+        }
+        if (compareit("R^", FALSE)) // IJ,NE reg,R^rel (BIRR,reg rel)
         {   emit(0xD8 + reg1);
-            getrelative();
-        } else
+            emit(dorel(1, FALSE));
+        } elif (compareit("U^", FALSE))
         {   emit(0xDC + reg1);
             getabsolute_branch();
+        } else
+        {   asmerror("R^ or U^ expected");
     }   }
     elif (compareit("INC", TRUE))
     {   skipblanks(TRUE);
-        emit(0xD8 + getreg_calm(2, TRUE));
+        reg1 = getreg_signetics(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        emit(0xD8 + reg1);
         emit(0x00);
     } elif (compareit("COMP", TRUE))
     {   skipblanks(TRUE);
@@ -1849,9 +2868,12 @@ START:
         if (compareit("#", FALSE))
         {   emit(0xE4 + reg1);
             getimmediate(FALSE);
-        } elif (compareit(".+", FALSE)) // was "^"
+        } elif (compareit("@.+", FALSE))
         {   emit(0xE8 + reg1);
-            getrelative();
+            getrelative(TRUE);
+        } elif (compareit(".+", FALSE))
+        {   emit(0xE8 + reg1);
+            getrelative(FALSE);
         } else
         {   reg2 = 4;
             if (reg1 == 0)
@@ -1860,22 +2882,35 @@ START:
                 {   emit(0xE0 + reg2);
             }   }
             if (reg2 == 4)
-            {   getabsolute_nonbranch_calm((UBYTE) (0xEC + reg1));
+            {   getabsolute_nonbranch_oldcalm((UBYTE) (0xEC + reg1));
     }   }   }
-    elif (compareit("DECJ,NE", TRUE))
+    elif (compareit("DJ,NE", TRUE))
     {   skipblanks(TRUE);
-        reg1 = getreg_calm(2, TRUE);
-        compareit(",", FALSE);
-        if (compareit(".+", FALSE)) // was "^"
+        reg1 = getreg_signetics(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        if (!compareit(",", FALSE))
+        {   asmerror("comma expected");
+        }
+        if (compareit("R^", FALSE)) // IJ,NE reg,R^rel (BIRR,reg rel)
         {   emit(0xF8 + reg1);
-            getrelative();
-        } else
+            emit(dorel(1, FALSE));
+        } elif (compareit("U^", FALSE))
         {   emit(0xFC + reg1);
             getabsolute_branch();
+        } else
+        {   asmerror("R^ or U^ expected");
     }   }
     elif (compareit("DEC", TRUE))
     {   skipblanks(TRUE);
-        emit(0xF8 + getreg_calm(2, TRUE));
+        reg1 = getreg_signetics(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        emit(0xF8 + reg1);
         emit(0x00);
     }
 
@@ -1964,25 +2999,18 @@ MODULE UBYTE getcc_signetics(FLAG unallowed)
     {   asmerror("condition code expected");
         return 4;
 }   }
-MODULE UBYTE getcc_calm(FLAG unallowed)
-{   if (LineBuffer[linecursor] == EOS)
-    {   if (!unallowed)
-        {   asmerror("condition code expected");
-            return 4;
-        }
-        return 3;
+MODULE UBYTE getcc_calm(void)
+{   skipblanks(TRUE);
+    if (compareit("EQ", TRUE) || compareit("AO", TRUE))
+    {   return 0;
+    } elif (compareit("GT", TRUE))
+    {   return 1;
+    } elif (compareit("LT", TRUE) || compareit("NO", TRUE))
+    {   return 2;
     } else
-    {   skipblanks(TRUE);
-        if (compareit("EQ", TRUE))
-        {   return 0;
-        } elif (compareit("GT", TRUE))
-        {   return 1;
-        } elif (compareit("LT", TRUE))
-        {   return 2;
-        } else
-        {   asmerror("condition code expected");
-            return 4;
-}   }   }
+    {   asmerror("condition code expected");
+        return 4;
+}   }
 
 MODULE UBYTE getreg_signetics(int r0allowed, FLAG r1r2allowed)
 {   /* For r0allowed:
@@ -1991,6 +3019,7 @@ MODULE UBYTE getreg_signetics(int r0allowed, FLAG r1r2allowed)
     2 means fully allowed */
 
     skipblanks(FALSE); // so eg. "LODI, r0" works
+
     if (compareit("r0", TRUE) || compareit("0", TRUE)) // "BDRR,0" etc. are used in uP-Programmierfibel book
     {   if (r0allowed == 0)
         {   asmerror("r0 is not allowed for this opcode");
@@ -2013,6 +3042,8 @@ MODULE UBYTE getreg_signetics(int r0allowed, FLAG r1r2allowed)
         return 2;
     } elif (compareit("r3", TRUE) || compareit("r6", TRUE) || compareit("3", TRUE) || compareit("6", TRUE))
     {   return 3;
+    } elif (style == STYLE_NEWCALM)
+    {   return 4;
     } else
     {   asmerror("register expected");
         return 0;
@@ -2111,17 +3142,22 @@ MODULE void getabsolute_branch(void)
     UBYTE byte1st,
           byte2nd;
 
-    if (style != STYLE_CALM && style != STYLE_IEEE)
+    if (style != STYLE_OLDCALM && style != STYLE_NEWCALM && style != STYLE_IEEE)
     {   skipblanks(TRUE);
     }
 
     if (compareit(indchars[style], FALSE))
     {   byte1st = 0x80;
-    } else
+        value = parsenumber(&LineBuffer[linecursor]);
+        if (style == STYLE_NEWCALM && !compareit("}", FALSE))
+        {   asmerror("} expected");
+    }   }
+    else
     {   byte1st = 0;
+        value = parsenumber(&LineBuffer[linecursor]);
     }
-    value = parsenumber(&LineBuffer[linecursor]);
-    if (comma)
+
+    if (compareit(",", FALSE))
     {   asmerror("unexpected comma");
     }
 
@@ -2162,7 +3198,7 @@ MODULE void getabsolute_indexed_signetics(UBYTE firstopcode) // "BXA $1234,r3"
     emit(byte2nd);
 }
 
-MODULE void getabsolute_nonbranch_calm(UBYTE firstopcode)
+MODULE void getabsolute_nonbranch_oldcalm(UBYTE firstopcode)
 {   int   value;
     UBYTE byte1st,
           byte2nd,
@@ -2198,6 +3234,83 @@ MODULE void getabsolute_nonbranch_calm(UBYTE firstopcode)
     emit(firstopcode);
     emit(byte1st);
     emit(byte2nd);
+}
+
+MODULE FLAG ganb_newcalm(FLAG allpages) // GANB means get absolute non-branch
+{   FLAG  rc;
+    UBYTE reg1;
+    int   maskval,
+          value;
+
+    // allpages is whether to mask with $7FFF instead (in case this turns out to be a MOVE U^abs,PSL instruction).
+    // Return code is whether indexing was used.
+
+    maskval = allpages ? 0x7FFF : 0x1FFF;
+
+    if   (compareit("{-", FALSE)) // eg. MOVE U^{-reg}+abs,r0 (LODA,r0 abs,reg)
+    {   gbyte1st = 0x40;
+        reg1 = getreg_signetics(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        gopcode &= 0xFC;
+        gopcode |= reg1;
+        if (!compareit("}+", FALSE))
+        {   asmerror("}+ expected");
+        }
+        rc = TRUE;
+    } elif (compareit("{+", FALSE)) // eg. MOVE U^{+reg}+abs,r0
+    {   gbyte1st = 0x20;
+        reg1 = getreg_signetics(2, TRUE);
+        if (reg1 == 4)
+        {   asmerror("register expected");
+            reg1 = 0;
+        }
+        gopcode &= 0xFC;
+        gopcode |= reg1;
+        if (!compareit("}+", FALSE))
+        {   asmerror("}+ expected");
+        }
+        rc = TRUE;
+    } elif (compareit("{",  FALSE)) // eg. MOVE U^{r0}+abs,reg or MOVE U^{abs},reg
+    {   reg1 = getreg_signetics(2, TRUE);
+        if (reg1 == 4) // eg. MOVE U^{abs}
+        {   gbyte1st = 0x80;
+            value   =  parsenumber(&LineBuffer[linecursor]) & maskval;
+            if (!compareit("}", FALSE))
+            {   asmerror("} expected");
+            }
+            gbyte1st |= value / 256;
+            gbyte2nd =  value % 256;
+            return FALSE;
+        } else // eg. MOVE U^{r0}+abs,reg
+        {   gbyte1st = 0x60;
+            gopcode &= 0xFC;
+            gopcode |= reg1;
+            if (!compareit("}+", FALSE))
+            {   asmerror("}+ expected");
+            }
+            rc = TRUE;
+    }   }
+    else
+    {   gbyte1st = 0;             // eg. MOVE U^abs
+        rc = FALSE;
+    }
+
+    if (compareit("{", FALSE))
+    {   gbyte1st |= 0x80;
+        value = parsenumber(&LineBuffer[linecursor]) & maskval;
+        if (!compareit("}", FALSE))
+        {   asmerror("} expected");
+    }   }
+    else
+    {   value = parsenumber(&LineBuffer[linecursor]) & maskval;
+    }
+    gbyte1st |= value / 256;
+    gbyte2nd =  value % 256;
+
+    return rc;
 }
 
 MODULE void getabsolute_nonbranch_ieee(UBYTE firstopcode, int thereg)
@@ -2245,30 +3358,38 @@ MODULE int fiximmediate(int value)
     return value;
 }
 
-MODULE void getrelative(void)
-{   if (style != STYLE_CALM && style != STYLE_IEEE)
+MODULE void getrelative(FLAG indirect)
+{   // Used when the opcode has already been emitted.
+
+    if (style != STYLE_OLDCALM && style != STYLE_NEWCALM && style != STYLE_IEEE)
     {   skipblanks(TRUE);
     }
 
-    emit(dorel(1));
+    emit(dorel(1, indirect));
 }
 
-MODULE UBYTE dorel(int wherefrom)
-{   UBYTE rc;
+MODULE UBYTE dorel(int wherefrom, FLAG indirect)
+{   // Returns the operand byte.
+
+    UBYTE rc;
     int   backwards,
           forwards,
           middle,
           value;
 
-    if (compareit(indchars[style], FALSE))
+    if (indirect || compareit(indchars[style], FALSE))
     {   rc = 0x80;
-    } else
+        value  = parsenumber(&LineBuffer[linecursor]);
+        if (style == STYLE_NEWCALM && !compareit("}", FALSE))
+        {   asmerror("} expected");
+    }   }
+    else
     {   rc = 0;
+        value  = parsenumber(&LineBuffer[linecursor]);
     }
-    value  = parsenumber(&LineBuffer[linecursor]);
     middle = ocursor + wherefrom; // should really wrap this
 
-    if (compareit(",", FALSE))
+    if (style != STYLE_NEWCALM && compareit(",", FALSE))
     {   asmwarning("ignoring indexing on relative address");
     }
 
@@ -2291,16 +3412,20 @@ MODULE UBYTE dorel(int wherefrom)
     return rc;
 }
 
-MODULE void getzeropage(void)
+MODULE void getzeropage(FLAG indirect)
 {   int   value;
     UBYTE byte1st;
 
-    if (compareit(indchars[style], FALSE))
+    if (indirect || compareit(indchars[style], FALSE))
     {   byte1st = 0x80;
-    } else
+        value = parsenumber(&LineBuffer[linecursor]);
+        if (style == STYLE_NEWCALM && !compareit("}", FALSE))
+        {   asmerror("} expected");
+    }   }
+    else
     {   byte1st = 0;
+        value = parsenumber(&LineBuffer[linecursor]);
     }
-    value = parsenumber(&LineBuffer[linecursor]);
     if (value >= 8192 - 64 && value <= 8192 - 1)
     {   value -= 8192; // -64..  -1
         value +=  128; // +64..+127
@@ -2319,6 +3444,11 @@ MODULE void emit(int data)
 #ifdef VERBOSE
     zprintf(TEXTPEN_CLIOUTPUT, "$%04X: $%02X\n", ocursor, data);
 #endif
+
+    if (ocursor >= 32768)
+    {   asmerror("attempted to emit code/data beyond 32K");
+        return;
+    }
 
     if
     (   (   machine == ARCADIA
@@ -2346,136 +3476,145 @@ MODULE void emit(int data)
 }   }
 
 EXPORT int parsenumber(STRPTR stringptr)
-{   TRANSIENT FLAG   quoting;
-    TRANSIENT TEXT   oldoperator,
-                     newoperator;
-    TRANSIENT int    hilo,
-                     length,
-                     totalvalue,
-                     value;
-    TRANSIENT STRPTR oldstringptr = NULL; // initialized to avoid a spurious SAS/C warning
-    FAST      TEXT   tempstring[LABELLIMIT + 1];
+{   int value;
 
+    if (stringptr == NULL || *stringptr == EOS)
+    {   asmerror("empty expression");
+        return 0;
+    }
+    evalstring = stringptr;
+    value = expr();
     if (assembling)
-    {   oldstringptr = stringptr;
+    {   linecursor += evalstring - stringptr;
     }
 
-    length = strlen(stringptr);
-    if     (length >= 5 && !strnicmp(stringptr, "HI(", 3)) // HI(FOO) format
-    {   if (stringptr[length - 1] != ')')
-        {   asmerror(") expected");
-            return 0;
-        } // implied else
-        stringptr += 3;
-        // length -= 3;
-        hilo = 1;
-    } elif (length >= 5 && !strnicmp(stringptr, "LO(", 3)) // LO(FOO) format
-    {   if (stringptr[length - 1] != ')')
-        {   asmerror(") expected");
-            return 0;
-        } // implied else
-        stringptr += 3;
-        // length -= 3;
-        hilo = 2;
-    } else
-    {   hilo = 0;
+    if
+    (   *evalstring != EOS
+     && (   !assembling
+         || (   *evalstring != ','
+             && *evalstring != ' '
+             && *evalstring != HT
+             && *evalstring != ';'
+             && *evalstring != '+'
+             && *evalstring != '-'
+             && *evalstring != '.'
+             && *evalstring != '}'
+    )   )   )
+    {   sprintf(gtempstring, "invalid character '%c'", *evalstring);
+        asmerror(gtempstring);
+        return 0;
     }
 
-    // Handle for + or -
-    oldoperator = '=';
-    if (*stringptr == '+')
-    {   stringptr++;
-        oldoperator = '+'; // same as '=' in this context really
-    } elif (*stringptr == '-')
-    {   stringptr++;
-        oldoperator = '-';
-    } elif (*stringptr == '~')
-    {   stringptr++;
-        oldoperator = '~';
-    }
-    totalvalue = 0;
+    return value;
+}
 
+MODULE int expr(void) // this can be called recursively!
+{   int sign,
+        val;
+
+    switch (*evalstring)
+    {
+    case  '+': sign =  1; evalstring++;
+    acase '-': sign = -1; evalstring++;
+    adefault:  sign =  1;
+    }
+    val = sign * factor();
     for (;;)
-    {   newoperator = '=';
-        length = 0;
-        quoting = FALSE;
-        while
-        (   *stringptr != EOS
-         && (quoting || (*stringptr != ' ' && *stringptr != HT && (!assembling || (*stringptr != ',' && *stringptr != '('))))
-        ) // assembler stops at , (for eg. DB) and ( (for eg. CMP .0,/*$F00(.1) ) but debugger doesn't (for eg. POKE 1234 BCTA,EQ)
-        {   if
-            (   !quoting
-             && length >= 1
-             && (   *stringptr == '+'
-                 || *stringptr == '-'
-                 || *stringptr == '|'
-                 || *stringptr == '&'
-                 || *stringptr == '^'
-                 || *stringptr == '%'
-                 || *stringptr == '*'
-                 || *stringptr == 0xD7
-                 || *stringptr == '/'
-                 || *stringptr == 0xF7
-                 || *stringptr == '~'
-                 || (length >= 2 && (!strncmp( stringptr, "<<"   , 2) || !strncmp( stringptr, ">>"   , 2)))
-            )   )
-            {   newoperator = *stringptr;
-                if (newoperator == '<' || newoperator == '>')
-                {   stringptr += 2;
-                } else
-                {   stringptr++;
-                }
-                break;
-            } else
-            {   if (*stringptr == QUOTE || *stringptr == QUOTES)
-                {   quoting = quoting ? FALSE : TRUE;
-                }
-                tempstring[length++] = *stringptr;
-                stringptr++;
-        }   }
-        if (*stringptr == ',')
-        {   comma = TRUE;
-        } else
-        {   comma = FALSE;
-        }
-        tempstring[length] = EOS;
-
-        if (hilo && tempstring[length - 1] == ')')
-        {   value = parseonenumber((STRPTR) tempstring, length - 1);
-        } else
-        {   value = parseonenumber((STRPTR) tempstring, length);
-        }
-
-        switch (oldoperator)
+    {   switch (*evalstring)
         {
-        case  '=':            totalvalue =   value;
-        acase '+':            totalvalue +=  value;
-        acase '-':            totalvalue -=  value;
-        acase '|':            totalvalue |=  value;
-        acase '&':            totalvalue &=  value;
-        acase '^':            totalvalue ^=  value;
-        acase '%':            if (value) totalvalue %= value; else { asmerror("divide by zero"); emit(0); }
-        acase '*': case 0xD7: totalvalue *=  value; // $D7 is multiplication symbol
-        acase '/': case 0xF7: totalvalue /=  value; // $F7 is division symbol
-        acase '<':            totalvalue <<= value;
-        acase '>':            totalvalue >>= value;
-        acase '~':            totalvalue =   value ^ 0xFF;
-        }
+        case  '+':            evalstring++;    val += factor();
+        acase '-':            evalstring++;    val -= factor();
+        acase '*': case 0xD7: evalstring++;    val *= factor();
+        acase '/': case 0xF7: evalstring++;    val /= factor();
+        acase '^':            evalstring++;    val ^= factor();
+        acase '|':            evalstring++;    val |= factor();
+        acase '&':            evalstring++;    val &= factor();
+        acase '%':            if (val) { evalstring++; val %= factor(); } else { asmerror("divide by zero"); val = 0; }
+        acase '<':            if ((*evalstring + 1) == '<') { evalstring += 2; val <<= factor(); } else return val;
+        acase '>':            if ((*evalstring + 1) == '>') { evalstring += 2; val >>= factor(); } else return val;
+        acase '~':            evalstring++;    val = factor() ^ 0xFF;
+        adefault:             return val;
+}   }   }
 
-        if (newoperator == '=')
-        {   if (hilo)
-            {   stringptr++; // skip ')'
-            }
-            if (assembling)
-            {   linecursor += stringptr - oldstringptr;
-            }
-            if   (hilo == 1) totalvalue /= 256;
-            elif (hilo == 2) totalvalue %= 256;
-            return totalvalue;
-        }
+MODULE int factor(void) // this can be called recursively!
+{   int    length,
+           val;
+    STRPTR evalend;
 
-        oldoperator = newoperator;
-}   }
+    if (*evalstring == '(')
+    {   evalstring++;
+        val = expr();
+        if (*evalstring == ')')
+            evalstring++;
+        else
+        {   asmerror(") expected");
+            return 0;
+    }   }
+    elif (!strnicmp(evalstring, "HI(", 3))
+    {   evalstring += 3;
+        val = expr() / 256;
+        if (*evalstring == ')')
+            evalstring++;
+        else
+        {   asmerror(") expected");
+            return 0;
+    }   }
+    elif (!strnicmp(evalstring, "LO(", 3))
+    {   evalstring += 3;
+        val = expr() % 256;
+        if (*evalstring == ')')
+            evalstring++;
+        else
+        {   asmerror(") expected");
+            return 0;
+    }   }
+    elif (*evalstring == '<' && *(evalstring + 1) != '<') // MSB
+    {   evalstring++;
+        val = expr() / 256;
+    } elif (*evalstring == '>' && *(evalstring + 1) != '>') // LSB
+    {   evalstring++;
+        val = expr() % 256;
+    } else
+    {   evalend = evalstring;
+        length = 0;
+        while
+        (   !isterminator(*evalend)
+         && *evalend != '+'
+         && *evalend != '-'
+         && *evalend != '*' && *evalend != 0xD7
+         && *evalend != '/' && *evalend != 0xF7
+         && *evalend != '^'
+         && *evalend != '|'
+         && *evalend != '&'
+         && *evalend != '%'
+         && *evalend != '<'
+         && *evalend != '>'
+         && *evalend != '~'
+         && *evalend != '}'
+        )
+        {   if (length == 0) // so that eg. 16'1234 works
+            {   if (*evalend == QUOTE)
+                {   length++;
+                    evalend++;
+                    while (*evalend != QUOTE && *evalend != EOS && *evalend != CR && *evalend != LF)
+                    {   length++;
+                        evalend++;
+                }   }
+                if (*evalend == QUOTES)
+                {   length++;
+                    evalend++;
+                    while (*evalend != QUOTES && *evalend != EOS && *evalend != CR && *evalend != LF)
+                    {   length++;
+                        evalend++;
+            }   }   }
+            length++;
+            evalend++;
+        }
+        val = parseonenumber(evalstring, length);
+        evalstring += length;
+    }
+    return val;
+}
 
 MODULE FLAG compareit(STRPTR target, FLAG needspace)
 {   int length;
@@ -2492,6 +3631,7 @@ MODULE FLAG compareit(STRPTR target, FLAG needspace)
          || LineBuffer[linecursor + length] == '+'
          || LineBuffer[linecursor + length] == '-'
          || LineBuffer[linecursor + length] == ')'
+         || LineBuffer[linecursor + length] == '}'
     )   )
     {   linecursor += length;
         return TRUE;
@@ -2506,12 +3646,29 @@ MODULE void getimmediate(FLAG skipthem)
     {   skipblanks(TRUE);
     }
 
-    value = fiximmediate(parsenumber(&LineBuffer[linecursor]));
+    value = parsenumber(&LineBuffer[linecursor]);
+    value = fiximmediate(value);
     if (value < 0 || value > 255)
     {   asmerror("immediate value out of range");
         emit(0);
     } else
     {   emit((UBYTE) value);
+}   }
+
+MODULE UBYTE saveimmediate(FLAG skipthem)
+{   int value;
+
+    if (skipthem)
+    {   skipblanks(TRUE);
+    }
+
+    value = parsenumber(&LineBuffer[linecursor]);
+    value = fiximmediate(value);
+    if (value < 0 || value > 255)
+    {   asmerror("immediate value out of range");
+        return 0;
+    } else
+    {   return (UBYTE) value;
 }   }
 
 MODULE void getdbx(void)
@@ -2781,28 +3938,33 @@ MODULE void asmwarning(STRPTR errorstring)
     } */
 
     if (pass == 2 || including)
-    {   // assert(ListFileHandle);
-        fwrite("*** ", 4, 1, ListFileHandle);
-        sprintf((char*) entirestring, "Warning at line %d: %s!\n", line, errorstring);
-        zprintf(TEXTPEN_CLIOUTPUT, (const char*) entirestring);
-        fwrite(entirestring, strlen((const char*) entirestring), 1, ListFileHandle);
-        zprintf(TEXTPEN_CLIOUTPUT, "$%04X: %s\n       ", ocursor, LineBuffer);
-        if (linecursor)
-        {   for (i = 0; i < linecursor; i++)
-            {   zprintf(TEXTPEN_CLIOUTPUT, " ");
-        }   }
-        zprintf(TEXTPEN_CLIOUTPUT, "^\n");
+    {   if (warn)
+        {   // assert(ListFileHandle);
+            fwrite("*** ", 4, 1, ListFileHandle);
+            sprintf((char*) entirestring, "Warning at line %d: %s!\n", line, errorstring);
+            zprintf(TEXTPEN_CLIOUTPUT, (const char*) entirestring);
+            fwrite(entirestring, strlen((const char*) entirestring), 1, ListFileHandle);
+            zprintf(TEXTPEN_CLIOUTPUT, "$%04X: %s\n       ", ocursor, LineBuffer);
+            if (linecursor)
+            {   for (i = 0; i < linecursor; i++)
+                {   zprintf(TEXTPEN_CLIOUTPUT, " ");
+            }   }
+            zprintf(TEXTPEN_CLIOUTPUT, "^\n");
+        }
         warnings++;
 }   }
 
 MODULE void getaddress(UBYTE offset)
-{   // assert(style == CALM);
+{   // assert(style == STYLE_OLDCALM);
 
     skipblanks(TRUE);
 
-    if (compareit(".+", FALSE)) // was "^"
+    if (compareit("@.+", FALSE))
     {   emit(offset);
-        getrelative();
+        getrelative(TRUE);
+    } elif (compareit(".+", FALSE))
+    {   emit(offset);
+        getrelative(FALSE);
     } else
     {   emit(offset + 4);
         getabsolute_branch();
@@ -3198,11 +4360,24 @@ PERSIST const struct
 }
 
 EXPORT int parse_literal(STRPTR passedstring, int length)
-{   int  localbase,
+{   int  i,
+         localbase,
          value = 0; // initialized to avoid a spurious SAS/C warning
     TEXT firstletter;
 
     firstletter = toupper(passedstring[0]);
+
+    zstrncpy(gtempstring, passedstring, length);
+    for (i = 0; i < length; i++)
+    {   if
+        (   gtempstring[i] == EOS || gtempstring[i] == ' ' || gtempstring[i] == HT || gtempstring[i] == ';'
+         || (assembling && style == STYLE_IEEE && (gtempstring[i] == '(' || gtempstring[i] == ')'))
+        )
+        {   gtempstring[i] = EOS; // but we currently don't use gtempstring, only passedstring
+            linecursor -= (length - i);
+            length = i;
+            break;
+    }   }
 
     if     (firstletter == 'H' && passedstring[1] == QUOTE && passedstring[length - 1] == QUOTE)                   // H'1234' format (Signetics)
     {   return readnum_hex(    (STRPTR) &passedstring[2], length - 3);
@@ -3236,7 +4411,8 @@ EXPORT int parse_literal(STRPTR passedstring, int length)
     {   return readnum_decimal((STRPTR) &passedstring[                      1], length -                       1);
     } elif (passedstring[0] == '%')                                                                                // % prefix
     {   return readnum_decimal((STRPTR) &passedstring[                      1], length -                       1);
-    } elif (passedstring[0] == QUOTE)                                                                              // 'Z' format
+    } elif (passedstring[0] == QUOTE                                                                               // 'Z' format
+         || passedstring[0] == QUOTES)                                                                             // "Z" format
     {   return readnum_char(passedstring[1]);
     } else // 1234 format
     {   localbase = assembling ? defasmbase : base;
@@ -3304,7 +4480,7 @@ MODULE int parseonenumber(STRPTR passedstring, int length)
 
     if
     (   (length == (int) strlen(apcchars[style]) && !strnicmp(passedstring, apcchars[style], length)                                                   )
-     || (length ==                             1 && (passedstring[0] == '·' /* used by CALM */ || passedstring[0] == '.' /* used by X2650 cross-asm */ ))
+     || (length ==                             1 && passedstring[0] == '.') // used by X2650 cross-asm
     )
     {   if (equmode)
         {   value = ocursor;
@@ -3338,7 +4514,7 @@ MODULE int parseonenumber(STRPTR passedstring, int length)
     else switch (passedstring[0])
     {
     case '^': // X2650 cross-asm
-        if (style != STYLE_CALM)
+        if (style != STYLE_OLDCALM && style != STYLE_NEWCALM)
         {   switch (toupper(passedstring[1]))
             {
             case 'B':
@@ -3451,7 +4627,7 @@ MODULE int parseonenumber(STRPTR passedstring, int length)
             value = 0;
         }
     acase '!':
-        if (style == STYLE_SIGNETICS1 || style == STYLE_SIGNETICS2 || style == STYLE_CALM)
+        if (style == STYLE_SIGNETICS1 || style == STYLE_SIGNETICS2 || style == STYLE_OLDCALM || style == STYLE_NEWCALM)
         {   value = readnum_decimal(&passedstring[1], length - 1);
             if (value == OUTOFRANGE)
             {   asmerror("invalid decimal number");
@@ -3517,9 +4693,10 @@ START:
 
     // Directives (except Equates)----------------------------------------
 
-    if
-    (   LineBuffer[0] == EOS
-     || compareit("PAGE",  TRUE)
+    if (LineBuffer[0] == EOS)
+    {   ;
+    } elif
+    (   compareit("PAGE",  TRUE)
      || compareit("TITLE", TRUE)
     )
     {   asmwarning("ignoring directive");
@@ -3543,7 +4720,7 @@ START:
             specified = TRUE;
         }
         ended = TRUE;
-        return FALSE;
+        return TRUE;
     } elif (compareit("ORG", TRUE))
     {   skipblanks(TRUE);
         value1 = parsenumber(&LineBuffer[linecursor]);
@@ -3640,9 +4817,9 @@ START:
                 }
                 emit(0x04 + reg1);
                 emit((UBYTE) value1);
-            } elif (compareit("$", FALSE)) // was "^"
+            } elif (compareit("$", FALSE))
             {   emit(0x08 + reg1);
-                getrelative();
+                getrelative(FALSE);
             } elif (compareit("/", FALSE))
             {   getabsolute_nonbranch_ieee(0x0C, reg1);
             } else
@@ -3660,9 +4837,9 @@ START:
         {   reg1 = getreg_ieee();
             if (!compareit(",", FALSE))
             {   asmerror("comma expected");
-            } elif (compareit("$", FALSE)) // was "^"
+            } elif (compareit("$", FALSE))
             {   emit(0xC8 + reg1);
-                getrelative();
+                getrelative(FALSE);
             } elif (compareit("/", FALSE))
             {   getabsolute_nonbranch_ieee(0xCC, reg1);
             } else
@@ -3674,23 +4851,23 @@ START:
     elif     (compareit("RET"   , TRUE ))   emit(0x17);
     elif     (compareit("BEQ"   , TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0x1B); getrelative();        } // was "^"
+        if   (compareit("$"     , FALSE)) { emit(0x1B); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0x1F); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("BGT"   , TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0x1B); getrelative();        } // was "^"
+        if   (compareit("$"     , FALSE)) { emit(0x1B); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0x1F); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("BLT"   , TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0x1B); getrelative();        } // was "^"
+        if   (compareit("$"     , FALSE)) { emit(0x1B); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0x1F); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("BR"    , TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0x1B); getrelative();        } // was "^"
-        elif (compareit("!"     , FALSE)) { emit(0x9B); getzeropage();        } // was "&"
+        if   (compareit("$"     , FALSE)) { emit(0x1B); getrelative(FALSE);   }
+        elif (compareit("!"     , FALSE)) { emit(0x9B); getzeropage(FALSE);   }
         elif (compareit("/"     , FALSE))
         {   if (compareit("@", FALSE))
             {   byte1st = 0x80;
@@ -3700,7 +4877,7 @@ START:
             value1 = parsenumber(&LineBuffer[linecursor]);
             byte1st |= (value1 / 256);
             byte2nd =  (value1 % 256);
-            if (comma)
+            if (compareit(",", FALSE))
             {   asmerror("unexpected comma");
             }
             if (compareit("(.3)", TRUE) || compareit("(.6)", TRUE))
@@ -3720,9 +4897,9 @@ START:
         } elif (compareit("#", FALSE))
         {   emit(0x24 + reg1);
             getimmediate(FALSE);
-        } elif (compareit("$", FALSE)) // was "^"
+        } elif (compareit("$", FALSE))
         {   emit(0x28 + reg1);
-            getrelative();
+            getrelative(FALSE);
         } elif (compareit("/", FALSE))
         {   getabsolute_nonbranch_ieee(0x2C, reg1);
         } elif (reg1 == 0)
@@ -3750,23 +4927,23 @@ START:
     elif     (compareit("RETI"  , TRUE ))   emit(0x37);
     elif     (compareit("CALLEQ", TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0x38); getrelative();        }
+        if   (compareit("$"     , FALSE)) { emit(0x38); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0x3C); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("CALLGT", TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0x39); getrelative();        }
+        if   (compareit("$"     , FALSE)) { emit(0x39); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0x3D); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("CALLLT", TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0x3A); getrelative();        }
+        if   (compareit("$"     , FALSE)) { emit(0x3A); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0x3E); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("CALL"  , TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0x3B); getrelative();        }
-        elif (compareit("!"     , FALSE)) { emit(0xBB); getzeropage();        } // was "&"
+        if   (compareit("$"     , FALSE)) { emit(0x3B); getrelative(FALSE);   }
+        elif (compareit("!"     , FALSE)) { emit(0xBB); getzeropage(FALSE);   }
         elif (compareit("/"     , FALSE))
         {   if (compareit("@", FALSE))
             {   byte1st = 0x80;
@@ -3776,7 +4953,7 @@ START:
             value1 = parsenumber(&LineBuffer[linecursor]);
             byte1st |= (value1 / 256);
             byte2nd =  (value1 % 256);
-            if (comma)
+            if (compareit(",", FALSE))
             {   asmerror("unexpected comma");
             }
             if (compareit("(.3)", TRUE) || compareit("(.6)", TRUE))
@@ -3817,9 +4994,9 @@ START:
             } elif (compareit("#", FALSE))
             {   emit(0x44 + reg1);
                 getimmediate(FALSE);
-            } elif (compareit("$", FALSE)) // was "^"
+            } elif (compareit("$", FALSE))
             {   emit(0x48 + reg1);
-                getrelative();
+                getrelative(FALSE);
             } elif (compareit("/", FALSE))
             {   getabsolute_nonbranch_ieee(0x4C, reg1);
             } elif (reg1 == 0)
@@ -3841,9 +5018,9 @@ START:
         reg1 = getreg_ieee();
         if (!compareit(",", FALSE))
         {   asmerror("comma expected");
-        } elif (compareit("$", FALSE)) // was "^"
+        } elif (compareit("$", FALSE))
         {   emit(0x58 + reg1);
-            getrelative();
+            getrelative(FALSE);
         } elif (compareit("/", FALSE))
         {   emit(0x5C + reg1);
             getabsolute_branch();
@@ -3865,9 +5042,9 @@ START:
             } elif (compareit("#", FALSE))
             {   emit(0x64 + reg1);
                 getimmediate(FALSE);
-            } elif (compareit("$", FALSE)) // was "^"
+            } elif (compareit("$", FALSE))
             {   emit(0x68 + reg1);
-                getrelative();
+                getrelative(FALSE);
             } elif (compareit("/", FALSE))
             {   getabsolute_nonbranch_ieee(0x6C, reg1);
             } elif (reg1 == 0)
@@ -3881,9 +5058,9 @@ START:
         reg1 = getreg_ieee();
         if (!compareit(",", FALSE))
         {   asmerror("comma expected");
-        } elif (compareit("$", FALSE)) // was "^"
+        } elif (compareit("$", FALSE))
         {   emit(0x78 + reg1);
-            getrelative();
+            getrelative(FALSE);
         } elif (compareit("/", FALSE))
         {   emit(0x7C + reg1);
             getabsolute_branch();
@@ -3898,9 +5075,9 @@ START:
         } elif (compareit("#", FALSE))
         {   emit(0x84 + reg1);
             getimmediate(FALSE);
-        } elif (compareit("$", FALSE)) // was "^"
+        } elif (compareit("$", FALSE))
         {   emit(0x88 + reg1);
-            getrelative();
+            getrelative(FALSE);
         } elif (compareit("/", FALSE))
         {   getabsolute_nonbranch_ieee(0x8C, reg1);
         } elif (reg1 == 0)
@@ -3915,17 +5092,17 @@ START:
         emit(0x94 + reg1);
     } elif   (compareit("BNE"   , TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0x98); getrelative();        }
+        if   (compareit("$"     , FALSE)) { emit(0x98); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0x9C); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("BLE"   , TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0x99); getrelative();        }
+        if   (compareit("$"     , FALSE)) { emit(0x99); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0x9D); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("BGE"   , TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0x9A); getrelative();        }
+        if   (compareit("$"     , FALSE)) { emit(0x9A); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0x9E); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("SUB"   , TRUE ) || compareit("SUBC", TRUE))
@@ -3938,7 +5115,7 @@ START:
             getimmediate(FALSE);
         } elif (compareit("$", FALSE))
         {   emit(0xA8 + reg1);
-            getrelative();
+            getrelative(FALSE);
         } elif (compareit("/", FALSE))
         {   getabsolute_nonbranch_ieee(0xAC, reg1);
         } elif (reg1 == 0)
@@ -3978,17 +5155,17 @@ START:
     }   }
     elif     (compareit("CALLNE", TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0xB8); getrelative();        }
+        if   (compareit("$"     , FALSE)) { emit(0xB8); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0xBC); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("CALLLE", TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0xB9); getrelative();        }
+        if   (compareit("$"     , FALSE)) { emit(0xB9); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0xBD); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("CALLGE", TRUE ))
     {   skipblanks(TRUE);
-        if   (compareit("$"     , FALSE)) { emit(0xBA); getrelative();        }
+        if   (compareit("$"     , FALSE)) { emit(0xBA); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0xBE); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("NOP"   , FALSE))   emit(0xC0);
@@ -4001,7 +5178,7 @@ START:
         reg1 = getreg_ieee();
         if (!compareit(",", FALSE))
         {   asmerror("comma expected");
-        } elif (compareit("$"   , FALSE)) { emit(0xD8 + reg1); getrelative();        }
+        } elif (compareit("$"   , FALSE)) { emit(0xD8 + reg1); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0xDC + reg1); getabsolute_branch(); }
         else asmerror("$ or / expected");
     } elif   (compareit("CMP"   , TRUE ))
@@ -4014,7 +5191,7 @@ START:
             getimmediate(FALSE);
         } elif (compareit("$", FALSE))
         {   emit(0xE8 + reg1);
-            getrelative();
+            getrelative(FALSE);
         } elif (compareit("/", FALSE))
         {   getabsolute_nonbranch_ieee(0xEC, reg1);
         } elif (reg1 == 0)
@@ -4028,7 +5205,7 @@ START:
         reg1 = getreg_ieee();
         if (!compareit(",", FALSE))
         {   asmerror("comma expected");
-        } elif (compareit("$"   , FALSE)) { emit(0xF8 + reg1); getrelative();        }
+        } elif (compareit("$"   , FALSE)) { emit(0xF8 + reg1); getrelative(FALSE);   }
         elif (compareit("/"     , FALSE)) { emit(0xFC + reg1); getabsolute_branch(); }
         else asmerror("$ or / expected");
     }
@@ -4078,4 +5255,22 @@ START:
     }   }
 
     return TRUE;
+}
+
+MODULE FLAG isterminator(TEXT thechar)
+{   if
+    (   thechar == EOS
+     || thechar == CR
+     || thechar == LF
+     || thechar == ' '
+     || thechar == HT
+     || thechar == ';'
+     || thechar == ':'
+     || thechar == '.'
+     || thechar == '}'
+     || (assembling && thechar == ',') // so that eg. "E 1234 BCTA,UN" works
+    )
+    {   return TRUE;
+    } // implied else
+    return FALSE;
 }

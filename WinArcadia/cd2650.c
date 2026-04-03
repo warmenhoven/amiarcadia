@@ -98,6 +98,7 @@ IMPORT       int                  ambient,
                                   debugdrive,
                                   drawmode,
                                   drive_mode,
+                                  drive_idmode,
                                   editscreen,
                                   framebased,
                                   game,
@@ -285,9 +286,16 @@ EXPORT void cd2650_setmemmap(void)
     for (i = 0x1000; i <= 0x14FF; i++) memory[i] = 0x20;
     for (i = 0x1500; i <= 0x5FFF; i++) memory[i] = 0;
     if (!post && cd2650_biosver == CD2650_IPL && cd2650_dosver != DOS_NOCD2650DOS)
-    {   for (i = 0x6000; i <= 0x7AFF; i++)
-        {   memory[i] = cd2650_dos[cd2650_dosver][i - 0x6000];
-        }
+    {   switch (cd2650_dosver)
+        {
+        case DOS_CDDOS:
+            for (i = 0x6000; i <= 0x7AFF; i++)
+            {   memory[i] = cd2650_dos[i - 0x6000];
+            }
+        acase DOS_P1DOS:
+            for (i = 0x6000; i <= 0x7AFF; i++)
+            {   memory[i] = p1dos[i - 0x6000 + 0x1200]; // $1200..$2CFF on disk -> $6000..$7AFF in RAM
+        }   }
         iar = 0x6000;
     } else
     {   for (i = 0x6000; i <= 0x7AFF; i++)
@@ -301,24 +309,27 @@ EXPORT void cd2650_setmemmap(void)
         {   memflags[address] |= NOWRITE;
         } elif (address <= 0x14FF)
         {   memflags[address] |= VISIBLE;
-        } elif (address >= 0x1800 && address <= 0x1FFF)
+        } /* Eelco's machine has RAM at $1800..$1FFF but original machine has nothing there
+        elif (address >= 0x1800 && address <= 0x1FFF)
         {   memflags[address] |= NOREAD | NOWRITE;
-        }
+        } */
 
         mirror_r[address] =
         mirror_w[address] = (UWORD) address;
     }
 
+    if (cd2650_dosver == DOS_P1DOS)
+    {   machines[CD2650].firstdatacomment = FIRSTP1DOSDATACOMMENT;
+        machines[CD2650].lastdatacomment  = LASTP1DOSDATACOMMENT;
+        for (i = 0x6000; i <= 0x7AFF; i++)
+        {   memflags[i] |= BIOS;
+    }   }
     for (i = machines[machine].firstcodecomment; i <= machines[machine].lastcodecomment; i++)
     {   memflags[codecomment[i].address] |= COMMENTED;
     }
     for (i = 0; i <= biosend; i++)
     {   memflags[i] |= BIOS;
     }
-    if (cd2650_dosver == DOS_P1DOS)
-    {   for (i = 0x6000; i <= 0x7AFF; i++)
-        {   memflags[i] |= BIOS;
-    }   }
 
     cd2650_updatecharset();
 
@@ -1226,7 +1237,7 @@ EXPORT void cd2650_create_disk(int whichdrive)
     read_rtc();
 
     if (cd2650_dosver == DOS_P1DOS)
-    {   for (i = 0; i <= 0x277; i++)
+    {   for (i = 0; i <= 0x5603; i++)
         {   drive[whichdrive].contents[i] = p1dos[i];
     }   }
     else
@@ -1273,10 +1284,8 @@ EXPORT void cd2650_create_disk(int whichdrive)
         drive[whichdrive].contents[64 + 45] = drive[whichdrive].contents[64 + 53] = '-';
         drive[whichdrive].contents[64 + 46] = drive[whichdrive].contents[64 + 54] = '0' + ((rtc.year  % 100) / 10);
         drive[whichdrive].contents[64 + 47] = drive[whichdrive].contents[64 + 55] = '0' + ((rtc.year  % 100) % 10);
-    }
 
-    if (cd2650_dosver != DOS_NOCD2650DOS)
-    {   memcpy(&drive[whichdrive].contents[2 * CD2650_TRACKSIZE], cd2650_dos[cd2650_dosver], 6912); // 6.75K (tracks 2..4)
+        memcpy(&drive[whichdrive].contents[2 * CD2650_TRACKSIZE], cd2650_dos, 6912); // 6.75K (tracks 2..4)
     }
 
     for (i = 0; i < CD2650_DISKSIZE / 8; i++)
@@ -1455,7 +1464,40 @@ EXPORT void cd2650_dir_disk(FLAG quiet, int whichdrive)
     }   }   }   }
 
     if (!quiet)
-    {   zprintf
+    {   if (verbosedisk)
+        {   zprintf
+            (   TEXTPEN_DISK,
+                "\n" \
+                "Filename.Extn Block(s)\n" \
+                "------------- --------\n"
+            );
+
+            for (i = 0; i < 64; i++)
+            {   if (drive[whichdrive].filename[i] && drive[whichdrive].filename[i][0])
+                {   startblock = (  drive[whichdrive].contents[(i * 64) + 28] * CD2650_SECTORS) // track
+                                  + drive[whichdrive].contents[(i * 64) + 29] - 1;              // sector
+                    endblock   = (  drive[whichdrive].contents[(i * 64) + 30] * CD2650_SECTORS) // track
+                                  + drive[whichdrive].contents[(i * 64) + 31] - 1;              // sector
+                    if (startblock == endblock)
+                    {   zprintf
+                        (   TEXTPEN_DISK,
+                            "%-8s.%-4s      %3d\n",
+                            drive[whichdrive].filename[i],
+                            drive[whichdrive].fileext[i],
+                            startblock
+                        );
+                    } else
+                    {   zprintf
+                        (   TEXTPEN_DISK,
+                            "%-8s.%-4s %3d..%3d\n",
+                            drive[whichdrive].filename[i],
+                            drive[whichdrive].fileext[i],
+                            startblock,
+                            endblock
+                        );
+        }   }   }   }
+
+        zprintf
         (   TEXTPEN_DISK,
             "\n%5d bytes used by files.\n" \
             "%5d bytes reserved for file list.\n" \
@@ -2103,9 +2145,14 @@ EXPORT void cd2650_serialize_cos(void)
 {   int i,
         whichdrive;
 
-    for (i = 0x3FF; i <= 0x7FFF; i++)
-    {   serialize_byte(&memory[i]);
-    }
+    if (cosversion >= 44)
+    {   for (i =     0; i <= 0x7FFF; i++)
+        {   serialize_byte(&memory[i]);
+    }   }
+    else
+    {   for (i = 0x3FF; i <= 0x7FFF; i++)
+        {   serialize_byte(&memory[i]);
+    }   }
     if (serializemode == SERIALIZE_READ)
     {   for (whichdrive = 0; whichdrive < machines[machine].drives; whichdrive++)
         {   for (i = 0; i < CD2650_DISKSIZE / 8; i++)
@@ -2126,6 +2173,9 @@ EXPORT void cd2650_serialize_cos(void)
     }
     serialize_byte_int((int*) &curdrive);
     serialize_byte_int(&drive_mode);
+    if (cosversion >= 44)
+    {   serialize_byte_int(&drive_idmode);
+    }
     serialize_byte_int(&stepdir);
     if (stepdir == 0xFF)
     {   stepdir = -1;

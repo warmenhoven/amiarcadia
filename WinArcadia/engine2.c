@@ -116,7 +116,7 @@ EXPORT       int                      base                     = BASE_HEX,
                                       ppc,
                                       runtoframe               = FALSE,
                                       speedup                  = SPEED_4QUARTERS,
-                                      udcflips                 =  0,
+                                      udgflips                 =  0,
                                       usecsperframe[2],
                                       whichkeyrect,
                                       whichoverlay;
@@ -303,7 +303,7 @@ IMPORT       int                      ambient,
                                       trainer_lives,
                                       trainer_time,
                                       trainer_invincibility,
-                                      udcflip,
+                                      udgflip,
                                       vdu_x, vdu_y,
                                       verbosity,
                                       viewspeedas,
@@ -379,6 +379,8 @@ IMPORT const struct KnownStruct       known[KNOWNGAMES];
                                       language,
                                       memmap_to_smlimage[MEMMAPS],
                                       outputpos,
+                                      storedmenu1,
+                                      storedmenu2,
                                       textcolour;
     IMPORT       HICON                smlicon;
     IMPORT       HWND                 hStatusBar,
@@ -516,7 +518,7 @@ EXPORT void configure(void)
         paddleright     = -1;
         firstrow        = 26;
         lastrow         = -1;
-        udcflips        =
+        udgflips        =
         spriteflips     = 0;
         for (i = 0; i < 4; i++)
         {   protect[    i] =
@@ -604,7 +606,7 @@ EXPORT void configure(void)
             }
         acase INSTRUCTOR:
             s_id          = (int)   known[whichgame].spriteflips;
-            s_is          = (int)   known[whichgame].udcflips;
+            s_is          = (int)   known[whichgame].udgflips;
             s_io          =         known[whichgame].flagline;
         acase PHUNSY:
             startaddr_h   = (UBYTE) (known[whichgame].startaddr / 256);
@@ -653,10 +655,10 @@ EXPORT void configure(void)
         make_stars();
 
         if (machine != PIPBUG && machine != INSTRUCTOR) // because these machines use these known[] structure fields for other purposes
-        {   if (known[whichgame].demultiplex || known[whichgame].spriteflips || known[whichgame].udcflips)
+        {   if (known[whichgame].demultiplex || known[whichgame].spriteflips || known[whichgame].udgflips)
             {   firstrow    =  known[whichgame].firstrow;
                 lastrow     =  known[whichgame].lastrow;
-                udcflips    =  known[whichgame].udcflips;
+                udgflips    =  known[whichgame].udgflips;
                 spriteflips =  known[whichgame].spriteflips;
                 if (machine == INTERTON || machine == ELEKTOR)
                 {   multisprite[0] = (known[whichgame].demultiplex & 0x80) ? TRUE : FALSE;
@@ -1339,7 +1341,6 @@ EXPORT void auditfile(STRPTR passedname, int passedsize, FLAG user)
     case KIND_PSG:
     case KIND_YM:
     case KIND_MNG:
-    case KIND_AVIANIM:
     case KIND_MIDI:
     case KIND_SMUS:
     case KIND_ASCII:
@@ -1861,6 +1862,11 @@ EXPORT int readnum_hex(STRPTR input, int length)
 
     lastparse = BASE_HEX;
 
+    if (length >= 2 && (input[length - 1] == 'H' || input[length - 1] == 'h'))
+    {   length--;
+    }
+    zstrncpy(gtempstring, input, length);
+
     for (i = 0; i < length; i++)
     {   if
         (   (input[i] >= 'a' && input[i] <= 'f')
@@ -1873,7 +1879,8 @@ EXPORT int readnum_hex(STRPTR input, int length)
         {   return OUTOFRANGE;
     }   }
 
-    DISCARD stch_l(input, (void*) &value); // hexstring -> number
+    DISCARD stch_l(gtempstring, (void*) &value); // hexstring -> number
+
     return value;
 }
 
@@ -2162,7 +2169,7 @@ PERSIST const int textpen_to_rgb[] =
             );
         }
 
-        if (!quitting)
+        if (!quitting && storedmenu1 == -1 && storedmenu2 == -1)
         {   wa_checkinput();
             process_code();
     }   }
@@ -3111,24 +3118,27 @@ EXPORT void make_opcodetip(int i, STRPTR stringptr)
 #endif
     }
 
-    if (style != STYLE_CALM)
-    {   if (i == 0x9F || i == 0xBF) // BXA/BSXA
-        {   strcpy((char*) formatstring, opcodes[style][i].format);
-        } elif (opcodes[style][i].format[0])
-        {   sprintf((char*) formatstring, "%s %s", opcodes[style][i].name, opcodes[style][i].format);
-        } else
-        {   strcpy((char*) formatstring, opcodes[style][i].name);
-    }   }
-    else
-    {   // assert(style == STYLE_CALM);
+    switch (style)
+    {
+    acase STYLE_OLDCALM:
         if ((i == 0x11 && supercpu) || (i >= 0xC8 && i <= 0xCF) || (i >= 0xD4 && i <= 0xD7))
         {   strcpy((char*) formatstring, opcodes[style][i].format);
         } elif (opcodes[style][i].format[0])
         {   sprintf((char*) formatstring, "%s%s", opcodes[style][i].name, opcodes[style][i].format);
         } else
         {   strcpy((char*) formatstring, opcodes[style][i].name);
+        }
+    acase STYLE_NEWCALM:
+        strcpy((char*) formatstring, opcodes[style][i].name);
+    adefault:
+        if (style != STYLE_IEEE && (i == 0x9F || i == 0xBF)) // BXA/BSXA
+        {   strcpy((char*) formatstring, opcodes[style][i].format); // "BXA $aaaa,r3" or "BSXA $aaaa,r3"
+        } elif (opcodes[style][i].format[0])
+        {   sprintf((char*) formatstring, "%s %s", opcodes[style][i].name, opcodes[style][i].format);
+        } else
+        {   strcpy((char*) formatstring, opcodes[style][i].name);
     }   }
-
+    
     switch (table_addrmode_2650[supercpu][i])
     {
     case  'A': addrmode = (STRPTR) LLL(MSG_ABSOLUTE,  "Absolute");
@@ -3532,6 +3542,10 @@ EXPORT void patchrom(void)
         case COMEFRUTASPOS3:
             memory[ 0xB6E] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
         acase CRAZYGOBBLERPOS:
+            memory[ 0x2D9] = trainer_invincibility ? 0x1F : 0x0C; // LODA,r0 $18DC         -> BCTA,un $33A
+            memory[ 0x2DA] = trainer_invincibility ? 0x03 : 0x18;
+            memory[ 0x2DB] = trainer_invincibility ? 0x3A : 0xDC;
+
             memory[ 0x2DD] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
         acase CRAZYCLIMBERPOS:
             memory[ 0xDA3] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
@@ -4463,11 +4477,11 @@ EXPORT int parse_bytes(int mode)
         if (cosversion != machines[newmachine].cosversion)
         {   if
             (   (newmachine == PIPBUG && cosversion == 41)
-             || (newmachine == BINBUG && cosversion == 42)
+             || (newmachine == BINBUG && cosversion >= 42)
              || (newmachine == TWIN   && cosversion == 39)
-             || (newmachine == CD2650 && cosversion == 42)
+             || (newmachine == CD2650 && cosversion >= 42)
             )
-            {   ;
+            {   ; // OK
             } else
             {   sprintf((char*) tempstring, LLL(MSG_UNSUPPORTEDVER2, "Unsupported %s version (obsolete/future version)!"), "COS/COR");
                 say((STRPTR) tempstring);
@@ -4841,8 +4855,8 @@ EXPORT int parse_bytes(int mode)
         draw_margins();
         sound_reset();
         clearcoverage();
-        spriteflip         =
-        udcflip            = 0;
+        spriteflip =
+        udgflip    = 0;
         reset_fps();
     }
 

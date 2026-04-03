@@ -1316,6 +1316,7 @@ EXPORT void update_floppydrive(int level, int whichdrive)
                              && drive[whichdrive].contents[fileoffset[i] + (viewing / 8)] & (0x80 >> (viewing % 8))
                             )
                             {   strcpy(gtempstring, drive[whichdrive].filename[i]);
+                                twin_get_commands(whichdrive, i, FALSE); // extends gtempstring
                                 break;
                         }   }
                     acase BAM_FREE: strcpy(gtempstring, "(Free)");

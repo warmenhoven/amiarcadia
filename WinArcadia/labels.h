@@ -4186,8 +4186,9 @@ EXPORT struct EquivalentStruct equivalents[EQUIVALENTS] = {
 {   0x40, "FLAG"               , DATA    },
 {   0x80, "S"                  , DATA    },
 {   0x80, "SENS"               , DATA    }, // 4169 LASTCPUEQUIV
-// P1 DOS (CD2650) (4170..4205)
-{ 0x6004, "DOS_Command"        , POINTER }, // 4170 FIRSTP1DOSEQUIV
+// P1 DOS (CD2650) (4170..4224)
+{ 0x6003, "VersionCode"        , DATA    }, // 4170 FIRSTP1DOSEQUIV
+{ 0x6004, "DOS_Command"        , POINTER },
 { 0x6006, "DOS_InvalidCmdRetry", POINTER },
 { 0x6008, "DOS_ParseFilename"  , POINTER },
 { 0x600A, "DOS_ParseNumber"    , POINTER },
@@ -4196,8 +4197,8 @@ EXPORT struct EquivalentStruct equivalents[EQUIVALENTS] = {
 { 0x6010, "DOS_CloseFileByName", POINTER },
 { 0x6012, "DOS_CkChangeCodeByFP",POINTER },
 { 0x6014, "DOS_CkInspectCodeByFP",POINTER},
-{ 0x6016, "DOS_QyChangeCodeByFP",POINTER },
-{ 0x6018, "DOS_QyInspectCodeByFP",POINTER}, // 4180
+{ 0x6016, "DOS_QyChangeCodeByFP",POINTER }, // 4180
+{ 0x6018, "DOS_QyInspectCodeByFP",POINTER},
 { 0x601A, "DOS_AllocByName"    , POINTER },
 { 0x601C, "DOS_DeallocByName"  , POINTER },
 { 0x601E, "DOS_RWByName"       , POINTER },
@@ -4206,8 +4207,8 @@ EXPORT struct EquivalentStruct equivalents[EQUIVALENTS] = {
 { 0x6024, "DOS_LoadImageByName", POINTER },
 { 0x6026, "DOS_FileLengthByFP" , POINTER },
 { 0x6028, "DOS_SetCodeByName"  , POINTER },
-{ 0x602A, "DOS_QueryCodeByName", POINTER },
-{ 0x602C, "DOS_WriteChar"      , POINTER }, // 4190
+{ 0x602A, "DOS_QueryCodeByName", POINTER }, // 4190
+{ 0x602C, "DOS_WriteChar"      , POINTER },
 { 0x602E, "DOS_DoBackspace"    , POINTER },
 { 0x6030, "DOS_WriteHexByte"   , POINTER },
 { 0x6032, "DOS_WriteDecimal"   , POINTER },
@@ -4216,13 +4217,31 @@ EXPORT struct EquivalentStruct equivalents[EQUIVALENTS] = {
 { 0x6038, "DOS_ReadKbdNoecho"  , POINTER },
 { 0x603A, "DOS_ReadKbdEcho"    , POINTER },
 { 0x603C, "DOS_ReadKbdLine"    , POINTER },
-{ 0x603E, "DOS_ReadKbdCodeword", POINTER },
-{ 0x6040, "DOS_WrErr_Close_Cmdloop",POINTER}, // 4200
+{ 0x603E, "DOS_ReadKbdCodeword", POINTER }, // 4200
+{ 0x6040, "DOS_WrErr_Close_Cmdloop",POINTER},
 { 0x6042, "DOS_WriteErrorStr"  , POINTER },
 { 0x604A, "DOS_ReattachByName" , POINTER },
 { 0x6044, "DOS_ParseUnit"      , POINTER },
 { 0x6046, "DOS_Print"          , POINTER },
-{ 0x6048, "DOS_ClearScreen"    , POINTER }, // 4205 LASTP1DOSEQUIV
+{ 0x6048, "DOS_ClearScreen"    , POINTER },
+{ 0x6050, "ParsedFilename"     , STRING  },
+{ 0x6058, "ParsedType"         , STRING  },
+{ 0x605C, "PFName2"            , STRING  },
+{ 0x6064, "PFTyp2"             , STRING  }, // 4210
+{ 0x6068, "FileUnit"           , DATA    },
+{ 0x6069, "OpenFilePtr"        , POINTER },
+{ 0x606B, "Codeword"           , STRING  },
+{ 0x6073, "EntrCodeWord"       , STRING  },
+{ 0x607B, "Cmdline"            , STRING  },
+{ 0x60BC, "CursorAddr"         , POINTER },
+{ 0x60BE, "NumUnits"           , DATA    },
+{ 0x60BF, "LastUnit"           , DATA    },
+{ 0x60C0, "DefaultUnit"        , DATA    },
+{ 0x60C1, "CurrDate"           , STRING  }, // 4220
+{ 0x60C9, "CurrSignon"         , STRING  },
+{ 0x60D1, "CmdLinePtr"         , DATA    }, // not really a pointer
+{ 0x60D2, "PrivilegedMode"     , DATA    },
+{ 0x60D3, "TargetAddr"         , POINTER }, // 4224 LASTP1DOSEQUIV
 // End of machine equivalents
 // FIRSTGAMEEQUIV---------------------------------------------------------
 // Game equivalents start from here (array index FIRSTGAMEEQUIV), and are referred to as offsets from here...

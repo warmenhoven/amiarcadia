@@ -115,7 +115,6 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Generate &animations"
         BEGIN
-            MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
             MENUITEM "&GIF",                        ID_MACRO_GIF
             MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
             MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -291,28 +290,30 @@ BEGIN
         END
         POPUP "&Opcje"
         BEGIN
-            MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-            MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-            MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
-            MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+            MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+            MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+            MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
+            MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
             MENUITEM SEPARATOR
-            MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-            MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+            MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+            MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
             MENUITEM SEPARATOR
-            MENUITEM "N 0",                         ID_DEBUG_N_0
-            MENUITEM "N 1",                         ID_DEBUG_N_1
-            MENUITEM "N 2",                         ID_DEBUG_N_2
-            MENUITEM "N 3",                         ID_DEBUG_N_3
+            MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+            MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+            MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+            MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+            MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
             MENUITEM SEPARATOR
-            MENUITEM "TU 0",                        ID_DEBUG_TU_0
-            MENUITEM "TU 1",                        ID_DEBUG_TU_1
-            MENUITEM "TU 2",                        ID_DEBUG_TU_2
+            MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+            MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+            MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
             MENUITEM SEPARATOR
             MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
             MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
             MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
             MENUITEM SEPARATOR
             MENUITEM "GR",                          ID_DEBUG_GR
+            MENUITEM "WARN",                        ID_DEBUG_WARN
         END
         POPUP "Gr&afika"
         BEGIN
@@ -439,7 +440,7 @@ BEGIN
             MENUITEM "N&one",                       ID_DOS_NOTWINDOS
             MENUITEM SEPARATOR
             MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-            MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+            MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
             MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
         END
         POPUP "&Emulator"
@@ -450,7 +451,6 @@ BEGIN
 
             MENUITEM "Potwierdz przy wyjΆ&cie?",    ID_EMULATOR_CONFIRM
             MENUITEM "&Echo we/wy do konsoli?",     ID_LOG_CONSOLE
-            MENUITEM "&Frame/line-based emulation?", ID_EMULATOR_FRAMEBASED
             MENUITEM "Zident&yfikuj emulator?",     ID_EMULATOR_EMUID
             MENUITEM "Autotest &po wlaczeniu zasilania?", ID_EMULATOR_POST
             MENUITEM "Pamiec losowa? (&Z)",         ID_EMULATOR_RANDOMIZE
@@ -458,6 +458,9 @@ BEGIN
             MENUITEM "Pokazac w&skazσwki przy starcie?", ID_EMULATOR_SHOWTOD
             MENUITEM "&Uzywaj programσw posredniczacych?", 
                                                     ID_EMULATOR_USESTUBS
+            MENUITEM SEPARATOR
+            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
             MENUITEM SEPARATOR
             MENUITEM "&Dolacz do pamieci WinArcadia.log", ID_LOG_APPEND
             MENUITEM "&Ignoruj WinArcadia.log",     ID_LOG_IGNORE
@@ -496,7 +499,7 @@ BEGIN
             MENUITEM "De&jitterowe horyzonty?",     ID_GRAPHICS_DEJITTER
             MENUITEM "Wzmacniac ni&ebo?",           ID_GRAPHICS_SKIES
             MENUITEM "Wypeln&iac skrzyzowania?",    ID_GRAPHICS_CORNERS
-            MENUITEM "Pelny ekran? (&F)\tAlt+Enter, Ctrl+F", 
+            MENUITEM "Pelny ekran? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                     ID_GRAPHICS_FULLSCREEN
             MENUITEM "Odwrσc&ic migajace znaki?",   ID_VDU_COOMER
             MENUITEM "Waski? (&N)\tCtrl+N",         ID_GRAPHICS_NARROW
@@ -602,7 +605,11 @@ BEGIN
         POPUP "Kra&snoludki"
         BEGIN
             MENUITEM "Kolizje? (&C)\tCtrl+L",       ID_SPRITES_COLLISIONS
-            MENUITEM "&Demultiplex?",               ID_SPRITES_DEMULTIPLEX
+            MENUITEM SEPARATOR
+            MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+            MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+            MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
         END
         POPUP "&Trener"
         BEGIN
@@ -738,7 +745,6 @@ BEGIN
             MENUITEM SEPARATOR
             POPUP "Generate &animations"
             BEGIN
-                MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
                 MENUITEM "&GIF",                        ID_MACRO_GIF
                 MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
                 MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -917,29 +923,31 @@ BEGIN
             END
             POPUP "&Opcje"
             BEGIN
-                MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-                MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-                MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
+                MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+                MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+                MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
 
-                MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+                MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
                 MENUITEM SEPARATOR
-                MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-                MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+                MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+                MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
                 MENUITEM SEPARATOR
-                MENUITEM "N 0",                         ID_DEBUG_N_0
-                MENUITEM "N 1",                         ID_DEBUG_N_1
-                MENUITEM "N 2",                         ID_DEBUG_N_2
-                MENUITEM "N 3",                         ID_DEBUG_N_3
+                MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+                MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+                MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+                MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+                MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
                 MENUITEM SEPARATOR
-                MENUITEM "TU 0",                        ID_DEBUG_TU_0
-                MENUITEM "TU 1",                        ID_DEBUG_TU_1
-                MENUITEM "TU 2",                        ID_DEBUG_TU_2
+                MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+                MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+                MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
                 MENUITEM SEPARATOR
                 MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
                 MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
                 MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
                 MENUITEM SEPARATOR
                 MENUITEM "GR",                          ID_DEBUG_GR
+                MENUITEM "WARN",                        ID_DEBUG_WARN
             END
             POPUP "Gr&afika"
             BEGIN
@@ -1074,7 +1082,7 @@ BEGIN
                 MENUITEM "N&one",                       ID_DOS_NOTWINDOS
                 MENUITEM SEPARATOR
                 MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-                MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+                MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
                 MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
             END
             POPUP "&Emulator"
@@ -1085,9 +1093,6 @@ BEGIN
 
                 MENUITEM "Potwierdz przy wyjΆ&cie?",    ID_EMULATOR_CONFIRM
                 MENUITEM "&Echo we/wy do konsoli?",     ID_LOG_CONSOLE
-                MENUITEM "&Frame/line-based emulation?", 
-                                                        ID_EMULATOR_FRAMEBASED
-
                 MENUITEM "Zident&yfikuj emulator?",     ID_EMULATOR_EMUID
                 MENUITEM "Autotest &po wlaczeniu zasilania?", 
                                                         ID_EMULATOR_POST
@@ -1099,6 +1104,11 @@ BEGIN
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "&Uzywaj programσw posredniczacych?", 
                                                         ID_EMULATOR_USESTUBS
+                MENUITEM SEPARATOR
+                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+
+                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
+
                 MENUITEM SEPARATOR
                 MENUITEM "&Dolacz do pamieci WinArcadia.log", ID_LOG_APPEND
                 MENUITEM "&Ignoruj WinArcadia.log",     ID_LOG_IGNORE
@@ -1141,7 +1151,7 @@ BEGIN
                 MENUITEM "De&jitterowe horyzonty?",     ID_GRAPHICS_DEJITTER
                 MENUITEM "Wzmacniac ni&ebo?",           ID_GRAPHICS_SKIES
                 MENUITEM "Wypeln&iac skrzyzowania?",    ID_GRAPHICS_CORNERS
-                MENUITEM "Pelny ekran? (&F)\tAlt+Enter, Ctrl+F", 
+                MENUITEM "Pelny ekran? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                         ID_GRAPHICS_FULLSCREEN
 
                 MENUITEM "Odwrσc&ic migajace znaki?",   ID_VDU_COOMER
@@ -1262,7 +1272,12 @@ BEGIN
             BEGIN
                 MENUITEM "Kolizje? (&C)\tCtrl+L",       ID_SPRITES_COLLISIONS
 
-                MENUITEM "&Demultiplex?",               ID_SPRITES_DEMULTIPLEX
+                MENUITEM SEPARATOR
+                MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+
+                MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+                MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
 
             END
             POPUP "&Trener"
@@ -1416,7 +1431,6 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Generate &animations"
         BEGIN
-            MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
             MENUITEM "&GIF",                        ID_MACRO_GIF
             MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
             MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -1592,28 +1606,30 @@ BEGIN
         END
         POPUP "&Options"
         BEGIN
-            MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-            MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-            MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
-            MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+            MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+            MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+            MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
+            MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
             MENUITEM SEPARATOR
-            MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-            MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+            MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+            MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
             MENUITEM SEPARATOR
-            MENUITEM "N 0",                         ID_DEBUG_N_0
-            MENUITEM "N 1",                         ID_DEBUG_N_1
-            MENUITEM "N 2",                         ID_DEBUG_N_2
-            MENUITEM "N 3",                         ID_DEBUG_N_3
+            MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+            MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+            MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+            MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+            MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
             MENUITEM SEPARATOR
-            MENUITEM "TU 0",                        ID_DEBUG_TU_0
-            MENUITEM "TU 1",                        ID_DEBUG_TU_1
-            MENUITEM "TU 2",                        ID_DEBUG_TU_2
+            MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+            MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+            MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
             MENUITEM SEPARATOR
             MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
             MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
             MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
             MENUITEM SEPARATOR
             MENUITEM "GR",                          ID_DEBUG_GR
+            MENUITEM "WARN",                        ID_DEBUG_WARN
         END
         POPUP "Γπΰτθκΰ (&A)"
         BEGIN
@@ -1743,7 +1759,7 @@ BEGIN
             MENUITEM "N&one",                       ID_DOS_NOTWINDOS
             MENUITEM SEPARATOR
             MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-            MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+            MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
             MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
         END
         POPUP "έμσλÿςξπ (&E)"
@@ -1754,7 +1770,6 @@ BEGIN
 
             MENUITEM "Οξδςβεπζδενθε βϋυξδΰ? (&C)",  ID_EMULATOR_CONFIRM
             MENUITEM "Ξςπΰζΰςό β κξνρξλθ ββξδ/βϋβξδ? (&E)", ID_LOG_CONSOLE
-            MENUITEM "&Frame/line-based emulation?", ID_EMULATOR_FRAMEBASED
             MENUITEM "Ξοπεδελθςό ύμσλÿςξπ? (&Y)",   ID_EMULATOR_EMUID
             MENUITEM "Ρΰμξοπξβεπκΰ οπθ βκλώχενθθ? (&P)", ID_EMULATOR_POST
             MENUITEM "Randomi&ze memory?",          ID_EMULATOR_RANDOMIZE
@@ -1762,6 +1777,9 @@ BEGIN
             MENUITEM "&Show tips at startup?",      ID_EMULATOR_SHOWTOD
             MENUITEM "Θροξλόηξβΰςό οπξγπΰμμϋ-ηΰγλσψκθ? (&U)", 
                                                     ID_EMULATOR_USESTUBS
+            MENUITEM SEPARATOR
+            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
             MENUITEM SEPARATOR
             MENUITEM "Appen&d to WinArcadia.log",   ID_LOG_APPEND
             MENUITEM "&Ignore WinArcadia.log",      ID_LOG_IGNORE
@@ -1802,7 +1820,7 @@ BEGIN
                                                     ID_GRAPHICS_SKIES
             MENUITEM "Ηΰοξλνÿςό οεπερεχενθÿ ρεγμενςξβ? (&I)", 
                                                     ID_GRAPHICS_CORNERS
-            MENUITEM "Οξλνϋι ύκπΰν? (&F)\tAlt+Enter, Ctrl+F", 
+            MENUITEM "Οξλνϋι ύκπΰν? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                     ID_GRAPHICS_FULLSCREEN
             MENUITEM "&Invert flashed characters?", ID_VDU_COOMER
             MENUITEM "Ρσζθβΰςό? (&N)\tCtrl+N",      ID_GRAPHICS_NARROW
@@ -1913,8 +1931,11 @@ BEGIN
         BEGIN
             MENUITEM "Ξοπεδελενθε ρςξλκνξβενθÿ ροπΰιςξβ? (&C)\tCtrl+L", 
                                                     ID_SPRITES_COLLISIONS
-            MENUITEM "Δεμσλόςθολεκρθπξβΰνθε ροπΰιςξβ? (&D)", 
-                                                    ID_SPRITES_DEMULTIPLEX
+            MENUITEM SEPARATOR
+            MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+            MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+            MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
         END
         POPUP "Òπενεπϋ (&T)"
         BEGIN
@@ -2051,7 +2072,6 @@ BEGIN
             MENUITEM SEPARATOR
             POPUP "Generate &animations"
             BEGIN
-                MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
                 MENUITEM "&GIF",                        ID_MACRO_GIF
                 MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
                 MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -2230,29 +2250,31 @@ BEGIN
             END
             POPUP "&Options"
             BEGIN
-                MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-                MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-                MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
+                MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+                MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+                MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
 
-                MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+                MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
                 MENUITEM SEPARATOR
-                MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-                MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+                MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+                MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
                 MENUITEM SEPARATOR
-                MENUITEM "N 0",                         ID_DEBUG_N_0
-                MENUITEM "N 1",                         ID_DEBUG_N_1
-                MENUITEM "N 2",                         ID_DEBUG_N_2
-                MENUITEM "N 3",                         ID_DEBUG_N_3
+                MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+                MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+                MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+                MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+                MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
                 MENUITEM SEPARATOR
-                MENUITEM "TU 0",                        ID_DEBUG_TU_0
-                MENUITEM "TU 1",                        ID_DEBUG_TU_1
-                MENUITEM "TU 2",                        ID_DEBUG_TU_2
+                MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+                MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+                MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
                 MENUITEM SEPARATOR
                 MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
                 MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
                 MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
                 MENUITEM SEPARATOR
                 MENUITEM "GR",                          ID_DEBUG_GR
+                MENUITEM "WARN",                        ID_DEBUG_WARN
             END
             POPUP "Γπΰτθκΰ (&A)"
             BEGIN
@@ -2389,7 +2411,7 @@ BEGIN
                 MENUITEM "N&one",                       ID_DOS_NOTWINDOS
                 MENUITEM SEPARATOR
                 MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-                MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+                MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
                 MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
             END
             POPUP "έμσλÿςξπ (&E)"
@@ -2401,9 +2423,6 @@ BEGIN
                 MENUITEM "Οξδςβεπζδενθε βϋυξδΰ? (&C)",  ID_EMULATOR_CONFIRM
                 MENUITEM "Ξςπΰζΰςό β κξνρξλθ ββξδ/βϋβξδ? (&E)", 
                                                         ID_LOG_CONSOLE
-                MENUITEM "&Frame/line-based emulation?", 
-                                                        ID_EMULATOR_FRAMEBASED
-
                 MENUITEM "Ξοπεδελθςό ύμσλÿςξπ? (&Y)",   ID_EMULATOR_EMUID
                 MENUITEM "Ρΰμξοπξβεπκΰ οπθ βκλώχενθθ? (&P)", 
                                                         ID_EMULATOR_POST
@@ -2414,6 +2433,11 @@ BEGIN
                 MENUITEM "&Show tips at startup?",      ID_EMULATOR_SHOWTOD
                 MENUITEM "Θροξλόηξβΰςό οπξγπΰμμϋ-ηΰγλσψκθ? (&U)", 
                                                         ID_EMULATOR_USESTUBS
+                MENUITEM SEPARATOR
+                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+
+                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
+
                 MENUITEM SEPARATOR
                 MENUITEM "Appen&d to WinArcadia.log",   ID_LOG_APPEND
                 MENUITEM "&Ignore WinArcadia.log",      ID_LOG_IGNORE
@@ -2458,7 +2482,7 @@ BEGIN
                                                         ID_GRAPHICS_SKIES
                 MENUITEM "Ηΰοξλνÿςό οεπερεχενθÿ ρεγμενςξβ? (&I)", 
                                                         ID_GRAPHICS_CORNERS
-                MENUITEM "Οξλνϋι ύκπΰν? (&F)\tAlt+Enter, Ctrl+F", 
+                MENUITEM "Οξλνϋι ύκπΰν? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                         ID_GRAPHICS_FULLSCREEN
 
                 MENUITEM "&Invert flashed characters?", ID_VDU_COOMER
@@ -2582,8 +2606,12 @@ BEGIN
                 MENUITEM "Ξοπεδελενθε ρςξλκνξβενθÿ ροπΰιςξβ? (&C)\tCtrl+L", 
                                                         ID_SPRITES_COLLISIONS
 
-                MENUITEM "Δεμσλόςθολεκρθπξβΰνθε ροπΰιςξβ? (&D)", 
-                                                        ID_SPRITES_DEMULTIPLEX
+                MENUITEM SEPARATOR
+                MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+
+                MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+                MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
 
             END
             POPUP "Òπενεπϋ (&T)"
@@ -2749,7 +2777,6 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Generate &animations"
         BEGIN
-            MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
             MENUITEM "&GIF",                        ID_MACRO_GIF
             MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
             MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -2925,28 +2952,30 @@ BEGIN
         END
         POPUP "Einstellungen (&O)"
         BEGIN
-            MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-            MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-            MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
-            MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+            MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+            MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+            MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
+            MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
             MENUITEM SEPARATOR
-            MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-            MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+            MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+            MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
             MENUITEM SEPARATOR
-            MENUITEM "N 0",                         ID_DEBUG_N_0
-            MENUITEM "N 1",                         ID_DEBUG_N_1
-            MENUITEM "N 2",                         ID_DEBUG_N_2
-            MENUITEM "N 3",                         ID_DEBUG_N_3
+            MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+            MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+            MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+            MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+            MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
             MENUITEM SEPARATOR
-            MENUITEM "TU 0",                        ID_DEBUG_TU_0
-            MENUITEM "TU 1",                        ID_DEBUG_TU_1
-            MENUITEM "TU 2",                        ID_DEBUG_TU_2
+            MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+            MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+            MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
             MENUITEM SEPARATOR
             MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
             MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
             MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
             MENUITEM SEPARATOR
             MENUITEM "GR",                          ID_DEBUG_GR
+            MENUITEM "WARN",                        ID_DEBUG_WARN
         END
         POPUP "Gr&afik"
         BEGIN
@@ -3072,7 +3101,7 @@ BEGIN
             MENUITEM "N&one",                       ID_DOS_NOTWINDOS
             MENUITEM SEPARATOR
             MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-            MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+            MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
             MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
         END
         POPUP "&Emulator"
@@ -3083,13 +3112,15 @@ BEGIN
 
             MENUITEM "Bestδtigung beim Beenden? (&C)", ID_EMULATOR_CONFIRM
             MENUITEM "&Echo I/O zur Konsole?",      ID_LOG_CONSOLE
-            MENUITEM "&Frame/line-based emulation?", ID_EMULATOR_FRAMEBASED
             MENUITEM "Identifiziere Emulator? (&Y)", ID_EMULATOR_EMUID
             MENUITEM "Einschaltselbsttest? (&P)",   ID_EMULATOR_POST
             MENUITEM "&Zufallsspeicher?",           ID_EMULATOR_RANDOMIZE
             MENUITEM "Erkenne Spiel? (&G)",         ID_EMULATOR_SENSEGAME
             MENUITEM "Tipp&s beim Starten anzeigen?", ID_EMULATOR_SHOWTOD
             MENUITEM "St&ummelprogramme benutzen?", ID_EMULATOR_USESTUBS
+            MENUITEM SEPARATOR
+            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
             MENUITEM SEPARATOR
             MENUITEM "Anhδnge an WinArcadia.log",   ID_LOG_APPEND
             MENUITEM "&Ignoriere WinArcadia.log",   ID_LOG_IGNORE
@@ -3127,7 +3158,7 @@ BEGIN
             MENUITEM "Horizontalen entflimmern? (&J)", ID_GRAPHICS_DEJITTER
             MENUITEM "&Enhance skies?",             ID_GRAPHICS_SKIES
             MENUITEM "Fόlle schn&ittpunkte?",       ID_GRAPHICS_CORNERS
-            MENUITEM "Vollbild? (&F)\tAlt+Enter, Ctrl+F", 
+            MENUITEM "Vollbild? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                     ID_GRAPHICS_FULLSCREEN
             MENUITEM "Blinkende Zeichen &invertieren?", ID_VDU_COOMER
             MENUITEM "Schmal? (&N)\tCtrl+N",        ID_GRAPHICS_NARROW
@@ -3237,7 +3268,11 @@ BEGIN
         POPUP "&Sprites"
         BEGIN
             MENUITEM "Kollisionen? (&C)\tCtrl+L",   ID_SPRITES_COLLISIONS
-            MENUITEM "&Demultiplexen?",             ID_SPRITES_DEMULTIPLEX
+            MENUITEM SEPARATOR
+            MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+            MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+            MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
         END
         POPUP "&Trainer"
         BEGIN
@@ -3372,7 +3407,6 @@ BEGIN
             MENUITEM SEPARATOR
             POPUP "Generate &animations"
             BEGIN
-                MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
                 MENUITEM "&GIF",                        ID_MACRO_GIF
                 MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
                 MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -3551,29 +3585,31 @@ BEGIN
             END
             POPUP "Einstellungen (&O)"
             BEGIN
-                MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-                MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-                MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
+                MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+                MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+                MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
 
-                MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+                MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
                 MENUITEM SEPARATOR
-                MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-                MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+                MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+                MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
                 MENUITEM SEPARATOR
-                MENUITEM "N 0",                         ID_DEBUG_N_0
-                MENUITEM "N 1",                         ID_DEBUG_N_1
-                MENUITEM "N 2",                         ID_DEBUG_N_2
-                MENUITEM "N 3",                         ID_DEBUG_N_3
+                MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+                MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+                MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+                MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+                MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
                 MENUITEM SEPARATOR
-                MENUITEM "TU 0",                        ID_DEBUG_TU_0
-                MENUITEM "TU 1",                        ID_DEBUG_TU_1
-                MENUITEM "TU 2",                        ID_DEBUG_TU_2
+                MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+                MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+                MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
                 MENUITEM SEPARATOR
                 MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
                 MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
                 MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
                 MENUITEM SEPARATOR
                 MENUITEM "GR",                          ID_DEBUG_GR
+                MENUITEM "WARN",                        ID_DEBUG_WARN
             END
             POPUP "Gr&afik"
             BEGIN
@@ -3704,7 +3740,7 @@ BEGIN
                 MENUITEM "N&one",                       ID_DOS_NOTWINDOS
                 MENUITEM SEPARATOR
                 MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-                MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+                MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
                 MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
             END
             POPUP "&Emulator"
@@ -3716,9 +3752,6 @@ BEGIN
                 MENUITEM "Bestδtigung beim Beenden? (&C)", 
                                                         ID_EMULATOR_CONFIRM
                 MENUITEM "&Echo I/O zur Konsole?",      ID_LOG_CONSOLE
-                MENUITEM "&Frame/line-based emulation?", 
-                                                        ID_EMULATOR_FRAMEBASED
-
                 MENUITEM "Identifiziere Emulator? (&Y)", ID_EMULATOR_EMUID
                 MENUITEM "Einschaltselbsttest? (&P)",   ID_EMULATOR_POST
                 MENUITEM "&Zufallsspeicher?",           ID_EMULATOR_RANDOMIZE
@@ -3728,6 +3761,11 @@ BEGIN
                 MENUITEM "Tipp&s beim Starten anzeigen?", 
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "St&ummelprogramme benutzen?", ID_EMULATOR_USESTUBS
+                MENUITEM SEPARATOR
+                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+
+                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
+
                 MENUITEM SEPARATOR
                 MENUITEM "Anhδnge an WinArcadia.log",   ID_LOG_APPEND
                 MENUITEM "&Ignoriere WinArcadia.log",   ID_LOG_IGNORE
@@ -3770,7 +3808,7 @@ BEGIN
                                                         ID_GRAPHICS_DEJITTER
                 MENUITEM "&Enhance skies?",             ID_GRAPHICS_SKIES
                 MENUITEM "Fόlle schn&ittpunkte?",       ID_GRAPHICS_CORNERS
-                MENUITEM "Vollbild? (&F)\tAlt+Enter, Ctrl+F", 
+                MENUITEM "Vollbild? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                         ID_GRAPHICS_FULLSCREEN
 
                 MENUITEM "Blinkende Zeichen &invertieren?", ID_VDU_COOMER
@@ -3891,7 +3929,12 @@ BEGIN
             BEGIN
                 MENUITEM "Kollisionen? (&C)\tCtrl+L",   ID_SPRITES_COLLISIONS
 
-                MENUITEM "&Demultiplexen?",             ID_SPRITES_DEMULTIPLEX
+                MENUITEM SEPARATOR
+                MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+
+                MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+                MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
 
             END
             POPUP "&Trainer"
@@ -4199,7 +4242,6 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Generate &animations"
         BEGIN
-            MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
             MENUITEM "&GIF",                        ID_MACRO_GIF
             MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
             MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -4375,28 +4417,30 @@ BEGIN
         END
         POPUP "&Options"
         BEGIN
-            MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-            MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-            MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
-            MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+            MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+            MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+            MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
+            MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
             MENUITEM SEPARATOR
-            MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-            MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+            MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+            MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
             MENUITEM SEPARATOR
-            MENUITEM "N 0",                         ID_DEBUG_N_0
-            MENUITEM "N 1",                         ID_DEBUG_N_1
-            MENUITEM "N 2",                         ID_DEBUG_N_2
-            MENUITEM "N 3",                         ID_DEBUG_N_3
+            MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+            MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+            MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+            MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+            MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
             MENUITEM SEPARATOR
-            MENUITEM "TU 0",                        ID_DEBUG_TU_0
-            MENUITEM "TU 1",                        ID_DEBUG_TU_1
-            MENUITEM "TU 2",                        ID_DEBUG_TU_2
+            MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+            MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+            MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
             MENUITEM SEPARATOR
             MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
             MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
             MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
             MENUITEM SEPARATOR
             MENUITEM "GR",                          ID_DEBUG_GR
+            MENUITEM "WARN",                        ID_DEBUG_WARN
         END
         POPUP "Gr&aphismes"
         BEGIN
@@ -4523,7 +4567,7 @@ BEGIN
             MENUITEM "N&one",                       ID_DOS_NOTWINDOS
             MENUITEM SEPARATOR
             MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-            MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+            MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
             MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
         END
         POPUP "Ιmulat&eur"
@@ -4534,7 +4578,6 @@ BEGIN
 
             MENUITEM "&Confirmer l'Arret?",         ID_EMULATOR_CONFIRM
             MENUITEM "&Echo E/S vers la Console?",  ID_LOG_CONSOLE
-            MENUITEM "&Frame/line-based emulation?", ID_EMULATOR_FRAMEBASED
             MENUITEM "Identifier l'Emulateur? (&Y)", ID_EMULATOR_EMUID
             MENUITEM "Autotest a la mise sous tension? (&P)", 
                                                     ID_EMULATOR_POST
@@ -4543,6 +4586,9 @@ BEGIN
             MENUITEM "Afficher le&s astuces au dιmarrage?", 
                                                     ID_EMULATOR_SHOWTOD
             MENUITEM "&Utiliser les Programmes Stub?", ID_EMULATOR_USESTUBS
+            MENUITEM SEPARATOR
+            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
             MENUITEM SEPARATOR
             MENUITEM "Ajouter a la WinArca&dia.log", ID_LOG_APPEND
             MENUITEM "&Ignorer la WinArcadia.log",  ID_LOG_IGNORE
@@ -4581,7 +4627,7 @@ BEGIN
             MENUITEM "Dιgiguez les horizons? (&J)", ID_GRAPHICS_DEJITTER
             MENUITEM "Amelior&er le Ciel?",         ID_GRAPHICS_SKIES
             MENUITEM "Rempl&ir les Intersections?", ID_GRAPHICS_CORNERS
-            MENUITEM "Plein Ecran? (&F)\tAlt+Enter, Ctrl+F", 
+            MENUITEM "Plein Ecran? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                     ID_GRAPHICS_FULLSCREEN
             MENUITEM "&Inverser les caractθres flashιs?", ID_VDU_COOMER
             MENUITEM "Mode Limite? (&N)\tCtrl+N",   ID_GRAPHICS_NARROW
@@ -4693,7 +4739,11 @@ BEGIN
         POPUP "&Sprites"
         BEGIN
             MENUITEM "&Collisions?\tCtrl+L",        ID_SPRITES_COLLISIONS
-            MENUITEM "&Demultiplexer?",             ID_SPRITES_DEMULTIPLEX
+            MENUITEM SEPARATOR
+            MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+            MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+            MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
         END
         POPUP "&Trainers"
         BEGIN
@@ -4828,7 +4878,6 @@ BEGIN
             MENUITEM SEPARATOR
             POPUP "Generate &animations"
             BEGIN
-                MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
                 MENUITEM "&GIF",                        ID_MACRO_GIF
                 MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
                 MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -5007,29 +5056,31 @@ BEGIN
             END
             POPUP "&Options"
             BEGIN
-                MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-                MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-                MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
+                MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+                MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+                MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
 
-                MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+                MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
                 MENUITEM SEPARATOR
-                MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-                MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+                MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+                MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
                 MENUITEM SEPARATOR
-                MENUITEM "N 0",                         ID_DEBUG_N_0
-                MENUITEM "N 1",                         ID_DEBUG_N_1
-                MENUITEM "N 2",                         ID_DEBUG_N_2
-                MENUITEM "N 3",                         ID_DEBUG_N_3
+                MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+                MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+                MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+                MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+                MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
                 MENUITEM SEPARATOR
-                MENUITEM "TU 0",                        ID_DEBUG_TU_0
-                MENUITEM "TU 1",                        ID_DEBUG_TU_1
-                MENUITEM "TU 2",                        ID_DEBUG_TU_2
+                MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+                MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+                MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
                 MENUITEM SEPARATOR
                 MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
                 MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
                 MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
                 MENUITEM SEPARATOR
                 MENUITEM "GR",                          ID_DEBUG_GR
+                MENUITEM "WARN",                        ID_DEBUG_WARN
             END
             POPUP "Gr&aphismes"
             BEGIN
@@ -5165,7 +5216,7 @@ BEGIN
                 MENUITEM "N&one",                       ID_DOS_NOTWINDOS
                 MENUITEM SEPARATOR
                 MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-                MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+                MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
                 MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
             END
             POPUP "Ιmulat&eur"
@@ -5176,9 +5227,6 @@ BEGIN
 
                 MENUITEM "&Confirmer l'Arret?",         ID_EMULATOR_CONFIRM
                 MENUITEM "&Echo E/S vers la Console?",  ID_LOG_CONSOLE
-                MENUITEM "&Frame/line-based emulation?", 
-                                                        ID_EMULATOR_FRAMEBASED
-
                 MENUITEM "Identifier l'Emulateur? (&Y)", ID_EMULATOR_EMUID
                 MENUITEM "Autotest a la mise sous tension? (&P)", 
                                                         ID_EMULATOR_POST
@@ -5190,6 +5238,11 @@ BEGIN
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "&Utiliser les Programmes Stub?", 
                                                         ID_EMULATOR_USESTUBS
+                MENUITEM SEPARATOR
+                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+
+                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
+
                 MENUITEM SEPARATOR
                 MENUITEM "Ajouter a la WinArca&dia.log", ID_LOG_APPEND
                 MENUITEM "&Ignorer la WinArcadia.log",  ID_LOG_IGNORE
@@ -5232,7 +5285,7 @@ BEGIN
                 MENUITEM "Dιgiguez les horizons? (&J)", ID_GRAPHICS_DEJITTER
                 MENUITEM "Amelior&er le Ciel?",         ID_GRAPHICS_SKIES
                 MENUITEM "Rempl&ir les Intersections?", ID_GRAPHICS_CORNERS
-                MENUITEM "Plein Ecran? (&F)\tAlt+Enter, Ctrl+F", 
+                MENUITEM "Plein Ecran? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                         ID_GRAPHICS_FULLSCREEN
 
                 MENUITEM "&Inverser les caractθres flashιs?", ID_VDU_COOMER
@@ -5358,7 +5411,12 @@ BEGIN
             BEGIN
                 MENUITEM "&Collisions?\tCtrl+L",        ID_SPRITES_COLLISIONS
 
-                MENUITEM "&Demultiplexer?",             ID_SPRITES_DEMULTIPLEX
+                MENUITEM SEPARATOR
+                MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+
+                MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+                MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
 
             END
             POPUP "&Trainers"
@@ -5524,7 +5582,6 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Generate &animations"
         BEGIN
-            MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
             MENUITEM "&GIF",                        ID_MACRO_GIF
             MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
             MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -5699,28 +5756,30 @@ BEGIN
         END
         POPUP "Imp&ostazioni"
         BEGIN
-            MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-            MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-            MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
-            MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+            MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+            MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+            MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
+            MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
             MENUITEM SEPARATOR
-            MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-            MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+            MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+            MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
             MENUITEM SEPARATOR
-            MENUITEM "N 0",                         ID_DEBUG_N_0
-            MENUITEM "N 1",                         ID_DEBUG_N_1
-            MENUITEM "N 2",                         ID_DEBUG_N_2
-            MENUITEM "N 3",                         ID_DEBUG_N_3
+            MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+            MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+            MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+            MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+            MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
             MENUITEM SEPARATOR
-            MENUITEM "TU 0",                        ID_DEBUG_TU_0
-            MENUITEM "TU 1",                        ID_DEBUG_TU_1
-            MENUITEM "TU 2",                        ID_DEBUG_TU_2
+            MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+            MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+            MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
             MENUITEM SEPARATOR
             MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
             MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
             MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
             MENUITEM SEPARATOR
             MENUITEM "GR",                          ID_DEBUG_GR
+            MENUITEM "WARN",                        ID_DEBUG_WARN
         END
         POPUP "Gr&afica"
         BEGIN
@@ -5846,7 +5905,7 @@ BEGIN
             MENUITEM "N&one",                       ID_DOS_NOTWINDOS
             MENUITEM SEPARATOR
             MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-            MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+            MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
             MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
         END
         POPUP "&Emulatore"
@@ -5857,13 +5916,15 @@ BEGIN
 
             MENUITEM "&Conferma di chiusura?",      ID_EMULATOR_CONFIRM
             MENUITEM "&Echo I/O su console?",       ID_LOG_CONSOLE
-            MENUITEM "&Frame/line-based emulation?", ID_EMULATOR_FRAMEBASED
             MENUITEM "Identifica emulatore? (&Y)",  ID_EMULATOR_EMUID
             MENUITEM "Test di autoavvio? (&P)",     ID_EMULATOR_POST
             MENUITEM "Randomi&zzare la memoria?",   ID_EMULATOR_RANDOMIZE
             MENUITEM "Scopo del &gioco?",           ID_EMULATOR_SENSEGAME
             MENUITEM "Mo&stra suggerimenti all'avvio?", ID_EMULATOR_SHOWTOD
             MENUITEM "&Usa programmi stub?",        ID_EMULATOR_USESTUBS
+            MENUITEM SEPARATOR
+            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
             MENUITEM SEPARATOR
             MENUITEM "Aggiungi alla WinArca&dia.log", ID_LOG_APPEND
             MENUITEM "&Ignora WinArcadia.log",      ID_LOG_IGNORE
@@ -5901,7 +5962,7 @@ BEGIN
             MENUITEM "Orizzonti De&jitter?",        ID_GRAPHICS_DEJITTER
             MENUITEM "Incr&ementa campo stellato?", ID_GRAPHICS_SKIES
             MENUITEM "Riempi &intersezioni?",       ID_GRAPHICS_CORNERS
-            MENUITEM "Schermo intero? (&F)\tAlt+Enter, Ctrl+F", 
+            MENUITEM "Schermo intero? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                     ID_GRAPHICS_FULLSCREEN
             MENUITEM "&Invertire i caratteri lampeggiati?", ID_VDU_COOMER
             MENUITEM "Schermo ristretto? (&N)\tCtrl+N", ID_GRAPHICS_NARROW
@@ -6015,7 +6076,11 @@ BEGIN
         POPUP "&Sprite"
         BEGIN
             MENUITEM "&Collisioni?\tCtrl+L",        ID_SPRITES_COLLISIONS
-            MENUITEM "&Demultiplex?",               ID_SPRITES_DEMULTIPLEX
+            MENUITEM SEPARATOR
+            MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+            MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+            MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
         END
         POPUP "&Trainer"
         BEGIN
@@ -6151,7 +6216,6 @@ BEGIN
             MENUITEM SEPARATOR
             POPUP "Generate &animations"
             BEGIN
-                MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
                 MENUITEM "&GIF",                        ID_MACRO_GIF
                 MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
                 MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -6330,29 +6394,31 @@ BEGIN
             END
             POPUP "Imp&ostazioni"
             BEGIN
-                MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-                MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-                MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
+                MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+                MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+                MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
 
-                MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+                MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
                 MENUITEM SEPARATOR
-                MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-                MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+                MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+                MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
                 MENUITEM SEPARATOR
-                MENUITEM "N 0",                         ID_DEBUG_N_0
-                MENUITEM "N 1",                         ID_DEBUG_N_1
-                MENUITEM "N 2",                         ID_DEBUG_N_2
-                MENUITEM "N 3",                         ID_DEBUG_N_3
+                MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+                MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+                MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+                MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+                MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
                 MENUITEM SEPARATOR
-                MENUITEM "TU 0",                        ID_DEBUG_TU_0
-                MENUITEM "TU 1",                        ID_DEBUG_TU_1
-                MENUITEM "TU 2",                        ID_DEBUG_TU_2
+                MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+                MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+                MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
                 MENUITEM SEPARATOR
                 MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
                 MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
                 MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
                 MENUITEM SEPARATOR
                 MENUITEM "GR",                          ID_DEBUG_GR
+                MENUITEM "WARN",                        ID_DEBUG_WARN
             END
             POPUP "Gr&afica"
             BEGIN
@@ -6483,7 +6549,7 @@ BEGIN
                 MENUITEM "N&one",                       ID_DOS_NOTWINDOS
                 MENUITEM SEPARATOR
                 MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-                MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+                MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
                 MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
             END
             POPUP "&Emulatore"
@@ -6494,9 +6560,6 @@ BEGIN
 
                 MENUITEM "&Conferma di chiusura?",      ID_EMULATOR_CONFIRM
                 MENUITEM "&Echo I/O su console?",       ID_LOG_CONSOLE
-                MENUITEM "&Frame/line-based emulation?", 
-                                                        ID_EMULATOR_FRAMEBASED
-
                 MENUITEM "Identifica emulatore? (&Y)",  ID_EMULATOR_EMUID
                 MENUITEM "Test di autoavvio? (&P)",     ID_EMULATOR_POST
                 MENUITEM "Randomi&zzare la memoria?",   ID_EMULATOR_RANDOMIZE
@@ -6506,6 +6569,11 @@ BEGIN
                 MENUITEM "Mo&stra suggerimenti all'avvio?", 
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "&Usa programmi stub?",        ID_EMULATOR_USESTUBS
+                MENUITEM SEPARATOR
+                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+
+                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
+
                 MENUITEM SEPARATOR
                 MENUITEM "Aggiungi alla WinArca&dia.log", ID_LOG_APPEND
                 MENUITEM "&Ignora WinArcadia.log",      ID_LOG_IGNORE
@@ -6553,7 +6621,7 @@ BEGIN
                 MENUITEM "Orizzonti De&jitter?",        ID_GRAPHICS_DEJITTER
                 MENUITEM "Incr&ementa campo stellato?", ID_GRAPHICS_SKIES
                 MENUITEM "Riempi &intersezioni?",       ID_GRAPHICS_CORNERS
-                MENUITEM "Schermo intero? (&F)\tAlt+Enter, Ctrl+F", 
+                MENUITEM "Schermo intero? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                         ID_GRAPHICS_FULLSCREEN
 
                 MENUITEM "&Invertire i caratteri lampeggiati?", 
@@ -6679,7 +6747,12 @@ BEGIN
             BEGIN
                 MENUITEM "&Collisioni?\tCtrl+L",        ID_SPRITES_COLLISIONS
 
-                MENUITEM "&Demultiplex?",               ID_SPRITES_DEMULTIPLEX
+                MENUITEM SEPARATOR
+                MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+
+                MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+                MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
 
             END
             POPUP "&Trainer"
@@ -6841,7 +6914,6 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Generate &animations"
         BEGIN
-            MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
             MENUITEM "&GIF",                        ID_MACRO_GIF
             MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
             MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -7017,28 +7089,30 @@ BEGIN
         END
         POPUP "&Opties"
         BEGIN
-            MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-            MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-            MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
-            MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+            MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+            MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+            MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
+            MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
             MENUITEM SEPARATOR
-            MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-            MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+            MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+            MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
             MENUITEM SEPARATOR
-            MENUITEM "N 0",                         ID_DEBUG_N_0
-            MENUITEM "N 1",                         ID_DEBUG_N_1
-            MENUITEM "N 2",                         ID_DEBUG_N_2
-            MENUITEM "N 3",                         ID_DEBUG_N_3
+            MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+            MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+            MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+            MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+            MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
             MENUITEM SEPARATOR
-            MENUITEM "TU 0",                        ID_DEBUG_TU_0
-            MENUITEM "TU 1",                        ID_DEBUG_TU_1
-            MENUITEM "TU 2",                        ID_DEBUG_TU_2
+            MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+            MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+            MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
             MENUITEM SEPARATOR
             MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
             MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
             MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
             MENUITEM SEPARATOR
             MENUITEM "GR",                          ID_DEBUG_GR
+            MENUITEM "WARN",                        ID_DEBUG_WARN
         END
         POPUP "Gr&aphics"
         BEGIN
@@ -7162,7 +7236,7 @@ BEGIN
             MENUITEM "N&one",                       ID_DOS_NOTWINDOS
             MENUITEM SEPARATOR
             MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-            MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+            MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
             MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
         END
         POPUP "&Emulator"
@@ -7173,13 +7247,15 @@ BEGIN
 
             MENUITEM "Bevestigen stoppen? (&C)",    ID_EMULATOR_CONFIRM
             MENUITEM "&Echo I/O te troosten?",      ID_LOG_CONSOLE
-            MENUITEM "&Frame/line-based emulation?", ID_EMULATOR_FRAMEBASED
             MENUITEM "Identificeer emulator? (&Y)", ID_EMULATOR_EMUID
             MENUITEM "&Power-on zelftest?",         ID_EMULATOR_POST
             MENUITEM "Geheugen randomiseren? (&Z)", ID_EMULATOR_RANDOMIZE
             MENUITEM "Sense spel? (&G)",            ID_EMULATOR_SENSEGAME
             MENUITEM "Tip&s bij het opstarten?",    ID_EMULATOR_SHOWTOD
             MENUITEM "Gebr&uik stub-programma's?",  ID_EMULATOR_USESTUBS
+            MENUITEM SEPARATOR
+            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
             MENUITEM SEPARATOR
             MENUITEM "Toevoegen aan WinArca&dia.log", ID_LOG_APPEND
             MENUITEM "Negeer W&inArcadia.log",      ID_LOG_IGNORE
@@ -7217,7 +7293,7 @@ BEGIN
             MENUITEM "De&jitter horizonten?",       ID_GRAPHICS_DEJITTER
             MENUITEM "Ski&es vergroten?",           ID_GRAPHICS_SKIES
             MENUITEM "Vul kru&ispunten?",           ID_GRAPHICS_CORNERS
-            MENUITEM "Volscherm? (&F)\tAlt+Enter, Ctrl+F", 
+            MENUITEM "Volscherm? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                     ID_GRAPHICS_FULLSCREEN
             MENUITEM "Gefl&itste tekens omkeren?",  ID_VDU_COOMER
             MENUITEM "Smalle? (&N)\tCtrl+N",        ID_GRAPHICS_NARROW
@@ -7324,7 +7400,11 @@ BEGIN
         POPUP "&Sprites"
         BEGIN
             MENUITEM "Aanvaringen? (&C)\tCtrl+L",   ID_SPRITES_COLLISIONS
-            MENUITEM "&Demultiplex?",               ID_SPRITES_DEMULTIPLEX
+            MENUITEM SEPARATOR
+            MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+            MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+            MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
         END
         POPUP "&Trainers"
         BEGIN
@@ -7467,7 +7547,6 @@ BEGIN
             MENUITEM SEPARATOR
             POPUP "Generate &animations"
             BEGIN
-                MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
                 MENUITEM "&GIF",                        ID_MACRO_GIF
                 MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
                 MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -7646,29 +7725,31 @@ BEGIN
             END
             POPUP "&Opties"
             BEGIN
-                MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-                MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-                MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
+                MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+                MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+                MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
 
-                MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+                MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
                 MENUITEM SEPARATOR
-                MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-                MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+                MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+                MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
                 MENUITEM SEPARATOR
-                MENUITEM "N 0",                         ID_DEBUG_N_0
-                MENUITEM "N 1",                         ID_DEBUG_N_1
-                MENUITEM "N 2",                         ID_DEBUG_N_2
-                MENUITEM "N 3",                         ID_DEBUG_N_3
+                MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+                MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+                MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+                MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+                MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
                 MENUITEM SEPARATOR
-                MENUITEM "TU 0",                        ID_DEBUG_TU_0
-                MENUITEM "TU 1",                        ID_DEBUG_TU_1
-                MENUITEM "TU 2",                        ID_DEBUG_TU_2
+                MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+                MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+                MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
                 MENUITEM SEPARATOR
                 MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
                 MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
                 MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
                 MENUITEM SEPARATOR
                 MENUITEM "GR",                          ID_DEBUG_GR
+                MENUITEM "WARN",                        ID_DEBUG_WARN
             END
             POPUP "Gr&aphics"
             BEGIN
@@ -7798,7 +7879,7 @@ BEGIN
                 MENUITEM "N&one",                       ID_DOS_NOTWINDOS
                 MENUITEM SEPARATOR
                 MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-                MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+                MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
                 MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
             END
             POPUP "&Emulator"
@@ -7809,9 +7890,6 @@ BEGIN
 
                 MENUITEM "Bevestigen stoppen? (&C)",    ID_EMULATOR_CONFIRM
                 MENUITEM "&Echo I/O te troosten?",      ID_LOG_CONSOLE
-                MENUITEM "&Frame/line-based emulation?", 
-                                                        ID_EMULATOR_FRAMEBASED
-
                 MENUITEM "Identificeer emulator? (&Y)", ID_EMULATOR_EMUID
                 MENUITEM "&Power-on zelftest?",         ID_EMULATOR_POST
                 MENUITEM "Geheugen randomiseren? (&Z)", ID_EMULATOR_RANDOMIZE
@@ -7820,6 +7898,11 @@ BEGIN
 
                 MENUITEM "Tip&s bij het opstarten?",    ID_EMULATOR_SHOWTOD
                 MENUITEM "Gebr&uik stub-programma's?",  ID_EMULATOR_USESTUBS
+                MENUITEM SEPARATOR
+                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+
+                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
+
                 MENUITEM SEPARATOR
                 MENUITEM "Toevoegen aan WinArca&dia.log", ID_LOG_APPEND
                 MENUITEM "Negeer W&inArcadia.log",      ID_LOG_IGNORE
@@ -7861,7 +7944,7 @@ BEGIN
                 MENUITEM "De&jitter horizonten?",       ID_GRAPHICS_DEJITTER
                 MENUITEM "Ski&es vergroten?",           ID_GRAPHICS_SKIES
                 MENUITEM "Vul kru&ispunten?",           ID_GRAPHICS_CORNERS
-                MENUITEM "Volscherm? (&F)\tAlt+Enter, Ctrl+F", 
+                MENUITEM "Volscherm? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                         ID_GRAPHICS_FULLSCREEN
 
                 MENUITEM "Gefl&itste tekens omkeren?",  ID_VDU_COOMER
@@ -7983,7 +8066,12 @@ BEGIN
             BEGIN
                 MENUITEM "Aanvaringen? (&C)\tCtrl+L",   ID_SPRITES_COLLISIONS
 
-                MENUITEM "&Demultiplex?",               ID_SPRITES_DEMULTIPLEX
+                MENUITEM SEPARATOR
+                MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+
+                MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+                MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
 
             END
             POPUP "&Trainers"
@@ -8136,7 +8224,6 @@ BEGIN
             MENUITEM SEPARATOR
             POPUP "Generate &animations"
             BEGIN
-                MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
                 MENUITEM "&GIF",                        ID_MACRO_GIF
                 MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
                 MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -8312,32 +8399,35 @@ BEGIN
                 MENUITEM "SWAP <1st-start> <1st-end> <2nd-start>", 
                                                         ID_DEBUG_SWAP
                 MENUITEM "TRAIN [<value>]",             ID_DEBUG_TRAIN
+                MENUITEM "EVAL <expression>",           ID_DEBUG_EVAL
             END
             POPUP "&Options"
             BEGIN
-                MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-                MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-                MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
+                MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+                MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+                MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
 
-                MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+                MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
                 MENUITEM SEPARATOR
-                MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-                MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+                MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+                MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
                 MENUITEM SEPARATOR
-                MENUITEM "N 0",                         ID_DEBUG_N_0
-                MENUITEM "N 1",                         ID_DEBUG_N_1
-                MENUITEM "N 2",                         ID_DEBUG_N_2
-                MENUITEM "N 3",                         ID_DEBUG_N_3
+                MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+                MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+                MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+                MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+                MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
                 MENUITEM SEPARATOR
-                MENUITEM "TU 0",                        ID_DEBUG_TU_0
-                MENUITEM "TU 1",                        ID_DEBUG_TU_1
-                MENUITEM "TU 2",                        ID_DEBUG_TU_2
+                MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+                MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+                MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
                 MENUITEM SEPARATOR
                 MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
                 MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
                 MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
                 MENUITEM SEPARATOR
                 MENUITEM "GR",                          ID_DEBUG_GR
+                MENUITEM "WARN",                        ID_DEBUG_WARN
             END
             POPUP "Gr&aphics"
             BEGIN
@@ -8468,7 +8558,7 @@ BEGIN
                 MENUITEM "N&one",                       ID_DOS_NOTWINDOS
                 MENUITEM SEPARATOR
                 MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-                MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+                MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
                 MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
             END
             POPUP "&Emulator"
@@ -8479,9 +8569,6 @@ BEGIN
 
                 MENUITEM "&Confirm on exit?",           ID_EMULATOR_CONFIRM
                 MENUITEM "&Echo I/O to console?",       ID_LOG_CONSOLE
-                MENUITEM "&Frame/line-based emulation?", 
-                                                        ID_EMULATOR_FRAMEBASED
-
                 MENUITEM "Identif&y emulator?",         ID_EMULATOR_EMUID
                 MENUITEM "&Power-on self-test?",        ID_EMULATOR_POST
                 MENUITEM "Randomi&ze memory?",          ID_EMULATOR_RANDOMIZE
@@ -8490,6 +8577,11 @@ BEGIN
 
                 MENUITEM "&Show tips at startup?",      ID_EMULATOR_SHOWTOD
                 MENUITEM "&Use stub programs?",         ID_EMULATOR_USESTUBS
+                MENUITEM SEPARATOR
+                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+
+                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
+
                 MENUITEM SEPARATOR
                 MENUITEM "Appen&d to WinArcadia.log",   ID_LOG_APPEND
                 MENUITEM "&Ignore WinArcadia.log",      ID_LOG_IGNORE
@@ -8531,7 +8623,7 @@ BEGIN
                 MENUITEM "De&jitter horizons?",         ID_GRAPHICS_DEJITTER
                 MENUITEM "&Enhance skies?",             ID_GRAPHICS_SKIES
                 MENUITEM "F&ill intersections?",        ID_GRAPHICS_CORNERS
-                MENUITEM "&Full screen?\tAlt+Enter, Ctrl+F", 
+                MENUITEM "&Full screen?\tAlt+Enter, Ctrl+F, F11", 
                                                         ID_GRAPHICS_FULLSCREEN
 
                 MENUITEM "&Invert flashed characters?", ID_VDU_COOMER
@@ -8644,7 +8736,12 @@ BEGIN
             BEGIN
                 MENUITEM "&Collisions?\tCtrl+L",        ID_SPRITES_COLLISIONS
 
-                MENUITEM "&Demultiplex?",               ID_SPRITES_DEMULTIPLEX
+                MENUITEM SEPARATOR
+                MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+
+                MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+                MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
 
             END
             POPUP "&Trainers"
@@ -8785,7 +8882,6 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Generate &animations"
         BEGIN
-            MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
             MENUITEM "&GIF",                        ID_MACRO_GIF
             MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
             MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -8957,31 +9053,34 @@ BEGIN
             MENUITEM "REL <source-addr> [*]<target-addr>", ID_DEBUG_REL
             MENUITEM "SWAP <1st-start> <1st-end> <2nd-start>", ID_DEBUG_SWAP
             MENUITEM "TRAIN [<value>]",             ID_DEBUG_TRAIN
+            MENUITEM "EVAL <expression>",           ID_DEBUG_EVAL
         END
         POPUP "&Options"
         BEGIN
-            MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-            MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-            MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
-            MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+            MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+            MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+            MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
+            MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
             MENUITEM SEPARATOR
-            MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-            MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+            MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+            MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
             MENUITEM SEPARATOR
-            MENUITEM "N 0",                         ID_DEBUG_N_0
-            MENUITEM "N 1",                         ID_DEBUG_N_1
-            MENUITEM "N 2",                         ID_DEBUG_N_2
-            MENUITEM "N 3",                         ID_DEBUG_N_3
+            MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+            MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+            MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+            MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+            MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
             MENUITEM SEPARATOR
-            MENUITEM "TU 0",                        ID_DEBUG_TU_0
-            MENUITEM "TU 1",                        ID_DEBUG_TU_1
-            MENUITEM "TU 2",                        ID_DEBUG_TU_2
+            MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+            MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+            MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
             MENUITEM SEPARATOR
             MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
             MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
             MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
             MENUITEM SEPARATOR
             MENUITEM "GR",                          ID_DEBUG_GR
+            MENUITEM "WARN",                        ID_DEBUG_WARN
         END
         POPUP "Gr&aphics"
         BEGIN
@@ -9106,7 +9205,7 @@ BEGIN
             MENUITEM "N&one",                       ID_DOS_NOTWINDOS
             MENUITEM SEPARATOR
             MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-            MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+            MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
             MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
         END
         POPUP "&Emulator"
@@ -9117,13 +9216,15 @@ BEGIN
 
             MENUITEM "&Confirm on exit?",           ID_EMULATOR_CONFIRM
             MENUITEM "&Echo I/O to console?",       ID_LOG_CONSOLE
-            MENUITEM "&Frame/line-based emulation?", ID_EMULATOR_FRAMEBASED
             MENUITEM "Identif&y emulator?",         ID_EMULATOR_EMUID
             MENUITEM "&Power-on self-test?",        ID_EMULATOR_POST
             MENUITEM "Randomi&ze memory?",          ID_EMULATOR_RANDOMIZE
             MENUITEM "Sense &game?",                ID_EMULATOR_SENSEGAME
             MENUITEM "&Show tips at startup?",      ID_EMULATOR_SHOWTOD
             MENUITEM "&Use stub programs?",         ID_EMULATOR_USESTUBS
+            MENUITEM SEPARATOR
+            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
             MENUITEM SEPARATOR
             MENUITEM "Appen&d to WinArcadia.log",   ID_LOG_APPEND
             MENUITEM "&Ignore WinArcadia.log",      ID_LOG_IGNORE
@@ -9161,7 +9262,7 @@ BEGIN
             MENUITEM "De&jitter horizons?",         ID_GRAPHICS_DEJITTER
             MENUITEM "&Enhance skies?",             ID_GRAPHICS_SKIES
             MENUITEM "F&ill intersections?",        ID_GRAPHICS_CORNERS
-            MENUITEM "&Full screen?\tAlt+Enter, Ctrl+F", 
+            MENUITEM "&Full screen?\tAlt+Enter, Ctrl+F, F11", 
                                                     ID_GRAPHICS_FULLSCREEN
             MENUITEM "&Invert flashed characters?", ID_VDU_COOMER
             MENUITEM "&Narrow?\tCtrl+N",            ID_GRAPHICS_NARROW
@@ -9263,7 +9364,11 @@ BEGIN
         POPUP "&Sprites"
         BEGIN
             MENUITEM "&Collisions?\tCtrl+L",        ID_SPRITES_COLLISIONS
-            MENUITEM "&Demultiplex?",               ID_SPRITES_DEMULTIPLEX
+            MENUITEM SEPARATOR
+            MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+            MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+            MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
         END
         POPUP "&Trainers"
         BEGIN
@@ -9503,6 +9608,12 @@ IDB_OVERLAY_SOCCER      BITMAP  DISCARDABLE     "o-Soccer.bmp"
 IDB_OVERLAY_ROBOTKILLER BITMAP  DISCARDABLE     "o-RobotKiller.bmp"
 IDB_OVERLAY_NIBBLEMEN   BITMAP  DISCARDABLE     "o-Devilman.bmp"
 IDB_CONTROLS_RADIOBULLETIN BITMAP  DISCARDABLE     "c-radiobulletin.bmp"
+IDB_BOX_BOOK            BITMAP  DISCARDABLE     "box-book.bmp"
+IDB_BOX_ESS_RECORD      BITMAP  DISCARDABLE     "box-essrecord.bmp"
+IDB_BOX_ESS_TAPE        BITMAP  DISCARDABLE     "box-esstape.bmp"
+IDB_BOX_HOBBYMODULE     BITMAP  DISCARDABLE     "box-hobbymodule.bmp"
+IDB_BOX_HOCOSOFT        BITMAP  DISCARDABLE     "box-hocosoft.bmp"
+IDB_OVERLAY_CATTRACK    BITMAP  DISCARDABLE     "o-CatTrack.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -12638,7 +12749,7 @@ BEGIN
                     SS_SUNKEN
 END
 
-IDD_OPCODES DIALOGEX 0, 0, 715, 230
+IDD_OPCODES DIALOGEX 0, 0, 715, 240
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Opcodes"
@@ -13188,17 +13299,19 @@ BEGIN
                     SS_CENTERIMAGE | SS_SUNKEN
     LTEXT           "",IDC_OPCODE255,662,173,41,9,SS_NOPREFIX | 
                     SS_CENTERIMAGE | SS_SUNKEN
-    LTEXT           "",IDL_OP_1ST,42,201,13,10,SS_CENTERIMAGE | SS_SUNKEN
-    LTEXT           "",IDL_OP_2ND,167,201,13,10,SS_CENTERIMAGE | SS_SUNKEN
-    LTEXT           "",IDL_OP_3RD,294,201,13,10,SS_CENTERIMAGE | SS_SUNKEN
-    LTEXT           "",IDL_OP_4TH,420,201,13,10,SS_CENTERIMAGE | SS_SUNKEN
-    LTEXT           "",IDL_OP_5TH,546,201,13,10,SS_CENTERIMAGE | SS_SUNKEN
-    GROUPBOX        "Legend",IDL_OPCODESLEGEND,32,187,672,33
-    LTEXT           "Arithmetic, transfer",IDL_LEGEND8,58,201,105,8
-    LTEXT           "I/O, PSW, mixed",IDL_LEGEND9,183,201,107,8
-    LTEXT           "Branch",IDL_LEGEND10,310,201,106,8
-    LTEXT           "Special",IDL_LEGEND11,436,201,106,8
-    LTEXT           "Illegal",IDL_LEGEND12,562,201,132,8
+    LTEXT           "Hover over a button for more information.",IDL_HOVER8,
+                    20,20,200,12
+    LTEXT           "",IDL_OP_1ST,42,213,13,10,SS_CENTERIMAGE | SS_SUNKEN
+    LTEXT           "",IDL_OP_2ND,167,213,13,10,SS_CENTERIMAGE | SS_SUNKEN
+    LTEXT           "",IDL_OP_3RD,294,213,13,10,SS_CENTERIMAGE | SS_SUNKEN
+    LTEXT           "",IDL_OP_4TH,420,213,13,10,SS_CENTERIMAGE | SS_SUNKEN
+    LTEXT           "",IDL_OP_5TH,546,213,13,10,SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "Legend",IDL_OPCODESLEGEND,32,199,672,33
+    LTEXT           "Arithmetic, transfer",IDL_LEGEND8,58,213,105,8
+    LTEXT           "I/O, PSW, mixed",IDL_LEGEND9,183,213,107,8
+    LTEXT           "Branch",IDL_LEGEND10,310,213,106,8
+    LTEXT           "Special",IDL_LEGEND11,436,213,106,8
+    LTEXT           "Illegal",IDL_LEGEND12,562,213,132,8
 END
 
 IDD_SPEED_PIPBUG DIALOG DISCARDABLE  0, 0, 311, 154
@@ -18307,7 +18420,7 @@ BEGIN
     CONTROL         608,IDC_CONTROLS2,"Static",SS_BITMAP,7,89,673,199
 END
 
-IDD_FURNACE DIALOG DISCARDABLE  0, 0, 423, 267
+IDD_FURNACE DIALOG DISCARDABLE  0, 0, 471, 284
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Industrial/Scientific Peripherals: Wind Furnace Controller"
@@ -18343,7 +18456,7 @@ BEGIN
                     WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_YAWMOTORMODE,329,70,80,50,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,111,421,2
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,111,471,2
     LTEXT           "Rotor speed:",IDL_ROTORSPEED,13,206,81,10
     LTEXT           "Blade pitch angle:",IDL_PITCHANGLE,13,122,81,10
     LTEXT           "Hub yaw direction:",IDL_YAWSENSORDIRECTION,13,144,81,10
@@ -18380,25 +18493,25 @@ BEGIN
     LTEXT           "degrees",IDL_YAWSENSORDIRUNITS,280,144,44,10
     LTEXT           "mph",IDL_WINDSPEEDUNITS,280,166,44,10
     LTEXT           "degrees",IDL_WINDDIRECTIONUNITS,280,188,44,10
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,1,226,421,2
-    LTEXT           "Mechanical power:",IDL_MECHPOWER,14,237,81,10
-    LTEXT           "Electrical power:",IDL_ELECPOWER,14,251,81,10
-    EDITTEXT        IDC_MECHPOWER,210,236,64,12,ES_RIGHT | ES_AUTOHSCROLL | 
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,3,244,468,2
+    LTEXT           "Mechanical power:",IDL_MECHPOWER,14,255,81,10
+    LTEXT           "Electrical power:",IDL_ELECPOWER,14,269,81,10
+    EDITTEXT        IDC_MECHPOWER,210,254,64,12,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_READONLY | WS_DISABLED
-    EDITTEXT        IDC_ELECPOWER,210,250,64,12,ES_RIGHT | ES_AUTOHSCROLL | 
+    EDITTEXT        IDC_ELECPOWER,210,268,64,12,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_READONLY | WS_DISABLED
-    LTEXT           "kW",IDL_MECHPOWERUNITS,281,238,45,10
-    LTEXT           "kW",IDL_ELECPOWERUNITS,281,252,45,10
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,28,422,2
+    LTEXT           "kW",IDL_MECHPOWERUNITS,281,256,45,10
+    LTEXT           "kW",IDL_ELECPOWERUNITS,281,270,45,10
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,28,471,2
     COMBOBOX        IDC_PERIPHERAL,99,9,143,50,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
     LTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
+    PUSHBUTTON      "Reset",IDC_INDUSTRIAL_RESET,329,8,133,14,WS_GROUP
     CONTROL         ".",IDC_WFC,"Button",BS_OWNERDRAW | BS_FLAT | 
-                    WS_DISABLED,326,130,84,84
-    PUSHBUTTON      "Reset",IDC_INDUSTRIAL_RESET,326,8,84,14,WS_GROUP
+                    WS_DISABLED,330,120,132,116
 END
 
-IDD_LINEARISATIE DIALOG DISCARDABLE  0, 0, 357, 144
+IDD_LINEARISATIE DIALOG DISCARDABLE  0, 0, 396, 162
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Industrial/Scientific Peripherals: Linearization"
@@ -18435,14 +18548,14 @@ BEGIN
     COMBOBOX        IDC_PERIPHERAL,98,9,143,50,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
     LTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,28,357,2
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,28,396,2
     LTEXT           "mV",IDL_LINEARXUNITS,229,43,14,10
     LTEXT           "mV",IDL_LINEARYUNITS,229,70,14,10
     LTEXT           "mV",IDL_LINEARUUNITS,229,97,14,10
     LTEXT           "mV",IDL_LINEARVUNITS,229,125,14,10
+    PUSHBUTTON      "Reset",IDC_INDUSTRIAL_RESET,260,9,128,14,WS_GROUP
     CONTROL         ".",IDC_WFC,"Button",BS_OWNERDRAW | BS_FLAT | 
-                    WS_DISABLED,261,45,84,84
-    PUSHBUTTON      "Reset",IDC_INDUSTRIAL_RESET,260,9,85,14,WS_GROUP
+                    WS_DISABLED,260,36,128,118
 END
 
 IDD_EAPRINTER DIALOG DISCARDABLE  0, 0, 250, 65
@@ -18460,13 +18573,13 @@ BEGIN
     LTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
 END
 
-IDD_MAGNETOMETER DIALOG DISCARDABLE  0, 0, 422, 265
+IDD_MAGNETOMETER DIALOG DISCARDABLE  0, 0, 470, 265
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Industrial/Scientific Peripherals: Vector Magnetometer"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,28,421,2
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,28,469,2
     LTEXT           "Plane Hx:",IDL_MAGNETICX,12,40,52,10
     LTEXT           "Plane Hy:",IDL_MAGNETICY,12,67,52,10
     LTEXT           "Plane Hz:",IDL_MAGNETICZ,12,94,52,10
@@ -18511,8 +18624,8 @@ BEGIN
     COMBOBOX        IDC_PERIPHERAL,98,9,143,50,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
     CONTROL         ".",IDC_WFC,"Button",BS_OWNERDRAW | BS_FLAT | 
-                    WS_DISABLED,326,56,84,84
-    PUSHBUTTON      "Reset",IDC_INDUSTRIAL_RESET,325,9,85,14,WS_GROUP
+                    WS_DISABLED,326,38,132,116
+    PUSHBUTTON      "Reset",IDC_INDUSTRIAL_RESET,326,9,132,14,WS_GROUP
     LTEXT           "Latitude (based on inclination):",IDL_LATITUDE1,12,233,
                     191,10
     LTEXT           "Latitude (based on intensity):",IDL_LATITUDE2,12,247,
@@ -18540,8 +18653,8 @@ BEGIN
                     ES_READONLY | WS_DISABLED
     LTEXT           "degrees",IDL_PLANEYAWUNITS,280,219,45,10
     CONTROL         "Declinate?",IDC_DECLINATE,"Button",BS_AUTOCHECKBOX | 
-                    BS_BOTTOM | WS_TABSTOP,325,146,84,11
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,168,421,2
+                    BS_BOTTOM | WS_TABSTOP,341,245,120,11
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,168,469,2
 END
 
 IDD_GAMEINFO_OVERLAYS DIALOG DISCARDABLE  0, 0, 373, 319
@@ -18756,8 +18869,8 @@ IDI_HOMERUN             ICON    DISCARDABLE     "homerun.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 35,9,0,1
- PRODUCTVERSION 35,9,0,1
+ FILEVERSION 36,1,0,1
+ PRODUCTVERSION 36,1,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -18775,14 +18888,14 @@ BEGIN
             VALUE "Comments", "Think Signetics. Sig 'em! We want you to have the best.\0"
             VALUE "CompanyName", "Amigan Software\0"
             VALUE "FileDescription", "WinArcadia multi-emulator\0"
-            VALUE "FileVersion", "35.9\0"
+            VALUE "FileVersion", "36.1\0"
             VALUE "InternalName", "WinArcadia\0"
             VALUE "LegalCopyright", "Copyright © 2006-2026 James Jacobs\0"
             VALUE "LegalTrademarks", "WinArcadia\0"
             VALUE "OriginalFilename", "WinArcadia.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "WinArcadia\0"
-            VALUE "ProductVersion", "35.9\0"
+            VALUE "ProductVersion", "36.1\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -18820,6 +18933,27 @@ BEGIN
     "\0"
 END
 
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_FURNACE, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 267
+    END
+
+    IDD_LINEARISATIE, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 161
+    END
+END
 #endif    // APSTUDIO_INVOKED
 
 #endif    // English (Australia) resources
@@ -18931,7 +19065,6 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Generate &animations"
         BEGIN
-            MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
             MENUITEM "&GIF",                        ID_MACRO_GIF
             MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
             MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -19107,28 +19240,30 @@ BEGIN
         END
         POPUP "&Options"
         BEGIN
-            MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-            MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-            MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
-            MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+            MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+            MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+            MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
+            MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
             MENUITEM SEPARATOR
-            MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-            MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+            MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+            MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
             MENUITEM SEPARATOR
-            MENUITEM "N 0",                         ID_DEBUG_N_0
-            MENUITEM "N 1",                         ID_DEBUG_N_1
-            MENUITEM "N 2",                         ID_DEBUG_N_2
-            MENUITEM "N 3",                         ID_DEBUG_N_3
+            MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+            MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+            MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+            MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+            MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
             MENUITEM SEPARATOR
-            MENUITEM "TU 0",                        ID_DEBUG_TU_0
-            MENUITEM "TU 1",                        ID_DEBUG_TU_1
-            MENUITEM "TU 2",                        ID_DEBUG_TU_2
+            MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+            MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+            MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
             MENUITEM SEPARATOR
             MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
             MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
             MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
             MENUITEM SEPARATOR
             MENUITEM "GR",                          ID_DEBUG_GR
+            MENUITEM "WARN",                        ID_DEBUG_WARN
         END
         POPUP "Grαficos (&A)"
         BEGIN
@@ -19257,7 +19392,7 @@ BEGIN
             MENUITEM "N&one",                       ID_DOS_NOTWINDOS
             MENUITEM SEPARATOR
             MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-            MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+            MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
             MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
         END
         POPUP "&Emulador"
@@ -19268,7 +19403,6 @@ BEGIN
 
             MENUITEM "Ώ&Confirmaciσn al salir?",    ID_EMULATOR_CONFIRM
             MENUITEM "Ώ&Eco E/S a la consola?",     ID_LOG_CONSOLE
-            MENUITEM "&Frame/line-based emulation?", ID_EMULATOR_FRAMEBASED
             MENUITEM "ΏIdentificar el emulador? (&Y)", ID_EMULATOR_EMUID
             MENUITEM "Ώ&Poder en la auto prueba?",  ID_EMULATOR_POST
             MENUITEM "ΏAleatori&zar la memoria?",   ID_EMULATOR_RANDOMIZE
@@ -19277,6 +19411,9 @@ BEGIN
             MENUITEM "ΏMo_strar consejos al inicio?", ID_EMULATOR_SHOWTOD
             MENUITEM "Ώ&Usar programas de cσdigo auxiliar?", 
                                                     ID_EMULATOR_USESTUBS
+            MENUITEM SEPARATOR
+            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
             MENUITEM SEPARATOR
             MENUITEM "Agregar a WinArca&dia.log",   ID_LOG_APPEND
             MENUITEM "&Ignorar WinArcadia.log",     ID_LOG_IGNORE
@@ -19314,7 +19451,7 @@ BEGIN
             MENUITEM "ΏDe&jitter horizontes?",      ID_GRAPHICS_DEJITTER
             MENUITEM "ΏFondos de &estrellas mejorados?", ID_GRAPHICS_SKIES
             MENUITEM "ΏRellenar las &intersecciones?", ID_GRAPHICS_CORNERS
-            MENUITEM "ΏPantalla completa? (&F)\tAlt+Enter, Ctrl+F", 
+            MENUITEM "ΏPantalla completa? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                     ID_GRAPHICS_FULLSCREEN
             MENUITEM "Ώ&Invertir caracteres destellados?", ID_VDU_COOMER
             MENUITEM "ΏEstrechos? (&N)\tCtrl+N",    ID_GRAPHICS_NARROW
@@ -19426,7 +19563,11 @@ BEGIN
         POPUP "Duendecillo&s grαficos"
         BEGIN
             MENUITEM "Ώ&Colisiones?\tCtrl+L",       ID_SPRITES_COLLISIONS
-            MENUITEM "Ώ&Desmultiplexar?",           ID_SPRITES_DEMULTIPLEX
+            MENUITEM SEPARATOR
+            MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+            MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+            MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
         END
         POPUP "En&trenadores"
         BEGIN
@@ -19566,7 +19707,6 @@ BEGIN
             MENUITEM SEPARATOR
             POPUP "Generate &animations"
             BEGIN
-                MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
                 MENUITEM "&GIF",                        ID_MACRO_GIF
                 MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
                 MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -19745,29 +19885,31 @@ BEGIN
             END
             POPUP "&Options"
             BEGIN
-                MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-                MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-                MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
+                MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+                MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+                MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
 
-                MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+                MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
                 MENUITEM SEPARATOR
-                MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-                MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+                MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+                MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
                 MENUITEM SEPARATOR
-                MENUITEM "N 0",                         ID_DEBUG_N_0
-                MENUITEM "N 1",                         ID_DEBUG_N_1
-                MENUITEM "N 2",                         ID_DEBUG_N_2
-                MENUITEM "N 3",                         ID_DEBUG_N_3
+                MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+                MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+                MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+                MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+                MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
                 MENUITEM SEPARATOR
-                MENUITEM "TU 0",                        ID_DEBUG_TU_0
-                MENUITEM "TU 1",                        ID_DEBUG_TU_1
-                MENUITEM "TU 2",                        ID_DEBUG_TU_2
+                MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+                MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+                MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
                 MENUITEM SEPARATOR
                 MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
                 MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
                 MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
                 MENUITEM SEPARATOR
                 MENUITEM "GR",                          ID_DEBUG_GR
+                MENUITEM "WARN",                        ID_DEBUG_WARN
             END
             POPUP "Grαficos (&A)"
             BEGIN
@@ -19902,7 +20044,7 @@ BEGIN
                 MENUITEM "N&one",                       ID_DOS_NOTWINDOS
                 MENUITEM SEPARATOR
                 MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-                MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+                MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
                 MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
             END
             POPUP "&Emulador"
@@ -19913,9 +20055,6 @@ BEGIN
 
                 MENUITEM "Ώ&Confirmaciσn al salir?",    ID_EMULATOR_CONFIRM
                 MENUITEM "Ώ&Eco E/S a la consola?",     ID_LOG_CONSOLE
-                MENUITEM "&Frame/line-based emulation?", 
-                                                        ID_EMULATOR_FRAMEBASED
-
                 MENUITEM "ΏIdentificar el emulador? (&Y)", ID_EMULATOR_EMUID
                 MENUITEM "Ώ&Poder en la auto prueba?",  ID_EMULATOR_POST
                 MENUITEM "ΏAleatori&zar la memoria?",   ID_EMULATOR_RANDOMIZE
@@ -19927,6 +20066,11 @@ BEGIN
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "Ώ&Usar programas de cσdigo auxiliar?", 
                                                         ID_EMULATOR_USESTUBS
+                MENUITEM SEPARATOR
+                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
+
+                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
+
                 MENUITEM SEPARATOR
                 MENUITEM "Agregar a WinArca&dia.log",   ID_LOG_APPEND
                 MENUITEM "&Ignorar WinArcadia.log",     ID_LOG_IGNORE
@@ -19970,7 +20114,7 @@ BEGIN
                                                         ID_GRAPHICS_SKIES
                 MENUITEM "ΏRellenar las &intersecciones?", 
                                                         ID_GRAPHICS_CORNERS
-                MENUITEM "ΏPantalla completa? (&F)\tAlt+Enter, Ctrl+F", 
+                MENUITEM "ΏPantalla completa? (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                         ID_GRAPHICS_FULLSCREEN
 
                 MENUITEM "Ώ&Invertir caracteres destellados?", ID_VDU_COOMER
@@ -20097,7 +20241,12 @@ BEGIN
             BEGIN
                 MENUITEM "Ώ&Colisiones?\tCtrl+L",       ID_SPRITES_COLLISIONS
 
-                MENUITEM "Ώ&Desmultiplexar?",           ID_SPRITES_DEMULTIPLEX
+                MENUITEM SEPARATOR
+                MENUITEM "&Multiplex",                  ID_DEMULTIPLEX_MULTIPLEX
+
+                MENUITEM "&Transparent",                ID_DEMULTIPLEX_TRANSPARENT
+
+                MENUITEM "&Opaque",                     ID_DEMULTIPLEX_OPAQUE
 
             END
             POPUP "En&trenadores"
@@ -20264,7 +20413,6 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Παραγωγή κινούμενων σχεδίων (&A)"
         BEGIN
-            MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
             MENUITEM "&GIF",                        ID_MACRO_GIF
             MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
             MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -20441,28 +20589,30 @@ BEGIN
         END
         POPUP "Επιλογές (&O)"
         BEGIN
-            MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-            MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-            MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
-            MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+            MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+            MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+            MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
+            MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
             MENUITEM SEPARATOR
-            MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-            MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+            MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+            MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
             MENUITEM SEPARATOR
-            MENUITEM "N 0",                         ID_DEBUG_N_0
-            MENUITEM "N 1",                         ID_DEBUG_N_1
-            MENUITEM "N 2",                         ID_DEBUG_N_2
-            MENUITEM "N 3",                         ID_DEBUG_N_3
+            MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+            MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+            MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+            MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+            MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
             MENUITEM SEPARATOR
-            MENUITEM "TU 0",                        ID_DEBUG_TU_0
-            MENUITEM "TU 1",                        ID_DEBUG_TU_1
-            MENUITEM "TU 2",                        ID_DEBUG_TU_2
+            MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+            MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+            MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
             MENUITEM SEPARATOR
             MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
             MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
             MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
             MENUITEM SEPARATOR
             MENUITEM "GR",                          ID_DEBUG_GR
+            MENUITEM "WARN",                        ID_DEBUG_WARN
         END
         POPUP "Γραφικά (&A)"
         BEGIN
@@ -20592,7 +20742,7 @@ BEGIN
             MENUITEM "N&one",                       ID_DOS_NOTWINDOS
             MENUITEM SEPARATOR
             MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-            MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+            MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
             MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
         END
         POPUP "Εξομοιωτής (&E)"
@@ -20605,7 +20755,6 @@ BEGIN
             MENUITEM "Επιβεβαίωση στην έξοδο; (&C)", ID_EMULATOR_CONFIRM
             MENUITEM "Προώθηση εισόδου/εξόδου στην κονσόλα; (&E)", 
                                                     ID_LOG_CONSOLE
-            MENUITEM "Προσομοίωση βάση καρέ; (&F)", ID_EMULATOR_FRAMEBASED
             MENUITEM "Αναγνώριση εξομοιωτή; (&Y)",  ID_EMULATOR_EMUID
             MENUITEM "Διαγνωστικό πρόγραμμα εκκίνησης; (&P)", 
                                                     ID_EMULATOR_POST
@@ -20614,6 +20763,10 @@ BEGIN
             MENUITEM "Aiφάνιση σoiβioλ?o eατά την aeeίνηση; (&S)", 
                                                     ID_EMULATOR_SHOWTOD
             MENUITEM "Χρήση εφαρμογών στελέχου; (&U)", ID_EMULATOR_USESTUBS
+            MENUITEM SEPARATOR
+            MENUITEM "Προσομοίωση βάση καρέ; (&F)", ID_EMULATOR_FRAMEBASED
+            MENUITEM "Εξομοίωση με βάση εικονοστοχείου (&X)", 
+                                                    ID_EMULATOR_PIXELBASED
             MENUITEM SEPARATOR
             MENUITEM "Προσθήκη στο WinArca&dia.log", ID_LOG_APPEND
             MENUITEM "Παράβλεψη W&inArcadia.log",   ID_LOG_IGNORE
@@ -20651,7 +20804,7 @@ BEGIN
             MENUITEM "Διακύμανση ορίζοντα; (&J)",   ID_GRAPHICS_DEJITTER
             MENUITEM "&Enhance skies?",             ID_GRAPHICS_SKIES
             MENUITEM "Γέμισμα διατομής; (&I)",      ID_GRAPHICS_CORNERS
-            MENUITEM "Πλήρη οθόνη; (&F)\tAlt+Enter, Ctrl+F", 
+            MENUITEM "Πλήρη οθόνη; (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                     ID_GRAPHICS_FULLSCREEN
             MENUITEM "Στενά; (&N)\tCtrl+N",         ID_GRAPHICS_NARROW
             MENUITEM "Περιστροφή οθόνης; (&R)",     ID_GRAPHICS_ROTATE
@@ -20766,7 +20919,11 @@ BEGIN
         BEGIN
             MENUITEM "Ανίχνευση σύγκρουσης; (&C)\tCtrl+L", 
                                                     ID_SPRITES_COLLISIONS
-            MENUITEM "Πολυπλεξία; (&D)",            ID_SPRITES_DEMULTIPLEX
+            MENUITEM SEPARATOR
+            MENUITEM "Σύνθετα (&M)",                ID_DEMULTIPLEX_MULTIPLEX
+            MENUITEM "Διαφανή (&T)",                ID_DEMULTIPLEX_TRANSPARENT
+
+            MENUITEM "Αδιαφανή (&O)",               ID_DEMULTIPLEX_OPAQUE
         END
         POPUP "Βοηθήματα (&T)"
         BEGIN
@@ -20917,7 +21074,6 @@ BEGIN
             MENUITEM SEPARATOR
             POPUP "Παραγωγή κινούμενων σχεδίων (&A)"
             BEGIN
-                MENUITEM "&AVI",                        ID_MACRO_AVIANIMS
                 MENUITEM "&GIF",                        ID_MACRO_GIF
                 MENUITEM "&IFF ANIM",                   ID_MACRO_IFFANIMS
                 MENUITEM "&MNG",                        ID_MACRO_MNG
@@ -21098,29 +21254,31 @@ BEGIN
             END
             POPUP "Επιλογές (&O)"
             BEGIN
-                MENUITEM "BASE 2|%",                    ID_DEBUG_BASE_BINARY
-                MENUITEM "BASE 8|@",                    ID_DEBUG_BASE_OCTAL
-                MENUITEM "BASE 10|!",                   ID_DEBUG_BASE_DECIMAL
+                MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
+                MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
+                MENUITEM "BASE 10|! (decimal)",         ID_DEBUG_BASE_DECIMAL
 
-                MENUITEM "BASE 16|$",                   ID_DEBUG_BASE_HEX
+                MENUITEM "BASE 16|$ (hexadecimal)",     ID_DEBUG_BASE_HEX
                 MENUITEM SEPARATOR
-                MENUITEM "CPU 0",                       ID_DEBUG_CPU_0
-                MENUITEM "CPU 1",                       ID_DEBUG_CPU_1
+                MENUITEM "CPU 0 (2650/2650A)",          ID_DEBUG_CPU_0
+                MENUITEM "CPU 1 (2650B)",               ID_DEBUG_CPU_1
                 MENUITEM SEPARATOR
-                MENUITEM "N 0",                         ID_DEBUG_N_0
-                MENUITEM "N 1",                         ID_DEBUG_N_1
-                MENUITEM "N 2",                         ID_DEBUG_N_2
-                MENUITEM "N 3",                         ID_DEBUG_N_3
+                MENUITEM "N 0 (non-extended Signetics)", ID_DEBUG_N_0
+                MENUITEM "N 1 (extended Signetics)",    ID_DEBUG_N_1
+                MENUITEM "N 2 (old CALM)",              ID_DEBUG_N_2
+                MENUITEM "N 3 (new CALM)",              ID_DEBUG_N_3
+                MENUITEM "N 4 (IEEE-694)",              ID_DEBUG_N_4
                 MENUITEM SEPARATOR
-                MENUITEM "TU 0",                        ID_DEBUG_TU_0
-                MENUITEM "TU 1",                        ID_DEBUG_TU_1
-                MENUITEM "TU 2",                        ID_DEBUG_TU_2
+                MENUITEM "TU 0 (cycles)",               ID_DEBUG_TU_0
+                MENUITEM "TU 1 (clocks)",               ID_DEBUG_TU_1
+                MENUITEM "TU 2 (pixels)",               ID_DEBUG_TU_2
                 MENUITEM SEPARATOR
                 MENUITEM "VB|VERBOSE 0",                ID_DEBUG_VB_0
                 MENUITEM "VB|VERBOSE 1",                ID_DEBUG_VB_1
                 MENUITEM "VB|VERBOSE 2",                ID_DEBUG_VB_2
                 MENUITEM SEPARATOR
                 MENUITEM "GR",                          ID_DEBUG_GR
+                MENUITEM "WARN",                        ID_DEBUG_WARN
             END
             POPUP "Γραφικά (&A)"
             BEGIN
@@ -21260,7 +21418,7 @@ BEGIN
                 MENUITEM "N&one",                       ID_DOS_NOTWINDOS
                 MENUITEM SEPARATOR
                 MENUITEM "&Central Data DOS",           ID_DOS_CDDOS
-                MENUITEM "&P1 DOS 10",                  ID_DOS_P1DOS
+                MENUITEM "&P1 DOS 1.1",                 ID_DOS_P1DOS
                 MENUITEM "Non&e",                       ID_DOS_NOCD2650DOS
             END
             POPUP "Εξομοιωτής (&E)"
@@ -21273,8 +21431,6 @@ BEGIN
                 MENUITEM "Επιβεβαίωση στην έξοδο; (&C)", ID_EMULATOR_CONFIRM
                 MENUITEM "Προώθηση εισόδου/εξόδου στην κονσόλα; (&E)", 
                                                         ID_LOG_CONSOLE
-                MENUITEM "Προσομοίωση βάση καρέ; (&F)", ID_EMULATOR_FRAMEBASED
-
                 MENUITEM "Αναγνώριση εξομοιωτή; (&Y)",  ID_EMULATOR_EMUID
                 MENUITEM "Διαγνωστικό πρόγραμμα εκκίνησης; (&P)", 
                                                         ID_EMULATOR_POST
@@ -21286,6 +21442,12 @@ BEGIN
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "Χρήση εφαρμογών στελέχου; (&U)", 
                                                         ID_EMULATOR_USESTUBS
+                MENUITEM SEPARATOR
+                MENUITEM "Προσομοίωση βάση καρέ; (&F)", ID_EMULATOR_FRAMEBASED
+
+                MENUITEM "Εξομοίωση με βάση εικονοστοχείου (&X)", 
+                                                        ID_EMULATOR_PIXELBASED
+
                 MENUITEM SEPARATOR
                 MENUITEM "Προσθήκη στο WinArca&dia.log", ID_LOG_APPEND
                 MENUITEM "Παράβλεψη W&inArcadia.log",   ID_LOG_IGNORE
@@ -21327,7 +21489,7 @@ BEGIN
                 MENUITEM "Διακύμανση ορίζοντα; (&J)",   ID_GRAPHICS_DEJITTER
                 MENUITEM "&Enhance skies?",             ID_GRAPHICS_SKIES
                 MENUITEM "Γέμισμα διατομής; (&I)",      ID_GRAPHICS_CORNERS
-                MENUITEM "Πλήρη οθόνη; (&F)\tAlt+Enter, Ctrl+F", 
+                MENUITEM "Πλήρη οθόνη; (&F)\tAlt+Enter, Ctrl+F, F11", 
                                                         ID_GRAPHICS_FULLSCREEN
 
                 MENUITEM "Στενά; (&N)\tCtrl+N",         ID_GRAPHICS_NARROW
@@ -21453,7 +21615,12 @@ BEGIN
                 MENUITEM "Ανίχνευση σύγκρουσης; (&C)\tCtrl+L", 
                                                         ID_SPRITES_COLLISIONS
 
-                MENUITEM "Πολυπλεξία; (&D)",            ID_SPRITES_DEMULTIPLEX
+                MENUITEM SEPARATOR
+                MENUITEM "Σύνθετα (&M)",                ID_DEMULTIPLEX_MULTIPLEX
+
+                MENUITEM "Διαφανή (&T)",                ID_DEMULTIPLEX_TRANSPARENT
+
+                MENUITEM "Αδιαφανή (&O)",               ID_DEMULTIPLEX_OPAQUE
 
             END
             POPUP "Βοηθήματα (&T)"

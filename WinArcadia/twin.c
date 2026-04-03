@@ -62,6 +62,8 @@
 EXPORT       FLAG            drive_rst,
                              priflag[32],
                              twin_escaped;
+EXPORT       TEXT            cmdfile[78],
+                             cmdname[78][7 + 1];
 EXPORT       UBYTE           drive_control,
                              mastermem[16 * KILOBYTE],
                              other_ininterrupt,
@@ -283,7 +285,8 @@ MODULE       UBYTE              crtstatus,
                                 slavemem[32 * KILOBYTE];
 MODULE       MEMFLAG            masterflags[16 * KILOBYTE],
                                 slaveflags[32 * KILOBYTE];
-MODULE       int                drive_stage,
+MODULE       int                commands = 0,
+                                drive_stage,
                                 freesize;
 MODULE       struct DriveStruct tempdrive;
 
@@ -295,6 +298,7 @@ MODULE void c306_printline(void);
 MODULE FLAG parse_mod(UBYTE* modptr, FLAG showing, FLAG doing);
 MODULE void tell_cluster(int cluster);
 MODULE void tell_clusters(int first, int second);
+MODULE void twin_list_commands(FLAG quiet);
 
 // CODE-------------------------------------------------------------------
 
@@ -1018,15 +1022,15 @@ EXPORT void twin_create_disk(int whichdrive)
 }
 
 EXPORT void twin_dir_disk(FLAG quiet, int whichdrive)
-{   FLAG  first,
-          ok;
-    int   i, j,
-          started,
-          badclusters,
-          fileclusters,
-          numfiles,
-          usedclusters,
-          where;
+{   FLAG first,
+         ok;
+    int  i, j,
+         started,
+         badclusters,
+         fileclusters,
+         numfiles,
+         usedclusters,
+         where;
 
     if (!drive[whichdrive].inserted)
     {   return;
@@ -1084,6 +1088,10 @@ EXPORT void twin_dir_disk(FLAG quiet, int whichdrive)
     }   }
     freesize = (304 - badclusters - usedclusters) * 1024;
 
+    if (whichdrive == 0)
+    {   twin_list_commands(TRUE);
+    }
+
     if (!quiet)
     {   zprintf
         (   TEXTPEN_DISK,
@@ -1108,14 +1116,14 @@ EXPORT void twin_dir_disk(FLAG quiet, int whichdrive)
         );
 
 #ifdef USEBYTES
-        zprintf(TEXTPEN_DISK, "Filename    Size Bytes\n" \
-                              "-------- ------- -----\n" \
-                              "(Bad)     %6d ",
+        zprintf(TEXTPEN_DISK, "Filename Cmd(s)    Size Bytes\n" \
+                              "-------- ------- ------ -----\n" \
+                              "(Bad)            %6d ",
                 badclusters * 1024);
 #else
-        zprintf(TEXTPEN_DISK, "Filename    Size Clusters\n" \
-                              "-------- ------- --------\n" \
-                              "(Bad)     %6d ",
+        zprintf(TEXTPEN_DISK, "Filename Cmd(s)    Size Clusters\n" \
+                              "-------- ------- ------ --------\n" \
+                              "(Bad)            %6d ",
                 badclusters * 1024);
 #endif
         started = -1;
@@ -1154,7 +1162,7 @@ EXPORT void twin_dir_disk(FLAG quiet, int whichdrive)
         {   zprintf(TEXTPEN_DISK, "\n");
         }
 
-        zprintf(TEXTPEN_DISK, "(Used)    %6d ", usedclusters * 1024); // aka "(Master)"
+        zprintf(TEXTPEN_DISK, "(Used)           %6d ", usedclusters * 1024); // aka "(Master)"
         started = -1;
         first = TRUE;
         for (i = 0; i < 304; i++)
@@ -1193,7 +1201,12 @@ EXPORT void twin_dir_disk(FLAG quiet, int whichdrive)
 
         for (i = 0; i < 78; i++)
         {   if (drive[whichdrive].filename[i][0] != EOS)
-            {   zprintf(TEXTPEN_DISK, "%8s %7d", drive[whichdrive].filename[i], drive[whichdrive].filesize[i]);
+            {   twin_get_commands(whichdrive, i, TRUE); // sets gtempstring
+                if (gtempstring[0] == EOS)
+                {   zprintf(TEXTPEN_DISK, "%8s         %6d", drive[whichdrive].filename[i], drive[whichdrive].filesize[i]);
+                } else
+                {   zprintf(TEXTPEN_DISK, "%8s %s %6d", drive[whichdrive].filename[i], gtempstring, drive[whichdrive].filesize[i]);
+                }
                 fileclusters = 0;
                 for (j = 0; j < 304; j++)
                 {   if (drive[whichdrive].contents[fileoffset[i] + (j / 8)] & (0x80 >> (j % 8)))
@@ -3109,4 +3122,140 @@ EXPORT void twin_view_dos(void)
     }
 
     zprintf(TEXTPEN_VIEW, "\n");
+
+    twin_list_commands(FALSE);
 }
+
+MODULE void twin_list_commands(FLAG quiet)
+{   int address,
+        firstdebug = 78,
+        i, j;
+
+    switch (twin_dosver)
+    {
+    case  TWIN_EXOS:   address = 0x75E;
+    acase TWIN_SDOS20: address = 0xE7D;
+    acase TWIN_SDOS40: address = 0xE2A;
+    acase TWIN_SDOS42: address = 0xE23;
+    acase TWIN_TOS:    address = 0x7F6;
+    acase TWIN_UDOS:   address = 0xE1D;
+    adefault:
+        commands = 0;
+        return;
+    }
+
+    if (!quiet)
+    {   zprintf(TEXTPEN_DISK, "Command Location\n" \
+                              "------- --------\n");
+    }
+
+    for (i = 0; i < 78; i++)
+    {   if (memory[address] == 0)
+        {   address++;
+            break;
+        }
+        if (memory[address] == 0xA0)
+        {   firstdebug = i;
+            while (memory[address] != 1)
+            {   address++;
+            }
+            address++;
+        }
+        j = 0;
+        do
+        {   cmdname[i][j++] = memory[address++] & 0x7F;
+        } while (memory[address - 1] < 128);
+        do
+        {   cmdname[i][j++] = tolower(memory[address] & 0x7F);
+            address++;
+        } while (memory[address - 1] < 128);
+        if (memory[address - 1] == 0xA0)
+        {   j--;
+        }
+        cmdname[i][j] = EOS;
+    }
+
+    commands = i;
+    if (commands)
+    {   for (i = 0; i < commands; i++)
+        {   if (memory[address] == 0 && memory[address + 1] == 0)
+            {   address += 2;
+            }
+            if (!quiet)
+            {   switch (memory[address] & 0xC0)
+                {
+                case 0x00:
+                    zprintf(    TEXTPEN_DISK, "%-7s Address $%02X%02X        (master memory)"  , cmdname[i], memory[address    ], memory[address + 1]       );
+                    cmdfile[i] = EOS;
+                acase 0x40:
+                    if ((memory[address] & 0x3F) != 0)
+                    {   zprintf(TEXTPEN_DISK, "%-7s File @%c + offset $%02X (1st overlay area)", cmdname[i], memory[address + 1], memory[address    ] & 0x3F);
+                    } else
+                    {   zprintf(TEXTPEN_DISK, "%-7s File @%c              (1st overlay area)"  , cmdname[i], memory[address + 1]);
+                    }
+                    cmdfile[i] = memory[address + 1];
+                acase 0x80:
+                    if ((memory[address] & 0x3F) != 0)
+                    {   zprintf(TEXTPEN_DISK, "%-7s File @%c + offset $%02X (2nd overlay area)", cmdname[i], memory[address + 1], memory[address    ] & 0x3F);
+                    } else
+                    {   zprintf(TEXTPEN_DISK, "%-7s File @%c              (2nd overlay area)"  , cmdname[i], memory[address + 1]);
+                    }
+                    cmdfile[i] = memory[address + 1];
+                acase 0xC0:
+                    if ((memory[address] & 0x3F) != 0)
+                    {   zprintf(TEXTPEN_DISK, "%-7s File @%c + offset $%02X (slave memory)"    , cmdname[i], memory[address + 1], memory[address    ] & 0x3F);
+                    } else
+                    {   zprintf(TEXTPEN_DISK, "%-7s File @%c              (slave memory)"      , cmdname[i], memory[address + 1]);
+                    }
+                    cmdfile[i] = memory[address + 1];
+                }
+                if (i >= firstdebug)
+                {   zprintf(TEXTPEN_DISK, " (debug only)\n");
+                } else
+                {   zprintf(TEXTPEN_DISK, "\n");
+            }   }
+            if ((memory[address] & 0xC0) == 0x00)
+            {   cmdfile[i] = EOS;
+            } else
+            {   cmdfile[i] = memory[address + 1];
+            }
+            address += 2;
+    }   }
+
+    if (!quiet)
+    {   zprintf(TEXTPEN_DISK, "\n");
+}   }
+
+EXPORT void twin_get_commands(int whichdrive, int whichfile, FLAG multiline)
+{   int i, j;
+
+    // This function gets the commands belonging to this system file.
+
+    if (multiline)
+    {   gtempstring[0] = EOS;
+    }
+
+    if (whichdrive != 0 || drive[whichdrive].filename[whichfile][0] != '@' || drive[whichdrive].filename[whichfile][2] != EOS)
+    {   return;
+    }
+
+    j = 0;
+    for (i = 0; i < commands; i++)
+    {   if (cmdfile[i] == drive[whichdrive].filename[whichfile][1])
+        {   j++;
+            if (multiline)
+            {   if (j >= 2)
+                {   sprintf(ENDOF(gtempstring), "\n         %-7s", cmdname[i]);
+                } else
+                {   sprintf(      gtempstring ,            "%-7s", cmdname[i]);
+            }   }
+            else
+            {   if (j >= 2)
+                {   sprintf(ENDOF(gtempstring), ", %s", cmdname[i]);
+                } else
+                {   sprintf(ENDOF(gtempstring), " (%s", cmdname[i]);
+    }   }   }   }
+
+    if (!multiline && j >= 1)
+    {   strcat(gtempstring, ")");
+}   }

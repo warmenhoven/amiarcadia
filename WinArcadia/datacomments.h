@@ -908,7 +908,27 @@ EXPORT const struct DataCommentStruct datacomment[] = {
 {   0x15,     -2, "Get parameters"             },
 {  0x112,  0x114, "End of line chars"          },
 {  0x5CF,  0x7F5, "Tables"                     }, // 631 (LASTPIPBUG2DATACOMMENT)
-// FIRSTGAMEDATACOMMENT (632)
+// P1DOS 1.1
+{ 0x6003,     -1, "P1 DOS version (read-only)"                                    }, // 632 (FIRSTP1DOSDATACOMMENT)
+{ 0x6050, 0x6057, "Filename for _ByName functions (string)"                       },
+{ 0x6058, 0x605B, "Filetype for _ByName functions (string)"                       },
+{ 0x605C, 0x6063, "Secondary filename (string)"                                   },
+{ 0x6064, 0x6067, "Secondary file type (string)"                                  },
+{ 0x6068,     -1, "Drive unit for _ByName functions"                              },
+{ 0x6069,     -2, "Pointer into Open Files Block for _ByFP functions"             },
+{ 0x606B, 0x6072, "New codeword to set, DOS_SetCodeByName (string)"               },
+{ 0x6073, 0x607A, "Last codeword entered by the user (string) (read-only)"        }, // 640
+{ 0x607B, 0x60BA, "Command line for Parse... functions (string)"                  },
+{ 0x60BC,     -2, "Cursor position"                                               },
+{ 0x60BE,     -1, "Number of drives installed in the system (read-only)"          },
+{ 0x60BF,     -1, "Last drive unit used by DOS (read-only)"                       },
+{ 0x60C0,     -1, "Default drive to use for file names without an explicit drive" },
+{ 0x60C1, 0x60C8, "System date in MM-DD-YY format (read-only)"                    },
+{ 0x60C9, 0x60D0, "Currently signed-on user (string) (read-only)"                 },
+{ 0x60D1,     -1, "Index into command line"                                       },
+{ 0x60D2,     -1, "Zero for normal user, non-zero for supervisor (read-only)"     },
+{ 0x60D3,     -2, "Buffer address for disk I/O with DOS_RWByName"                 }, // 650 (LASTP1DOSDATACOMMENT)
+// FIRSTGAMEDATACOMMENT (651)
 // Examples 1 & 2 (Hobby Module) (0..1 + FIRSTGAMEDATACOMMENT)
 {  0x912,  0x91F, "DATA table for object and duplicate"                                          },
 {  0x938,  0x963, "Data table"                                                                   },

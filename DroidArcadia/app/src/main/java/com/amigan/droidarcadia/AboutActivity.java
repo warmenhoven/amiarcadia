@@ -31,8 +31,8 @@ public class AboutActivity extends Activity
         TextView about_cpu            = findViewById(R.id.about_cpu);
         TextView link1_button         = findViewById(R.id.link1_button);
         TextView link2_button         = findViewById(R.id.link2_button);
-        
-        about_nameandversion.setText("DroidArcadia 4.42 beta 2");
+
+        about_nameandversion.setText("DroidArcadia 4.51");
         /* Toast.makeText(AboutActivity.this, "Versions are " + Build.VERSION.SDK_INT + "," + Build.VERSION_CODES.O, Toast.LENGTH_LONG).show(); // "25,26" for Nox
         if
         (   !Build.HARDWARE.toLowerCase().contains("nox")
@@ -41,7 +41,7 @@ public class AboutActivity extends Activity
          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O // ie. less than Android 8.0 (less than API 26)
         ) // Nox returns VERSION.SDK_INT of 25 but thinks 25 >= 26!?
         { */
-            LocalDate releasedate = LocalDate.of(2026, Month.JANUARY, 21);
+            LocalDate releasedate = LocalDate.of(2026, Month.MARCH, 12);
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG);
             String formatteddate = releasedate.format(dateFormatter);
             about_releasedate.setText(formatteddate);

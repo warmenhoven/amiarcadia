@@ -634,14 +634,14 @@
                     android:drawablePadding="5dp"
                 />
 
-                <Switch
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="#000000"
                     android:textStyle="bold"
                     android:textSize="18sp"
-                    android:text="@string/demultiplexing"
-                    android:id="@+id/switch_demultiplex"
+                    android:text="@string/multiplex"
+                    android:id="@+id/button_demultiplex"
                     android:padding="10dp"
                     android:background="#cc00cc"
                     android:gravity="left"

@@ -167,7 +167,7 @@ EXPORT struct KeyNameStruct keyname[SCANCODES] = {
 { "(84)",  { NC  , NC  ,  NC  }, { NC  , NC  , NC  }, { NC , NC  , NC  },   NC,   NC, NC  , NC  , FALSE, -1                , FALSE, FALSE, -1 }, // $54
 { "Fn",    { NC  , NC  ,  NC  }, { NC  , NC  , NC  }, { NC , NC  , NC  },   NC,   NC, NC  , NC  , TRUE , IDC_KYBD_FN       , FALSE, TRUE , -1 }, // $55 (on IBM ThinkPad. Doesn't map to any scancode on eg. Acer AspireOne)
 { "L\\",   { NC  , NC  ,  NC  }, { NC  , NC  , NC  }, { NC , NC  , NC  }, 0x1C,   NC, NC  , NC  , FALSE, -1                , FALSE, FALSE, -1 }, // $56 left backslash
-{ "F11",   { NC  , NC  ,  NC  }, { NC  , NC  , NC  }, { NC , NC  , NC  },   NC,   NC, NC  , NC  , FALSE, IDC_KYBD_F11      , TRUE , TRUE , -1 }, // $57
+{ "F11",   { NC  , NC  ,  NC  }, { NC  , NC  , NC  }, { NC , NC  , NC  },   NC,   NC, NC  , NC  , TRUE , IDC_KYBD_F11      , TRUE , TRUE , -1 }, // $57
 { "F12",   { NC  , NC  ,  NC  }, { NC  , NC  , NC  }, { NC , NC  , NC  },   NC,   NC, NC  , NC  , FALSE, IDC_KYBD_F12      , TRUE , TRUE , -1 }, // $58
 { "(89)",  { NC  , NC  ,  NC  }, { NC  , NC  , NC  }, { NC , NC  , NC  },   NC,   NC, NC  , NC  , FALSE, -1                , FALSE, FALSE, -1 }, // $59
 { "(90)",  { NC  , NC  ,  NC  }, { NC  , NC  , NC  }, { NC , NC  , NC  },   NC,   NC, NC  , NC  , FALSE, -1                , FALSE, FALSE, -1 }, // $5A
@@ -605,6 +605,7 @@ IMPORT       UBYTE                     button[2][8],
                                        sx[2], sy[2];
 IMPORT const UBYTE                     table_opcolours_2650[2][256];
 IMPORT       TEXT                      autotext[GAMEINFOLINES][80 + 1],
+                                       gtempstring[256 + 1],
                                        pgmtext[6 * KILOBYTE],
                                        joyname[2][MAX_PATH];
 IMPORT       ULONG                     arcadia_bigctrls,
@@ -623,7 +624,8 @@ IMPORT       ULONG                     arcadia_bigctrls,
                                        viewkybdas2,
                                        viewpadsas;
 IMPORT const DWORD                     joyfires[8];
-IMPORT const STRPTR                    overlays[OVERLAYS][33];
+IMPORT const STRPTR                    opcodelink[256],
+                                       overlays[OVERLAYS][33];
 IMPORT       HBRUSH                    hBrush[EMUBRUSHES];
 IMPORT       HFONT                     hSmallFont;
 IMPORT       HINSTANCE                 InstancePtr;
@@ -1784,6 +1786,9 @@ PERSIST const int key_to_gid[2][16] = {
             acase A_CAPTUREPOS:
                 localhicon3 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_OVERLAY_CAPTURE         ));
                 localhicon4 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_OVERLAY_CAPTURE         ));
+            acase CATTRAXPOS:
+                localhicon3 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_OVERLAY_CATTRACK        ));
+                localhicon4 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_OVERLAY_CATTRACK        ));
             acase A_CIRCUSPOS:
                 localhicon3 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_OVERLAY_CIRCUS          ));
                 localhicon4 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_OVERLAY_CIRCUS          ));
@@ -1833,8 +1838,8 @@ PERSIST const int key_to_gid[2][16] = {
                 localhicon3 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_OVERLAY_SUPERBUG        ));
                 localhicon4 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_OVERLAY_DEFAULT         ));
             adefault:
-                /* We are missing MPT-03 overlays for these 4 games:
-                   Cat Track, Escape, Space Raider, Video Chess
+                /* We are missing MPT-03 overlays for these 5 games:
+                   Escape, Parashooter, Space Raider, Space Vultures, Video Chess
                    and probably for other subgame(s) of Math/Logic */
                 localhicon3 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_OVERLAY_DEFAULT         ));
                 localhicon4 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_OVERLAY_DEFAULT         ));
@@ -1970,6 +1975,7 @@ PERSIST const int key_to_gid[2][16] = {
         acase THEENDPOS1:
         case  THEENDPOS2:        localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_THEEND   ));
         acase TURTLESPOS:        localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_TURTLESTURPIN));
+
         // Interton
         acase CARRACESPOS:       localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_1 ));
         acase I_BLACKJACKPOS:    localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_2 ));
@@ -2017,6 +2023,151 @@ PERSIST const int key_to_gid[2][16] = {
         case  232:               localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_37));
         acase HYPERSPACEPOS:     localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_38));
         acase SUPERSPACEPOS:     localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_40));
+
+        // Elektor
+        acase 255:                 // Keyboard Painting aka Play with the PVI               ESS-003-1
+        case  256:                 // Clock                                                 ESS-003-2
+        case  257:                 // Music Box                                             ESS-003-3
+        case  258:                 // 4 in a Row (7*6 board)                                ESS-003-4
+        case  259:                 // Surround                                              ESS-003-5
+        case  260:                 // Steam Engine aka Locomotive aka Demonstration Program ESS-003-6
+        case  262:                 // PVI Programming                                       ESS-006-2
+        case  ROCKETSHOOTINGPOS:   // Rocket Shooting                                       ESS-006-3 (263)
+                                   localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_ESS_RECORD));
+
+        acase 236:                 // Mazes                         ESS-011-4
+        case  CIRCLEDRIVEPOS1:     // Circledrive                   ESS-009-3 (237)
+        case  238:                 // Labyrinth                     ESS-009-6
+        case  243:                 // Invaders                      ESS-010-1
+        case  244:                 // Rocket Hunting                ESS-010-9
+        case  245:                 // Basketball                    ESS-010-A
+        case  246:                 // Galgenspiel                   ESS-010-E
+        case  247:                 // Hangman                       ESS-010-F
+        case  248:                 // Dragster      ,               ESS-011-6
+        case  COSMICADVENTUREPOS1: // Cosmic Adventure              ESS-011-F (249)
+        case  250:                 // Disassembler                  ESS-007-D
+        case  251:                 // Editor         ,              ESS-010-D
+        case  COSMICADVENTUREPOS2: // Cosmic Adventure (enhanced)   ESS-011-F (253)
+        case  261:                 // Picture Pattern/Test Patterns ESS-006-1/ESS-007-E (arbitrary choice over IDB_BOX_ESS_RECORD (matches .reference field))
+        case  264:                 // Mastermind                    ESS-007-1
+        case  265:                 // Code Breaker                  ESS-007-2
+        case  266:                 // Reversi                       ESS-007-3
+        case  267:                 // Amazone                       ESS-007-4
+        case  268:                 // Space Shoot-Out               ESS-007-5
+        case  269:                 // 4 in a Row (7*6 board)        ESS-007-6
+        case  270:                 // 4 in a Row (8*7 board)        ESS-007-7
+        case  271:                 // Jackpot                       ESS-007-8
+        case  272:                 // Surround                      ESS-007-9
+        case  273:                 // Shapes                        ESS-007-A
+        case  274:                 // Piano                         ESS-007-B
+        case  275:                 // PVI Programming               ESS-007-C
+        case  276:                 // Lotto                         ESS-007-F
+        case  277:                 // (not) Aggressor               ESS-009-1
+        case  278:                 // Offshore Fishing              ESS-009-2
+        case  279:                 // Seawar                        ESS-009-4
+        case  280:                 // Memory                        ESS-009-5
+        case  281:                 // Destroyer                     ESS-009-7
+        case  282:                 // Starship Enterprise           ESS-009-8
+        case  283:                 // Blackjack                     ESS-009-9
+        case  284:                 // Card Trick                    ESS-009-A
+        case  285:                 // Awari                         ESS-009-B
+        case  UFOSHOOTINGPOS:      // UFO Shooting                  ESS-009-C (286)
+        case  287:                 // Raster                        ESS-009-D
+        case  288:                 // Nim                           ESS-009-E
+        case  289:                 // Solitaire                     ESS-009-F
+        case  E_PINBALLPOS:        // Pinball                       ESS-010-2 (290)
+        case  HELICOPTERPOS:       // Helicopter                    ESS-010-3 (291)
+        case  292:                 // Hard Nut                      ESS-010-4
+        case  293:                 // Catapult                      ESS-010-5
+        case  294:                 // Pilot                         ESS-010-6
+        case  ATTACKFROMSPACEPOS:  // Attack from Space             ESS-010-7 (295)
+        case  296:                 // Reverse                       ESS-010-8
+        case  BURSTINGBALLOONSPOS: // Bursting Balloons             ESS-010-B (297)
+        case  298:                 // Für Elise                     ESS-010-C
+        case  299:                 // Change Words for Hangman      ESS-010-1x
+        case  300:                 // Snakes and Ladders            ESS-011-1
+        case  301:                 // Molebasher                    ESS-011-2
+        case  302:                 // Snap                          ESS-011-3
+        case  ASTEROIDSPOS:        // Asteroids                     ESS-011-5 (303)
+        case  OMEGALANDINGPOS:     // Omega Landing                 ESS-011-7 (304)
+        case  BREAKOUTPOS:         // Breakout                      ESS-011-8 (305)
+        case  TINYTIMPOS:          // Tiny Tim                      ESS-011-9 (306)
+        case  307:                 // Horse Race + Jackpot          ESS-011-A
+        case  308:                 // Newton                        ESS-011-B
+        case  309:                 // Horse Races                   ESS-011-C
+        case  310:                 // Painting                      ESS-011-D
+        case  SUBMARINESRACINGPOS: // Submarines + Racing           ESS-011-E (311)
+        case  CIRCLEDRIVEPOS2:     // Circledrive (patched)         ESS-009-3 (312)
+        case  378:                 // Piano (song #1) (dump #1)    (ESS-007-B)
+        case  379:                 // Piano (song #1) (dump #2)    (ESS-007-B)
+        case  380:                 // Piano (song #2) (dump #1)    (ESS-007-B)
+        case  381:                 // Piano (song #2) (dump #2)    (ESS-007-B)
+        case  382:                 // Piano (song #3) (dump #1)    (ESS-007-B)
+        case  383:                 // Piano (song #3) (dump #2)    (ESS-007-B)
+        case  384:                 // Piano (song #4) (dump #1)    (ESS-007-B)
+        case  385:                 // Piano (song #4) (dump #2)    (ESS-007-B)
+        case  450:                 // Aggressor (dump #1)           ESS-009-1
+        case  451:                 // Aggressor (dump #2)           ESS-009-1
+                                   localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_ESS_TAPE));
+
+        acase 313:                 // Figure 26                     Pages 88-89
+        case  314:                 // Figure 27                     Pages 88-90
+        case  315:                 // Steam Engine 2                Pages 34-35 + 66
+        case  316:                 // Clear Background aka Table 5  Page 75
+        case  317:                 // Add 2                         Pages 96-97
+        case  318:                 // Add 4                         Pages 96-97
+        case  319:                 // Minus 2                       Pages 96-97
+        case  320:                 // Minus 4                       Pages 96-98
+        case  321:                 // Explosion aka Table 42        Page 181
+        case  322:                 // Gunshot aka Table 42          Page 181
+        case  323:                 // Joystick aka Table 23         Pages 118-119
+        case  324:                 // Message aka Table 15          Pages 103-104
+        case  326:                 // Wolf Whistle                  Page 182
+        case  327:                 // Page 91                       Pages 88-91
+        case  328:                 // Practice                      Page 94
+        case  329:                 // Siren                         Page 181
+        case  330:                 // Steam Engine 1 aka Table 3    Pages 34-35
+        case  331:                 // Table 10                      Pages 75 + 93
+        case  332:                 // Table 18                      Page 110
+        case  333:                 // Table 19                      Page 110
+        case  334:                 // Table 20                      Page 114
+        case  335:                 // Table 28 (horizontal)         Pages 124-125
+        case  336:                 // Table 28 (vertical)           Pages 124-125
+        case  337:                 // Disassembler aka Table 34     Page 138
+        case  338:                 // Table 40                      Pages 158-159
+        case  339:                 // EPROM Programmer aka Table 48 Page 196
+        case  340:                 // Table A                       Page 73
+        case  341:                 // Table B                       Pages 73-76
+        case  342:                 // Table C                       Pages 73-79
+        case  343:                 // Table D                       Pages 73-83
+        case  344:                 // Table E                       Pages 73-85
+        case  345:                 // Table 26                      Pages 120 + 122
+        case  346:                 // Table 29                      Pages 127-128
+        case  347:                 // Table 30                      Page 128
+        case  348:                 // Wedding March                 Pages 183-184
+                                   localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_BOOK));
+
+        acase 349:                 // Reverse                       Hocosoft #27. File $2
+        case  350:                 // Solitaire (A)                 Hocosoft #22. File $1
+        case  351:                 // Teaser                        Hocosoft #21. File $3
+        case  352:                 // Bazaar (Basar)                Hocosoft #30. File $6
+        case  353:                 // Othello                       Hocosoft #33. File $1
+        case  QUEENPOS:            // Queen                         Hocosoft #21. File $1 (354)
+        case  SPACEBATTLEPOS:      // Space Battle (Raumschlacht)   Hocosoft #16. File $B (355)
+        case  E_MATH1POS:          // Mathematics 1 (Mathematik 1)  Hocosoft #4.  File $4 (356)
+        case  376:                 // Towers of Hanoi               Hocosoft #28. File $8
+        case  377:                 // Hunting (Jagen)               Hocosoft #9.  File $9
+        case  446:                 // Solitaire (B)               , Hocosoft #22. File $2
+                                   localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_HOCOSOFT));
+
+        acase HAMISH1POS1:         // Example 2 (Joystick Control, etc. aka Hamish 1)    Radofin (404)
+        case  439:                 // Example 1 (Setting Up Objects and Background)      Radofin
+        case  440:                 // Example 3 (Multiple Objects aka Knock out Objects) Radofin
+        case  441:                 // Example 4 (Survival)                               Radofin
+        case  442:                 // Example 5 (PVI Art)                                Radofin
+        case  443:                 // Decimal Adjust Example                             Radofin
+                                   localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_HOBBYMODULE));
+
         // all
         adefault:                localhicon2 = NULL;
         } // Mothership and Super Bug 2 could arguably use the box of their related game
@@ -2146,8 +2297,12 @@ PERSIST const int key_to_gid[2][16] = {
 }
 
 MODULE BOOL CALLBACK OpcodesDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
-{   LONG  gid;
-    UBYTE category;
+{   FAST LONG  gid;
+    FAST UBYTE category;
+    FAST int   i,
+               mousex, mousey;
+    FAST RECT  localrect;
+    FAST POINT thepoint;
 
     switch (Message)
     {
@@ -2174,9 +2329,22 @@ MODULE BOOL CALLBACK OpcodesDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPAR
         setdlgtext(hwnd, IDL_LEGEND12,      MSG_LEGEND12,     "Illegal");
 #endif
 
-        move_subwindow(SUBWINDOW_OPCODES, hwnd);
+        for (i = 0; i <= 255; i++)
+        {   GetWindowRect(GetDlgItem(hwnd, IDC_OPCODE0 + i), &localrect);
+            thepoint.x                    = localrect.left;
+            thepoint.y                    = localrect.top;
+            DISCARD ScreenToClient(hwnd, &thepoint);
+            opcodes[style][i].rect.left   = thepoint.x;
+            opcodes[style][i].rect.top    = thepoint.y;
+            thepoint.x                    = localrect.right;
+            thepoint.y                    = localrect.bottom;
+            DISCARD ScreenToClient(hwnd, &thepoint);
+            opcodes[style][i].rect.right  = thepoint.x;
+            opcodes[style][i].rect.bottom = thepoint.y;
+        }
 
-        return FALSE;
+        move_subwindow(SUBWINDOW_OPCODES, hwnd);
+    return FALSE;
     case WM_ACTIVATE: // no need for acase
         do_autopause(wParam, lParam);
     acase WM_CTLCOLORSTATIC:
@@ -2210,22 +2378,38 @@ MODULE BOOL CALLBACK OpcodesDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPAR
             case IDL_OP_9TH:  SetBkColor((HDC) wParam, EMUPEN_WHITE   ); return (LRESULT) hBrush[EMUBRUSH_WHITE];
             case IDL_OP_10TH: SetBkColor((HDC) wParam, EMUPEN_DARKBLUE); return (LRESULT) hBrush[EMUBRUSH_DARKBLUE];
         }   }
-        return FALSE;
+    return FALSE;
     case WM_CLOSE: // no need for acase
         clearkybd();
         DestroyWindow(hwnd);
         SubWindowPtr[SUBWINDOW_OPCODES] = NULL;
         updatemenu(MENUITEM_OPCODES);
-
-        return TRUE;
+    return TRUE;
     case WM_DESTROY: // no need for acase
         SubWindowPtr[SUBWINDOW_OPCODES] = NULL;
-        return FALSE;
+    return FALSE;
     case WM_MOVE: // no need for acase
         reset_fps();
-        return FALSE;
-    default: // no need for adefault
-        return FALSE;
+    return FALSE;
+    case WM_LBUTTONDBLCLK: // no need for acase
+    case WM_LBUTTONDOWN:
+        mousex = (int) LOWORD(lParam);
+        mousey = (int) HIWORD(lParam);
+        for (i = 0; i <= 255; i++)
+        {   if
+            (   mousex >= opcodes[style][i].rect.left
+             && mousex <= opcodes[style][i].rect.right
+             && mousey >= opcodes[style][i].rect.top
+             && mousey <= opcodes[style][i].rect.bottom
+            )
+            {   if (opcodelink[i][0] && (supercpu || (i != 0x10 && i != 0x11)))
+                {   sprintf(gtempstring, "http://amigan.yatho.com/2650UM.html#%s.html", opcodelink[i]);
+                    openurl(gtempstring);
+                }
+                break; // for speed
+        }   }
+    adefault:
+    return FALSE;
     }
     return TRUE;
 }

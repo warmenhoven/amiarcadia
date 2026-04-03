@@ -133,7 +133,6 @@ EXPORT ULONG  analog                   = FALSE,
               confirmable              = FALSE,
 #endif
               declinate                = TRUE,
-              demultiplex              = TRUE,
               eachpage                 = FALSE,
               elektor_bigctrls         = TRUE,
               interton_bigctrls        = TRUE,
@@ -205,7 +204,6 @@ EXPORT TEXT   asciiname_long[259][9 + 1],
               usermsg[80 + 1]          = "";
 EXPORT int    aifffile                 = FALSE,
               ambient                  = TRUE,
-              avianims                 = FALSE,
               apnganims                = FALSE,
               autocoin                 = TRUE,
               autopause                = FALSE,
@@ -242,6 +240,12 @@ EXPORT int    aifffile                 = FALSE,
               cpuy,
               crippled                 = FALSE,
               debugdrive               = 0,
+#ifdef WIN32
+              demultiplex              = 1, // transparent
+#endif
+#ifdef AMIGA
+              demultiplex              = 2, // opaque
+#endif
               dejitter                 = FALSE,
               drawcorners              = FALSE,
               drawunlit                = TRUE,
@@ -352,6 +356,7 @@ EXPORT int    aifffile                 = FALSE,
               verbosity                = 2,
               viewingsprite            = 0,
               viewspeedas              = VIEWAS_PERCENTS,
+              warn                     = TRUE,
               watchreads               = TRUE,
               watchwrites              = WATCH_ALL,
               wavfile                  = FALSE,
@@ -417,10 +422,10 @@ EXPORT struct MachineStruct machines[MACHINES] =                                
   { "INTERTON"  ,                   0,                    0, MEMMAP_D,           REGION_PAL , {  0.0            , 50.0804105952784 }, 2,  30,   37, 42,    0, 38,     0.0, 1,  4, 0, { 1, 112, 225 }, 0x1F00, FALSE,  -1,   -1,  98, 120, { "START" , "SELECT", "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   }, -1,  0, TRUE , FALSE, 0,               0, { { "1st"  , "1"    , "2"    , "3"    , "4"    , "5"    , "6"    , "7"    , "8"    , "9"    , "Cl"   , "0"    , "En"   , "x1"   , "x2"   , "x3"   , "x4"   , "Up"   , "Dn"   , "Lt"   , "Rt"   , "2nd"  , "3rd"  , "4th"  , "UpLt" , "UpRt" , "DnLt" , "DnRt" }, { "1st"  , "1"    , "2"    , "3"    , "4"    , "5"    , "6"    , "7"    , "8"    , "9"    , "Cl"   , "0"    , "En"   , "x1"   , "x2"   , "x3"   , "x4"   , "Up"   , "Dn"   , "Lt"   , "Rt"   , "2nd"  , "3rd"  , "4th"  , "UpLt" , "UpRt" , "DnLt" , "DnRt"  } } }, // INTERTON
   { "ELEKTOR"   ,                   0,                    0, MEMMAP_F,           REGION_PAL , {  0.0            , 50.0804105952784 }, 2,  -1,   -1, 36,    0, 38,     0.0, 1,  4, 0, { 1, 111, 225 }, 0x1F00, FALSE,  -1,   -1,  -1,  -1, { "START" , "UC"    , "LC"    , "RESET"    }, { IMAGE_START, IMAGE_UC  , IMAGE_LC   , IMAGE_RESET   }, -1,  0, TRUE , FALSE, 0,               0, { { "1st"  , "RCAS" , "WCAS" , "C"    , "BP"   , "REG"  , "8"    , "PC"   , "MEM"  , "4"    , "-"    , "+"    , "0"    , "-----", "-----", "-----", "-----", "Up"   , "Dn"   , "Lt"   , "Rt"   , "2nd"  , "3rd"  , "4th"  , "UpLt" , "UpRt" , "DnLt" , "DnRt" }, { "1st"  , "D"    , "E"    , "F"    , "9"    , "A"    , "B"    , "5"    , "6"    , "7"    , "1"    , "2"    , "3"    , "-----", "-----", "-----", "-----", "Up"   , "Dn"   , "Lt"   , "Rt"   , "2nd"  , "3rd"  , "4th"  , "UpLt" , "UpRt" , "DnLt" , "DnRt"  } } }, // ELEKTOR
   { "PIPBUG"    ,                   0,                    0, MEMMAP_PIPBUG1,     REGION_PAL , {  0.0            , 50.0             }, 1,  -1,   -1,  0,    0, 42, 20000.0, 0,  0, 4, { 0, 128, 255 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   }, -1,  0, FALSE, TRUE , 0,               0,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // PIPBUG
-  { "BINBUG"    ,                   0,                    0, MEMMAP_BINBUG,      REGION_PAL , {  0.0            , 50.0             }, 1,  -1,   -1, 16,    0, 43, 20000.0, 0,  0, 0, { 0, 128, 255 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   }, -1,  0, TRUE , FALSE, BINBUG_DISKSIZE, 2, { { "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----"}, { "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----" } } }, // BINBUG
+  { "BINBUG"    ,                   0,                    0, MEMMAP_BINBUG,      REGION_PAL , {  0.0            , 50.0             }, 1,  -1,   -1, 16,    0, 44, 20000.0, 0,  0, 0, { 0, 128, 255 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   }, -1,  0, TRUE , FALSE, BINBUG_DISKSIZE, 2, { { "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----"}, { "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----" } } }, // BINBUG
   { "INSTRUCTOR", INSTRUCTOR_BOXWIDTH, INSTRUCTOR_BOXHEIGHT, MEMMAP_O,           REGION_PAL , {  0.0            , 50.0             }, 1,FIRSTSI50EQUIV,LASTSI50EQUIV,32,0,36,17900.0,0,0,8,{0,0, 0 },      0, FALSE,1922, 2692, 305, 354, { "SENS"  , "INT"   , "MON"   , "RST"      }, { IMAGE_START, IMAGE_INT , IMAGE_MON  , IMAGE_RESET   }, -1,  0, FALSE, FALSE, 0,               0, { { "-----", "WCAS" , "BKPT" , "C"    , "RCAS" , "REG"  , "8"    , "STEP" , "MEM"  , "4"    , "RUN"  , "NXT"  , "0"    , "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----"}, { "-----", "D"    , "E"    , "F"    , "9"    , "A"    , "B"    , "5"    , "6"    , "7"    , "1"    , "2"    , "3"    , "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----" } } }, // INSTRUCTOR
   { "TWIN"      ,                   0,                    0, MEMMAP_TWIN,        REGION_NTSC, { 60.0            ,  0.0             }, 1,  -1,   -1, 55,    0, 40, 20800.0, 0,  0, 0, { 0,   0,   0 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   }, -1,  0, FALSE, FALSE, TWIN_DISKSIZE,   2,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // TWIN
-  { "CD2650"    ,                   0,                    0, MEMMAP_CD2650,      REGION_NTSC, { 59.4690265486726,  0.0             }, 1,  -1,   -1,  0,    0, 43, 19888.0, 0, 12, 0, { 0,   0,   0 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   }, -1,  0, FALSE, FALSE, CD2650_DISKSIZE, 4,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // CD2650
+  { "CD2650"    ,                   0,                    0, MEMMAP_CD2650,      REGION_NTSC, { 59.4690265486726,  0.0             }, 1,  -1,   -1,  0,    0, 44, 19888.0, 0, 12, 0, { 0,   0,   0 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   }, -1,  0, FALSE, FALSE, CD2650_DISKSIZE, 4,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // CD2650
   { "ZACCARIA"  ,     COINOP_BOXWIDTH,     COINOP_BOXHEIGHT, MEMMAP_ASTROWARS,   REGION_PAL , { 60.0            , 50.0             }, 1,  -1,   -1,  0,    0, 34, 23608.0, 0,  0, 0, { 0, 128, 255 }, 0x1500, TRUE ,  -1,   -1,  -1,  -1, { "1UP"   , "2UP"   , "Coin A", "Coin B"   }, { IMAGE_1UP  , IMAGE_2UP , IMAGE_COINA, IMAGE_COINB   }, 51,  6, TRUE , FALSE, 0,               0,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // ZACCARIA
   { "MALZAK"    ,     COINOP_BOXWIDTH,     COINOP_BOXHEIGHT, MEMMAP_MALZAK1,     REGION_PAL , { 60.0            , 50.0             }, 1,  -1,   -1, 11,    0, 34,     0.0, 2,  0, 0, { 0, 128, 255 }, 0x1400, TRUE ,  -1,   -1,  -1,  -1, { "1UP"   , "2UP"   , "Coin"  , "Switch"   }, { IMAGE_1UP  , IMAGE_2UP , IMAGE_COINA, IMAGE_DIPS    }, 51,  6, TRUE , FALSE, 0,               0,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // MALZAK
   { "PHUNSY"    ,                   0,                    0, MEMMAP_PHUNSY,      REGION_PAL,  {  0.0            , 50.0             }, 1,FIRSTPHUNSYEQUIV,LASTPHUNSYEQUIV,24,0,36,20032.0,0,0,0,{0,0,0},    0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   }, -1,  0, FALSE, FALSE, 0,               0, { { "-----", "0"    , "4"    , "8"    , "1"    , "5"    , "9"    , "2"   , "6"     , "A"    , "3"    , "7"    , "B"    , "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----"}, { "-----", "C"    , "D->M" , "RESET", "D"    , "M->D" , "HALT" , "E"    , "GO TO", "DUMPC", "F"    , "CLEAR", "LOADC", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----" } } }, // PHUNSY
@@ -4700,9 +4705,6 @@ MODULE void serializeconfig(void)
     aserialize_bool("bigcontrols_elektor" , (int*) &elektor_bigctrls);
     aserialize_bool("bigcontrols_mikit"   , (int*) &mikit_bigctrls);
     aserialize_bool("bigcontrols_si50"    , (int*) &si50_bigctrls);
-    if (configversion == OLDEST)
-    {   aserialize_bool("bigmusic"        , (int*) &temp       );
-    }
     aserialize_bool("blankingareas"       , &usemargins        );
     aserialize_bool("blink"               , &blink             );
 #ifdef WIN32
@@ -4723,7 +4725,11 @@ MODULE void serializeconfig(void)
     aserialize_bool("darkenbg"            , &darkenbg          );
     aserialize_bool("declinate"           , (int*) &declinate  );
     aserialize_bool("dejitter"            , &dejitter          );
-    aserialize_bool("demultiplex"         , (int*) &demultiplex);
+    if (configversion == OLDEST)
+    {   aserialize_bool("demultiplex"     , (int*) &demultiplex);
+        if (demultiplex)
+        {   demultiplex = 2; // opaque
+    }   }
     aserialize_bool("drawcorners"         , &drawcorners       );
     aserialize_bool("drawunlit"           , &drawunlit         );
     aserialize_bool("eachpage"            , (int*) &eachpage   );
@@ -4745,7 +4751,7 @@ MODULE void serializeconfig(void)
     aserialize_bool("forcefeedback_right" , &useff[1]          );
     aserialize_bool("fullscreen"          , &fullscreen       );
 #ifdef AMIGA
-    if (configversion != NEWER)
+    if (configversion == OLDEST)
 #endif
     {   aserialize_bool("fullscreen_debugger" , &showdebugger[  1]);
         aserialize_bool("fullscreen_menubar"  , &showmenubars[  1]);
@@ -4757,7 +4763,9 @@ MODULE void serializeconfig(void)
     }
     aserialize_bool("generate"            , &generate          );
     aserialize_bool("generateanim"        , &iffanims          );
-    aserialize_bool("generateavi"         , &avianims          );
+    if (configversion == OLDEST)
+    {   aserialize_bool("generateavi"     , &temp              );
+    }
     aserialize_bool("generategif"         , &gifanims          );
     aserialize_bool("generatemng"         , &mnganims          );
     aserialize_bool("generatepng"         , &apnganims         );
@@ -4827,6 +4835,9 @@ MODULE void serializeconfig(void)
     aserialize_bool("verbosedisk"         , (int*) &verbosedisk);
     aserialize_bool("verbosetape"         , (int*) &verbosetape);
     aserialize_bool("viewbuiltin"         , &showbuiltin       );
+    if (configversion != OLDEST)
+    {   aserialize_bool("warn"            , (int*) &warn       );
+    }
     aserialize_bool("watchreads"          , &watchreads        );
     aserialize_int( "watchwrites"         , &watchwrites, 0, 2 );
     aserialize_bool("windowed_debugger"   , &showdebugger[  0] );
@@ -4912,6 +4923,14 @@ MODULE void serializeconfig(void)
     aserialize_int(  "controller_left"    , &hostcontroller[0]      ,             0, 8); // host-specific
     aserialize_int(  "controller_right"   , &hostcontroller[1]      ,             0, 8); // host-specific
     aserialize_int(  "debugger_drive"     , &debugdrive             ,             0, 1);
+    if (configversion != OLDEST)
+    {   aserialize_int("demultiplex"      , &demultiplex            ,             0, 2); // off, transparent, opaque
+#ifdef AMIGA
+        if (demultiplex == 1)
+        {   demultiplex = 2;
+        }
+#endif
+    }
     aserialize_ubyte("dips_astrowars"     , &aw_dips1);
     aserialize_ubyte("dips_astrowars_2"   , &aw_dips2);
     aserialize_ubyte("dips_galaxia"       , &ga_dips);
@@ -4943,12 +4962,18 @@ MODULE void serializeconfig(void)
     }
     aserialize_uword("netport"            , &netport                ,             0, 65535);
     aserialize_int("nexttip"              , &nexttod                ,             0, TIPSOFDAYS - 1);
-    aserialize_int("notation"             , &style                  ,             0, 3); // non-extended, extended, calm, ieee
+    if (configversion == NEWER)
+    {   aserialize_int("notation"         , &style                  ,             0, 4); // non-extended, extended, old calm, new calm, ieee
+    } else
+    {   aserialize_int("notation"         , &style                  ,             0, 3); // non-extended, extended, old calm, ieee
+        if (style == 3)
+        {   style = 4; // IEEE-694
+    }   }
     aserialize_int("phunsy_biosversion"   , &phunsy_biosver         ,             0, 1); // mini-monitor, phunsy
     aserialize_int("pipbug_baudrate"      , &pipbug_baudrate        ,             0, 2); // 110, 300, 4800
     aserialize_int("pipbug_biosversion"   , &pipbug_biosver         ,             0, 3); // Artemis, HYBUG, PIPBUG 1, PIPBUG 2
     aserialize_int("pipbug_peripheral"    , &pipbug_periph          ,             0, 3); // EA printer, Linearization, VM, WFC
-    if (configversion == NEWER)
+    if (configversion != OLDEST)
     {   aserialize_int("pipbug_vdu"       , &pipbug_vdu             ,             0, 5); // elekterminal, narrow lcvdu, wide lcvdu, rb, svt-100, vt100
     } else
     {   aserialize_int("pipbug_vdu"       , &pipbug_vdu             ,             0, 4); // elekterminal, narrow lcvdu, wide lcvdu, svt-100, vt100

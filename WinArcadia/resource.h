@@ -515,6 +515,12 @@
 #define IDB_OVERLAY_SOCCER              643
 #define IDB_OVERLAY_ROBOTKILLER         644
 #define IDB_CONTROLS_RADIOBULLETIN      646
+#define IDB_BOX_BOOK                    647
+#define IDB_BOX_ESS_RECORD              648
+#define IDB_BOX_ESS_TAPE                649
+#define IDB_BOX_HOBBYMODULE             650
+#define IDB_BOX_HOCOSOFT                651
+#define IDB_OVERLAY_CATTRACK            652
 #define IDC_CHANGE_FROM                 1000
 #define IDC_CHANGE_TO                   1001
 #define IDC_CHANGE_ADDRESS              1002
@@ -3224,6 +3230,7 @@
 #define IDC_LT_EXTRAFIRE2               4300
 #define IDC_RT_EXTRAFIRE1               4301
 #define IDC_RT_EXTRAFIRE2               4302
+#define IDL_HOVER8                      4303
 #define ID_FILE_RESET                   40001
 #define ID_FILE_RESETTOMONITOR          40002
 #define ID_FILE_REINITIALIZE            40003
@@ -3267,7 +3274,6 @@
 #define ID_MACRO_RESTARTPLAYBACK        40062
 #define ID_MACRO_STOP                   40063
 #define ID_MACRO_LOOP                   40064
-#define ID_MACRO_AVIANIMS               40065
 #define ID_MACRO_PSGS                   40066
 #define ID_MACRO_YM                     40067
 #define ID_LOG_CONSOLE                  40070
@@ -3614,7 +3620,6 @@
 #define ID_DEBUG_DRAW_2                 40484
 #define ID_DEBUG_DRAW_3                 40485
 #define ID_DEBUG_DRAW_4                 40486
-#define ID_EMULATOR_FRAMEBASED          40487
 #define ID_DEBUG_REN                    40488
 #define ID_DEBUG_INJECT                 40489
 #define ID_SPEED_EXACT                  40491
@@ -3632,15 +3637,23 @@
 #define ID_VDU_RADIOBULLETIN            40503
 #define ID_VDU_SVT100                   40504
 #define ID_VDU_VT100                    40505
+#define ID_DEMULTIPLEX_MULTIPLEX        40508
+#define ID_DEMULTIPLEX_TRANSPARENT      40509
+#define ID_DEMULTIPLEX_OPAQUE           40510
+#define ID_DEBUG_WARN                   40511
+#define ID_EMULATOR_FRAMEBASED          40512
+#define ID_EMULATOR_PIXELBASED          40513
+#define ID_DEBUG_EVAL                   40514
+#define ID_DEBUG_N_4                    40515
 #define ID_STATIC                       -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        647
-#define _APS_NEXT_COMMAND_VALUE         40506
-#define _APS_NEXT_CONTROL_VALUE         4303
+#define _APS_NEXT_RESOURCE_VALUE        653
+#define _APS_NEXT_COMMAND_VALUE         40516
+#define _APS_NEXT_CONTROL_VALUE         4304
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

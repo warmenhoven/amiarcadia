@@ -33,8 +33,7 @@ EXPORT       int                  collx, colly,
 
 IMPORT       FLAG                 inframe,
                                   lmb, mmb, rmb,
-                                  multisprite[4],
-                                  protect[4];
+                                  multisprite[4];
 IMPORT       SBYTE                galaxia_scrolly;
 IMPORT       UBYTE                awga_collide,
                                   coinignore,

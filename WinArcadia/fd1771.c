@@ -31,7 +31,8 @@ EXPORT UBYTE                drivedata,
                             trackreg;
 EXPORT ULONG                curdrive,
                             timeoutat;
-EXPORT int                  stepdir;
+EXPORT int                  drive_idmode,
+                            stepdir;
 
 // IMPORTED VARIABLES-----------------------------------------------------
 
@@ -250,6 +251,7 @@ EXPORT void fd1771_read_sector(UBYTE data)
         zprintf(TEXTPEN_LOG, " Desired sector:          %d\n", reqsector);
     }
 
+    drive_idmode = 0;
     type2_head(data); // load head if requested
     multimode = (data & 0x10) ? TRUE : FALSE;
     set_drive_mode(DRIVEMODE_READING);
@@ -307,6 +309,38 @@ EXPORT void fd1771_write_sector(UBYTE data)
 
 EXPORT UBYTE fd1771_read_datareg(void)
 {   FAST UBYTE t;
+
+    if
+    (   drive_idmode
+     && drive[curdrive].inserted
+     && drive[curdrive].headloaded
+     && drive_mode == DRIVEMODE_READING
+    )
+    {   switch (drive_idmode)
+        {
+        case  1: t = drive[curdrive].track;
+                 if (verbosedisk) zprintf(TEXTPEN_LOG, "Returning track number");
+        acase 2: t = 0; // side number
+                 if (verbosedisk) zprintf(TEXTPEN_LOG, "Returning side number");
+        acase 3: t = drive[curdrive].sector;
+                 if (verbosedisk) zprintf(TEXTPEN_LOG, "Returning sector number");
+        acase 4: t = ((machine == BINBUG) ? (BINBUG_BLOCKSIZE) : (CD2650_BLOCKSIZE)) / 16;
+                 if (verbosedisk) zprintf(TEXTPEN_LOG, "Returning sector length");
+        acase 5: t = 0; // CRC 1
+                 if (verbosedisk) zprintf(TEXTPEN_LOG, "Returning 1st CRC");
+        acase 6: t = 0; // CRC 2
+                 if (verbosedisk) zprintf(TEXTPEN_LOG, "Returning 2nd CRC");
+        }
+        if (verbosedisk)
+        {   zprintf(TEXTPEN_LOG, " ($%02X).\n", t);
+        }
+        if (drive_idmode == 6)
+        {   drive_idmode = 0;
+        } else
+        {   drive_idmode++;
+        }
+        return t;
+    }
 
     RESETTIMEOUT;
 
@@ -523,11 +557,27 @@ EXPORT UBYTE fd1771_read_controlreg(void)
 EXPORT void fd1771_read_address(UBYTE data)
 {   RESETTIMEOUT;
 
-    if (machine != CD2650 || verbosedisk)
-    {   zprintf(TEXTPEN_LOG, "Read Address command ($%02X) (unimplemented!)\n", data); // CD DOS & P1 DOS call this during initialization
+    if (verbosedisk)
+    {   // assert(data == 0xC4);
+        zprintf(TEXTPEN_LOG, "Read Address command ($%02X).\n", data); // CD DOS & P1 DOS call this during initialization, to query the current track of the current drive
     }
 
-    setdrivestatus(0x00, 3, 1);
+    drive[curdrive].headloaded = TRUE;
+    set_drive_mode(DRIVEMODE_READING);
+    if (drive[curdrive].inserted)
+    {   drive_idmode = 1;
+        reqsector = drive[curdrive].sector;
+        setdrivestatus(0x00, 3, 1);
+    } else
+    {   drive_idmode = 0;
+        setdrivestatus(0x80, 3, 1); // not ready
+    }
+    /* Bits 6..5 are always 0
+       Bit  4    is  ID not found
+       Bit  3    is  CRC error
+       Bit  2    is  Lost data
+       Bit  1    is  DRQ
+       Bit  0    is  Busy */
 }
 
 EXPORT void fd1771_read_track(UBYTE data)
@@ -724,6 +774,7 @@ EXPORT void reset_drives(void)
 {   int whichdrive;
 
     drive_mode           = DRIVEMODE_IDLE;
+    drive_idmode         = 0;
     curdrive             = 0;
     stepdir              = 0;
     lasttype             =

@@ -172,7 +172,6 @@ EXPORT const struct VolumeStruct volume_3to16[8] = {
 
 IMPORT int                      aifffile,
                                 apnganims,
-                                avianims,
                                 bitrate,
                                 colourset,
                                 crippled,
@@ -486,6 +485,7 @@ MODULE void write_samples(int guestchan, int samples);
 MODULE void write_silence(int guestchan, int samples);
 MODULE void emit_dbs(STRPTR labelstring, int howmany, int address);
 MODULE void writeulong(ULONG value, UBYTE* ptr);
+// MODULE void writeleulong(ULONG value, UBYTE* ptr);
 MODULE void set_volume(int guestvolume);
 
 // CODE-------------------------------------------------------------------
@@ -1617,15 +1617,21 @@ MODULE void writeulong(ULONG value, UBYTE* ptr)
     ptr[2] = (UBYTE) ((value %    65536) /   256);
     ptr[3] = (UBYTE) ( value %      256         );
 }
+/* MODULE void writeleulong(ULONG value, UBYTE* ptr)
+{   ptr[3] = (UBYTE) ( value / 16777216         );
+    ptr[2] = (UBYTE) ((value % 16777216) / 65536);
+    ptr[1] = (UBYTE) ((value %    65536) /   256);
+    ptr[0] = (UBYTE) ( value %      256         );
+} */
 
 EXPORT void write_idat_or_fdat(FILE* filehandle, FLAG is_fdat, int kind, FLAG animating)
-{   TRANSIENT int        x, y;
-    TRANSIENT ULONG      crc;
-    TRANSIENT void*      pPNG_data;
-    TRANSIENT UBYTE*     pImage;
-    FAST      ASCREEN*   screenptr;
-    FAST      int        dupbpl;
-    PERSIST   UBYTE      idat[8] = {
+{   TRANSIENT int      x, y;
+    TRANSIENT ULONG    crc;
+    TRANSIENT void*    pPNG_data;
+    TRANSIENT UBYTE*   pImage;
+    FAST      ASCREEN* screenptr;
+    FAST      int      dupbpl;
+    PERSIST   UBYTE    idat[8] = {
   0 ,  0 ,  0 ,  0 , // 0..3 IDAT length
  'I', 'D', 'A', 'T', // 4..7 IDAT name
 }, fdat[12] = {
@@ -5035,24 +5041,17 @@ EXPORT void macro_stop(void)
     if (ANIMHandle)
     {   finalize_anim(ANIMHandle);
     }
-
-#ifdef WIN32
-    CloseAVIAnim();
-#endif
-
     if (GIFHandle)
     {   putc(0x3B, GIFHandle);
         fclose(GIFHandle);
         GIFHandle = NULL;
     }
-
     if (MNGHandle)
     {   write_mend(MNGHandle);
         write_mhdr_end(MNGHandle);
         fclose(MNGHandle);
         MNGHandle = NULL;
     }
-
     if (PNGHandle)
     {   write_iend(PNGHandle);
         write_actl_end(PNGHandle);
@@ -5063,7 +5062,6 @@ EXPORT void macro_stop(void)
     if (MIDIHandle)
     {   finalize_midi();
     }
-
     if (SMUSHandle)
     {   finalize_smus();
     }
@@ -5424,14 +5422,6 @@ EXPORT void macro_start(void)
     if (esvxfile || aifffile || wavfile)
     {   sound_startrecording();
     }
-
-#ifdef WIN32
-    if (avianims)
-    {   strcpy(fn_save, fn_game);
-        fixextension(filekind[KIND_AVIANIM].extension, fn_save, TRUE, "");
-        OpenAVIAnim(fn_save);
-    }
-#endif
 
     if (mnganims || apnganims || gifanims || iffanims)
     {   strcpy((char*) fn_oldscreenshot, (const char*) fn_screenshot);

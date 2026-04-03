@@ -3,7 +3,7 @@
 <string name="app_name">DroidArcadia</string>
 <string name="about">About DroidArcadia</string>
 <string name="description">An emulator of Signetics-based machines</string>
-<string name="copyright">© Copyright 2023-2025 James Jacobs of Amigan Software</string>
+<string name="copyright">© Copyright 2023-2026 James Jacobs of Amigan Software</string>
 <string name="translator">English translation by James Jacobs</string>
 <string name="compiler">Compiler: Android Studio Meerkat</string>
 <string name="runningon">Running on</string>
@@ -145,10 +145,14 @@
 <string name="darkenbg">Darken backgrounds</string>
 <string name="flagline">Flag line emulation</string>
 <string name="linebased">Line-based emulation</string>
+<string name="pixelbased">Pixel-based emulation</string>
 <string name="sameplayer">Same player for gamepad as for touch</string>
 <string name="sensitivity_vlow">Sensitivity: Very low</string>
 <string name="sensitivity_low">Sensitivity: Low</string>
 <string name="sensitivity_medium">Sensitivity: Medium</string>
 <string name="sensitivity_high">Sensitivity: High</string>
 <string name="sensitivity_vhigh">Sensitivity: Very high</string>
+<string name="multiplex">Sprites: Multiplex</string>
+<string name="transparent">Sprites: Transparent</string>
+<string name="opaque">Sprites: Opaque</string>
 </resources>

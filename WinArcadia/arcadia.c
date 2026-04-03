@@ -25,13 +25,14 @@
 // #define LOGSPRITECOLLISIONS
 // whether to print a message for inter-sprite collisions (not sprite-bg)
 
-#define UDCFLIPS         7
+#define UDGFLIPS         7
 
 #define UVIXTOSCREENX(x) (USG_XMARGIN + x - absxmin)
 #define UVIYTOSCREENY(y) (USG_YMARGIN + y - absymin)
 
 // EXPORTED VARIABLES-----------------------------------------------------
 
+EXPORT       UBYTE                 bgc;
 EXPORT       ULONG                 fractionator;
 EXPORT       int                   frac[4];
 
@@ -112,7 +113,7 @@ IMPORT       int                   absxmin, absxmax,
                                    spritemode,
                                    supercpu,
                                    trace,
-                                   udcflips,
+                                   udgflips,
                                    undither,
                                    useff[2],
                                    usemargins,
@@ -142,7 +143,10 @@ IMPORT const struct KnownStruct    known[KNOWNGAMES];
 IMPORT       struct MachineStruct  machines[MACHINES];
 
 #ifdef WIN32
-    IMPORT       int               CatalogPtr;
+    IMPORT       int               CatalogPtr,
+                                   colourset;
+    IMPORT       UBYTE             fgtable[BOXHEIGHT][BOXWIDTH];
+    IMPORT       ULONG             pencolours[COLOURSETS][PENS];
     IMPORT       HWND              SubWindowPtr[SUBWINDOWS];
 #endif
 #ifdef AMIGA
@@ -156,9 +160,10 @@ IMPORT       struct MachineStruct  machines[MACHINES];
     IMPORT       int               slice_2650;
 #endif
 
-IMPORT void (* drawpixel  ) (int x, int y, int colour);
+IMPORT void (* drawpixel   ) (int x, int y, int   colour);
 #ifdef WIN32
-IMPORT void (* drawbgpixel) (int x, int y, int colour);
+IMPORT void (* drawbgpixel ) (int x, int y, int   colour);
+IMPORT void (* drawrawpixel) (int x, int y, ULONG colour);
 #endif
 
 // MODULE VARIABLES-------------------------------------------------------
@@ -170,22 +175,22 @@ MODULE int    endsprx[4],
               hoffset,
               hoffsetstart,
               hoffsetend,
-              oldhoffset[UDCFLIPS + 1][26],
+              oldhoffset[UDGFLIPS + 1][26],
               uviy, uviy2,
               voffsetend;
 MODULE FLAG   spritesdone;
-MODULE UBYTE  bgc,
-              bgc_cached,
+MODULE UBYTE  bgc_cached,
               boardmode,
               colltable[312][227],
               dmascreen[312],
               fgc1, fgc2,         // only used for board mode. Arcadia format
               outerbgc, innerbgc, // Arcadia format
               hires,              // 0 for low resolution, 1 for high resolution
-              rowbuf[UDCFLIPS + 1][26][16],
+              pastbgc[312],
+              rowbuf[UDGFLIPS + 1][26][16],
               scrnbgc,
               sprimagedata[4],
-              udgimgbuf[UDCFLIPS + 1][8][8],
+              udgimgbuf[UDGFLIPS + 1][8][8],
               t;
 MODULE SLONG  blockmode,
               column,
@@ -230,7 +235,7 @@ EXPORT       int   flagline = TRUE,
                                     23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23 },
                    spriteflip,
                    spriteflips,
-                   udcflip,
+                   udgflip,
                    voffset;
 EXPORT const UBYTE from_a[2][24] =
 { { 0, //  0 ->  0 white
@@ -273,6 +278,9 @@ MODULE __inline void do_sprites2(void);
 MODULE void arcadia_oneraster(void);
 MODULE void arcadia_runcpu(void);
 MODULE void run_cpu(int until);
+#ifdef WIN32
+    MODULE ULONG blend(int colour1, int colour2);
+#endif
 
 // CODE-------------------------------------------------------------------
 
@@ -329,6 +337,7 @@ EXPORT void uvi(void)
         {   breakrastline();
             dmascreen[cpuy] = memory[A_CHARLINE] & 0x0F;
             arcadia_runcpu();
+            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
         }
 
         unvblank();
@@ -336,6 +345,7 @@ EXPORT void uvi(void)
         for (cpuy = n1; cpuy < n2; cpuy++)
         {   arcadia_oneraster(); // this calls breakrastline()
             arcadia_runcpu();
+            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
         }
 
         wa_checkinput();
@@ -344,6 +354,7 @@ EXPORT void uvi(void)
         for (cpuy = n2; cpuy < n3; cpuy++)
         {   arcadia_oneraster(); // this calls breakrastline()
             arcadia_runcpu();
+            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
         }
 
         if (!spritesdone)
@@ -363,12 +374,14 @@ EXPORT void uvi(void)
         vblank();
         dmascreen[cpuy] = memory[A_CHARLINE] & 0x0F;
         run_cpu(227); // the rest of raster 0
-    
+        pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
+
         // scanlines 1..42 (PAL) or 1..19 (NTSC)------------------------------
         for (cpuy = 1; cpuy < n1; cpuy++) // in vertical blank
         {   breakrastline();
             dmascreen[cpuy] = memory[A_CHARLINE] & 0x0F;
             run_cpu(227);
+            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
         }
 
         // scanline 43 (PAL) or 20 (NTSC)-------------------------------------
@@ -384,6 +397,7 @@ EXPORT void uvi(void)
         for (cpux = 49; cpux < 227; cpux++) // normal drawing
         {   onepixel();
         }
+        pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
 
         // scanlines 44..311 (PAL) or 21..261 (NTSC)--------------------------
         for (cpuy = n1 + 1; cpuy < n3; cpuy++)
@@ -404,11 +418,13 @@ EXPORT void uvi(void)
             run_cpu(49);
             for (cpux = 49; cpux < 227; cpux++)
             {   onepixel();
-    }   }   }
+            }
+            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
+    }   }
 
     for (whichudg = 0; whichudg < 8; whichudg++)
     {   for (y = 0; y < 8; y++)
-        {   udgimgbuf[udcflip][whichudg][y] = memory[A_OFFSET_SPRITES + (whichudg * 8) + y];
+        {   udgimgbuf[udgflip][whichudg][y] = memory[A_OFFSET_SPRITES + (whichudg * 8) + y];
     }   }
 
     drawfakesprites();
@@ -417,9 +433,9 @@ EXPORT void uvi(void)
     } else spriteflip++;
 
     drawfakeudgs();
-    if (udcflip >= udcflips)
-    {   udcflip = 0;
-    } else udcflip++;
+    if (udgflip >= udgflips)
+    {   udgflip = 0;
+    } else udgflip++;
 
 #ifdef SHOWRUMBLE
     if (rumbling[0])
@@ -1500,7 +1516,7 @@ MODULE __inline void onepixel(void)
                 } else
                 {   minorrow = (uviy2 & 0xF) >> 1; // or (uviy2 % 16) / 2
             }   }
-            thechar = rowbuf[udcflip][majorrow][column];
+            thechar = rowbuf[udgflip][majorrow][column];
             if (thechar == 0xC0)
             {   blockmode = 1;
             } elif (thechar == 0x40)
@@ -1702,15 +1718,15 @@ MODULE void newdma(void)
         // Red Clash relies on the row of characters being cached
         if (majorrow <= 12)
         {   for (x = 0; x < 16; x++)
-            {   rowbuf[udcflip][majorrow][x] = memory[0x1800 + (majorrow << 4) + x];
+            {   rowbuf[udgflip][majorrow][x] = memory[0x1800 + (majorrow << 4) + x];
         }   }
         elif (majorrow <= 25)
         {   for (x = 0; x < 16; x++)
-            {   rowbuf[udcflip][majorrow][x] = memory[0x1930 + (majorrow << 4) + x];
+            {   rowbuf[udgflip][majorrow][x] = memory[0x1930 + (majorrow << 4) + x];
         }   }
 
         uviwrite(A_CHARLINE, (UBYTE) (0xF0 | (majorrow % 13)));
-        oldhoffset[udcflip][majorrow] = hoffset = hoffsets[majorrow] = 23 + ((memory[A_VOLUME] & 0xE0) >> 5); // 3 bits wide
+        oldhoffset[udgflip][majorrow] = hoffset = hoffsets[majorrow] = 23 + ((memory[A_VOLUME] & 0xE0) >> 5); // 3 bits wide
         hoffsetstart = 49 + hoffset;
         hoffsetend   = hoffsetstart + 128;
     } else
@@ -1806,9 +1822,13 @@ MODULE void drawfakesprites(void)
     FAST int   flipper,
                i,
                whichsprite,
-               x, xx, y, yy;
+               x, xx, xxx,
+               y, yy, yyy;
+#ifdef WIN32
+    FAST ULONG blendedcolour;
+#endif
 
-    if (!spriteflips || !demultiplex || frames < (ULONG) spriteflips || spritemode == SPRITEMODE_INVISIBLE)
+    if (!spriteflips || demultiplex == 0 || frames < (ULONG) spriteflips || spritemode == SPRITEMODE_INVISIBLE)
     {   return;
     }
 
@@ -1817,9 +1837,9 @@ MODULE void drawfakesprites(void)
 #define LEFTMOST  USG_XMARGIN
 #define RIGHTMOST 226
 
-    for (i = 1; i <= spriteflips; i++)
+    for (i = (demultiplex == 1) ? 0 : 1; i <= spriteflips; i++)
     {   flipper = (spriteflip + i) % (spriteflips + 1);
-        if (flipper == spriteflip)
+        if (demultiplex == 2 && flipper == spriteflip)
         {   continue;
         } // implied else
 
@@ -1844,23 +1864,51 @@ MODULE void drawfakesprites(void)
                                 for (xx = 0; xx < 8; xx++)
                                 {   if (x + xx >= LEFTMOST && x + xx <= RIGHTMOST)
                                     {   if (imagedata & (0x80 >> xx))
-                                        {   changeabspixel(x + xx, y + yy, from_a[localflagging][spr[flipper][whichsprite].colour]);
-                    }   }   }   }   }   }
+                                        {   xxx = x + xx - absxmin;
+                                            yyy = y + yy - absymin;
+#ifdef WIN32
+                                            if (demultiplex == 1) // transparent
+                                            {   if (xxx >= 0 && xxx <= absxmax - USG_XMARGIN - UVI_HIDELEFT && yyy >= USG_YMARGIN && yyy <= absymax)
+                                                {   blendedcolour = blend(from_a[localflagging][spr[flipper][whichsprite].colour], pastbgc[yyy]);
+                                                    screen[xxx][yyy] = from_a[localflagging][spr[flipper][whichsprite].colour];
+                                                    drawrawpixel(xxx, yyy, blendedcolour);
+                                                    fgtable[yyy][xxx] = 1;
+                                            }   }
+                                            else // opaque
+#endif
+                                            {   changeabspixel(xxx + absxmin, yyy + absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
+                    }   }   }   }   }   }   }
                     else
                     {   for (yy = 0; yy < 8; yy++)
-                        {   if (y + (yy * 2) >= USG_YMARGIN && y + (yy * 2) < n3)
-                            {   imagedata = spr[flipper][whichsprite].imagery[yy];
-                                for (xx = 0; xx < 8; xx++)
-                                {   if (x + xx >= LEFTMOST && x + xx <= RIGHTMOST)
-                                    {   if (imagedata & (0x80 >> xx))
-                                        {   changeabspixel(x + xx, y + (yy * 2), from_a[localflagging][spr[flipper][whichsprite].colour]);
-                                }   }   }
-                                if (y + (yy * 2) + 1 >= USG_YMARGIN && y + (yy * 2) + 1 < n3)
-                                {   for (xx = 0; xx < 8; xx++)
-                                    {   if (x + xx >= LEFTMOST && x + xx <= RIGHTMOST)
-                                        {   if (imagedata & (0x80 >> xx))
-                                            {   changeabspixel(x + xx, y + (yy * 2) + 1, from_a[localflagging][spr[flipper][whichsprite].colour]);
-}   }   }   }   }   }   }   }   }   }   }   }
+                        {   imagedata = spr[flipper][whichsprite].imagery[yy];
+                            for (xx = 0; xx < 8; xx++)
+                            {   if
+                                (   x + xx >= LEFTMOST
+                                 && x + xx <= RIGHTMOST
+                                 && (imagedata & (0x80 >> xx))
+                                )
+                                {   xxx = x +  xx      - absxmin;
+                                    yyy = y + (yy * 2) - absymin;
+#ifdef WIN32
+                                    if (demultiplex == 1) // transparent
+                                    {   if (yyy >= USG_YMARGIN && yyy <= absymax)
+                                        {   blendedcolour = blend(from_a[localflagging][spr[flipper][whichsprite].colour], pastbgc[yyy]);
+                                            screen[xxx][yyy] = from_a[localflagging][spr[flipper][whichsprite].colour];
+                                            drawrawpixel(xxx, yyy, blendedcolour);
+                                            fgtable[yyy][xxx] = 1;
+                                        }
+                                        yyy++;
+                                        if (yyy >= USG_YMARGIN && yyy <= absymax)
+                                        {   blendedcolour = blend(from_a[localflagging][spr[flipper][whichsprite].colour], pastbgc[yyy]);
+                                            screen[xxx][yyy] = from_a[localflagging][spr[flipper][whichsprite].colour];
+                                            drawrawpixel(xxx, yyy, blendedcolour);
+                                            fgtable[yyy][xxx] = 1;
+                                    }   }
+                                    else // opaque
+#endif
+                                    {   changeabspixel(xxx + absxmin, yyy +     absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
+                                        changeabspixel(xxx + absxmin, yyy + 1 + absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
+}   }   }   }   }   }   }   }   }   }
 
 MODULE void drawfakeudgs(void)
 {   FAST FLAG  ok;
@@ -1869,16 +1917,19 @@ MODULE void drawfakeudgs(void)
                flipper,
                i,
                row,
-               x, y,
-               xx, yy;
+               x, xx,
+               y, yy;
     FAST UBYTE fgc,
                imagedata,
                thechar;
+#ifdef WIN32
+    FAST ULONG blendedcolour;
+#endif
     // These have similar names and purposes to some MODULE variables,
     // but we must use separate variables so that the values of such
     // MODULE variables are preserved.
 
-    if (!udcflips || !demultiplex || frames < (ULONG) udcflips)
+    if (!udgflips || demultiplex == 0 || frames < (ULONG) udgflips)
     {   return;
     }
 
@@ -1889,7 +1940,7 @@ MODULE void drawfakeudgs(void)
         {   for (x = 0; x < 40; x++)
             {   imagedata = memory[0x1A30 + ((x / 8) * 8) + y];
                 if (imagedata & (0x80 >> (x % 8)))
-                {   xx = oldhoffset[udcflip][0] + 40 + x;
+                {   xx = oldhoffset[udgflip][0] + 40 + x;
                     yy = voffset + (y * 2);
 
                     changerelpixel(    xx    , yy    , BLACK);
@@ -1901,9 +1952,9 @@ MODULE void drawfakeudgs(void)
        So we only draw where it is black, to avoid overwriting new
        graphics with old graphics (eg. the bomb on level 3 of Macross). */
 
-    for (i = 1; i <= udcflips; i++)
-    {   flipper = (udcflip + i) % (udcflips + 1);
-        if (flipper == udcflip)
+    for (i = 1; i <= udgflips; i++)
+    {   flipper = (udgflip + i) % (udgflips + 1);
+        if (flipper == udgflip)
         {   continue;
         } // implied else
 
@@ -1949,9 +2000,9 @@ MODULE void drawfakeudgs(void)
                         for (x = 0; x < 8; x++)
                         {   if (imagedata & (0x80 >> x))
                             {   xx = oldhoffset[flipper][row] + (column * 8) + x;
-                                changerelpixel(        xx    , yy    ,     fgc);
+                                changerelpixel(xx, yy, fgc);
                                 if (!hires && yy < n3 - n1 - 1)
-                                {   changerelpixel(    xx    , yy + 1,     fgc);
+                                {   changerelpixel(xx, yy + 1, fgc);
 }   }   }   }   }   }   }   }   }
 
 MODULE void newraster(void)
@@ -2279,7 +2330,7 @@ EXPORT void arcadia_reset(void)
 {   int i;
 
     spriteflip   =
-    udcflip      = 0;
+    udgflip      = 0;
     fractionator = 0;
     /* This clearing helps avoid these problems:
        (a) Resetting from Dr. Slump game screen to title screen turns
@@ -2338,7 +2389,7 @@ MODULE void arcadia_oneraster(void)
     }
     
     for (column = 0; column < 16; column++)
-    {   thechar = rowbuf[udcflip][majorrow][column];
+    {   thechar = rowbuf[udgflip][majorrow][column];
         if (thechar == 0xC0)
         {   blockmode = 1;
         } elif (thechar == 0x40)
@@ -2552,3 +2603,27 @@ EXPORT void arcadia_update_miniglow(void)
         } else
         {   drawctrlglow(135,  50, (FLAG) TRUE);
 }   }   }
+
+#ifdef WIN32
+MODULE ULONG blend(int colour1, int colour2)
+{   FAST ULONG red1,   red2,   red3,
+               green1, green2, green3,
+               blue1,  blue2,  blue3,
+               result;
+
+    red1   = (pencolours[colourset][colour1] & 0x00FF0000) >> 16;
+    red2   = (pencolours[colourset][colour2] & 0x00FF0000) >> 16;
+    red3   = (red1 + red2) / 2;
+    green1 = (pencolours[colourset][colour1] & 0x0000FF00) >>  8;
+    green2 = (pencolours[colourset][colour2] & 0x0000FF00) >>  8;
+    green3 = (green1 + green2) / 2;
+    blue1  = (pencolours[colourset][colour1] & 0x000000FF)      ;
+    blue2  = (pencolours[colourset][colour2] & 0x000000FF)      ;
+    blue3  = (blue1 + blue2) / 2;
+    result = (red3   << 16)
+           | (green3 <<  8)
+           |  blue3;
+
+    return result;
+}
+#endif

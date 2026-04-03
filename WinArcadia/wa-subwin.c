@@ -213,7 +213,6 @@ IMPORT       ULONG                     analog,
                                        collisions,
                                        coverage[32768],
                                        cycles_prev,
-                                       demultiplex,
                                        paused,
                                        pencolours[COLOURSETS][PENS],
                                        region,
@@ -1251,7 +1250,7 @@ EXPORT void update_notation(void)
         SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_PSU, "PSU:");
         SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_PSL, "PSL:");
         SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_IAR, "IAR:");
-    acase STYLE_CALM:
+    acase STYLE_OLDCALM:
         SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R0 , "A:"  );
         SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R1 , "B:"  );
         SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R2 , "C:"  );
@@ -1261,6 +1260,17 @@ EXPORT void update_notation(void)
         SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R6 , "D':" );
         SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_PSU, "U:"  );
         SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_PSL, "L:"  );
+        SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_IAR, "PC:" );
+    acase STYLE_NEWCALM:
+        SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R0 , "R0:" );
+        SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R1 , "R1:" );
+        SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R2 , "R2:" );
+        SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R3 , "R3:" );
+        SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R4 , "R4:" );
+        SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R5 , "R5:" );
+        SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R6 , "R6:" );
+        SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_PSU, "PSU:");
+        SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_PSL, "PSL:");
         SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_IAR, "PC:" );
     acase STYLE_IEEE:
         SetDlgItemText(SubWindowPtr[SUBWINDOW_MONITOR_CPU], IDL_R0 , ".0:"  );
@@ -1966,9 +1976,8 @@ MODULE BOOL CALLBACK XVIMonitorDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
         // If they move the subwindow later, it doesn't matter.
 
         move_subwindow(SUBWINDOW_MONITOR_XVI, hwnd);
-
-        return FALSE;
-    acase WM_ACTIVATE:
+    return FALSE;
+    case WM_ACTIVATE:
         do_autopause(wParam, lParam);
     acase WM_CLOSE:
         DestroyWindow(hwnd);
@@ -1983,7 +1992,7 @@ MODULE BOOL CALLBACK XVIMonitorDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
         }
         updatemenu(MENUITEM_VIEWMONITOR_XVI);
     acase WM_DESTROY:
-        return FALSE;
+    return FALSE;
     case WM_PAINT: // no need for acase
         BeginPaint(hwnd, &localps);
         DISCARD EndPaint(hwnd, &localps);
@@ -1993,7 +2002,7 @@ MODULE BOOL CALLBACK XVIMonitorDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
             do_axes();
             // UpdateWindow(GetDlgItem(hwnd, IDC_AXES));
         }
-        return FALSE; // important!
+    return FALSE; // important!
     case WM_MBUTTONDBLCLK: // no need for acase
     case WM_MBUTTONDOWN:
         mousex = (int) LOWORD(lParam);
@@ -2069,13 +2078,12 @@ MODULE BOOL CALLBACK XVIMonitorDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
             {   monchange(i);
                 break; // for speed
         }   }
-
-        return FALSE;
+    return FALSE;
     case WM_MOVE: // no need for acase
         reset_fps();
-        return FALSE;
-    adefault:
-        return FALSE;
+    return FALSE;
+    default:
+    return FALSE;
     }
 
     return TRUE;
@@ -3547,9 +3555,13 @@ EXPORT void open_magnifier(void)
     if (magnifying) // as MagnifierWindowPtr takes some time to open
     {   return;
     }
-    magnifying = TRUE;
 
     hosttoguestmouse(&hostx, &hosty, &guestx, &guesty, NULL, NULL);
+    if (guestx < 0 || guestx >= machines[machine].width || guesty < 0 || guesty >= machines[machine].height)
+    {   return;
+    }
+
+    magnifying = TRUE;
 
     MagnifierWindowPtr = CreateWindowEx
     (   0,

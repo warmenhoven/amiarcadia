@@ -186,6 +186,7 @@ public class GameInfoActivity extends Activity
         case 54     : img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_tetris          , null); break;
         case 55     : img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_theend          , null); break;
         case 56     : img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_turtlesturpin   , null); break;
+
         // Interton
         case 56 +  1: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_1               , null); break;
         case 56 +  2: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_2               , null); break;
@@ -224,8 +225,16 @@ public class GameInfoActivity extends Activity
         case 56 + 35: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_37              , null); break;
         case 56 + 36: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_38              , null); break;
         case 56 + 37: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_40              , null); break;
+
+        // Elektor
+        case 56 + 37 + 1: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_essrecord   , null); break;
+        case 56 + 37 + 2: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_esstape     , null); break;
+        case 56 + 37 + 3: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_book        , null); break;
+        case 56 + 37 + 4: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_hocosoft    , null); break;
+        case 56 + 37 + 5: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_hobbymodule , null); break;
+
         // all
-        default:      img = null;
+        default:          img = null;
         }
         if (img != null)
         {   gameinfo_box.setImageDrawable(img);

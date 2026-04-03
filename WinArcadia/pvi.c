@@ -193,7 +193,6 @@ IMPORT       int                   absxmin, absxmax,
                                    spritemode,
                                    supercpu,
                                    trace,
-                                   udcflips,
                                    undither,
                                    usemargins,
                                    watchreads,
@@ -881,7 +880,7 @@ PERSIST const UBYTE mininumber[5][5] = {
                 {   prevsprnum[whichsprite]++;
     }   }   }   }
 
-    if (demultiplex && frames >= (ULONG) spriteflips && spritemode != SPRITEMODE_INVISIBLE)
+    if (demultiplex != 0 && frames >= (ULONG) spriteflips && spritemode != SPRITEMODE_INVISIBLE)
     {   for (i = 0; i < 4; i++)
         {   for (j = 0; j < PREVSPRITES; j++)
             {   prevspritedone[i][j] = FALSE;
@@ -2336,7 +2335,7 @@ PERSIST const int consolecolours[8] =
             #endif
         }
 
-        if (demultiplex && prevsprnum[whichsprite] < PREVSPRITES)
+        if (demultiplex != 0 && prevsprnum[whichsprite] < PREVSPRITES)
         {   if (pviy == newsprite[whichsprite].starty)
             {   prevsprite[multiframe][whichsprite][prevsprnum[whichsprite]].inuse  = TRUE;
                 prevsprite[multiframe][whichsprite][prevsprnum[whichsprite]].leftx  = newsprite[whichsprite].startx; // for prevsprites, we don't support changing these every line

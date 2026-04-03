@@ -42,6 +42,7 @@ public class OptionsActivity extends Activity
     private TextView button_quickload, button_colours, button_autofire,
                      button_handedness, button_machine, button_indicator,
                      button_swapped, button_region, button_levelskip,
+                     button_demultiplex,
                      label_stretch, label_size, label_paddle,
                      label_speed, label_frameskip, label_volume,
                      label_sensitivity;
@@ -106,7 +107,7 @@ public class OptionsActivity extends Activity
                  label_volume         = findViewById(R.id.label_volume);
                  seekbar_volume       = findViewById(R.id.seekbar_volume);
         Switch   switch_retune        = findViewById(R.id.switch_retune);
-        Switch   switch_demultiplex   = findViewById(R.id.switch_demultiplex);
+                 button_demultiplex   = findViewById(R.id.button_demultiplex);
         TextView button_hiscores      = findViewById(R.id.button_hiscores);
                  switch_collisions    = findViewById(R.id.switch_collisions);
                  switch_lives         = findViewById(R.id.switch_lives);
@@ -184,10 +185,7 @@ public class OptionsActivity extends Activity
 
         update_trainers();
         
-        if (MainActivity.demultiplex)
-        {   switch_demultiplex.setBackgroundColor(Color.parseColor("#ff00ff"));
-        }
-        switch_demultiplex.setChecked(MainActivity.demultiplex);
+        writegadget_demultiplex();
 
         if
         (   MainActivity.machine == ARCADIA
@@ -518,13 +516,13 @@ public class OptionsActivity extends Activity
             }
         });
 
-        switch_demultiplex.setOnCheckedChangeListener((buttonView, isChecked) ->
-        {   MainActivity.demultiplex = isChecked;
-            if (isChecked)
-            {   switch_demultiplex.setBackgroundColor(Color.parseColor("#ff00ff"));
+        button_demultiplex.setOnClickListener((view) ->
+        {   if (MainActivity.demultiplex == 2)
+            {   MainActivity.demultiplex = 0;
             } else
-            {   switch_demultiplex.setBackgroundColor(Color.parseColor("#cc00cc"));
+            {   MainActivity.demultiplex++;
             }
+            writegadget_demultiplex();
         });
 
         switch_lives.setOnCheckedChangeListener((buttonView, isChecked) ->
@@ -624,7 +622,7 @@ public class OptionsActivity extends Activity
         if (MainActivity.sound        ) options1 |= (1 <<  6);
         if (MainActivity.retune       ) options1 |= (1 <<  7);
         if (MainActivity.collisions   ) options1 |= (1 <<  8);
-        if (MainActivity.demultiplex  ) options1 |= (1 <<  9);
+                                                 // (1 <<  9); (spare)
         if (MainActivity.lives        ) options1 |= (1 << 10);
         if (MainActivity.time         ) options1 |= (1 << 11);
         if (MainActivity.invincibility) options1 |= (1 << 12);
@@ -647,6 +645,7 @@ public class OptionsActivity extends Activity
         if (MainActivity.flagline     ) options2 |= (1                        <<  9); // bit       9 (1 bit )
         if (MainActivity.sameplayer   ) options2 |= (1                        << 10); // bit      10 (1 bit )
                                         options2 |= (MainActivity.sensitivity << 11); // bits 13..11 (3 bits)
+                                        options2 |= (MainActivity.demultiplex << 14); // bits 15..14 (2 bits)
 
         csetoptions(options1, options2);
         jgetoptions(); // read them back in case C code has changed them (eg. region)
@@ -797,8 +796,10 @@ public class OptionsActivity extends Activity
     {   switch_linebased.setChecked(MainActivity.linebased);
         if (MainActivity.linebased)
         {   switch_linebased.setBackgroundColor(Color.parseColor("#aaffaa"));
+            switch_linebased.setText(R.string.linebased);
         } else
         {   switch_linebased.setBackgroundColor(Color.parseColor("#88ff88"));
+            switch_linebased.setText(R.string.pixelbased);
     }   }
     
     private void writegadget_flagline()
@@ -1030,6 +1031,18 @@ public class OptionsActivity extends Activity
         seekbar_sensitivity.setProgress(MainActivity.sensitivity);
     }
 
+    private void writegadget_demultiplex()
+    {   if (MainActivity.demultiplex == 0)
+        {   button_demultiplex.setBackgroundColor(Color.parseColor("#cc00cc"));
+            button_demultiplex.setText(getResources().getString(R.string.multiplex));
+        } else
+        {   button_demultiplex.setBackgroundColor(Color.parseColor("#ff00ff"));
+            if (MainActivity.demultiplex == 1)
+            {   button_demultiplex.setText(getResources().getString(R.string.transparent));
+            } else if (MainActivity.demultiplex == 2)
+            {   button_demultiplex.setText(getResources().getString(R.string.opaque));
+    }   }   }
+
     private void update_trainers()
     {   if (MainActivity.cheevos && MainActivity.hardcore)
         {   // This shouldn't be necessary (RAActivity handles it) but for some reason it seems to be :-(
@@ -1090,7 +1103,7 @@ public class OptionsActivity extends Activity
         wtf = ( 1 <<  6); if ((options & wtf) != 0) MainActivity.sound         = true; else MainActivity.sound         = false;
         wtf = ( 1 <<  7); if ((options & wtf) != 0) MainActivity.retune        = true; else MainActivity.retune        = false;
         wtf = ( 1 <<  8); if ((options & wtf) != 0) MainActivity.collisions    = true; else MainActivity.collisions    = false;
-        wtf = ( 1 <<  9); if ((options & wtf) != 0) MainActivity.demultiplex   = true; else MainActivity.demultiplex   = false;
+     // wtf = ( 1 <<  9); (spare)
         wtf = ( 1 << 10); if ((options & wtf) != 0) MainActivity.lives         = true; else MainActivity.lives         = false;
         wtf = ( 1 << 11); if ((options & wtf) != 0) MainActivity.time          = true; else MainActivity.time          = false;
         wtf = ( 1 << 12); if ((options & wtf) != 0) MainActivity.invincibility = true; else MainActivity.invincibility = false;
@@ -1113,4 +1126,5 @@ public class OptionsActivity extends Activity
         wtf = ( 1 <<  9); if ((options & wtf) != 0) MainActivity.flagline      = true; else MainActivity.flagline      = false; // bit  9 (1 bit)
         wtf = ( 1 << 10); if ((options & wtf) != 0) MainActivity.sameplayer    = true; else MainActivity.sameplayer    = false; // bit 10 (1 bit)
         wtf = ( 7 << 11);                           MainActivity.sensitivity   = (options & wtf) >> 11; // bits 13..11 (3 bits)
+        wtf = ( 3 << 14);                           MainActivity.demultiplex   = (options & wtf) >> 14; // bits 15..14 (2 bits)
 }   }

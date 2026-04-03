@@ -359,7 +359,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="3D Attack"
                     android:gravity="left"
                 />
@@ -367,7 +367,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="3D Soccer"
                     android:gravity="left"
                 />
@@ -375,7 +375,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Akane's Home Run"
                     android:gravity="left"
                 />
@@ -383,7 +383,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Alien Invaders"
                     android:gravity="left"
                 />
@@ -391,7 +391,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="American Football"
                     android:gravity="left"
                 />
@@ -399,7 +399,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Astro Invader"
                     android:gravity="left"
                 />
@@ -407,7 +407,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Baseball"
                     android:gravity="left"
                 />
@@ -415,7 +415,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Basketball"
                     android:gravity="left"
                 />
@@ -423,7 +423,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Boxing"
                     android:gravity="left"
                 />
@@ -431,7 +431,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Breakaway"
                     android:gravity="left"
                 />
@@ -439,7 +439,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Capture"
                     android:gravity="left"
                 />
@@ -447,7 +447,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Cat Trax"
                     android:gravity="left"
                 />
@@ -455,7 +455,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Circus"
                     android:gravity="left"
                 />
@@ -463,7 +463,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Crazy Climber"
                     android:gravity="left"
                 />
@@ -471,7 +471,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Crazy Gobbler"
                     android:gravity="left"
                 />
@@ -479,7 +479,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Doraemon"
                     android:gravity="left"
                 />
@@ -487,7 +487,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Dr. Slump"
                     android:gravity="left"
                 />
@@ -495,7 +495,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Escape"
                     android:gravity="left"
                 />
@@ -503,7 +503,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Frogger"
                     android:gravity="left"
                 />
@@ -511,7 +511,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Funky Fish"
                     android:gravity="left"
                 />
@@ -519,7 +519,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Gundam"
                     android:gravity="left"
                 />
@@ -527,7 +527,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Hobo"
                     android:gravity="left"
                 />
@@ -535,7 +535,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Journey"
                     android:gravity="left"
                 />
@@ -543,7 +543,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="JTron"
                     android:gravity="left"
                 />
@@ -551,7 +551,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Jump Bug"
                     android:gravity="left"
                 />
@@ -559,7 +559,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Jungler"
                     android:gravity="left"
                 />
@@ -567,7 +567,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Macross"
                     android:gravity="left"
                 />
@@ -575,7 +575,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Missile War"
                     android:gravity="left"
                 />
@@ -583,7 +583,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Monaco Grand Prix"
                     android:gravity="left"
                 />
@@ -591,7 +591,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Nibblemen"
                     android:gravity="left"
                 />
@@ -599,7 +599,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Parashooter"
                     android:gravity="left"
                 />
@@ -607,7 +607,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Pleiades"
                     android:gravity="left"
                 />
@@ -615,7 +615,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="R2D Tank"
                     android:gravity="left"
                 />
@@ -623,7 +623,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Red Clash"
                     android:gravity="left"
                 />
@@ -631,7 +631,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Robot Killer"
                     android:gravity="left"
                 />
@@ -639,7 +639,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Route 16"
                     android:gravity="left"
                 />
@@ -647,7 +647,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Soccer"
                     android:gravity="left"
                 />
@@ -655,7 +655,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Space Attack"
                     android:gravity="left"
                 />
@@ -663,7 +663,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Space Buster"
                     android:gravity="left"
                 />
@@ -671,7 +671,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Space Mission"
                     android:gravity="left"
                 />
@@ -679,7 +679,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Space Raiders"
                     android:gravity="left"
                 />
@@ -687,7 +687,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Space Squadron"
                     android:gravity="left"
                 />
@@ -695,7 +695,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Space Vultures"
                     android:gravity="left"
                 />
@@ -703,7 +703,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Spiders"
                     android:gravity="left"
                 />
@@ -711,7 +711,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Super Bug 1"
                     android:gravity="left"
                 />
@@ -719,7 +719,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Super Bug 2"
                     android:gravity="left"
                 />
@@ -727,7 +727,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Tanks a Lot"
                     android:gravity="left"
                 />
@@ -735,7 +735,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Tetris (Austrian)"
                     android:gravity="left"
                 />
@@ -743,7 +743,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Tetris (Japanese)"
                     android:gravity="left"
                 />
@@ -751,7 +751,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="The End"
                     android:gravity="left"
                 />
@@ -759,7 +759,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="Turtles/Turpin"
                     android:gravity="left"
                 />
@@ -776,7 +776,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_1"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -785,7 +785,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_2"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -794,7 +794,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_3"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -803,7 +803,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_4"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -812,7 +812,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_5"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -821,7 +821,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_6"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -830,7 +830,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_7"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -839,7 +839,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_8"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -848,7 +848,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_9"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -857,7 +857,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_10"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -866,7 +866,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_11"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -875,7 +875,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_12"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -884,7 +884,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_13"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -893,7 +893,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_14"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -902,7 +902,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_15"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -911,7 +911,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_16"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -920,7 +920,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_17"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -929,7 +929,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_18"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -938,7 +938,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_19"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -947,7 +947,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_20"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -956,7 +956,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_21"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -965,7 +965,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_22"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -974,7 +974,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_23"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -983,7 +983,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_24"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -992,7 +992,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_25"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1001,7 +1001,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_26"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1010,7 +1010,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_27"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1019,7 +1019,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_28"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1028,7 +1028,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_29"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1037,7 +1037,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_30"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1046,7 +1046,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_31"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1055,7 +1055,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_32"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1064,7 +1064,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_33"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1073,7 +1073,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_34"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1082,7 +1082,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_35"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1091,7 +1091,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_36"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1100,7 +1100,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_37"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1109,7 +1109,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_38"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1118,7 +1118,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_39"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1127,7 +1127,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_40"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1136,7 +1136,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_41"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1145,7 +1145,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_42"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1154,7 +1154,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_43"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1163,7 +1163,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_44"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1172,7 +1172,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_45"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1181,7 +1181,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_46"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1190,7 +1190,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_47"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1199,7 +1199,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_48"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1208,7 +1208,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_49"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1217,7 +1217,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_50"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />
@@ -1226,7 +1226,474 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/hs_51"
                     android:textColor="#ffffff"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#444455"
+                android:gravity="right"
+                android:layout_marginRight="10dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_1"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_2"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_3"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_4"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_5"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_6"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_7"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_8"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_9"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_10"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_11"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_12"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_13"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_14"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_15"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_16"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_17"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_18"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_19"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_20"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_21"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_22"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_23"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_24"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_25"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_26"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_27"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_28"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_29"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_30"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_31"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_32"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_33"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_34"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_35"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_36"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_37"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_38"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_39"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_40"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_41"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_42"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_43"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_44"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_45"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_46"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_47"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_48"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_49"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_50"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:text="-"
+                    android:gravity="right"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hsd_51"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
                     android:text="-"
                     android:gravity="right"
                 />

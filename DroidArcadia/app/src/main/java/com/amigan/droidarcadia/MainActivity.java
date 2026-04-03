@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                             cheevos           = false, // must be false!
                             collisions        = true,
                             darkenbg          = true,
-                            demultiplex       = true,
                             dejitter          = false,
                             fill              = false,
                             flagline          = true,
@@ -153,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                             availwidth,
                             availheight,
                             colours           = COLOURS_PURE,
+                            demultiplex       = 2, // opaque
                             hardxdelta        = 0,
                             hardydelta        = 0,
                             destwidth, destheight,
@@ -203,7 +203,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                                    password   = "",
                                    progressstr,
                                    trackerstr,
-                                   username   = "";
+                                   username   = "",
+                                   hiscoredate[] = new String[51 + 6];
     public  static String[]        keystring;
     private long            newtime,
                             waitfor,
@@ -298,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public native int     getgame();
     public native String  getgamegfxurl();
     public native int     gethiscore(int whichscore);
+    public native String  gethiscoredate(int whichscore);
     public native byte[]  getkeyname(int whichkey);
     public native String  getmessage();
     public native String  getprogressstr();
@@ -316,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public native void    redrawscreen();
     public native int     setconsolekey(int whichkey);
     public native void    setframebuffer(ByteBuffer buf);
-    public native void    sethiscore(int whichscore, int thescore);
+    public native void    sethiscore(int whichscore, int thescore, String thedate);
     public native void    setinput(int player, int thekeypad, int cx, int cy);
     public native void    jshutdownraclient();
     public native void    clientidle();
@@ -339,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         }
         for (i = 0; i < 51 + 6; i++)
         {   hiscore[i] = 0;
+            hiscoredate[i] = "";
         }
 
         sourcerect = new Rect(0, 0, 0, 0 );
@@ -1118,7 +1121,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     private void loadconfig()
     {   try (FileInputStream fis = openFileInput("DroidArcadia.ini"))
-        {   if (fis.read() == 25)                //  0 version byte (25 means V4.41+)
+        {   if (fis.read() == 26)                //  0 version byte (26 means V4.42+)
             {   linebased     = fis.read() == 1; //  1
                 stretch       = fis.read()     ; //  2
                 autofire      = fis.read()     ; //  3
@@ -1128,7 +1131,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 sound         = fis.read() == 1; //  7
                 retune        = fis.read() == 1; //  8
                 collisions    = fis.read() == 1; //  9
-                demultiplex   = fis.read() == 1; // 10
+                demultiplex   = fis.read()     ; // 10
                 lives         = fis.read() == 1; // 11
                 time          = fis.read() == 1; // 12
                 invincibility = fis.read() == 1; // 13
@@ -1165,7 +1168,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     password = reader.readLine();
                     if (password == null) password = "";
                 } catch (IOException e)
-                {   ;
+                {   Toast.makeText(MainActivity.this, "Can't read username/password from DroidArcadia.ini!", Toast.LENGTH_SHORT).show();
                 }
                 // don't call fis.close()!
                 jsetoptions();
@@ -1179,7 +1182,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     private void saveconfig()
     {   try (FileOutputStream fos = openFileOutput("DroidArcadia.ini", MODE_PRIVATE))
-        {   fos.write(25);                                      //  0 version byte (25 means V4.41+)
+        {   fos.write(26);                                      //  0 version byte (26 means V4.42+)
             if (linebased    ) fos.write(1); else fos.write(0); //  1
             fos.write((byte) stretch);                          //  2
             fos.write((byte) autofire);                         //  3
@@ -1189,7 +1192,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             if (sound        ) fos.write(1); else fos.write(0); //  7
             if (retune       ) fos.write(1); else fos.write(0); //  8
             if (collisions   ) fos.write(1); else fos.write(0); //  9
-            if (demultiplex  ) fos.write(1); else fos.write(0); // 10
+            fos.write((byte) demultiplex);                      // 10
             if (lives        ) fos.write(1); else fos.write(0); // 11
             if (time         ) fos.write(1); else fos.write(0); // 12
             if (invincibility) fos.write(1); else fos.write(0); // 13
@@ -1229,66 +1232,80 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             // don't call fos.close()!
             jsetoptions();
         } catch (IOException e)
-        {   ; // can't create/open configuration file
+        {   Toast.makeText(MainActivity.this, "Can't create/reopen DroidArcadia.ini!", Toast.LENGTH_SHORT).show();
     }   }
 
     private void loadhs()
-    {   int i,
+    {   int i, j,
             rc;
 
         try (FileInputStream fis = openFileInput("DroidArcadia.hgh"))
         {   rc = fis.read();
-            if (rc == 4) // version byte (4 means V4.41+)
+            if (rc == 5) // version byte (5 means V4.5+)
             {   for (i = 0; i < 51 + 6; i++)
                 {   rc =  fis.read() * 65536;
                     rc += fis.read() *   256;
                     rc += fis.read();
                     hiscore[i] = rc;
                 }
-                // Toast.makeText(MainActivity.this, "Loaded high score table V4.", Toast.LENGTH_SHORT).show();
-            } else if (rc == 3) // version byte (3 means V3.0-4.4)
-            {   for (i = 0; i <= 1; i++)
+                for (i = 0; i < 51 + 6; i++)
+                {   byte[] buffer = new byte[8 + 1];
+                    int bytesread = fis.read(buffer);
+                    if (bytesread == -1)
+                    {   Toast.makeText(MainActivity.this, "Error loading high score table!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    hiscoredate[i] = new String(buffer, 0, 8).trim();
+                }
+                // Toast.makeText(MainActivity.this, "Loaded high score table V5.", Toast.LENGTH_SHORT).show();
+            } else if (rc == 4) // version byte (4 means V4.41-4,42 beta 2)
+            {   for (i = 0; i < 51 + 6; i++)
                 {   rc =  fis.read() * 65536;
                     rc += fis.read() *   256;
                     rc += fis.read();
                     hiscore[i] = rc;
+                    hiscoredate[i] = "-";
                 }
-                for (i = 2; i < 50 + 6; i++)
-                {   rc =  fis.read() * 65536;
-                    rc += fis.read() *   256;
-                    rc += fis.read();
-                    hiscore[i + 1] = rc;
-                }
-                // Toast.makeText(MainActivity.this, "Loaded high score table V3.", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(MainActivity.this, "Loaded high score table V4.", Toast.LENGTH_SHORT).show();
             }
+
             fis.close();
+
             for (i = 0; i < 51 + 6; i++)
-            {   sethiscore(i, hiscore[i]);
+            {   sethiscore(i, hiscore[i], hiscoredate[i]);
         }   }
         catch (IOException e)
         {   ; // high score table does not exist
     }   }
 
     private void savehs()
-    {   int i;
+    {   int i, j;
     
         for (i = 0; i < 51 + 6; i++)
         {   hiscore[i] = gethiscore(i);
+            hiscoredate[i] = gethiscoredate(i);
         }
         
         try (FileOutputStream fos = openFileOutput("DroidArcadia.hgh", MODE_PRIVATE);)
-        {   fos.write(4); // version byte (4 means V4.41+)
+        {   fos.write(5); // version byte (5 means V4.5+)
             for (i = 0; i < 51 + 6; i++)
             {   fos.write( hiscore[i] / 65536);
                 fos.write((hiscore[i] % 65536) / 256);
                 fos.write( hiscore[i]   % 256);
+            }
+            for (i = 0; i < 51 + 6; i++)
+            {   byte[] strBytes = new byte[8 + 1];
+                byte[] strBytesData = hiscoredate[i].getBytes();
+                System.arraycopy(strBytesData, 0, strBytes, 0, Math.min(strBytesData.length, 8));
+                strBytes[Math.min(strBytesData.length, 8)] = 0;
+                fos.write(strBytes);
             }
             // Toast.makeText(MainActivity.this, "Saved high score table.", Toast.LENGTH_SHORT).show();
 
             fos.close();
 
             for (i = 0; i < 51 + 6; i++)
-            {   sethiscore(i, hiscore[i]);
+            {   sethiscore(i, hiscore[i], hiscoredate[i]);
         }   }
         catch (IOException e)
         {   ; // can't create/open high score table
@@ -1392,7 +1409,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         if (sound        ) options1 |= (1 <<  6);
         if (retune       ) options1 |= (1 <<  7);
         if (collisions   ) options1 |= (1 <<  8);
-        if (demultiplex  ) options1 |= (1 <<  9);
+                                    // (1 <<  9); (spare)
         if (lives        ) options1 |= (1 << 10);
         if (time         ) options1 |= (1 << 11);
         if (invincibility) options1 |= (1 << 12);
@@ -1415,6 +1432,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         if (flagline    )  options2 |= (1           <<  9); // bit       9 (1 bit )
         if (sameplayer  )  options2 |= (1           << 10); // bit      10 (1 bit )
                            options2 |= (sensitivity << 11); // bits 13..11 (3 bits)
+                           options2 |= (demultiplex << 14); // bits 15..14 (2 bits)
                            
         csetoptions(options1, options2);
     }
@@ -1432,7 +1450,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         wtf = ( 1 <<  6); MainActivity.sound         = ((options & wtf) != 0);
         wtf = ( 1 <<  7); MainActivity.retune        = ((options & wtf) != 0);
         wtf = ( 1 <<  8); MainActivity.collisions    = ((options & wtf) != 0);
-        wtf = ( 1 <<  9); MainActivity.demultiplex   = ((options & wtf) != 0);
+     // wtf = ( 1 <<  9); (spare)
         wtf = ( 1 << 10); MainActivity.lives         = ((options & wtf) != 0);
         wtf = ( 1 << 11); MainActivity.time          = ((options & wtf) != 0);
         wtf = ( 1 << 12); MainActivity.invincibility = ((options & wtf) != 0);
@@ -1455,6 +1473,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         wtf = ( 1 <<  9); MainActivity.flagline      = ((options & wtf) !=  0); // bit       9 (1 bit )
         wtf = ( 1 << 10); MainActivity.sameplayer    = ((options & wtf) !=  0); // bit      10 (1 bit )
         wtf = ( 7 << 11); MainActivity.sensitivity   =  (options & wtf) >> 11 ; // bits 13..11 (3 bits)
+        wtf = ( 3 << 14); MainActivity.demultiplex   =  (options & wtf) >> 14 ; // bits 15..14 (2 bits)
     }
 
     private void jloadrom(Intent data)

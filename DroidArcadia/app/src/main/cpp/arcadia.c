@@ -31,7 +31,6 @@ EXPORT       int                   frac[4];
 IMPORT       ULONG                 autofire[2],
                                    collisions,
                                    cycles_2650,
-                                   demultiplex,
                                    downframes,
                                    frames,
                                    hinput[2],
@@ -40,9 +39,11 @@ IMPORT       ULONG                 autofire[2],
                                    swapped,
                                    totalframes;
 IMPORT       UBYTE*                IOBuffer;
+IMPORT       UWORD*                display;
 IMPORT       int                   absxmin, absxmax,
                                    absymin, absymax,
                                    cpl,
+                                   colourset,
                                    console_start,
                                    console_a,
                                    console_b,
@@ -50,6 +51,7 @@ IMPORT       int                   absxmin, absxmax,
                                    cpux,
                                    cpuy,
                                    dejitter,
+                                   demultiplex,
                                    filesize,
                                    firstrow,
                                    game,
@@ -94,6 +96,7 @@ IMPORT       UWORD                 iar,
                                    mirror_r[32768],
                                    mirror_w[32768],
                                    screen_iar[BOXWIDTH][BOXHEIGHT];
+IMPORT const UWORD                 pencolours[4][GUESTCOLOURS];
 IMPORT const struct KnownStruct    known[KNOWNGAMES];
 IMPORT       struct MachineStruct  machines[MACHINES];
 
@@ -127,6 +130,7 @@ MODULE UBYTE  bgc,
               fgc1, fgc2,         // only used for board mode. Arcadia format
               outerbgc, innerbgc, // Arcadia format
               hires,              // 0 for low resolution, 1 for high resolution
+              pastbgc[312],
               rowbuf[UDCFLIPS + 1][26][16],
               scrnbgc,
               sprimagedata[4],
@@ -219,6 +223,8 @@ MODULE void setpaddle(int player, int which);
 MODULE void arcadia_oneraster(void);
 MODULE void run_cpu(int until);
 MODULE void arcadia_runcpu(void);
+MODULE void drawrawpixel(int x, int y, UWORD colour);
+MODULE UWORD blend(int colour1, int colour2);
 
 // CODE-------------------------------------------------------------------
 
@@ -247,6 +253,7 @@ EXPORT void uvi(void)
 
         for (cpuy = 0; cpuy < n1; cpuy++)
         {   arcadia_runcpu();
+            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
         }
 
         unvblank();
@@ -254,6 +261,7 @@ EXPORT void uvi(void)
         for (cpuy = n1; cpuy < n2; cpuy++)
         {   arcadia_oneraster();
             arcadia_runcpu();
+            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
         }
 
         a_emuinput();
@@ -261,6 +269,7 @@ EXPORT void uvi(void)
         for (cpuy = n2; cpuy < n3; cpuy++)
         {   arcadia_oneraster();
             arcadia_runcpu();
+            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
         }
 
         if (!spritesdone)
@@ -278,10 +287,12 @@ EXPORT void uvi(void)
         }
         vblank();
         run_cpu(227);
+        pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
     
         // scanlines 1..42 (PAL) or 1..19 (NTSC)------------------------------
         for (cpuy = 1; cpuy < n1; cpuy++) // in vertical blank
         {   run_cpu(227);
+            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
         }
 
         // scanline 43 (PAL) or 20 (NTSC)-------------------------------------
@@ -296,6 +307,7 @@ EXPORT void uvi(void)
         for (cpux = 49; cpux < 227; cpux++) // normal drawing
         {   onepixel();
         }
+        pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
 
         // scanlines 44..311 (PAL) or 21..261 (NTSC)--------------------------
         for (cpuy = n1 + 1; cpuy < n3; cpuy++)
@@ -313,7 +325,9 @@ EXPORT void uvi(void)
             run_cpu(49);
             for (cpux = 49; cpux < 227; cpux++)
             {   onepixel();
-    }   }   }
+            }
+            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
+    }   }
 
     for (whichudg = 0; whichudg < 8; whichudg++)
     {   for (y = 0; y < 8; y++)
@@ -924,12 +938,14 @@ MODULE void unvblank(void)
 MODULE void drawfakesprites(void)
 {   FAST FLAG  localflagging;
     FAST UBYTE imagedata;
+    FAST UWORD blendedcolour;
     FAST int   flipper,
                i,
                whichsprite,
-               x, xx, y, yy;
+               x, xx, xxx,
+               y, yy, yyy;
 
-    if (!spriteflips || !demultiplex || frames < (ULONG) spriteflips)
+    if (!spriteflips || demultiplex == 0 || frames < (ULONG) spriteflips)
     {   return;
     }
 
@@ -938,9 +954,9 @@ MODULE void drawfakesprites(void)
 #define LEFTMOST  USG_XMARGIN
 #define RIGHTMOST 226
 
-    for (i = 1; i <= spriteflips; i++)
+    for (i = (demultiplex == 1) ? 0 : 1; i <= spriteflips; i++)
     {   flipper = (spriteflip + i) % (spriteflips + 1);
-        if (flipper == spriteflip)
+        if (demultiplex == 2 && flipper == spriteflip)
         {   continue;
         } // implied else
 
@@ -965,23 +981,44 @@ MODULE void drawfakesprites(void)
                                 for (xx = 0; xx < 8; xx++)
                                 {   if (x + xx >= LEFTMOST && x + xx <= RIGHTMOST)
                                     {   if (imagedata & (0x80 >> xx))
-                                        {   changeabspixel(x + xx, y + yy, from_a[localflagging][spr[flipper][whichsprite].colour]);
-                    }   }   }   }   }   }
+                                        {   if (demultiplex == 1) // transparent
+                                            {   xxx = x + xx - absxmin;
+                                                yyy = y + yy - absymin;
+                                                if (xxx >= 0 && xxx <= absxmax - USG_XMARGIN - UVI_HIDELEFT && yyy >= USG_YMARGIN && yyy <= absymax)
+                                                {   blendedcolour = blend(from_a[localflagging][spr[flipper][whichsprite].colour], pastbgc[yyy]);
+                                                    screen[xxx][yyy] = from_a[localflagging][spr[flipper][whichsprite].colour];
+                                                    drawrawpixel(xxx, yyy, blendedcolour);
+                                            }   }
+                                            else // opaque
+                                            {   changeabspixel(x + xx, y + yy, from_a[localflagging][spr[flipper][whichsprite].colour]);
+                    }   }   }   }   }   }   }
                     else
                     {   for (yy = 0; yy < 8; yy++)
-                        {   if (y + (yy * 2) >= USG_YMARGIN && y + (yy * 2) < n3)
-                            {   imagedata = spr[flipper][whichsprite].imagery[yy];
-                                for (xx = 0; xx < 8; xx++)
-                                {   if (x + xx >= LEFTMOST && x + xx <= RIGHTMOST)
-                                    {   if (imagedata & (0x80 >> xx))
-                                        {   changeabspixel(x + xx, y + (yy * 2), from_a[localflagging][spr[flipper][whichsprite].colour]);
-                                }   }   }
-                                if (y + (yy * 2) + 1 >= USG_YMARGIN && y + (yy * 2) + 1 < n3)
-                                {   for (xx = 0; xx < 8; xx++)
-                                    {   if (x + xx >= LEFTMOST && x + xx <= RIGHTMOST)
-                                        {   if (imagedata & (0x80 >> xx))
-                                            {   changeabspixel(x + xx, y + (yy * 2) + 1, from_a[localflagging][spr[flipper][whichsprite].colour]);
-}   }   }   }   }   }   }   }   }   }   }   }
+                        {   imagedata = spr[flipper][whichsprite].imagery[yy];
+                            for (xx = 0; xx < 8; xx++)
+                            {   if
+                                (   x + xx >= LEFTMOST
+                                 && x + xx <= RIGHTMOST
+                                 && (imagedata & (0x80 >> xx))
+                                )
+                                {   xxx = x +  xx      - absxmin;
+                                    yyy = y + (yy * 2) - absymin;
+                                    if (demultiplex == 1) // transparent
+                                    {   if (yyy >= USG_YMARGIN && yyy <= absymax)
+                                        {   blendedcolour = blend(from_a[localflagging][spr[flipper][whichsprite].colour], pastbgc[yyy]);
+                                            screen[xxx][yyy] = from_a[localflagging][spr[flipper][whichsprite].colour];
+                                            drawrawpixel(xxx, yyy, blendedcolour);
+                                        }
+                                        yyy++;
+                                        if (yyy >= USG_YMARGIN && yyy <= absymax)
+                                        {   blendedcolour = blend(from_a[localflagging][spr[flipper][whichsprite].colour], pastbgc[yyy]);
+                                            screen[xxx][yyy] = from_a[localflagging][spr[flipper][whichsprite].colour];
+                                            drawrawpixel(xxx, yyy, blendedcolour);
+                                    }   }
+                                    else // opaque
+                                    {   changeabspixel(xxx + absxmin, yyy +     absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
+                                        changeabspixel(xxx + absxmin, yyy + 1 + absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
+}   }   }   }   }   }   }   }   }   }
 
 MODULE void drawfakeudgs(void)
 {   FAST FLAG  ok;
@@ -1372,3 +1409,29 @@ MODULE void run_cpu(int until)
     if (nextinst >= 227)
     {   nextinst -= cpl;
 }   }
+
+MODULE void drawrawpixel(int x, int y, UWORD colour)
+{   *(display + (y * MAXBOXWIDTH) + x) = colour;
+}
+
+MODULE UWORD blend(int colour1, int colour2)
+{   FAST UWORD red1,   red2,   red3,
+               green1, green2, green3,
+               blue1,  blue2,  blue3,
+               result;
+
+    red1   = (pencolours[colourset][colour1] & 0xF800) >> 11;
+    red2   = (pencolours[colourset][colour2] & 0xF800) >> 11;
+    red3   = (red1 + red2) / 2;
+    green1 = (pencolours[colourset][colour1] & 0x07E0) >>  5;
+    green2 = (pencolours[colourset][colour2] & 0x07E0) >>  5;
+    green3 = (green1 + green2) / 2;
+    blue1  = (pencolours[colourset][colour1] & 0x001F)      ;
+    blue2  = (pencolours[colourset][colour2] & 0x001F)      ;
+    blue3  = (blue1 + blue2) / 2;
+    result = (red3   << 11)
+           | (green3 <<  5)
+           |  blue3;
+
+    return result;
+}

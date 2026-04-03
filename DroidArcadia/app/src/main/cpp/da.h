@@ -1,8 +1,8 @@
 // INCLUDES---------------------------------------------------------------
 
 #define MAJORVERSION   0x04
-#define MINORVERSION   0x42
-#define INTEGERVERSION "4.42" // for RetroAchievements
+#define MINORVERSION   0x50
+#define INTEGERVERSION "4.50" // for RetroAchievements
 
 #include <jni.h>
 
@@ -201,7 +201,7 @@ typedef unsigned char  ASCREEN;
 #define MAZESPOS              236
 #define CIRCLEDRIVEPOS1       237
 #define COSMICADVENTUREPOS1   249
-#define COSMICADVENTUREPOS2   250
+#define COSMICADVENTUREPOS2   253
 #define ROCKETSHOOTINGPOS     263
 #define SPACESHOOTOUTPOS      268
 #define UFOSHOOTINGPOS        286
@@ -788,6 +788,7 @@ EXPORT struct HiScoreStruct
     UBYTE length;
     SBYTE nextdigit; // must be signed!
     ULONG score;
+    TEXT  date[8 + 1]; // enough for "31/12/99"
 };
 
 EXPORT struct MemMapInfoStruct
@@ -916,6 +917,7 @@ JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_MainActivity_getff(   
 JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_MainActivity_getfirebuttons(   JNIEnv* env, jobject this);
 JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_MainActivity_getgame(          JNIEnv* env, jobject this);
 JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_MainActivity_gethiscore(       JNIEnv* env, jobject this, jint whichscore);
+JNIEXPORT jstring    JNICALL Java_com_amigan_droidarcadia_MainActivity_gethiscoredate(   JNIEnv* env, jobject this, jint whichscore);
 JNIEXPORT jbyteArray JNICALL Java_com_amigan_droidarcadia_MainActivity_getkeyname(       JNIEnv* env, jobject this, jint whichkey);
 JNIEXPORT jstring    JNICALL Java_com_amigan_droidarcadia_MainActivity_getmessage(       JNIEnv* env, jobject this);
 JNIEXPORT jstring    JNICALL Java_com_amigan_droidarcadia_MainActivity_getprogressstr(   JNIEnv* env, jobject this);
@@ -934,7 +936,7 @@ JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_MainActivity_loadgame(
 JNIEXPORT void       JNICALL Java_com_amigan_droidarcadia_MainActivity_redrawscreen(     JNIEnv* env, jobject this);
 JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_MainActivity_setconsolekey(    JNIEnv* env, jobject this, jint whichkey);
 JNIEXPORT void       JNICALL Java_com_amigan_droidarcadia_MainActivity_setframebuffer(   JNIEnv* env, jobject this, jobject oBuf);
-JNIEXPORT void       JNICALL Java_com_amigan_droidarcadia_MainActivity_sethiscore(       JNIEnv* env, jobject this, jint whichscore, jint thescore);
+JNIEXPORT void       JNICALL Java_com_amigan_droidarcadia_MainActivity_sethiscore(       JNIEnv* env, jobject this, jint whichscore, jint thescore, jstring thedate);
 JNIEXPORT void       JNICALL Java_com_amigan_droidarcadia_MainActivity_setinput(         JNIEnv* env, jobject this, jint player, jint thekeypad, jint cx, jint cy);
 // JNIEXPORT void       JNICALL Java_com_amigan_droidarcadia_MainActivity_cloadnvram(    JNIEnv* env, jobject this, jbyteArray ptr);
 // JNIEXPORT jbyteArray JNICALL Java_com_amigan_droidarcadia_MainActivity_csavenvram(    JNIEnv* env, jobject this);
@@ -961,12 +963,14 @@ JNIEXPORT jbyteArray JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getgg
 JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getglyph(     JNIEnv* env, jobject this);
 
 // Java-accessible functions for ArcadiaHiScoresActivity.java
-JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_ArcadiaHiScoresActivity_gethiscore(JNIEnv* env, jobject this, jint whichscore);
-JNIEXPORT void       JNICALL Java_com_amigan_droidarcadia_ArcadiaHiScoresActivity_sethiscore(JNIEnv* env, jobject this, jint whichscore, jint thescore);
+JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_ArcadiaHiScoresActivity_gethiscore(    JNIEnv* env, jobject this, jint whichscore);
+JNIEXPORT jstring    JNICALL Java_com_amigan_droidarcadia_ArcadiaHiScoresActivity_gethiscoredate(JNIEnv* env, jobject this, jint whichscore);
+JNIEXPORT void       JNICALL Java_com_amigan_droidarcadia_ArcadiaHiScoresActivity_sethiscore(    JNIEnv* env, jobject this, jint whichscore, jint thescore, jstring thedate);
 
 // Java-accessible functions for CoinOpHiScoresActivity.java
-JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_CoinOpHiScoresActivity_gethiscore( JNIEnv* env, jobject this, jint whichscore);
-JNIEXPORT void       JNICALL Java_com_amigan_droidarcadia_CoinOpHiScoresActivity_sethiscore( JNIEnv* env, jobject this, jint whichscore, jint thescore);
+JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_CoinOpHiScoresActivity_gethiscore(    JNIEnv* env, jobject this, jint whichscore);
+JNIEXPORT jstring    JNICALL Java_com_amigan_droidarcadia_CoinOpHiScoresActivity_gethiscoredate(JNIEnv* env, jobject this, jint whichscore);
+JNIEXPORT void       JNICALL Java_com_amigan_droidarcadia_CoinOpHiScoresActivity_sethiscore(    JNIEnv* env, jobject this, jint whichscore, jint thescore, jstring thedate);
 
 // Java-accessible functions for DIPsActivity.java
 JNIEXPORT jint       JNICALL Java_com_amigan_droidarcadia_DIPsActivity_cgetdips(             JNIEnv* env, jobject this);

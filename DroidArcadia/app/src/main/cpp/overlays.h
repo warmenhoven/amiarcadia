@@ -2459,7 +2459,10 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "The paddle must be approximately centred at the time you press START (otherwise you will instantly die).\n" \
 "Paddle left/right: steer car left/right\n" \
 "Paddle backwards: accelerate\n" \
-"Paddle forwards: brake"
+"Paddle forwards: brake\n" \
+"SELECT (F2): return to title screen from \"ZIEL\" screen\n" \
+"Left digits show number of collisions. Right digits show distance covered.\n" \
+"Once the other cars have left you behind alone on-screen, it is impossible to catch them."
 },
 { // 178. Disassembler (Elektor) (Peter Marschat version)
         "-----",                "E",

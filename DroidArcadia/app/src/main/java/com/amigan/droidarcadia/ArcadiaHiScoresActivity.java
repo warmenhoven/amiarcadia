@@ -7,8 +7,9 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 public class ArcadiaHiScoresActivity extends Activity
-{   public native int  gethiscore(int whichscore);
-    public native void sethiscore(int whichscore, int thescore);
+{   public native int    gethiscore(int whichscore);
+    public native String gethiscoredate(int whichscore);
+    public native void   sethiscore(int whichscore, int thescore, String thedate);
     
     private TextView   hs_1,  hs_2,  hs_3,  hs_4,
                        hs_5,  hs_6,  hs_7,  hs_8,
@@ -22,7 +23,20 @@ public class ArcadiaHiScoresActivity extends Activity
                        hs_37, hs_38, hs_39, hs_40,
                        hs_41, hs_42, hs_43, hs_44,
                        hs_45, hs_46, hs_47, hs_48,
-                       hs_49, hs_50, hs_51;
+                       hs_49, hs_50, hs_51,
+                       hsd_1,  hsd_2,  hsd_3,  hsd_4,
+                       hsd_5,  hsd_6,  hsd_7,  hsd_8,
+                       hsd_9,  hsd_10, hsd_11, hsd_12,
+                       hsd_13, hsd_14, hsd_15, hsd_16,
+                       hsd_17, hsd_18, hsd_19, hsd_20,
+                       hsd_21, hsd_22, hsd_23, hsd_24,
+                       hsd_25, hsd_26, hsd_27, hsd_28,
+                       hsd_29, hsd_30, hsd_31, hsd_32,
+                       hsd_33, hsd_34, hsd_35, hsd_36,
+                       hsd_37, hsd_38, hsd_39, hsd_40,
+                       hsd_41, hsd_42, hsd_43, hsd_44,
+                       hsd_45, hsd_46, hsd_47, hsd_48,
+                       hsd_49, hsd_50, hsd_51;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,17 +98,70 @@ public class ArcadiaHiScoresActivity extends Activity
                  hs_49          = findViewById(R.id.hs_49);
                  hs_50          = findViewById(R.id.hs_50);
                  hs_51          = findViewById(R.id.hs_51);
+                 hsd_1          = findViewById(R.id.hsd_1);
+                 hsd_2          = findViewById(R.id.hsd_2);
+                 hsd_3          = findViewById(R.id.hsd_3);
+                 hsd_4          = findViewById(R.id.hsd_4);
+                 hsd_5          = findViewById(R.id.hsd_5);
+                 hsd_6          = findViewById(R.id.hsd_6);
+                 hsd_7          = findViewById(R.id.hsd_7);
+                 hsd_8          = findViewById(R.id.hsd_8);
+                 hsd_9          = findViewById(R.id.hsd_9);
+                 hsd_10         = findViewById(R.id.hsd_10);
+                 hsd_11         = findViewById(R.id.hsd_11);
+                 hsd_12         = findViewById(R.id.hsd_12);
+                 hsd_13         = findViewById(R.id.hsd_13);
+                 hsd_14         = findViewById(R.id.hsd_14);
+                 hsd_15         = findViewById(R.id.hsd_15);
+                 hsd_16         = findViewById(R.id.hsd_16);
+                 hsd_17         = findViewById(R.id.hsd_17);
+                 hsd_18         = findViewById(R.id.hsd_18);
+                 hsd_19         = findViewById(R.id.hsd_19);
+                 hsd_20         = findViewById(R.id.hsd_20);
+                 hsd_21         = findViewById(R.id.hsd_21);
+                 hsd_22         = findViewById(R.id.hsd_22);
+                 hsd_23         = findViewById(R.id.hsd_23);
+                 hsd_24         = findViewById(R.id.hsd_24);
+                 hsd_25         = findViewById(R.id.hsd_25);
+                 hsd_26         = findViewById(R.id.hsd_26);
+                 hsd_27         = findViewById(R.id.hsd_27);
+                 hsd_28         = findViewById(R.id.hsd_28);
+                 hsd_29         = findViewById(R.id.hsd_29);
+                 hsd_30         = findViewById(R.id.hsd_30);
+                 hsd_31         = findViewById(R.id.hsd_31);
+                 hsd_32         = findViewById(R.id.hsd_32);
+                 hsd_33         = findViewById(R.id.hsd_33);
+                 hsd_34         = findViewById(R.id.hsd_34);
+                 hsd_35         = findViewById(R.id.hsd_35);
+                 hsd_36         = findViewById(R.id.hsd_36);
+                 hsd_37         = findViewById(R.id.hsd_37);
+                 hsd_38         = findViewById(R.id.hsd_38);
+                 hsd_39         = findViewById(R.id.hsd_39);
+                 hsd_40         = findViewById(R.id.hsd_40);
+                 hsd_41         = findViewById(R.id.hsd_41);
+                 hsd_42         = findViewById(R.id.hsd_42);
+                 hsd_43         = findViewById(R.id.hsd_43);
+                 hsd_44         = findViewById(R.id.hsd_44);
+                 hsd_45         = findViewById(R.id.hsd_45);
+                 hsd_46         = findViewById(R.id.hsd_46);
+                 hsd_47         = findViewById(R.id.hsd_47);
+                 hsd_48         = findViewById(R.id.hsd_48);
+                 hsd_49         = findViewById(R.id.hsd_49);
+                 hsd_50         = findViewById(R.id.hsd_50);
+                 hsd_51         = findViewById(R.id.hsd_51);
         TextView button_clearhs = findViewById(R.id.button_clearhs);
 
         for (int i = 0; i < 51 + 6; i++)
         {   MainActivity.hiscore[i] = gethiscore(i);
+            MainActivity.hiscoredate[i] = gethiscoredate(i);
         }
         doscores();
         
         button_clearhs.setOnClickListener((view) ->
-        {   for (int i = 0; i < 51 + 6; i++)
+        {   for (int i = 0; i < 51; i++)
             {   MainActivity.hiscore[i] = 0;
-                sethiscore(i, MainActivity.hiscore[i]);
+                MainActivity.hiscoredate[i] = "-";
+                sethiscore(i, MainActivity.hiscore[i], MainActivity.hiscoredate[i]);
             }
             doscores();
         });
@@ -158,4 +225,56 @@ public class ArcadiaHiScoresActivity extends Activity
         hs_49.setText(String.valueOf(MainActivity.hiscore[48]));
         hs_50.setText(String.valueOf(MainActivity.hiscore[49]));
         hs_51.setText(String.valueOf(MainActivity.hiscore[50]));
+
+        hsd_1.setText(MainActivity.hiscoredate[0]);
+        hsd_2.setText(MainActivity.hiscoredate[1]);
+        hsd_3.setText(MainActivity.hiscoredate[2]);
+        hsd_4.setText(MainActivity.hiscoredate[3]);
+        hsd_5.setText(MainActivity.hiscoredate[4]);
+        hsd_6.setText(MainActivity.hiscoredate[5]);
+        hsd_7.setText(MainActivity.hiscoredate[6]);
+        hsd_8.setText(MainActivity.hiscoredate[7]);
+        hsd_9.setText(MainActivity.hiscoredate[8]);
+        hsd_10.setText(MainActivity.hiscoredate[9]);
+        hsd_11.setText(MainActivity.hiscoredate[10]);
+        hsd_12.setText(MainActivity.hiscoredate[11]);
+        hsd_13.setText(MainActivity.hiscoredate[12]);
+        hsd_14.setText(MainActivity.hiscoredate[13]);
+        hsd_15.setText(MainActivity.hiscoredate[14]);
+        hsd_16.setText(MainActivity.hiscoredate[15]);
+        hsd_17.setText(MainActivity.hiscoredate[16]);
+        hsd_18.setText(MainActivity.hiscoredate[17]);
+        hsd_19.setText(MainActivity.hiscoredate[18]);
+        hsd_20.setText(MainActivity.hiscoredate[19]);
+        hsd_21.setText(MainActivity.hiscoredate[20]);
+        hsd_22.setText(MainActivity.hiscoredate[21]);
+        hsd_23.setText(MainActivity.hiscoredate[22]);
+        hsd_24.setText(MainActivity.hiscoredate[23]);
+        hsd_25.setText(MainActivity.hiscoredate[24]);
+        hsd_26.setText(MainActivity.hiscoredate[25]);
+        hsd_27.setText(MainActivity.hiscoredate[26]);
+        hsd_28.setText(MainActivity.hiscoredate[27]);
+        hsd_29.setText(MainActivity.hiscoredate[28]);
+        hsd_30.setText(MainActivity.hiscoredate[29]);
+        hsd_31.setText(MainActivity.hiscoredate[30]);
+        hsd_32.setText(MainActivity.hiscoredate[31]);
+        hsd_33.setText(MainActivity.hiscoredate[32]);
+        hsd_34.setText(MainActivity.hiscoredate[33]);
+        hsd_35.setText(MainActivity.hiscoredate[34]);
+        hsd_36.setText(MainActivity.hiscoredate[35]);
+        hsd_37.setText(MainActivity.hiscoredate[36]);
+        hsd_38.setText(MainActivity.hiscoredate[37]);
+        hsd_39.setText(MainActivity.hiscoredate[38]);
+        hsd_40.setText(MainActivity.hiscoredate[39]);
+        hsd_41.setText(MainActivity.hiscoredate[40]);
+        hsd_42.setText(MainActivity.hiscoredate[41]);
+        hsd_43.setText(MainActivity.hiscoredate[42]);
+        hsd_44.setText(MainActivity.hiscoredate[43]);
+        hsd_45.setText(MainActivity.hiscoredate[44]);
+        hsd_46.setText(MainActivity.hiscoredate[45]);
+        hsd_47.setText(MainActivity.hiscoredate[46]);
+        hsd_48.setText(MainActivity.hiscoredate[47]);
+        hsd_49.setText(MainActivity.hiscoredate[48]);
+        hsd_50.setText(MainActivity.hiscoredate[49]);
+        hsd_51.setText(MainActivity.hiscoredate[50]);
 }   }

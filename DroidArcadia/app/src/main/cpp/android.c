@@ -5,9 +5,11 @@
 #include "games.h"
 #include "overlays.h"
 
+#include <stdio.h>
 #include <stdlib.h> // for FILE*
 #include <string.h> // for strcpy()
 #include <errno.h>  // for errno
+#include <time.h>
 
 #define RC_CLIENT_SUPPORTS_HASH
 #include "rc_client.h"
@@ -47,7 +49,6 @@ EXPORT UWORD      console[4],
 EXPORT ULONG      analog                   = FALSE,
                   autofire                 = FALSE,
                   collisions               = TRUE,
-                  demultiplex              = TRUE,
                   downframes               = 4,
                   frames,
                   hinput[2],
@@ -82,6 +83,7 @@ EXPORT int        absxmin, absxmax,
                   cpux,
                   cpuy,
                   dejitter                 = FALSE,
+                  demultiplex              = 2, // opaque
                   drawcorners              = FALSE,
                   elektor_biosver          = ELEKTOR_PHILIPS,
                   firstrow                 = 26,
@@ -440,11 +442,13 @@ EXPORT void drawbgpixel(int x, int y, int colour)
 }   }
 
 MODULE void updatehiscores(void)
-{   int bestscore  = 0,
-        i, j,
-        multiplier = 0,  // initialized to avoid spurious SAS/C compiler warnings
-        newscore,
-        resolved   = -1; // initialized to avoid spurious SAS/C compiler warnings
+{   TRANSIENT int        bestscore  = 0,
+                         i, j,
+                         multiplier = 0,  // initialized to avoid spurious SAS/C compiler warnings
+                         newscore,
+                         resolved   = -1; // initialized to avoid spurious SAS/C compiler warnings
+    FAST      time_t t;
+    FAST      struct tm* tm_info;
 
     resolved = resolvegame();
 
@@ -530,7 +534,10 @@ MODULE void updatehiscores(void)
 
     if (bestscore > (int) hiscore[resolved].score)
     {   hiscore[resolved].score = (ULONG) bestscore;
-        // datestamp(resolved);
+
+        t = time(NULL);
+        tm_info = localtime(&t);
+        sprintf(hiscore[resolved].date, "%02d/%02d/%02d", tm_info->tm_mday, tm_info->tm_mon + 1, tm_info->tm_year % 100);
 }   }
 
 MODULE int resolvegame(void)
@@ -1792,7 +1799,7 @@ JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_OptionsActivity_csetoptions(
     sound                 = (coptions & ( 1 <<  6)) ? TRUE       : FALSE;
     retune                = (coptions & ( 1 <<  7)) ? TRUE       : FALSE;
     collisions            = (coptions & ( 1 <<  8)) ? TRUE       : FALSE;
-    demultiplex           = (coptions & ( 1 <<  9)) ? TRUE       : FALSE;
+                         // (coptions & ( 1 <<  9)) ? TRUE       : FALSE; (spare)
     trainer_lives         = (coptions & ( 1 << 10)) ? TRUE       : FALSE;
     trainer_time          = (coptions & ( 1 << 11)) ? TRUE       : FALSE;
     trainer_invincibility = (coptions & ( 1 << 12)) ? TRUE       : FALSE;
@@ -1815,6 +1822,7 @@ JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_OptionsActivity_csetoptions(
     flagline              = (coptions & ( 1 <<  9)) >>  9;                // bit   9     (1 bit )
     sameplayer            = (coptions & ( 1 << 10)) >> 10;                // bit  10     (1 bit )
     sensitivity           = (coptions & ( 7 << 11)) >> 11;                // bits 13..11 (3 bits)
+    demultiplex           = (coptions & ( 3 << 14)) >> 14;                // bits 15..14 (2 bits)
     if (newmachine != machine || newmemmap != memmap)
     {   switch (newmachine)
         {
@@ -1845,7 +1853,7 @@ JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_MainActivity_csetoptions(JNI
     sound                 = (coptions & ( 1 <<  6)) ? TRUE       : FALSE;
     retune                = (coptions & ( 1 <<  7)) ? TRUE       : FALSE;
     collisions            = (coptions & ( 1 <<  8)) ? TRUE       : FALSE;
-    demultiplex           = (coptions & ( 1 <<  9)) ? TRUE       : FALSE;
+                         // (coptions & ( 1 <<  9)) ? TRUE       : FALSE; (spare)
     trainer_lives         = (coptions & ( 1 << 10)) ? TRUE       : FALSE;
     trainer_time          = (coptions & ( 1 << 11)) ? TRUE       : FALSE;
     trainer_invincibility = (coptions & ( 1 << 12)) ? TRUE       : FALSE;
@@ -1868,6 +1876,7 @@ JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_MainActivity_csetoptions(JNI
     flagline              = (coptions & ( 1 <<  9)) >>  9;                // bit   9     (1 bit )
     sameplayer            = (coptions & ( 1 << 10)) >> 10;                // bit  10     (1 bit )
     sensitivity           = (coptions & ( 7 << 11)) >> 11;                // bits 13..11 (3 bits)
+    demultiplex           = (coptions & ( 3 << 14)) >> 14;                // bits 15..14 (2 bits)
     if (newmachine != machine || newmemmap != memmap)
     {   switch (newmachine)
         {
@@ -1895,7 +1904,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_MainActivity_cgetoptions1(JN
     if (sound                ) coptions |= (1 <<  6);
     if (retune               ) coptions |= (1 <<  7);
     if (collisions           ) coptions |= (1 <<  8);
-    if (demultiplex          ) coptions |= (1 <<  9);
+                            // coptions |= (1 <<  9); (spare)
     if (trainer_lives        ) coptions |= (1 << 10);
     if (trainer_time         ) coptions |= (1 << 11);
     if (trainer_invincibility) coptions |= (1 << 12);
@@ -1922,7 +1931,8 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_MainActivity_cgetoptions2(JN
     if (flagline             ) coptions |= (1         <<  9); // bit       9 (1 bit )
     if (sameplayer           ) coptions |= (1         << 10); // bit      10 (1 bit )
     coptions |= (sensitivity << 11); // bits 13..11 (3 bits)
-    
+    coptions |= (demultiplex << 14); // bits 15..14 (2 bits)
+
     return (jint) coptions;
 }
 JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_OptionsActivity_cgetoptions1(JNIEnv* env, jobject this)
@@ -1936,7 +1946,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_OptionsActivity_cgetoptions1
     if (sound                ) coptions |= (1 <<  6);
     if (retune               ) coptions |= (1 <<  7);
     if (collisions           ) coptions |= (1 <<  8);
-    if (demultiplex          ) coptions |= (1 <<  9);
+                            // coptions |= (1 <<  9); (spare)
     if (trainer_lives        ) coptions |= (1 << 10);
     if (trainer_time         ) coptions |= (1 << 11);
     if (trainer_invincibility) coptions |= (1 << 12);
@@ -1963,6 +1973,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_OptionsActivity_cgetoptions2
     if (flagline             ) coptions |= (1         <<  9); // bit       9 (1 bit )
     if (sameplayer           ) coptions |= (1         << 10); // bit      10 (1 bit )
     coptions |= (sensitivity << 11); // bits 13..11 (3 bits)
+    coptions |= (demultiplex << 14); // bits 15..14 (2 bits)
 
     return (jint) coptions;
 }
@@ -2422,6 +2433,10 @@ EXPORT void patchrom(void)
         case COMEFRUTASPOS3:
             memory[ 0xB6E] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
         acase CRAZYGOBBLERPOS:
+            memory[ 0x2D9] = trainer_invincibility ? 0x1F : 0x0C; // LODA,r0 $18DC         -> BCTA,un $33A
+            memory[ 0x2DA] = trainer_invincibility ? 0x03 : 0x18;
+            memory[ 0x2DB] = trainer_invincibility ? 0x3A : 0xDC;
+
             memory[ 0x2DD] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
         acase CRAZYCLIMBERPOS:
             memory[ 0xDA3] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
@@ -3425,14 +3440,72 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_CoinOpHiScoresActivity_gethi
 JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_MainActivity_gethiscore(JNIEnv* env, jobject this, jint whichscore)
 {   return (jint) hiscore[(int) whichscore].score;
 }
-JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_ArcadiaHiScoresActivity_sethiscore(JNIEnv* env, jobject this, jint whichscore, jint thescore)
-{   hiscore[(int) whichscore].score = (int) thescore;
+
+JNIEXPORT jstring JNICALL Java_com_amigan_droidarcadia_ArcadiaHiScoresActivity_gethiscoredate(JNIEnv* env, jobject this, jint whichscore)
+{   jstring rc;
+
+    rc = (*env)->NewStringUTF(env, hiscore[(int) whichscore].date);
+    return rc;
 }
-JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_CoinOpHiScoresActivity_sethiscore(JNIEnv* env, jobject this, jint whichscore, jint thescore)
-{   hiscore[(int) whichscore].score = (int) thescore;
+JNIEXPORT jstring JNICALL Java_com_amigan_droidarcadia_CoinOpHiScoresActivity_gethiscoredate(JNIEnv* env, jobject this, jint whichscore)
+{   jstring rc;
+
+    rc = (*env)->NewStringUTF(env, hiscore[(int) whichscore].date);
+    return rc;
 }
-JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_MainActivity_sethiscore(JNIEnv* env, jobject this, jint whichscore, jint thescore)
-{   hiscore[(int) whichscore].score = (int) thescore;
+JNIEXPORT jstring JNICALL Java_com_amigan_droidarcadia_MainActivity_gethiscoredate(JNIEnv* env, jobject this, jint whichscore)
+{   jstring rc;
+
+    rc = (*env)->NewStringUTF(env, hiscore[(int) whichscore].date);
+    return rc;
+}
+
+JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_ArcadiaHiScoresActivity_sethiscore(JNIEnv* env, jobject this, jint whichscore, jint thescore, jstring thedate)
+{   char*       cdate     = NULL;
+    const char* cdateData = (*env)->GetStringUTFChars(env, thedate, 0);
+
+    if (cdateData != NULL)
+    {   cdate = (char*) malloc(strlen(cdateData) + 1); // +1 for null-terminator
+        strcpy(cdate, cdateData);
+        (*env)->ReleaseStringUTFChars(env, thedate, cdateData);
+    }
+
+    hiscore[(int) whichscore].score = (int) thescore;
+    strcpy(hiscore[(int) whichscore].date, cdate);
+
+    free(cdate);
+}
+
+JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_CoinOpHiScoresActivity_sethiscore(JNIEnv* env, jobject this, jint whichscore, jint thescore, jstring thedate)
+{   char*       cdate     = NULL;
+    const char* cdateData = (*env)->GetStringUTFChars(env, thedate, 0);
+
+    if (cdateData != NULL)
+    {   cdate = (char*) malloc(strlen(cdateData) + 1); // +1 for null-terminator
+        strcpy(cdate, cdateData);
+        (*env)->ReleaseStringUTFChars(env, thedate, cdateData);
+    }
+
+    hiscore[(int) whichscore].score = (int) thescore;
+    strcpy(hiscore[(int) whichscore].date, cdate);
+
+    free(cdate);
+}
+
+JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_MainActivity_sethiscore(JNIEnv* env, jobject this, jint whichscore, jint thescore, jstring thedate)
+{   char*       cdate     = NULL;
+    const char* cdateData = (*env)->GetStringUTFChars(env, thedate, 0);
+
+    if (cdateData != NULL)
+    {   cdate = (char*) malloc(strlen(cdateData) + 1); // +1 for null-terminator
+        strcpy(cdate, cdateData);
+        (*env)->ReleaseStringUTFChars(env, thedate, cdateData);
+    }
+
+    hiscore[(int) whichscore].score = (int) thescore;
+    strcpy(hiscore[(int) whichscore].date, cdate);
+
+    free(cdate);
 }
 
 JNIEXPORT void JNICALL Java_com_amigan_droidarcadia_MainActivity_redrawscreen(JNIEnv* env, jobject this)
@@ -3706,6 +3779,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     acase THEENDPOS1:
     case  THEENDPOS2:        rc = 55;
     acase TURTLESPOS:        rc = 56;
+
     // Interton
     acase CARRACESPOS:       rc = 56 +  1;
     acase I_BLACKJACKPOS:    rc = 56 +  2;
@@ -3753,6 +3827,151 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     case  232:               rc = 56 + 35;
     acase HYPERSPACEPOS:     rc = 56 + 36;
     acase SUPERSPACEPOS:     rc = 56 + 37;
+
+    // Elektor
+    acase 255:   // Keyboard Painting aka Play with the PVI               ESS-003-1
+    case  256:   // Clock                                                 ESS-003-2
+    case  257:   // Music Box                                             ESS-003-3
+    case  258:   // 4 in a Row (7*6 board)                                ESS-003-4
+    case  259:   // Surround                                              ESS-003-5
+    case  260:   // Steam Engine aka Locomotive aka Demonstration Program ESS-003-6
+    case  262:   // PVI Programming                                       ESS-006-2
+    case  263:   // Rocket Shooting                                       ESS-006-3
+                             rc = 56 + 37 + 1;
+
+    acase 236:   // Mazes                         ESS-011-4
+    case  237:   // Circledrive                   ESS-009-3
+    case  238:   // Labyrinth                     ESS-009-6
+    case  243:   // Invaders                      ESS-010-1
+    case  244:   // Rocket Hunting                ESS-010-9
+    case  245:   // Basketball                    ESS-010-A
+    case  246:   // Galgenspiel                   ESS-010-E
+    case  247:   // Hangman                       ESS-010-F
+    case  248:   // Dragster      ,               ESS-011-6
+    case  249:   // Cosmic Adventure              ESS-011-F
+    case  250:   // Disassembler                  ESS-007-D
+    case  251:   // Editor         ,              ESS-010-D
+    case  253:   // Cosmic Adventure (enhanced)   ESS-011-F
+    case  261:   // Picture Pattern/Test Patterns ESS-006-1/ESS-007-E (arbitrary choice over IDB_BOX_ESS_RECORD (matches .reference field))
+    case  264:   // Mastermind                    ESS-007-1
+    case  265:   // Code Breaker                  ESS-007-2
+    case  266:   // Reversi                       ESS-007-3
+    case  267:   // Amazone                       ESS-007-4
+    case  268:   // Space Shoot-Out               ESS-007-5
+    case  269:   // 4 in a Row (7*6 board)        ESS-007-6
+    case  270:   // 4 in a Row (8*7 board)        ESS-007-7
+    case  271:   // Jackpot                       ESS-007-8
+    case  272:   // Surround                      ESS-007-9
+    case  273:   // Shapes                        ESS-007-A
+    case  274:   // Piano                         ESS-007-B
+    case  275:   // PVI Programming               ESS-007-C
+    case  276:   // Lotto                         ESS-007-F
+    case  277:   // (not) Aggressor               ESS-009-1
+    case  278:   // Offshore Fishing              ESS-009-2
+    case  279:   // Seawar                        ESS-009-4
+    case  280:   // Memory                        ESS-009-5
+    case  281:   // Destroyer                     ESS-009-7
+    case  282:   // Starship Enterprise           ESS-009-8
+    case  283:   // Blackjack                     ESS-009-9
+    case  284:   // Card Trick                    ESS-009-A
+    case  285:   // Awari                         ESS-009-B
+    case  286:   // UFO Shooting                  ESS-009-C
+    case  287:   // Raster                        ESS-009-D
+    case  288:   // Nim                           ESS-009-E
+    case  289:   // Solitaire                     ESS-009-F
+    case  290:   // Pinball                       ESS-010-2
+    case  291:   // Helicopter                    ESS-010-3
+    case  292:   // Hard Nut                      ESS-010-4
+    case  293:   // Catapult                      ESS-010-5
+    case  294:   // Pilot                         ESS-010-6
+    case  295:   // Attack from Space             ESS-010-7
+    case  296:   // Reverse                       ESS-010-8
+    case  297:   // Bursting Balloons             ESS-010-B
+    case  298:   // Für Elise                     ESS-010-C
+    case  299:   // Change Words for Hangman      ESS-010-1x
+    case  300:   // Snakes and Ladders            ESS-011-1
+    case  301:   // Molebasher                    ESS-011-2
+    case  302:   // Snap                          ESS-011-3
+    case  303:   // Asteroids                     ESS-011-5
+    case  304:   // Omega Landing                 ESS-011-7
+    case  305:   // Breakout                      ESS-011-8
+    case  306:   // Tiny Tim                      ESS-011-9
+    case  307:   // Horse Race + Jackpot          ESS-011-A
+    case  308:   // Newton                        ESS-011-B
+    case  309:   // Horse Races                   ESS-011-C
+    case  310:   // Painting                      ESS-011-D
+    case  311:   // Submarines + Racing           ESS-011-E
+    case  312:   // Circledrive (patched)         ESS-009-3
+    case  378:   // Piano (song #1) (dump #1)    (ESS-007-B)
+    case  379:   // Piano (song #1) (dump #2)    (ESS-007-B)
+    case  380:   // Piano (song #2) (dump #1)    (ESS-007-B)
+    case  381:   // Piano (song #2) (dump #2)    (ESS-007-B)
+    case  382:   // Piano (song #3) (dump #1)    (ESS-007-B)
+    case  383:   // Piano (song #3) (dump #2)    (ESS-007-B)
+    case  384:   // Piano (song #4) (dump #1)    (ESS-007-B)
+    case  385:   // Piano (song #4) (dump #2)    (ESS-007-B)
+    case  450:   // Aggressor (dump #1)           ESS-009-1
+    case  451:   // Aggressor (dump #2)           ESS-009-1
+                             rc = 56 + 37 + 2;
+
+    acase 313:   // Figure 26                     Pages 88-89
+    case  314:   // Figure 27                     Pages 88-90
+    case  315:   // Steam Engine 2                Pages 34-35 + 66
+    case  316:   // Clear Background aka Table 5  Page 75
+    case  317:   // Add 2                         Pages 96-97
+    case  318:   // Add 4                         Pages 96-97
+    case  319:   // Minus 2                       Pages 96-97
+    case  320:   // Minus 4                       Pages 96-98
+    case  321:   // Explosion aka Table 42        Page 181
+    case  322:   // Gunshot aka Table 42          Page 181
+    case  323:   // Joystick aka Table 23         Pages 118-119
+    case  324:   // Message aka Table 15          Pages 103-104
+    case  326:   // Wolf Whistle                  Page 182
+    case  327:   // Page 91                       Pages 88-91
+    case  328:   // Practice                      Page 94
+    case  329:   // Siren                         Page 181
+    case  330:   // Steam Engine 1 aka Table 3    Pages 34-35
+    case  331:   // Table 10                      Pages 75 + 93
+    case  332:   // Table 18                      Page 110
+    case  333:   // Table 19                      Page 110
+    case  334:   // Table 20                      Page 114
+    case  335:   // Table 28 (horizontal)         Pages 124-125
+    case  336:   // Table 28 (vertical)           Pages 124-125
+    case  337:   // Disassembler aka Table 34     Page 138
+    case  338:   // Table 40                      Pages 158-159
+    case  339:   // EPROM Programmer aka Table 48 Page 196
+    case  340:   // Table A                       Page 73
+    case  341:   // Table B                       Pages 73-76
+    case  342:   // Table C                       Pages 73-79
+    case  343:   // Table D                       Pages 73-83
+    case  344:   // Table E                       Pages 73-85
+    case  345:   // Table 26                      Pages 120 + 122
+    case  346:   // Table 29                      Pages 127-128
+    case  347:   // Table 30                      Page 128
+    case  348:   // Wedding March                 Pages 183-184
+                             rc = 56 + 37 + 3;
+
+    acase 349:   // Reverse                       Hocosoft #27. File $2
+    case  350:   // Solitaire (A)                 Hocosoft #22. File $1
+    case  351:   // Teaser                        Hocosoft #21. File $3
+    case  352:   // Bazaar (Basar)                Hocosoft #30. File $6
+    case  353:   // Othello                       Hocosoft #33. File $1
+    case  354:   // Queen                         Hocosoft #21. File $1
+    case  355:   // Space Battle (Raumschlacht)   Hocosoft #16. File $B
+    case  356:   // Mathematics 1 (Mathematik 1)  Hocosoft #4.  File $4
+    case  376:   // Towers of Hanoi               Hocosoft #28. File $8
+    case  377:   // Hunting (Jagen)               Hocosoft #9.  File $9
+    case  446:   // Solitaire (B)                 Hocosoft #22. File $2
+                             rc = 56 + 37 + 4;
+
+    acase 404:   // Example 2 (Joystick Control, etc. aka Hamish 1)    Radofin
+    case  439:   // Example 1 (Setting Up Objects and Background)      Radofin
+    case  440:   // Example 3 (Multiple Objects aka Knock out Objects) Radofin
+    case  441:   // Example 4 (Survival)                               Radofin
+    case  442:   // Example 5 (PVI Art)                                Radofin
+    case  443:   // Decimal Adjust Example                             Radofin
+                             rc = 56 + 37 + 5;
+
     // all
     adefault:                rc = -1;
     } // Mothership and Super Bug 2 could arguably use the box of their related game

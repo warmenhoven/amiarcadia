@@ -538,7 +538,7 @@ EXPORT const struct TODStruct tods[TIPSOFDAYS] = {
               " palette editor."                                                              },
 { MSG_TOD19,  "Ctrl+' will make the emulator run at 1 FPS while held down."                   },
 // MSG_TOD20 is at the start of the array
-{ MSG_TOD13,  "In the \"Help|Opodes...\" subwindow, you can click on an opcode to open the"   \
+{ MSG_TOD13,  "In the \"Help|Opcodes...\" subwindow, you can click on an opcode to open the"  \
               "corresponding page of the CPU manual."                                         },
 { MSG_TOD21,  "If the mouse is not assigned to any guest player, you can click on the"        \
               " guest screen while holding the Shift key to run to the raster line under"     \

@@ -5068,7 +5068,7 @@ EXPORT void process_code(void)
                 wide = realwide = 1;
             }
             updatemenu(MENUITEM_NARROW);
-            resize(size, FALSE);
+            resize(size, TRUE);
         }
     acase SCAN_O:
         if (!crippled && ctrl() && !shift())

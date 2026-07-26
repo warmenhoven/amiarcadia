@@ -357,6 +357,8 @@ IMPORT const struct KnownStruct       known[KNOWNGAMES];
                                       storedmenu1,
                                       storedmenu2,
                                       textcolour;
+    IMPORT       UINT                 storedcode,
+                                      storedaltcode;
     IMPORT       HICON                smlicon;
     IMPORT       HWND                 hStatusBar,
                                       MainWindowPtr,
@@ -1833,7 +1835,7 @@ EXPORT void zprintf(UNUSED int whichcolour, const char* format, ...)
     SendMessage(RichTextGadget, EM_SETSEL,       end,            end);
     SendMessage(RichTextGadget, EM_SCROLLCARET,  0,              0);
 
-    if (!already && !quitting && storedmenu1 == -1 && storedmenu2 == -1)
+    if (!already && !quitting && storedmenu1 == -1 && storedmenu2 == -1 && storedcode == 0 && storedaltcode == 0)
     {   already = TRUE;
         wa_checkinput();
         process_code();

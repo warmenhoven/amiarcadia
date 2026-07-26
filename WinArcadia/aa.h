@@ -1,10 +1,10 @@
-#define DECIMALVERSION       "36.53 beta 2"
-#define INTEGERVERSION       "36.53"
+#define DECIMALVERSION       "36.54 beta"
+#define INTEGERVERSION       "36.54"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x53
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (22.7.2026)" // d.m.yyyy format
-#define RELEASEDATE          "22-07-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "22 July 2026" // full month and year
+#define MINORVERSION         0x54
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (26.7.2026)" // d.m.yyyy format
+#define RELEASEDATE          "26-07-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "26 July 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
 #define NEWCONFIGVERSION     "36.5"  // V36.5      +

@@ -286,7 +286,7 @@ MODULE void newball1(void);
 MODULE void newball2(void);
 MODULE void makesound(int pitch);
 MODULE void calcangle(int whichbat);
-MODULE void pong_drawpixel(int x, int y, int colour);
+MODULE void pong_drawfgpixel(int x, int y, int colour);
 MODULE void pong_drawbgpixel(int x, int y, int colour);
 MODULE void pong_drawbouncepixel(int x, int y, int colour, FLAG visible, int direction);
 MODULE void pong_drawscorepixel(int x, int y, int colour, int player);
@@ -565,7 +565,7 @@ EXPORT void pong_simulate(void)
         for (i = 0; i < variantinfo[pong_variant].bats; i++)
         {   if (variantinfo[pong_variant].batinfo[i].player == 0)
             {   for (y = topbaty[0]; y <= botbaty[0]; y++)
-                {   pong_drawpixel(batx[i], y, ltc);
+                {   pong_drawfgpixel(batx[i], y, ltc);
                 }
                 if (teamleft)
                 {   tgc = ltc;
@@ -573,11 +573,11 @@ EXPORT void pong_simulate(void)
                     if (tgc == ORANGE) tgc = PINK; elif (tgc == PINK) tgc = ORANGE; elif (tgc < 8) tgc += 8; else tgc -= 8;
 #endif
                     for (y = topbaty[2]; y <= botbaty[2]; y++)
-                    {   pong_drawpixel(batx[i], y, tgc);
+                    {   pong_drawfgpixel(batx[i], y, tgc);
             }   }   }
             else
             {   for (y = topbaty[1]; y <= botbaty[1]; y++)
-                {   pong_drawpixel(batx[i], y, rtc);
+                {   pong_drawfgpixel(batx[i], y, rtc);
                 }
                 if (teamright)
                 {   tgc = rtc;
@@ -585,25 +585,25 @@ EXPORT void pong_simulate(void)
                     if (tgc == ORANGE) tgc = PINK; elif (tgc == PINK) tgc = ORANGE; elif (tgc < 8) tgc += 8; else tgc -= 8;
 #endif
                     for (y = topbaty[3]; y <= botbaty[3]; y++)
-                    {   pong_drawpixel(batx[i], y, tgc);
+                    {   pong_drawfgpixel(batx[i], y, tgc);
         }   }   }   }
 
         if (spritemode == SPRITEMODE_NUMBERED)
         {   if (pong_variant == VARIANT_8550_SQUASH || pong_variant == VARIANT_8600_SQUASH)
             {   for (y = topbaty[whoseturn]; y <= botbaty[whoseturn]; y += 2)
-                {   pong_drawpixel(batx[whoseturn], y, colourset == GREYSCALE ? GREY1 : WHITE);
+                {   pong_drawfgpixel(batx[whoseturn], y, colourset == GREYSCALE ? GREY1 : WHITE);
                 }
                 if (whoseturn == 0 && teamleft)
                 {   for (y = topbaty[2]; y <= botbaty[2]; y += 2)
-                    {   pong_drawpixel(batx[0], y, colourset == GREYSCALE ? GREY1 : WHITE);
+                    {   pong_drawfgpixel(batx[0], y, colourset == GREYSCALE ? GREY1 : WHITE);
                 }   }
                 elif (whoseturn == 1 && teamright)
                 {   for (y = topbaty[3]; y <= botbaty[3]; y += 2)
-                    {   pong_drawpixel(batx[1], y, colourset == GREYSCALE ? GREY1 : WHITE);
+                    {   pong_drawfgpixel(batx[1], y, colourset == GREYSCALE ? GREY1 : WHITE);
             }   }   }
             if (pong_variant == VARIANT_8600_TENNIS || pong_variant == VARIANT_8600_SQUASH)
-            {   pong_drawpixel(batx[server], topbaty[server] - 2, colourset == GREYSCALE ? GREY1 : WHITE);
-                pong_drawpixel(batx[server], botbaty[server] + 2, colourset == GREYSCALE ? GREY1 : WHITE);
+            {   pong_drawfgpixel(batx[server], topbaty[server] - 2, colourset == GREYSCALE ? GREY1 : WHITE);
+                pong_drawfgpixel(batx[server], botbaty[server] + 2, colourset == GREYSCALE ? GREY1 : WHITE);
         }   }
 
         if (ballinplay)
@@ -647,7 +647,7 @@ EXPORT void pong_simulate(void)
                 // 2*5 or 1*3
                 for (x = ltballx; x <= rtballx; x++)
                 {   for (y = bally - ballheight; y <= bally + ballheight; y++)
-                    {   pong_drawpixel(x, y, ballcolour);
+                    {   pong_drawfgpixel(x, y, ballcolour);
                 }   }
             acase VARIANT_8550_RIFLE1:
             case VARIANT_8550_RIFLE2:
@@ -657,7 +657,7 @@ EXPORT void pong_simulate(void)
                 {   // 4*15
                     for (x = ltballx - 1; x <= rtballx + 1; x++)
                     {   for (y = bally - ballheight; y <= bally + ballheight; y++)
-                        {   pong_drawpixel(x, y, ballcolour);
+                        {   pong_drawfgpixel(x, y, ballcolour);
     }   }   }   }   }   }
 
     if (pong_variant == VARIANT_8600_TARGET1 || pong_variant == VARIANT_8600_TARGET2)
@@ -665,27 +665,27 @@ EXPORT void pong_simulate(void)
         for (x = rifle1x - 3; x <= rifle1x + 3; x++)
         {   for (y = rifle1y - 1; y <= rifle1y + 1; y++)
             {   if (x >= 27-2 && x <= 99-22 && y >= y1 && y <= y2)
-                {   pong_drawpixel(x, y, ltc); // horizontal bar of crosshair
+                {   pong_drawfgpixel(x, y, ltc); // horizontal bar of crosshair
         }   }   }
         for (y = rifle1y - 10; y <= rifle1y + 10; y++)
         {   if (rifle1x >= 27-2 && rifle1x <= 99-2 && y >= y1 && y <= y2)
-            {   pong_drawpixel(rifle1x, y, ltc); // vertical bar of crosshair
+            {   pong_drawfgpixel(rifle1x, y, ltc); // vertical bar of crosshair
         }   }
 
         if (pong_variant == VARIANT_8600_TARGET2)
         {   for (x = rifle2x - 3; x <= rifle2x + 3; x++)
             {   for (y = rifle2y - 1; y <= rifle2y + 1; y++)
                 {   if (x >= 27-2 && x <= 99-2 && y >= y1 && y<= y2)
-                    {   pong_drawpixel(x, y, rtc); // horizontal bar of crosshair
+                    {   pong_drawfgpixel(x, y, rtc); // horizontal bar of crosshair
             }   }   }
             for (y = rifle2y - 10; y <= rifle2y + 10; y++)
             {   if (rifle2x >= 27-2 && rifle2x <= 99-2 && y >= y1 && y <= y2)
-                {   pong_drawpixel(rifle2x, y, rtc); // vertical bar of crosshair
+                {   pong_drawfgpixel(rifle2x, y, rtc); // vertical bar of crosshair
     }   }   }   }
 
     if (showpositions)
     {   if (rifle1x >= 27-2 && rifle1x <= 99-2 && rifle1y >= y1 && rifle1y <= y2)
-        {   pong_drawpixel(rifle1x, rifle1y, ltc); // or perhaps use RED
+        {   pong_drawfgpixel(rifle1x, rifle1y, ltc); // or perhaps use RED
         }
         if
         (   (   pong_variant == VARIANT_8550_TENNIS
@@ -705,7 +705,7 @@ EXPORT void pong_simulate(void)
          && rifle1y >= y1
          && rifle1y <= y2
         )
-        {   pong_drawpixel(rifle2x, rifle2y, rtc); // or perhaps use BLUE
+        {   pong_drawfgpixel(rifle2x, rifle2y, rtc); // or perhaps use BLUE
     }   }
 
     wa_checkinput(); // everything must be drawn first so magnifier works correctly
@@ -792,28 +792,28 @@ MODULE void pong_drawdigit(int whichbat, int startx, int value)
         {   for (y = 0; y <= 4; y++)
             {   if (pong_digitglyph[value][y] & (4 >> x))
                 {   if (region == REGION_PAL)
-                    {   pong_drawpixel(startx + (x * 2)    , 50 + (y * 6), thecolour);
-                        pong_drawpixel(startx + (x * 2) + 1, 50 + (y * 6), thecolour);
-                        pong_drawpixel(startx + (x * 2)    , 51 + (y * 6), thecolour);
-                        pong_drawpixel(startx + (x * 2) + 1, 51 + (y * 6), thecolour);
-                        pong_drawpixel(startx + (x * 2)    , 52 + (y * 6), thecolour);
-                        pong_drawpixel(startx + (x * 2) + 1, 52 + (y * 6), thecolour);
-                        pong_drawpixel(startx + (x * 2)    , 53 + (y * 6), thecolour);
-                        pong_drawpixel(startx + (x * 2) + 1, 53 + (y * 6), thecolour);
-                        pong_drawpixel(startx + (x * 2)    , 54 + (y * 6), thecolour);
-                        pong_drawpixel(startx + (x * 2) + 1, 54 + (y * 6), thecolour);
-                        pong_drawpixel(startx + (x * 2)    , 55 + (y * 6), thecolour);
-                        pong_drawpixel(startx + (x * 2) + 1, 55 + (y * 6), thecolour);
+                    {   pong_drawfgpixel(startx + (x * 2)    , 50 + (y * 6), thecolour);
+                        pong_drawfgpixel(startx + (x * 2) + 1, 50 + (y * 6), thecolour);
+                        pong_drawfgpixel(startx + (x * 2)    , 51 + (y * 6), thecolour);
+                        pong_drawfgpixel(startx + (x * 2) + 1, 51 + (y * 6), thecolour);
+                        pong_drawfgpixel(startx + (x * 2)    , 52 + (y * 6), thecolour);
+                        pong_drawfgpixel(startx + (x * 2) + 1, 52 + (y * 6), thecolour);
+                        pong_drawfgpixel(startx + (x * 2)    , 53 + (y * 6), thecolour);
+                        pong_drawfgpixel(startx + (x * 2) + 1, 53 + (y * 6), thecolour);
+                        pong_drawfgpixel(startx + (x * 2)    , 54 + (y * 6), thecolour);
+                        pong_drawfgpixel(startx + (x * 2) + 1, 54 + (y * 6), thecolour);
+                        pong_drawfgpixel(startx + (x * 2)    , 55 + (y * 6), thecolour);
+                        pong_drawfgpixel(startx + (x * 2) + 1, 55 + (y * 6), thecolour);
                     } else
                     {   // assert(region == REGION_NTSC);
-                        pong_drawpixel(startx + (x * 2)    , 48 + (y * 4), thecolour);
-                        pong_drawpixel(startx + (x * 2) + 1, 48 + (y * 4), thecolour);
-                        pong_drawpixel(startx + (x * 2)    , 49 + (y * 4), thecolour);
-                        pong_drawpixel(startx + (x * 2) + 1, 49 + (y * 4), thecolour);
-                        pong_drawpixel(startx + (x * 2)    , 50 + (y * 4), thecolour);
-                        pong_drawpixel(startx + (x * 2) + 1, 50 + (y * 4), thecolour);
-                        pong_drawpixel(startx + (x * 2)    , 51 + (y * 4), thecolour);
-                        pong_drawpixel(startx + (x * 2) + 1, 51 + (y * 4), thecolour);
+                        pong_drawfgpixel(startx + (x * 2)    , 48 + (y * 4), thecolour);
+                        pong_drawfgpixel(startx + (x * 2) + 1, 48 + (y * 4), thecolour);
+                        pong_drawfgpixel(startx + (x * 2)    , 49 + (y * 4), thecolour);
+                        pong_drawfgpixel(startx + (x * 2) + 1, 49 + (y * 4), thecolour);
+                        pong_drawfgpixel(startx + (x * 2)    , 50 + (y * 4), thecolour);
+                        pong_drawfgpixel(startx + (x * 2) + 1, 50 + (y * 4), thecolour);
+                        pong_drawfgpixel(startx + (x * 2)    , 51 + (y * 4), thecolour);
+                        pong_drawfgpixel(startx + (x * 2) + 1, 51 + (y * 4), thecolour);
     }   }   }   }   }
     else
     {   // assert(memmap == MEMMAP_8600);
@@ -826,13 +826,13 @@ MODULE void pong_drawdigit(int whichbat, int startx, int value)
         {   for (y = 0; y <= 4; y++)
             {   if (pong_digitglyph[value][y] & (4 >> x))
                 {   if (region == REGION_PAL)
-                    {   pong_drawpixel(startx +  x         , 50 + (y * 3), thecolour);
-                        pong_drawpixel(startx +  x         , 51 + (y * 3), thecolour);
-                        pong_drawpixel(startx +  x         , 52 + (y * 3), thecolour);
+                    {   pong_drawfgpixel(startx +  x         , 50 + (y * 3), thecolour);
+                        pong_drawfgpixel(startx +  x         , 51 + (y * 3), thecolour);
+                        pong_drawfgpixel(startx +  x         , 52 + (y * 3), thecolour);
                     } else
                     {   // assert(region == REGION_NTSC);
-                        pong_drawpixel(startx +  x         , 48 + (y * 2), thecolour);
-                        pong_drawpixel(startx +  x         , 49 + (y * 2), thecolour);
+                        pong_drawfgpixel(startx +  x         , 48 + (y * 2), thecolour);
+                        pong_drawfgpixel(startx +  x         , 49 + (y * 2), thecolour);
 }   }   }   }   }   }
 
 MODULE __inline void pong_emuinput(void)
@@ -1463,7 +1463,7 @@ MODULE void rt_hit_forwards(int batx, int oldbatx)
             p2rumble = PONGRUMBLE;
 }   }   }
 
-MODULE void pong_drawpixel(int x, int y, int colour)
+MODULE void pong_drawfgpixel(int x, int y, int colour)
 {   if (usemargins)
     {   x *= 2;
     } else
@@ -1478,10 +1478,10 @@ MODULE void pong_drawpixel(int x, int y, int colour)
     }
 
     if (x >=  0 && x < machines[machine].width     && y >= 0 && y < machines[machine].height)
-    {   changepixel(x    , y, colour);
+    {   changefgpixel(x    , y, colour);
     }
     if (x >= -1 && x < machines[machine].width - 1 && y >= 0 && y < machines[machine].height)
-    {   changepixel(x + 1, y, colour);
+    {   changefgpixel(x + 1, y, colour);
 }   }
 
 MODULE void pong_drawbgpixel(int x, int y, int colour)
@@ -1508,15 +1508,15 @@ MODULE void pong_drawbgpixel(int x, int y, int colour)
 MODULE void pong_drawbouncepixel(int x, int y, int colour, FLAG visible, int direction)
 {   pongscreen[x][y] = (direction == DIR_VERT) ? 3 : 4;
     if (visible)
-    {   pong_drawpixel(x, y, colour);
+    {   pong_drawfgpixel(x, y, colour);
     } elif (spritemode == SPRITEMODE_NUMBERED)
-    {   pong_drawpixel(x, y, colour);
+    {   pong_drawfgpixel(x, y, colour);
 }   }
 
 MODULE void pong_drawscorepixel(int x, int y, int colour, int player)
 {   pongscreen[x][y] = player + 1;
     if (spritemode == SPRITEMODE_NUMBERED)
-    {   pong_drawpixel(x, y, colour);
+    {   pong_drawfgpixel(x, y, colour);
 }   }
 
 EXPORT void pong_newgame(void)
@@ -1761,14 +1761,14 @@ MODULE void drawfield(void)
     {   // net
         if (region == REGION_PAL)
         {   for (y = 46; y <= 273; y += 8)
-            {   pong_drawpixel(63-2, y + 2, fgc);
-                pong_drawpixel(63-2, y + 3, fgc);
-                pong_drawpixel(63-2, y + 4, fgc);
-                pong_drawpixel(63-2, y + 5, fgc);
+            {   pong_drawfgpixel(63-2, y + 2, fgc);
+                pong_drawfgpixel(63-2, y + 3, fgc);
+                pong_drawfgpixel(63-2, y + 4, fgc);
+                pong_drawfgpixel(63-2, y + 5, fgc);
         }   }
         else
         {   for (y = 44; y <= 231; y++)
-            {   pong_drawpixel(63-2, y    , fgc);
+            {   pong_drawfgpixel(63-2, y    , fgc);
     }   }   }
 
     switch (pong_variant)
@@ -1841,7 +1841,7 @@ MODULE void drawfield(void)
                     )
                     {   yy = 44 + y + gridy[x % 2];
                         if (yy > 231) yy -= 188;
-                        pong_drawpixel(gridlines[x], yy, (x % 2) ? rtc : ltc);
+                        pong_drawfgpixel(gridlines[x], yy, (x % 2) ? rtc : ltc);
                         pongscreen[gridlines[x]][yy] = 3;
             }   }   }
             else
@@ -1853,7 +1853,7 @@ MODULE void drawfield(void)
                     )
                     {   yy = 46 + y + gridy[x % 2];
                         if (yy > 273) yy -= 228;
-                        pong_drawpixel(gridlines[x], yy, (x % 2) ? rtc : ltc);
+                        pong_drawfgpixel(gridlines[x], yy, (x % 2) ? rtc : ltc);
                         pongscreen[gridlines[x]][yy] = 3;
     }   }   }   }   }
 

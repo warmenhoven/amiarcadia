@@ -461,9 +461,6 @@ BEGIN
             MENUITEM "&Uzywaj programσw posredniczacych?", 
                                                     ID_EMULATOR_USESTUBS
             MENUITEM SEPARATOR
-            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-            MENUITEM SEPARATOR
             MENUITEM "&Dolacz do pamieci WinArcadia.log", ID_LOG_APPEND
             MENUITEM "&Ignoruj WinArcadia.log",     ID_LOG_IGNORE
             MENUITEM "&Wymien WinArcadia.log",      ID_LOG_REPLACE
@@ -1109,11 +1106,6 @@ BEGIN
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "&Uzywaj programσw posredniczacych?", 
                                                         ID_EMULATOR_USESTUBS
-                MENUITEM SEPARATOR
-                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-
-                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-
                 MENUITEM SEPARATOR
                 MENUITEM "&Dolacz do pamieci WinArcadia.log", ID_LOG_APPEND
                 MENUITEM "&Ignoruj WinArcadia.log",     ID_LOG_IGNORE
@@ -1785,9 +1777,6 @@ BEGIN
             MENUITEM "Θροξλόηξβΰςό οπξγπΰμμϋ-ηΰγλσψκθ? (&U)", 
                                                     ID_EMULATOR_USESTUBS
             MENUITEM SEPARATOR
-            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-            MENUITEM SEPARATOR
             MENUITEM "Appen&d to WinArcadia.log",   ID_LOG_APPEND
             MENUITEM "&Ignore WinArcadia.log",      ID_LOG_IGNORE
             MENUITEM "Replace &WinArcadia.log",     ID_LOG_REPLACE
@@ -2443,11 +2432,6 @@ BEGIN
                 MENUITEM "&Show tips at startup?",      ID_EMULATOR_SHOWTOD
                 MENUITEM "Θροξλόηξβΰςό οπξγπΰμμϋ-ηΰγλσψκθ? (&U)", 
                                                         ID_EMULATOR_USESTUBS
-                MENUITEM SEPARATOR
-                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-
-                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-
                 MENUITEM SEPARATOR
                 MENUITEM "Appen&d to WinArcadia.log",   ID_LOG_APPEND
                 MENUITEM "&Ignore WinArcadia.log",      ID_LOG_IGNORE
@@ -3128,9 +3112,6 @@ BEGIN
             MENUITEM "Tipp&s beim Starten anzeigen?", ID_EMULATOR_SHOWTOD
             MENUITEM "St&ummelprogramme benutzen?", ID_EMULATOR_USESTUBS
             MENUITEM SEPARATOR
-            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-            MENUITEM SEPARATOR
             MENUITEM "Anhδnge an WinArcadia.log",   ID_LOG_APPEND
             MENUITEM "&Ignoriere WinArcadia.log",   ID_LOG_IGNORE
             MENUITEM "Ersetze &WinArcadia.log",     ID_LOG_REPLACE
@@ -3772,11 +3753,6 @@ BEGIN
                 MENUITEM "Tipp&s beim Starten anzeigen?", 
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "St&ummelprogramme benutzen?", ID_EMULATOR_USESTUBS
-                MENUITEM SEPARATOR
-                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-
-                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-
                 MENUITEM SEPARATOR
                 MENUITEM "Anhδnge an WinArcadia.log",   ID_LOG_APPEND
                 MENUITEM "&Ignoriere WinArcadia.log",   ID_LOG_IGNORE
@@ -4599,9 +4575,6 @@ BEGIN
                                                     ID_EMULATOR_SHOWTOD
             MENUITEM "&Utiliser les Programmes Stub?", ID_EMULATOR_USESTUBS
             MENUITEM SEPARATOR
-            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-            MENUITEM SEPARATOR
             MENUITEM "Ajouter a la WinArca&dia.log", ID_LOG_APPEND
             MENUITEM "&Ignorer la WinArcadia.log",  ID_LOG_IGNORE
             MENUITEM "Remplacez la &WinArcadia.log", ID_LOG_REPLACE
@@ -5253,11 +5226,6 @@ BEGIN
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "&Utiliser les Programmes Stub?", 
                                                         ID_EMULATOR_USESTUBS
-                MENUITEM SEPARATOR
-                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-
-                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-
                 MENUITEM SEPARATOR
                 MENUITEM "Ajouter a la WinArca&dia.log", ID_LOG_APPEND
                 MENUITEM "&Ignorer la WinArcadia.log",  ID_LOG_IGNORE
@@ -5940,9 +5908,6 @@ BEGIN
             MENUITEM "Mo&stra suggerimenti all'avvio?", ID_EMULATOR_SHOWTOD
             MENUITEM "&Usa programmi stub?",        ID_EMULATOR_USESTUBS
             MENUITEM SEPARATOR
-            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-            MENUITEM SEPARATOR
             MENUITEM "Aggiungi alla WinArca&dia.log", ID_LOG_APPEND
             MENUITEM "&Ignora WinArcadia.log",      ID_LOG_IGNORE
             MENUITEM "Sostituisci &WinArcadia.log", ID_LOG_REPLACE
@@ -6589,11 +6554,6 @@ BEGIN
                 MENUITEM "Mo&stra suggerimenti all'avvio?", 
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "&Usa programmi stub?",        ID_EMULATOR_USESTUBS
-                MENUITEM SEPARATOR
-                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-
-                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-
                 MENUITEM SEPARATOR
                 MENUITEM "Aggiungi alla WinArca&dia.log", ID_LOG_APPEND
                 MENUITEM "&Ignora WinArcadia.log",      ID_LOG_IGNORE
@@ -7276,9 +7236,6 @@ BEGIN
             MENUITEM "Tip&s bij het opstarten?",    ID_EMULATOR_SHOWTOD
             MENUITEM "Gebr&uik stub-programma's?",  ID_EMULATOR_USESTUBS
             MENUITEM SEPARATOR
-            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-            MENUITEM SEPARATOR
             MENUITEM "Toevoegen aan WinArca&dia.log", ID_LOG_APPEND
             MENUITEM "Negeer W&inArcadia.log",      ID_LOG_IGNORE
             MENUITEM "Vervang &WinArcadia.log",     ID_LOG_REPLACE
@@ -7923,11 +7880,6 @@ BEGIN
 
                 MENUITEM "Tip&s bij het opstarten?",    ID_EMULATOR_SHOWTOD
                 MENUITEM "Gebr&uik stub-programma's?",  ID_EMULATOR_USESTUBS
-                MENUITEM SEPARATOR
-                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-
-                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-
                 MENUITEM SEPARATOR
                 MENUITEM "Toevoegen aan WinArca&dia.log", ID_LOG_APPEND
                 MENUITEM "Negeer W&inArcadia.log",      ID_LOG_IGNORE
@@ -8606,11 +8558,6 @@ BEGIN
                 MENUITEM "&Show tips at startup?",      ID_EMULATOR_SHOWTOD
                 MENUITEM "&Use stub programs?",         ID_EMULATOR_USESTUBS
                 MENUITEM SEPARATOR
-                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-
-                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-
-                MENUITEM SEPARATOR
                 MENUITEM "Appen&d to WinArcadia.log",   ID_LOG_APPEND
                 MENUITEM "&Ignore WinArcadia.log",      ID_LOG_IGNORE
                 MENUITEM "Replace &WinArcadia.log",     ID_LOG_REPLACE
@@ -9251,9 +9198,6 @@ BEGIN
             MENUITEM "Sense &game?",                ID_EMULATOR_SENSEGAME
             MENUITEM "&Show tips at startup?",      ID_EMULATOR_SHOWTOD
             MENUITEM "&Use stub programs?",         ID_EMULATOR_USESTUBS
-            MENUITEM SEPARATOR
-            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
             MENUITEM SEPARATOR
             MENUITEM "Appen&d to WinArcadia.log",   ID_LOG_APPEND
             MENUITEM "&Ignore WinArcadia.log",      ID_LOG_IGNORE
@@ -19374,8 +19318,8 @@ IDI_E_MAZES             ICON    DISCARDABLE     "e-mazes.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 36,5,4,0
- PRODUCTVERSION 36,5,4,0
+ FILEVERSION 36,5,5,2
+ PRODUCTVERSION 36,5,5,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -19393,14 +19337,14 @@ BEGIN
             VALUE "Comments", "Think Signetics. Sig 'em! We want you to have the best.\0"
             VALUE "CompanyName", "Amigan Software\0"
             VALUE "FileDescription", "WinArcadia multi-emulator\0"
-            VALUE "FileVersion", "36.54\0"
+            VALUE "FileVersion", "36.55\0"
             VALUE "InternalName", "WinArcadia\0"
             VALUE "LegalCopyright", "Copyright © 2006-2026 James Jacobs\0"
             VALUE "LegalTrademarks", "WinArcadia\0"
             VALUE "OriginalFilename", "WinArcadia.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "WinArcadia\0"
-            VALUE "ProductVersion", "36.54\0"
+            VALUE "ProductVersion", "36.55\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -19923,9 +19867,6 @@ BEGIN
             MENUITEM "ΏMo_strar consejos al inicio?", ID_EMULATOR_SHOWTOD
             MENUITEM "Ώ&Usar programas de cσdigo auxiliar?", 
                                                     ID_EMULATOR_USESTUBS
-            MENUITEM SEPARATOR
-            MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-            MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
             MENUITEM SEPARATOR
             MENUITEM "Agregar a WinArca&dia.log",   ID_LOG_APPEND
             MENUITEM "&Ignorar WinArcadia.log",     ID_LOG_IGNORE
@@ -20581,11 +20522,6 @@ BEGIN
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "Ώ&Usar programas de cσdigo auxiliar?", 
                                                         ID_EMULATOR_USESTUBS
-                MENUITEM SEPARATOR
-                MENUITEM "&Frame/line-based emulation", ID_EMULATOR_FRAMEBASED
-
-                MENUITEM "Pi&xel-based emulation",      ID_EMULATOR_PIXELBASED
-
                 MENUITEM SEPARATOR
                 MENUITEM "Agregar a WinArca&dia.log",   ID_LOG_APPEND
                 MENUITEM "&Ignorar WinArcadia.log",     ID_LOG_IGNORE
@@ -21281,10 +21217,6 @@ BEGIN
                                                     ID_EMULATOR_SHOWTOD
             MENUITEM "Χρήση εφαρμογών στελέχου; (&U)", ID_EMULATOR_USESTUBS
             MENUITEM SEPARATOR
-            MENUITEM "Προσομοίωση βάση καρέ; (&F)", ID_EMULATOR_FRAMEBASED
-            MENUITEM "Εξομοίωση με βάση εικονοστοχείου (&X)", 
-                                                    ID_EMULATOR_PIXELBASED
-            MENUITEM SEPARATOR
             MENUITEM "Προσθήκη στο WinArca&dia.log", ID_LOG_APPEND
             MENUITEM "Παράβλεψη W&inArcadia.log",   ID_LOG_IGNORE
             MENUITEM "Αντικατάσταση &WinArcadia.log", ID_LOG_REPLACE
@@ -21962,12 +21894,6 @@ BEGIN
                                                         ID_EMULATOR_SHOWTOD
                 MENUITEM "Χρήση εφαρμογών στελέχου; (&U)", 
                                                         ID_EMULATOR_USESTUBS
-                MENUITEM SEPARATOR
-                MENUITEM "Προσομοίωση βάση καρέ; (&F)", ID_EMULATOR_FRAMEBASED
-
-                MENUITEM "Εξομοίωση με βάση εικονοστοχείου (&X)", 
-                                                        ID_EMULATOR_PIXELBASED
-
                 MENUITEM SEPARATOR
                 MENUITEM "Προσθήκη στο WinArca&dia.log", ID_LOG_APPEND
                 MENUITEM "Παράβλεψη W&inArcadia.log",   ID_LOG_IGNORE

@@ -396,7 +396,6 @@ IMPORT const STRPTR                   pristring[32];
 
 // MODULE VARIABLES-------------------------------------------------------
 
-MODULE FLAG    pausing = FALSE;
 MODULE UBYTE   after, before,
                nextopcode,
                oldpsl, oldpsu, oldr[7];
@@ -404,6 +403,7 @@ MODULE TEXT    friendly3[FRIENDLYLENGTH + 1];
 
 // EXPORTED VARIABLES-----------------------------------------------------
 
+EXPORT FLAG    pausing         = FALSE;
 EXPORT UBYTE   psu,
                psl,
                memory[32768],
@@ -432,7 +432,6 @@ EXPORT int     addr,
                interrupt_2650,
                justdone        = 0,
                slice_2650,
-               traceorstep     = FALSE,
                tt_scrn;
 EXPORT char    psubits[5 + 1],
                pslbits[6 + 1];
@@ -469,30 +468,6 @@ MODULE __inline void cpu_emu(void);
 #endif
 
 // CODE-------------------------------------------------------------------
-
-EXPORT void cpu_2650_untapable(void)
-{   FAST ULONG endcycle;
-
-    // assert(slice_2650 >= 1);
-
-    endcycle = cycles_2650 + slice_2650;
-    if (endcycle < cycles_2650)
-    {   // cycle counter will overflow, so we need to use the slow method
-        while (slice_2650 >= 1)
-        {   oldcycles = cycles_2650;
-            checkstep();
-            one_instruction();
-            slice_2650 -= (cycles_2650 - oldcycles);
-    }   }
-    else
-    {   // cycle counter will not overflow, so we can use a faster method
-        oldcycles = cycles_2650;
-        while (cycles_2650 < endcycle)
-        {   checkstep();
-            one_instruction();
-        }
-        slice_2650 -= (cycles_2650 - oldcycles);
-}   }
 
 EXPORT void cpu_2650_tapable(void)
 {   FAST ULONG endcycle;
@@ -731,7 +706,7 @@ EXPORT void one_instruction(void)
             {   coverage[WRAPMEM(2)] |= COVERAGE_OPERAND;
     }   }   }
 
-    if (traceorstep)
+    if (trace || step)
     {   tracecpu_2650(TRUE, FALSE);
         saytrace();
         cpu_emu();
@@ -750,12 +725,9 @@ EXPORT void one_instruction(void)
             draw_guide_ray(TRUE);
         } elif (step)
         {   step = FALSE;
-            traceorstep = (trace || step) ? TRUE : FALSE;
             memflags[iar] &= ~(STEPPOINT);
-            if (!rexx) // so that we can go on to execute the next instruction in the script
-            {   emu_pause(); // this is recursive! :-(
-        }   }
-        else
+            pausing = TRUE;
+        } else
         {   updatescreen();
         }
 
@@ -776,7 +748,7 @@ EXPORT void one_instruction(void)
     {   cpu_emu();
     }
 
-    if (pausing)
+    if (pausing && !rexx)
     {   runto();
     }
 #endif
@@ -4247,9 +4219,12 @@ EXPORT void set_pause(int thetype)
 }   }
 
 MODULE void runto(void)
-{   pausing = FALSE;
+{   if (rexx)
+    {   return;
+    }
+
+    pausing = FALSE;
     emu_pause();
-    update_monitor(FALSE); // because emu_pause() doesn't do it
 
     while (paused)
     {

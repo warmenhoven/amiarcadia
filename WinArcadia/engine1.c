@@ -256,12 +256,6 @@ EXPORT int    aifffile                 = FALSE,
               erasedel                 = TRUE,
               exactspeed               = FALSE,
               filter                   = FILTER_NONE,
-#ifdef WIN32
-              framebased               = FALSE,
-#endif
-#ifdef AMIGA
-              framebased               = TRUE,
-#endif
               frameskip                = FRAMESKIP_MIN,
               fromnum,
               foundgames               = 0,
@@ -382,6 +376,7 @@ EXPORT UWORD  console[4],
               netport                  = 6666;
 EXPORT FLAG   aborting                 = FALSE,
               bangercharging           = FALSE,
+              forcepause               = FALSE,
               ignore_cout,
               inframe                  = FALSE,
               loadedconfig             = FALSE,
@@ -567,6 +562,7 @@ IMPORT       FLAG                     capslock,
                                       d3d,
                                       midiplaying[GUESTCHANNELS],
                                       paperreaderenabled,
+                                      rexx,
                                       twin_escaped,
                                       upgrade;
 IMPORT       UBYTE                    acca,
@@ -992,7 +988,7 @@ EXPORT void poke_end(FLAG quiet, FLAG doke)
 }   }   }
 
 EXPORT void emu_pause(void)
-{   if (!paused)
+{   if ((!rexx && !paused) || forcepause)
     {   paused = TRUE;
         if (inframe && !crippled)
         {   cripple();
@@ -1008,6 +1004,7 @@ EXPORT void emu_pause(void)
         redrawscreen(); // helpful in frame skipping mode (ensures most
         // recent executed frame is shown, not a frame from a while ago).
         // And also needed for guide ray.
+        update_monitor(FALSE); // perhaps there are other subwindows we should update too
 #ifdef WIN32
         if (cheevos)
         {
@@ -1016,11 +1013,17 @@ EXPORT void emu_pause(void)
 #endif
            RA_SetPaused(TRUE);
         }
+        if (forcepause)
+        {   do
+            {   wa_checkinput();
+                process_code();
+            } while (paused);
+        }
 #endif
 }   }
 
 EXPORT void emu_unpause(void)
-{   if (paused) // important!
+{   if ((!rexx && paused) || forcepause)
     {   paused = FALSE;
         sound_on(TRUE);
         updatesmlgad(GADPOS_PAUSED, paused, TRUE);
@@ -4608,7 +4611,8 @@ MODULE void serializeconfig(void)
           green,
           blue;
     int   configversion = NEWER,
-          i, j;
+          i, j,
+          temp;
 
     offset = 0;
 
@@ -4684,7 +4688,7 @@ MODULE void serializeconfig(void)
     aserialize_bool("candy_tapedeck_phunsy",&candy[1 - 1]      );
     aserialize_bool("candy_hostkybd"      , &candy[2 - 1]      );
     aserialize_bool("candy_printer"       , &candy[3 - 1]      );
-    if (configversion != NEWER)
+    if (configversion == OLDEST)
     {   aserialize_bool("candy_controls"  , &candy[4 - 1]      );
     }
     aserialize_bool("candy_hostpads"      , &candy[5 - 1]      );
@@ -4710,7 +4714,9 @@ MODULE void serializeconfig(void)
 #endif
     aserialize_bool("erasedeleted"        , &erasedel          );
     aserialize_bool("exactspeed"          , &exactspeed        );
-    aserialize_bool("framebased"          , &framebased        );
+    if (configversion != NEWER)
+    {   aserialize_bool("framebased"      , &temp              );
+    }
     aserialize_bool("identifyemulator"    , &emuid             );
     aserialize_bool("fastbinbug"          , &fastbinbug        );
     aserialize_bool("fastcd2650"          , &fastcd2650        );
@@ -4813,7 +4819,7 @@ MODULE void serializeconfig(void)
     aserialize_bool("windowed_toolbar"    , &showtoolbars[  0] );
     aserialize_bool("windowed_sidebar"    , &showsidebars[  0] );
     aserialize_bool("windowed_statusbar"  , &showstatusbars[0] );
-    if (configversion == NEWER)
+    if (configversion != OLDEST)
     {   aserialize_bool("writeprotect_floppy0"   , (int*) &drive[0].writeprotect);
         aserialize_bool("writeprotect_floppy1"   , (int*) &drive[1].writeprotect);
         aserialize_bool("writeprotect_floppy2"   , (int*) &drive[2].writeprotect);
@@ -5048,10 +5054,8 @@ MODULE void serializeconfig(void)
     aserialize_int("viewmemorymapas"      , (int*) &viewmemas2             ,      0, 2); // contents, memory map, coverage report
     aserialize_int("viewpadsas"           , (int*) &viewpadsas      ,             0, 2); // guest, host, overlays
 #ifdef WIN32
-    if (configversion != OLDEST)
-    {   aserialize_int("viewpadsas2_1st"  , (int*) &viewpadsas2[0]  ,             0, 1); // Gameware, Logitech
-        aserialize_int("viewpadsas2_2nd"  , (int*) &viewpadsas2[1]  ,             0, 1); // Gameware, Logitech
-    }
+    aserialize_int("viewpadsas2_1st"      , (int*) &viewpadsas2[0]  ,             0, 1); // Gameware, Logitech
+    aserialize_int("viewpadsas2_2nd"      , (int*) &viewpadsas2[1]  ,             0, 1); // Gameware, Logitech
 #endif
 #ifdef AMIGA
     aserialize_int("viewpadsas2"          , (int*) &viewpadsas2     ,             0, 1); // CD32, Megadrive

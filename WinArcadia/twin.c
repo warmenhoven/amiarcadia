@@ -465,7 +465,7 @@ EXPORT void twin_emulate(void)
                          && (   ( inverted && !(lcvdu_chars[t][yy] & (0x20 >> xx)))
                              || (!inverted &&  (lcvdu_chars[t][yy] & (0x20 >> xx)))
                         )   )
-                        {   changepixel((x * 7) + xx, (y * 10) + yy, fgc);
+                        {   changefgpixel((x * 7) + xx, (y * 10) + yy, fgc);
                         } else
                         {   changebgpixel((x * 7) + xx, (y * 10) + yy, bgc);
         }   }   }   }   }
@@ -479,7 +479,7 @@ EXPORT void twin_emulate(void)
             }
             for (yy = 0; yy < 2; yy++)
             {   for (xx = 0; xx < 5; xx++)
-                {   changepixel((vdu_x * 7) + 1 + xx, (vdu_y * 10) + 7 + yy, fgc);
+                {   changefgpixel((vdu_x * 7) + 1 + xx, (vdu_y * 10) + 7 + yy, fgc);
     }   }   }   }
 
     if (drawmode)
@@ -1406,7 +1406,7 @@ EXPORT void twin_drawhelpgrid(void)
             for (xx = 0; xx < 7; xx++)
             {   for (yy = 0; yy < 10; yy++)
                 {   if (xx == 0 || xx == 6 || yy == 0 || yy == 9)
-                    {   changepixel(startx + xx, starty + yy, GREY1);
+                    {   changefgpixel(startx + xx, starty + yy, GREY1);
 }   }   }   }   }   }
 
 EXPORT void twin_viewscreen(void)
@@ -3265,3 +3265,11 @@ EXPORT void twin_get_commands(int whichdrive, int whichfile, FLAG multiline)
     if (!multiline && j >= 1)
     {   strcat(gtempstring, ")");
 }   }
+
+EXPORT void twin_one_instruction(void)
+{   oldcycles = cycles_2650;
+    checkstep();
+    one_instruction();
+    checkinterrupt();
+    slice_2650 -= (cycles_2650 - oldcycles);
+}

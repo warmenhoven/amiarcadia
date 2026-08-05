@@ -50,7 +50,8 @@ IMPORT       ULONG                 arcadia_viewcontrolsas,
                                    region,
                                    swapped;
 IMPORT       UBYTE*                IOBuffer;
-IMPORT       FLAG                  inframe,
+IMPORT       FLAG                  donecpu,
+                                   inframe,
                                    lmb, mmb, rmb;
 IMPORT       FILE*                 MacroHandle;
 IMPORT       TEXT                  file_game[MAX_PATH + 1],
@@ -79,7 +80,6 @@ IMPORT       int                   absxmin, absxmax,
                                    editscreen,
                                    filesize,
                                    firstrow,
-                                   framebased,
                                    game,
                                    hidetop,
                                    hostcontroller[2],
@@ -150,9 +150,6 @@ IMPORT       struct SubWindowStruct   subwin[SUBWINDOWS];
 #ifdef AMIGA
     IMPORT       struct Catalog*   CatalogPtr;
 #endif
-#ifdef BENCHMARK_GFX
-    IMPORT       ULONG             cycles_2650;
-#endif
 #ifdef EMULATE_CPU
     IMPORT       int               slice_2650;
 #endif
@@ -175,7 +172,6 @@ MODULE int    endsprx[4],
               oldhoffset[UDGFLIPS + 1][26],
               uviy, uviy2,
               voffsetend;
-MODULE FLAG   spritesdone;
 MODULE UBYTE  bgc_cached,
               boardmode,
               colltable[312][227],
@@ -268,13 +264,10 @@ MODULE void drawfakeudgs(void);
 MODULE void newdma(void);
 MODULE void newraster(void);
 MODULE __inline void a_emuinput(void);
-MODULE __inline void do_cpu(void);
 MODULE __inline void onepixel(void);
-MODULE __inline void do_sprites1(void);
-MODULE __inline void do_sprites2(void);
-MODULE void arcadia_oneraster(void);
-MODULE void arcadia_runcpu(void);
-MODULE void run_cpu(int until);
+MODULE __inline void do_sprites(void);
+MODULE void arcadia_startofframe(void);
+MODULE void arcadia_endofframe(void);
 #ifdef WIN32
     MODULE ULONG blend(int colour1, int colour2);
 #endif
@@ -282,142 +275,31 @@ MODULE void run_cpu(int until);
 // CODE-------------------------------------------------------------------
 
 EXPORT void uvi(void)
+{   // assert(machine == ARCADIA);
+
+    cpux = cpuy = 0;
+    do
+    {   arcadia_anypixel();
+    } while (inframe);
+}
+
+MODULE void arcadia_startofframe(void)
+{   inframe        = TRUE;
+    voffset        =
+    voffsetend     = 999;
+    flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
+    bgc_cached     = memory[A_BGCOLOUR];
+}
+
+MODULE void arcadia_endofframe(void)
 {   FAST int   whichudg,
                kx, ky,
                x, x1, x2,
                y, y1, y2;
     FAST UBYTE ogc,
                tgc;
-#ifdef BENCHMARK_GFX
-    FAST int   cyclecolour = 0, x;
-#endif
 
-    // assert(machine == ARCADIA);
-
-#ifndef EMULATE_XVI
-    #ifdef EMULATE_CPU
-        slice_2650 = 20000;
-        cpu_2650_untapable();
-    #endif
-
-    endofframe(0);
-    return;
-#endif
-
-#ifdef BENCHMARK_GFX
-    cycles_2650 += 20000;
-    for (x = 0; x < 227; x++)
-    {   for (y = 0; y < n3; y++)
-        {   changeabspixel(x, y, cyclecolour);
-    }   }
-    if (cyclecolour == 23)
-    {   cyclecolour = 0;
-    } else cyclecolour++;
-#else
-    inframe = TRUE;
-
-    voffset        =
-    voffsetend     = 999;
-    flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
-    bgc_cached     = memory[A_BGCOLOUR];
-
-    if (framebased)
-    {   spritesdone = FALSE;
-        cpuy = 0;
-        vblank();
-
-        for (cpux = 0; cpux < n4; cpux++)
-        {   changethisbgpixel(bgc);
-        }
-
-        for (cpuy = 0; cpuy < n1; cpuy++)
-        {   breakrastline();
-            dmascreen[cpuy] = memory[A_CHARLINE] & 0x0F;
-            arcadia_runcpu();
-            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
-        }
-
-        unvblank();
-
-        for (cpuy = n1; cpuy < n2; cpuy++)
-        {   arcadia_oneraster(); // this calls breakrastline()
-            arcadia_runcpu();
-            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
-        }
-
-        wa_checkinput();
-        a_emuinput();
-
-        for (cpuy = n2; cpuy < n3; cpuy++)
-        {   arcadia_oneraster(); // this calls breakrastline()
-            arcadia_runcpu();
-            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
-        }
-
-        if (!spritesdone)
-        {   do_sprites2();
-    }   }
-    else
-    {   // scanline 0---------------------------------------------------------
-        cpuy = 0;
-        breakrastline();
-        for (cpux = 0; cpux < n4; cpux++) // small amount of semi-normal drawing
-        {   if (!dejitter)
-            {   flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
-            }
-            changethisbgpixel(from_a[flag_cacheable][bgc_cached & 0x07]);
-            do_cpu();
-        }
-        vblank();
-        dmascreen[cpuy] = memory[A_CHARLINE] & 0x0F;
-        run_cpu(227); // the rest of raster 0
-        pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
-
-        // scanlines 1..42 (PAL) or 1..19 (NTSC)------------------------------
-        for (cpuy = 1; cpuy < n1; cpuy++) // in vertical blank
-        {   breakrastline();
-            dmascreen[cpuy] = memory[A_CHARLINE] & 0x0F;
-            run_cpu(227);
-            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
-        }
-
-        // scanline 43 (PAL) or 20 (NTSC)-------------------------------------
-        cpuy = n1;
-        breakrastline();
-        run_cpu(n4); // small amount of vertical blanking
-        unvblank();
-        flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
-        bgc_cached = memory[A_BGCOLOUR];
-        scrnbgc = from_a[flag_cacheable][bgc_cached & 0x07];
-        newraster();
-        run_cpu(49); // horizontal blanking
-        for (cpux = 49; cpux < 227; cpux++) // normal drawing
-        {   onepixel();
-        }
-        pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
-
-        // scanlines 44..311 (PAL) or 21..261 (NTSC)--------------------------
-        for (cpuy = n1 + 1; cpuy < n3; cpuy++)
-        {   breakrastline();
-            for (cpux = 0; cpux < n4; cpux++) // small amount of semi-normal drawing
-            {   if (!dejitter)
-                {   flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
-                }
-                changethisbgpixel(from_a[flag_cacheable][bgc_cached & 0x07]);
-                colltable[cpuy][cpux] = 0;
-                do_cpu();
-            }
-            if (cpuy == n2) // ie. USG_YMARGIN + ((n3 - USGMARGIN) / 2). "Conversion takes place during the active scan".
-            {   wa_checkinput();
-                a_emuinput();
-            }
-            newraster();
-            run_cpu(49);
-            for (cpux = 49; cpux < 227; cpux++)
-            {   onepixel();
-            }
-            pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
-    }   }
+    inframe = FALSE;
 
     for (whichudg = 0; whichudg < 8; whichudg++)
     {   for (y = 0; y < 8; y++)
@@ -437,14 +319,13 @@ EXPORT void uvi(void)
 #ifdef SHOWRUMBLE
     if (rumbling[0])
     {   for (y = 0; y < machines[machine].height; y++)
-        {   changepixel(                          0, y, 15 - screen[                          0][y]);
+        {   changefgpixel(                          0, y, 15 - screen[                          0][y]);
     }   }
     if (rumbling[1])
     {   for (y = 0; y < machines[machine].height; y++)
-        {   changepixel(machines[machine].width - 1, y, 15 - screen[machines[machine].width - 1][y]);
+        {   changefgpixel(machines[machine].width - 1, y, 15 - screen[machines[machine].width - 1][y]);
     }   }
 #endif // SHOWRUMBLE
-#endif // BENCHMARK_GFX
 
     if (editscreen)
     {   kx = scrnaddr % 16;
@@ -1469,35 +1350,35 @@ EXPORT void arcadia_drawhelpgrid(void)
         }   }   }
     acase 2:
         for (x = 0; x < n4; x++)
-        {   changeabspixel(    x, 0 , colltable[0 ][x] % GUESTCOLOURS);
+        {   changefgpixel(    x, 0 , colltable[0 ][x] % GUESTCOLOURS);
         }
         for (x = 49; x < 227; x++)
-        {   changeabspixel(    x, n1, colltable[n1][x] % GUESTCOLOURS);
+        {   changefgpixel(    x, n1, colltable[n1][x] % GUESTCOLOURS);
         }
         for (y = n1 + 1; y < n3; y++)
         {   for (x = 0; x < n4; x++)
-            {   changeabspixel(x, y , colltable[y ][x] % GUESTCOLOURS);
+            {   changefgpixel(x, y , colltable[y ][x] % GUESTCOLOURS);
             }
             for (x = 49; x < 227; x++)
-            {   changeabspixel(x, y , colltable[y ][x] % GUESTCOLOURS);
+            {   changefgpixel(x, y , colltable[y ][x] % GUESTCOLOURS);
         }   }
     acase 3:
         for (x = 0; x < n4; x++)
         {   if (!colltable[0][x])
-            {   changeabspixel(x, 0, dmascreen[0]);
+            {   changefgpixel(x, 0, dmascreen[0]);
         }   }
         for (x = 49; x < 227; x++)
         {   if (!colltable[n1][x])
-            {   changeabspixel(x, n1, dmascreen[n1]);
+            {   changefgpixel(x, n1, dmascreen[n1]);
         }   }
         for (y = n1 + 1; y < n3; y++)
         {   for (x = 0; x < n4; x++)
             {   if (!colltable[y][x])
-                {   changeabspixel(x, y, dmascreen[y]);
+                {   changefgpixel(x, y, dmascreen[y]);
             }   }
             for (x = 49; x < 227; x++)
             {   if (!colltable[y][x])
-                {   changeabspixel(x, y, dmascreen[y]);
+                {   changefgpixel(x, y, dmascreen[y]);
 }   }   }   }   }
 
 MODULE __inline void onepixel(void)
@@ -1540,11 +1421,11 @@ MODULE __inline void onepixel(void)
         {   if (imagedata & (0x80 >> x))
             {   t = from_a[flag_cacheable][(thechar & 0x40) ? fgc2 : fgc1];
                 colltable[cpuy][cpux] = 0x10;
-                changethisabspixel(t);
+                changethisfgpixel(t);
             } elif (thechar & 0x80)
             {   t = from_a[flag_cacheable][innerbgc];
                 colltable[cpuy][cpux] = 0x10;
-                changethisabspixel(t);
+                changethisfgpixel(t);
             } else
             {   t = from_a[flag_cacheable][outerbgc];
                 colltable[cpuy][cpux] = 0;
@@ -1561,11 +1442,11 @@ MODULE __inline void onepixel(void)
                 )
                 {   switch (whichgame)
                     {
-                    case  ESCAPEPOS:      changethisabspixel(multicolour_escape[  minorrow][x]);
-                    acase ROBOTKILLERPOS: changethisabspixel(multicolour_robotkil[minorrow][x]);
+                    case  ESCAPEPOS:      changethisfgpixel(multicolour_escape[  minorrow][x]);
+                    acase ROBOTKILLERPOS: changethisfgpixel(multicolour_robotkil[minorrow][x]);
                 }   }
                 else
-                {   changethisabspixel(t);
+                {   changethisfgpixel(t);
                 }
                 colltable[cpuy][cpux] = 0x10;
             } else
@@ -1573,11 +1454,10 @@ MODULE __inline void onepixel(void)
                 colltable[cpuy][cpux] = 0;
     }   }   }
 
-    do_sprites1();
-    do_cpu();
+    do_sprites();
 }
 
-MODULE __inline void do_sprites1(void)
+MODULE __inline void do_sprites(void)
 {   FAST    UBYTE sprcollisions,
                   sprcolours,
                   sprpixel;
@@ -1707,7 +1587,7 @@ MODULE __inline void do_sprites1(void)
                             {   p2rumble = -p2bgcol[whichsprite];
         }   }   }   }   }   }
 
-        changethisabspixel(from_a[flag_cacheable][sprcolours]);
+        changethisfgpixel(from_a[flag_cacheable][sprcolours]);
 }   }
 
 MODULE void newdma(void)
@@ -1738,11 +1618,7 @@ MODULE void newdma(void)
         hoffsetstart = 49 + hoffset;
         hoffsetend   = hoffsetstart + 128;
     } else
-    {   if (framebased)
-        {   do_sprites2(); // because CIRCUS checks for collisions as soon as CHARLINE becomes $FD
-            spritesdone = TRUE;
-        }
-        uviwrite(A_CHARLINE, 0xFD);
+    {   uviwrite(A_CHARLINE, 0xFD);
 }   }
 
 MODULE void vblank(void)
@@ -1884,7 +1760,7 @@ MODULE void drawfakesprites(void)
                                             }   }
                                             else // opaque
 #endif
-                                            {   changeabspixel(xxx + absxmin, yyy + absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
+                                            {   changefgpixel(xxx + absxmin, yyy + absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
                     }   }   }   }   }   }   }
                     else
                     {   for (yy = 0; yy < 8; yy++)
@@ -1915,8 +1791,8 @@ MODULE void drawfakesprites(void)
                                     }   }   }
                                     else // opaque
 #endif
-                                    {   changeabspixel(xxx + absxmin, yyy +     absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
-                                        changeabspixel(xxx + absxmin, yyy + 1 + absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
+                                    {   changefgpixel(xxx + absxmin, yyy +     absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
+                                        changefgpixel(xxx + absxmin, yyy + 1 + absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
 }   }   }   }   }   }   }   }   }   }
 
 MODULE void drawfakeudgs(void)
@@ -2025,22 +1901,21 @@ MODULE void newraster(void)
     {   bgc_cached = memory[A_BGCOLOUR];
     }
 
-    if (!framebased)
-    {   switch (spritemode)
-        {
-        case  SPRITEMODE_INVISIBLE:
-            sprimagedata[0] = sprimagedata[1] = sprimagedata[2] = sprimagedata[3] = 0;
-        acase SPRITEMODE_NUMBERED:
-            sprimagedata[0] = sprnumbers[     0][        (cpuy - spr[spriteflip][0].y) >> (spr[spriteflip][0].tall ? 1 : 0)];
-            sprimagedata[1] = sprnumbers[     1][        (cpuy - spr[spriteflip][1].y) >> (spr[spriteflip][1].tall ? 1 : 0)];
-            sprimagedata[2] = sprnumbers[     2][        (cpuy - spr[spriteflip][2].y) >> (spr[spriteflip][2].tall ? 1 : 0)];
-            sprimagedata[3] = sprnumbers[     3][        (cpuy - spr[spriteflip][3].y) >> (spr[spriteflip][3].tall ? 1 : 0)];
-        acase SPRITEMODE_VISIBLE:
-            sprimagedata[0] = spr[spriteflip][0].imagery[(cpuy - spr[spriteflip][0].y) >> (spr[spriteflip][0].tall ? 1 : 0)];
-            sprimagedata[1] = spr[spriteflip][1].imagery[(cpuy - spr[spriteflip][1].y) >> (spr[spriteflip][1].tall ? 1 : 0)];
-            sprimagedata[2] = spr[spriteflip][2].imagery[(cpuy - spr[spriteflip][2].y) >> (spr[spriteflip][2].tall ? 1 : 0)];
-            sprimagedata[3] = spr[spriteflip][3].imagery[(cpuy - spr[spriteflip][3].y) >> (spr[spriteflip][3].tall ? 1 : 0)];
-    }   }
+    switch (spritemode)
+    {
+    case  SPRITEMODE_INVISIBLE:
+        sprimagedata[0] = sprimagedata[1] = sprimagedata[2] = sprimagedata[3] = 0;
+    acase SPRITEMODE_NUMBERED:
+        sprimagedata[0] = sprnumbers[     0][        (cpuy - spr[spriteflip][0].y) >> (spr[spriteflip][0].tall ? 1 : 0)];
+        sprimagedata[1] = sprnumbers[     1][        (cpuy - spr[spriteflip][1].y) >> (spr[spriteflip][1].tall ? 1 : 0)];
+        sprimagedata[2] = sprnumbers[     2][        (cpuy - spr[spriteflip][2].y) >> (spr[spriteflip][2].tall ? 1 : 0)];
+        sprimagedata[3] = sprnumbers[     3][        (cpuy - spr[spriteflip][3].y) >> (spr[spriteflip][3].tall ? 1 : 0)];
+    acase SPRITEMODE_VISIBLE:
+        sprimagedata[0] = spr[spriteflip][0].imagery[(cpuy - spr[spriteflip][0].y) >> (spr[spriteflip][0].tall ? 1 : 0)];
+        sprimagedata[1] = spr[spriteflip][1].imagery[(cpuy - spr[spriteflip][1].y) >> (spr[spriteflip][1].tall ? 1 : 0)];
+        sprimagedata[2] = spr[spriteflip][2].imagery[(cpuy - spr[spriteflip][2].y) >> (spr[spriteflip][2].tall ? 1 : 0)];
+        sprimagedata[3] = spr[spriteflip][3].imagery[(cpuy - spr[spriteflip][3].y) >> (spr[spriteflip][3].tall ? 1 : 0)];
+    }
 
     if (dejitter)
     {   if (whichgame != -1)
@@ -2053,27 +1928,6 @@ MODULE void newraster(void)
                 if (cpuy == (int) known[whichgame].the1stsize || cpuy == (int) known[whichgame].the2ndsize)
                 {   flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
 }   }   }   }   }
-
-MODULE __inline void do_cpu(void)
-{
-#ifdef OPCOLOURS
-    if (cpuy >= absymin && cpuy <= absymax && cpux >= absxmin && cpux <= absxmax)
-    {   changepixel(cpux - absxmin, cpuy - absymin, table_opcolours_2650[supercpu][opcode]);
-    }
-    screen_iar[cpux][cpuy] = iar;
-#endif
-
-#ifdef EMULATE_CPU
-    if (cpux == nextinst)
-    {   oldcycles = cycles_2650;
-        checkstep();
-        one_instruction();
-        nextinst += (cycles_2650 - oldcycles) * 4; // in pixels
-        if (nextinst >= 227)
-        {   nextinst -= cpl;
-    }   }
-#endif
-}
 
 EXPORT FLAG arcadia_edit_screen(UWORD code)
 {   int i;
@@ -2354,245 +2208,6 @@ EXPORT void arcadia_reset(void)
     }
     for (i = 0x19C0; i <= 0x19F7; i++)
     {   memory[i] = 0xFF;
-}   }
-
-MODULE void arcadia_oneraster(void)
-{   FAST UBYTE imagedata,
-               thechar;
-    FAST int   bgc2,
-               x;
-
-    breakrastline();
-    newraster();
-
-    if (!dejitter)
-    {   flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
-    }
-    bgc = from_a[flag_cacheable][bgc_cached & 0x07];
-
-    if (cpuy != n1)
-    {   for (cpux = 0; cpux < n4; cpux++)
-        {   changethisbgpixel(bgc);
-            colltable[cpuy][cpux] = 0;
-    }   }
-
-    for (cpux = 49; cpux < hoffsetstart; cpux++)
-    {   changethisbgpixel(bgc);
-        colltable[cpuy][cpux] = 0;
-    }
-
-    if (uviy < voffset || uviy >= voffsetend)
-    {   for (cpux = hoffsetstart; cpux < 227; cpux++)
-        {   changethisbgpixel(bgc);
-            colltable[cpuy][cpux] = 0;
-        }
-        return;
-    }
-
-    cpux = hoffsetstart;
-    blockmode = (memory[A_GFXMODE] & 0x80) >> 7;
-    if (hires)
-    {   minorrow =  uviy2 &   7      ; // or  uviy2 %  8
-    } else
-    {   minorrow = (uviy2 & 0xF) >> 1; // or (uviy2 % 16) / 2
-    }
-    
-    for (column = 0; column < 16; column++)
-    {   thechar = rowbuf[udgflip][majorrow][column];
-        if (thechar == 0xC0)
-        {   blockmode = 1;
-        } elif (thechar == 0x40)
-        {   blockmode = 0;
-        }
-        if (!blockmode && (thechar & 0x3F) >= 56) // this is a UDG
-        {   imagedata = memory[A_OFFSET_SPRITES + (8 * ((thechar & 0x3F) - 56)) + minorrow];
-        } else // this is a PDG
-        {   imagedata = arcadia_pdg[blockmode][thechar & 0x3F][minorrow];
-        }
-
-        if (boardmode)
-        {   t    = from_a[flag_cacheable][ (thechar & 0x40) ? fgc2     : fgc1    ];
-            bgc2 = from_a[flag_cacheable][ (thechar & 0x80) ? innerbgc : outerbgc];
-        } else
-        {   t    = from_a[flag_cacheable][((thechar & 0xC0) >> 5) + ((bgc_cached >> 3) & 1)];
-            bgc2 = bgc;
-        }
-
-        if
-        (   undither
-         && (whichgame == ESCAPEPOS || whichgame == ROBOTKILLERPOS)
-         && !flag_cacheable
-         && thechar == 0x3F
-         && !boardmode
-        )
-        {   for (x = 0; x < 8; x++, cpux++)
-            {   if (imagedata & (0x80 >> x))
-                {   switch (whichgame)
-                    {
-                    case  ESCAPEPOS:      changethisabspixel(multicolour_escape[  minorrow][x]);
-                    acase ROBOTKILLERPOS: changethisabspixel(multicolour_robotkil[minorrow][x]);
-                    }
-                    colltable[cpuy][cpux] = 0x10;
-                } else
-                {   changethisbgpixel(bgc);
-                    colltable[cpuy][cpux] = 0;
-        }   }   }
-        else
-        {   // unrolled for speed
-            if (imagedata & 0x80) { colltable[cpuy][cpux] = 0x10; changethisabspixel(t); } else { colltable[cpuy][cpux] = 0; changethisbgpixel(bgc2); } cpux++;
-            if (imagedata & 0x40) { colltable[cpuy][cpux] = 0x10; changethisabspixel(t); } else { colltable[cpuy][cpux] = 0; changethisbgpixel(bgc2); } cpux++;
-            if (imagedata & 0x20) { colltable[cpuy][cpux] = 0x10; changethisabspixel(t); } else { colltable[cpuy][cpux] = 0; changethisbgpixel(bgc2); } cpux++;
-            if (imagedata & 0x10) { colltable[cpuy][cpux] = 0x10; changethisabspixel(t); } else { colltable[cpuy][cpux] = 0; changethisbgpixel(bgc2); } cpux++;
-            if (imagedata & 0x08) { colltable[cpuy][cpux] = 0x10; changethisabspixel(t); } else { colltable[cpuy][cpux] = 0; changethisbgpixel(bgc2); } cpux++;
-            if (imagedata & 0x04) { colltable[cpuy][cpux] = 0x10; changethisabspixel(t); } else { colltable[cpuy][cpux] = 0; changethisbgpixel(bgc2); } cpux++;
-            if (imagedata & 0x02) { colltable[cpuy][cpux] = 0x10; changethisabspixel(t); } else { colltable[cpuy][cpux] = 0; changethisbgpixel(bgc2); } cpux++;
-            if (imagedata & 0x01) { colltable[cpuy][cpux] = 0x10; changethisabspixel(t); } else { colltable[cpuy][cpux] = 0; changethisbgpixel(bgc2); } cpux++;
-    }   }
-
-    for (cpux = hoffsetend; cpux < 227; cpux++)
-    {   changethisbgpixel(bgc);
-        colltable[cpuy][cpux] = 0;
-}   }
-
-MODULE void arcadia_runcpu(void)
-{   FAST ULONG endcycle;
-
-    slice_2650 += frac[fractionator & 3];
-    fractionator++;
-        
-    // assert(slice_2650 >= 1);
-
-    endcycle = cycles_2650 + slice_2650;
-    if (endcycle < cycles_2650)
-    {   // cycle counter will overflow, so we need to use the slow method
-        while (slice_2650 >= 1)
-        {   oldcycles = cycles_2650;
-            checkstep();
-            one_instruction();
-            slice_2650 -= (cycles_2650 - oldcycles);
-    }   }
-    else
-    {   // cycle counter will not overflow, so we can use a faster method
-        oldcycles = cycles_2650;
-        while (cycles_2650 < endcycle)
-        {   checkstep();
-            one_instruction();
-        }
-        slice_2650 -= (cycles_2650 - oldcycles);
-}   }
-
-MODULE __inline void do_sprites2(void)
-{   FAST UBYTE bgcollisions,
-               sprcollisions,
-               sprcolours;
-    FAST int   whichsprite,
-               x, y;
-
-    // Sprites----------------------------------------------------
-
-    bgcollisions  =
-    sprcollisions = 0;
-
-    for (whichsprite = 0; whichsprite < 4; whichsprite++)
-    {   for (y = spr[spriteflip][whichsprite].y; y <= endspry[whichsprite]; y++)
-        {   t = spr[spriteflip][whichsprite].imagery[(y - spr[spriteflip][whichsprite].y) >> (spr[spriteflip][whichsprite].tall ? 1 : 0)];
-            for (x = spr[spriteflip][whichsprite].x; x <= endsprx[whichsprite]; x++)
-            {   if (t & (0x80 >> (x - spr[spriteflip][whichsprite].x)))
-                {   colltable[y][x] |= (1 << whichsprite);
-
-                    if (collisions && y >= n1 && x >= USG_XMARGIN)
-                    {   if (colltable[y][x] & 0x10)
-                        {   bgcollisions |= (1 << whichsprite);
-                            if (useff[swapped ? 1 : 0])
-                            {   if (p1bgcol[whichsprite] > 0)
-                                {   p1rumble = p1bgcol[whichsprite];
-                                    // zprintf(TEXTPEN_VERBOSE, "p1 background rumble!\n");
-                                } elif (p1bgcol[whichsprite] < 0)
-                                {   p1rumble = -p1bgcol[whichsprite];
-                            }   }
-                            if (useff[swapped ? 0 : 1])
-                            {   if (p2bgcol[whichsprite] > 0)
-                                {   p2rumble = p2bgcol[whichsprite];
-                                    // zprintf(TEXTPEN_VERBOSE, "p2 background rumble!\n");
-                                } elif (p2bgcol[whichsprite] < 0)
-                                {   p2rumble = -p2bgcol[whichsprite];
-                        }   }   }
-
-                        if ((colltable[y][x] & 3) == 3) // %0011 #0 & #1
-                        {   sprcollisions |= 1;
-                            if (p1sprcol[0]) p1rumble = p1sprcol[0];
-                            if (p2sprcol[0]) p2rumble = p2sprcol[0];
-#ifdef LOGSPRITECOLLISIONS
-                            zprintf(TEXTPEN_VERBOSE, "Sprites #0 & #1 have collided!\n");
-#endif
-                        }
-                        if ((colltable[y][x] & 5) == 5) // %0101 #0 & #2
-                        {   sprcollisions |= 2;
-                            if (p1sprcol[1]) p1rumble = p1sprcol[1];
-                            if (p2sprcol[1]) p2rumble = p2sprcol[1];
-#ifdef LOGSPRITECOLLISIONS
-                            zprintf(TEXTPEN_VERBOSE, "Sprites #0 & #2 have collided!\n");
-#endif
-                        }
-                        if ((colltable[y][x] & 9) == 9) // %1001 #0 & #3
-                        {   sprcollisions |= 4;
-                            if (p1sprcol[2]) p1rumble = p1sprcol[2];
-                            if (p2sprcol[2]) p2rumble = p2sprcol[2];
-#ifdef LOGSPRITECOLLISIONS
-                            zprintf(TEXTPEN_VERBOSE, "Sprites #0 & #3 have collided!\n");
-#endif
-                        }
-                        if ((colltable[y][x] & 6) == 6) // %0110 #1 & #2
-                        {   sprcollisions |= 8;
-                            if (p1sprcol[3]) p1rumble = p1sprcol[3];
-                            if (p2sprcol[3]) p2rumble = p2sprcol[3];
-#ifdef LOGSPRITECOLLISIONS
-                            zprintf(TEXTPEN_VERBOSE, "Sprites #1 & #2 have collided!\n");
-#endif
-                        }
-                        if ((colltable[y][x] & 10) == 10) // %1010 #1 & #3
-                        {   sprcollisions |= 16;
-                            if (p1sprcol[4]) p1rumble = p1sprcol[4];
-                            if (p2sprcol[4]) p2rumble = p2sprcol[4];
-#ifdef LOGSPRITECOLLISIONS
-                            zprintf(TEXTPEN_VERBOSE, "Sprites #1 & #3 have collided!\n");
-#endif
-                        }
-                        if ((colltable[y][x] & 12) == 12) // %1100 #2 & #3
-                        {   sprcollisions |= 32;
-                            if (p1sprcol[5]) p1rumble = p1sprcol[5];
-                            if (p2sprcol[5]) p2rumble = p2sprcol[5];
-#ifdef LOGSPRITECOLLISIONS
-                            zprintf(TEXTPEN_VERBOSE, "Sprites #2 & #3 have collided!\n");
-#endif
-                    }   }
-
-                    if (x >= USG_XMARGIN + UVI_HIDELEFT)
-                    {   sprcolours = 0;
-                        if (colltable[y][x] & 1) sprcolours |= spr[spriteflip][0].colour;
-                        if (colltable[y][x] & 2) sprcolours |= spr[spriteflip][1].colour;
-                        if (colltable[y][x] & 4) sprcolours |= spr[spriteflip][2].colour;
-                        if (colltable[y][x] & 8) sprcolours |= spr[spriteflip][3].colour;
-                        changeabspixel(x, y, from_a[flag_cacheable][sprcolours]);
-    }   }   }   }   }
-
-    uviwrite((UWORD) A_SPRITECOLLIDE, (UBYTE) (~sprcollisions));
-    uviwrite((UWORD) A_BGCOLLIDE    , (UBYTE) (~bgcollisions ));
-}
-
-MODULE void run_cpu(int until)
-{   // This is a quicker equivalent to repeatedly incrementing cpux and calling do_cpu().
-
-    cpux = nextinst;
-    while (cpux < until)
-    {   oldcycles = cycles_2650;
-        checkstep();
-        one_instruction();
-        nextinst += (cycles_2650 - oldcycles) * 4; // in pixels
-        cpux = nextinst;
-    }
-    if (nextinst >= 227)
-    {   nextinst -= cpl;
 }   }
 
 EXPORT void arcadia_update_miniglow(void)
@@ -2925,3 +2540,73 @@ EXPORT FLAG interpret_uvi(int address)
 
     return TRUE;
 }
+
+EXPORT void arcadia_anypixel(void)
+{   if (cpux == 0)
+    {   breakrastline();
+    }
+
+    if (cpuy == 0)
+    {   if (cpux == 0)
+        {   arcadia_startofframe();
+        }
+        if (cpux < n4) // small amount of semi-normal drawing
+        {   if (!dejitter)
+            {   flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
+            }
+            changethisbgpixel(from_a[flag_cacheable][bgc_cached & 0x07]);
+        } elif (cpux == n4)
+        {   vblank();
+    }   }
+    // scanlines 1..42 (PAL) or 1..19 (NTSC) in vertical blank
+    elif (cpuy == n1) // scanline 43 (PAL) or 20 (NTSC)
+    {   if (cpux == n4)
+        {   unvblank();
+            flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
+            bgc_cached = memory[A_BGCOLOUR];
+            scrnbgc = from_a[flag_cacheable][bgc_cached & 0x07];
+            newraster();
+        } elif (cpux >= 49) // normal drawing
+        {   onepixel();
+    }   }
+    elif (cpuy > n1) // scanlines 44..311 (PAL) or 21..261 (NTSC)
+    {   if (cpux < n4) // small amount of semi-normal drawing
+        {   if (!dejitter)
+            {   flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
+            }
+            changethisbgpixel(from_a[flag_cacheable][bgc_cached & 0x07]);
+            colltable[cpuy][cpux] = 0;
+        }
+        if (cpux == 0 && cpuy == n2) // ie. USG_YMARGIN + ((n3 - USGMARGIN) / 2). "Conversion takes place during the active scan".
+        {   wa_checkinput();
+            a_emuinput();
+        }
+        if (cpux == n4)
+        {   newraster();
+        } elif (cpux >= 49)
+        {   onepixel();
+    }   }
+
+    if (cpux == nextinst)
+    {   oldcycles = cycles_2650;
+        checkstep();
+        one_instruction();
+        nextinst += (cycles_2650 - oldcycles) * 4; // in pixels
+        donecpu = TRUE;
+        if (nextinst >= 227)
+        {   nextinst -= cpl;
+    }   }
+
+    if (cpux == 227 - 1)
+    {   cpux = 0;
+        dmascreen[cpuy] = memory[A_CHARLINE] & 0x0F;
+        pastbgc[cpuy] = from_a[flag_cacheable][bgc_cached & 0x07];
+        if (cpuy == n3 - 1)
+        {   cpuy = 0;
+            arcadia_endofframe();
+        } else
+        {   cpuy++;
+    }   }
+    else
+    {   cpux++;
+}   }

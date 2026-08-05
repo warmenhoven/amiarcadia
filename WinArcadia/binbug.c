@@ -30,18 +30,6 @@
 #define BINBUG_FD1771_DATA     0xF
 #define BINBUG_FD1771_CONTROL 0x10
 
-#define DOCPU                 \
-if (cpux == nextinst)         \
-{   oldcycles = cycles_2650;  \
-    checkstep();              \
-    pipbin_io();              \
-    one_instruction();        \
-    if (fastbinbug) nextinst += (cycles_2650 - oldcycles) * 6; else nextinst += (cycles_2650 - oldcycles) * 12; \
-    if (nextinst >= 768)      \
-    {   nextinst -= 768;      \
-}   }
-// nextinst range is -128..383
-
 // EXPORTED VARIABLES-----------------------------------------------------
 
 EXPORT       UBYTE                    binbug_joyunit;
@@ -57,6 +45,7 @@ EXPORT       int                      binbug_baudrate   = BINBUG_BAUDRATE_150,
 // IMPORTED VARIABLES-----------------------------------------------------
 
 IMPORT       FLAG                     capslock,
+                                      donecpu,
                                       inframe,
                                       lmb, mmb, rmb,
                                       multimode,
@@ -112,7 +101,6 @@ IMPORT       int                      ambient,
                                       drive_mode,
                                       drive_idmode,
                                       editscreen,
-                                      framebased,
                                       game,
                                       hostcontroller[2],
                                       inverse,
@@ -157,7 +145,8 @@ IMPORT       UBYTE*                   IOBuffer;
 // MODULE VARIABLES-------------------------------------------------------
 
 MODULE       FLAG                     diskerror;
-MODULE       UBYTE                    bgc         = BLACK,
+MODULE       UBYTE                    fgc,
+                                      bgc         = BLACK,
                                       CMDBuffer[254],
                                       playerfire[2],
                                       ProgBuffer[254 * (BINBUG_DISKBLOCKS - 10)];
@@ -169,8 +158,8 @@ MODULE int bcd_to_normal(UBYTE value);
 MODULE void binbug_playerinput(int source, int dest);
 MODULE UWORD followchain(int startblock, int endblock, int thesize, int bamtype, FLAG isprog, FLAG quiet, int whichdrive);
 MODULE UWORD showchunks(int numblocks);
-MODULE void draw_binbug(void);
-MODULE void run_cpu(int until);
+MODULE void binbug_startofframe(void);
+MODULE void binbug_endofframe(void);
 
 // EXPORTED CODE----------------------------------------------------------
 
@@ -510,125 +499,12 @@ EXPORT void binbug_setmemmap(void)
 }
 
 EXPORT void binbug_emulate(void)
-{   FAST UBYTE fgc,
-               t,
-               tempvdu;
-    FAST int   colour,
-               i,
-               kx, x, x1, x2,
-               ky, y, y1, y2;
+{   // assert(machine == BINBUG);
 
-    inframe = TRUE;
-
-    ReadJoystick(0);
-    ReadJoystick(1);
-    if (swapped)
-    {   binbug_playerinput(1, 0);
-        binbug_playerinput(0, 1);
-    } else
-    {   binbug_playerinput(0, 0);
-        binbug_playerinput(1, 1);
-    }
-    pipbin_readtty();
-    keys_column[0] = keys_column[1] = keys_column[2] = keys_column[3] = 0;
-    domouse();
-
-    if (framebased)
-    {   if (fastbinbug)
-        {   // 2MHz = 2,000,000 cycles per second
-            // 2,000,000 / 50 = 40,000
-            slice_2650 += 40000;
-        } else
-        {   // 1MHz = 1,000,000 cycles per second / 50 = 20,000
-            slice_2650 += 20000;
-        }
-        pipbin_runcpu();
-        draw_binbug();
-    } else
-    {   fgc = inverse ? BLACK : WHITE;
-        bgc = inverse ? WHITE : BLACK;
-        for (cpuy = 0; cpuy <= 255; cpuy++)
-        {   breakrastline();
-            y1 = cpuy / 16;
-            y2 = cpuy % 16;
-            for (cpux = 0; cpux <= 575; cpux++)
-            {   x1 = cpux / 9;
-                x2 = cpux % 9;
-#ifdef SHOWCHARSET
-                if (x1 < 16 && y1 < 16) tempvdu = (y1 * 16) + x1; else
-#endif
-                tempvdu = memory[0x7800 + (y1 * 64) + x1];
-                if (memory[0x7C00 + (y1 * 64) + x1] & 4)
-                {   t = memory[0x7000 + (tempvdu * 16) + y2];
-                } elif (memory[0x7C00 + (y1 * 64) + x1] & 2)
-                {   t = dg640_gfx[tempvdu][y2];
-                } else
-                {   t = dg640_chars[tempvdu & 0x7F][y2] << 1;
-                    if (tempvdu & 0x80)
-                    {   t = ~t;
-                }   }
-                if ((memory[0x7C00 + (y1 * 64) + x1] & 1) && (frames % 50) < 25)
-                {   if (coomer)
-                    {   t = ~t; // inverse
-                    } else
-                    {   t = 0; // blank
-                }   }
-
-                if ((x2 <= 7 && (t & (0x80 >> x2))) || (x2 == 8 && (t & 1)))
-                {   changepixel(cpux, cpuy, fgc);
-                } else
-                {   changebgpixel(cpux, cpuy, bgc);
-                }
-                DOCPU;
-            }
-            run_cpu(768);
-        }
-        for (cpuy = 256; cpuy <= 311; cpuy++)
-        {   breakrastline();
-            run_cpu(768);
-        }
-        cpuy = 312;
-        breakrastline();
-        run_cpu(384);
-        nextinst -= 384; // skip the second half of the last rastline
-    }
-
-    if (editscreen)
-    {   kx =  scrnaddr           % 64;
-        ky = (scrnaddr - 0x7800) / 64;
-        x1 = (kx *  9) -  1;
-        x2 = (kx *  9) +  9;
-        y1 = (ky * 16) -  1;
-        y2 = (ky * 16) + 16;
-        for (x = x1; x <= x2; x++)
-        {   for (y = y1; y <= y2; y++)
-            {   if
-                (   (x == x1 || x == x2 || y == y1 || y == y2)
-                 &&  x >=  0
-                 &&  x < 576
-                 &&  y >=  0
-                 &&  y < 256
-                )
-                {   changepixel(x, y, RED);
-    }   }   }   }
-
-    for (i = 0; i < 8; i++)
-    {   if (glow & (128 >> i))
-        {   colour       = RED;
-        } elif (drawunlit)
-        {   colour       = DARKBLUE;
-        } else
-        {   colour       = BLACK;
-        }
-        drawglow(207 + (usemargins ? 96 : 0) + (i * 21), machines[BINBUG].height - 17, colour);
-    }
-
-    fd1771_spindown();
-    if (drawmode)
-    {   binbug_drawhelpgrid();
-    }
-    wa_checkinput();
-    endofframe(bgc);
+    cpux = cpuy = 0;
+    do
+    {   binbug_anypixel();
+    } while (inframe);
 }
 
 EXPORT UBYTE binbug_readport(int port)
@@ -1776,7 +1652,7 @@ EXPORT void binbug_drawhelpgrid(void)
             for (xx = 0; xx < DG640_CHARWIDTH; xx++)
             {   for (yy = 0; yy < DG640_CHARHEIGHT; yy++)
                 {   if (xx == 0 || xx == DG640_CHARWIDTH - 1 || yy == 0 || yy == DG640_CHARHEIGHT - 1)
-                    {   changepixel(startx + xx, starty + yy, GREY1);
+                    {   changefgpixel(startx + xx, starty + yy, GREY1);
 }   }   }   }   }   }
 
 EXPORT void extend_disk(int whichdrive)
@@ -2259,51 +2135,6 @@ MODULE int bcd_to_normal(UBYTE value)
           + ( value & 0x0F      );
 }
 
-MODULE void draw_binbug(void)
-{   FAST int   x, xx,
-               y, yy;
-    FAST UBYTE colour,
-               t,
-               tempvdu;
-
-    for (x = 0; x < 64; x++)
-    {   for (y = 0; y < 16; y++)
-        {   colour = inverse ? WHITE : BLACK;
-            for (yy = 0; yy < DG640_CHARHEIGHT; yy++)
-            {   for (xx = 0; xx < DG640_CHARWIDTH; xx++)
-                {   if (screen[(x * DG640_CHARWIDTH) + xx][(y * DG640_CHARHEIGHT) + yy] != colour)
-                    {   changepixel((x * DG640_CHARWIDTH) + xx, (y * DG640_CHARHEIGHT) + yy, colour);
-    }   }   }   }   }
-
-    for (x = 0; x < 64; x++)
-    {   for (y = 0; y < 16; y++)
-        {   tempvdu = memory[0x7800 + (y * 64) + x];
-            colour = inverse ? BLACK : WHITE;
-            for (yy = 0; yy < DG640_CHARHEIGHT; yy++)
-            {   if (memory[0x7C00 + (y * 64) + x] & 4)
-                {   t = memory[0x7000 + (tempvdu * 16) + yy];
-                } elif (memory[0x7C00 + (y * 64) + x] & 2)
-                {   t = dg640_gfx[tempvdu][yy];
-                } else
-                {   t = dg640_chars[tempvdu & 0x7F][yy] << 1;
-                    if (tempvdu & 0x80)
-                    {   t = ~t;
-                }   }
-                if ((memory[0x7C00 + (y * 64) + x] & 1) && (frames % 50) < 25)
-                {   if (coomer)
-                    {   t = ~t; // inverse
-                    } else
-                    {   t = 0; // blank
-                }   }
-
-                for (xx = 0; xx < 8; xx++)
-                {   if (t & (0x80 >> xx))
-                    {   changepixel((x * DG640_CHARWIDTH) + xx, (y * DG640_CHARHEIGHT) + yy, colour);
-                }   }
-                if (t & 1)
-                {   changepixel((x * DG640_CHARWIDTH) + 8, (y * DG640_CHARHEIGHT) + yy, colour); // 9th pixel
-}   }   }   }   }
-
 EXPORT void binbug_inject_file(STRPTR thefilename)
 {   TRANSIENT int   freesize,
                     freeblocks,
@@ -2456,18 +2287,130 @@ END:
     cd_progdir();
 }
 
-MODULE void run_cpu(int until)
-{   // This is a quicker equivalent to repeatedly incrementing cpux and calling do_cpu().
+MODULE void binbug_startofframe(void)
+{   inframe = TRUE;
 
-    cpux = nextinst;
-    while (cpux < until)
+    ReadJoystick(0);
+    ReadJoystick(1);
+    if (swapped)
+    {   binbug_playerinput(1, 0);
+        binbug_playerinput(0, 1);
+    } else
+    {   binbug_playerinput(0, 0);
+        binbug_playerinput(1, 1);
+    }
+    pipbin_readtty();
+    keys_column[0] = keys_column[1] = keys_column[2] = keys_column[3] = 0;
+    domouse();
+    fgc = inverse ? BLACK : WHITE;
+    bgc = inverse ? WHITE : BLACK;
+}
+
+MODULE void binbug_endofframe(void)
+{   FAST int colour,
+             i,
+             kx, x, x1, x2,
+             ky, y, y1, y2;
+
+    inframe = FALSE;
+
+    if (editscreen)
+    {   kx =  scrnaddr           % 64;
+        ky = (scrnaddr - 0x7800) / 64;
+        x1 = (kx *  9) -  1;
+        x2 = (kx *  9) +  9;
+        y1 = (ky * 16) -  1;
+        y2 = (ky * 16) + 16;
+        for (x = x1; x <= x2; x++)
+        {   for (y = y1; y <= y2; y++)
+            {   if
+                (   (x == x1 || x == x2 || y == y1 || y == y2)
+                 &&  x >=  0
+                 &&  x < 576
+                 &&  y >=  0
+                 &&  y < 256
+                )
+                {   changefgpixel(x, y, RED);
+    }   }   }   }
+
+    for (i = 0; i < 8; i++)
+    {   if (glow & (128 >> i))
+        {   colour       = RED;
+        } elif (drawunlit)
+        {   colour       = DARKBLUE;
+        } else
+        {   colour       = BLACK;
+        }
+        drawglow(207 + (usemargins ? 96 : 0) + (i * 21), machines[BINBUG].height - 17, colour);
+    }
+
+    fd1771_spindown();
+    if (drawmode)
+    {   binbug_drawhelpgrid();
+    }
+    wa_checkinput();
+    endofframe(bgc);
+}
+
+EXPORT void binbug_anypixel(void)
+{   FAST UBYTE t,
+               tempvdu;
+    FAST int   x1, x2,
+               y1, y2;
+
+    if (cpux == 0)
+    {   breakrastline();
+        if (cpuy == 0)
+        {   binbug_startofframe();
+    }   }
+
+    if (cpuy <= 255 && cpux <= 575)
+    {   y1 = cpuy / 16;
+        y2 = cpuy % 16;
+        x1 = cpux / 9;
+        x2 = cpux % 9;
+#ifdef SHOWCHARSET
+        if (x1 < 16 && y1 < 16) tempvdu = (y1 * 16) + x1; else
+#endif
+        tempvdu = memory[0x7800 + (y1 * 64) + x1];
+        if (memory[0x7C00 + (y1 * 64) + x1] & 4)
+        {   t = memory[0x7000 + (tempvdu * 16) + y2];
+        } elif (memory[0x7C00 + (y1 * 64) + x1] & 2)
+        {   t = dg640_gfx[tempvdu][y2];
+        } else
+        {   t = dg640_chars[tempvdu & 0x7F][y2] << 1;
+            if (tempvdu & 0x80)
+            {   t = ~t;
+        }   }
+        if ((memory[0x7C00 + (y1 * 64) + x1] & 1) && (frames % 50) < 25)
+        {   if (coomer)
+            {   t = ~t; // inverse
+            } else
+            {   t = 0; // blank
+        }   }
+        if ((x2 <= 7 && (t & (0x80 >> x2))) || (x2 == 8 && (t & 1)))
+        {   changethisfgpixel(fgc);
+        } else
+        {   changethisbgpixel(bgc);
+    }   }
+
+    if (cpux == nextinst)
     {   oldcycles = cycles_2650;
         checkstep();
         pipbin_io();
         one_instruction();
-        nextinst += (cycles_2650 - oldcycles) * (fastbinbug ? 6 : 12); // in pixels
-        cpux = nextinst;
-    }
-    if (nextinst >= 768)
-    {   nextinst -= 768;
+        if (fastbinbug) nextinst += (cycles_2650 - oldcycles) * 6; else nextinst += (cycles_2650 - oldcycles) * 12; // in pixels
+        if (nextinst >= 768)
+        {   nextinst -= 768;
+    }   }
+
+    if (cpux == 768 - 1)
+    {   cpux = 0;
+        cpuy++;
+    } elif (cpuy == 312 && cpux == 384 - 1) // skip the second half of the last rastline
+    {   cpux = cpuy = 0;
+        nextinst -= 384;
+        binbug_endofframe();
+    } else
+    {   cpux++;
 }   }

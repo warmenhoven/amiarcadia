@@ -43,8 +43,10 @@ IMPORT       UBYTE                awga_collide,
 IMPORT       UWORD                keypads[2][NUMKEYS];
 IMPORT       ULONG                autofire[2],
                                   collisions,
+                                  cycles_2650,
                                   frames,
-                                  jf[2];
+                                  jf[2],
+                                  oldcycles;
 IMPORT       int                  ax[2],
                                   ay[4],
                                   coinop_1p,
@@ -63,7 +65,7 @@ IMPORT       int                  ax[2],
                                   coinop_joy2right,
                                   collx, colly,
                                   console_b,
-                                  cpuy,
+                                  cpux, cpuy,
                                   drawmode,
                                   editscreen,
                                   hostcontroller[2],
@@ -72,6 +74,7 @@ IMPORT       int                  ax[2],
                                   machine,
                                   memmap,
                                   multiframe,
+                                  nextinst,
                                   offsetsprites,
                                   p1bgcol[6],
                                   p2bgcol[6],
@@ -82,7 +85,6 @@ IMPORT       int                  ax[2],
                                   pvibase,
                                   requirebutton[2],
                                   scrnaddr,
-                                  slice_2650,
                                   spritemode,
                                   trace,
                                   whichgame;
@@ -102,11 +104,11 @@ IMPORT       ASCREEN              screen[BOXWIDTH][BOXHEIGHT];
     IMPORT   int                  throb;
 #endif
 
-// MODULE VARIABLES-------------------------------------------------------
+/* MODULE VARIABLES-------------------------------------------------------
 
-MODULE       int                  xx;
+(None)
 
-// MODULE STRUCTURES------------------------------------------------------
+MODULE STRUCTURES------------------------------------------------------ */
 
 MODULE struct
 {   int   x,
@@ -122,43 +124,39 @@ MODULE struct
 
 MODULE void drawminorrow(int whichpvi, int whichsprite);
 MODULE __inline void drawsprites(int whichpvi);
-MODULE void emulate_rast(void);
 MODULE void initsprites(void);
 MODULE void newmajorrow(int whichpvi, int whichsprite);
-MODULE void newminorrow(int whichpvi, int whichsprite);
 MODULE void oldspritedone(int whichpvi, int whichsprite);
 MODULE void startsprite(int whichpvi, int whichsprite);
 MODULE void oldpvi_collisions(void);
+MODULE void oldpvi_startofframe(void);
+MODULE void oldpvi_endofframe(void);
 #ifdef WATCHPVIREADS
     MODULE UBYTE pviread(int address);
 #endif
 
 // CODE ------------------------------------------------------------------
 
-MODULE void newminorrow(int whichpvi, int whichsprite)
-{   oldsprite[whichpvi][whichsprite].minorrow++;
-    if (oldsprite[whichpvi][whichsprite].minorrow == oldsprite[whichpvi][whichsprite].size)
-    {   oldsprite[whichpvi][whichsprite].minorrow = 0;
-
-        if (oldsprite[whichpvi][whichsprite].majorrow == 9)
-        {   oldspritedone(whichpvi, whichsprite);
-        } else
-        {   oldsprite[whichpvi][whichsprite].majorrow++;
-            newmajorrow(whichpvi, whichsprite);
-}   }   }
-
 MODULE void drawminorrow(int whichpvi, int whichsprite)
 {   FAST int   expand,
                i,
                rast2,
-               x;
+               x, xx;
     FAST UBYTE c;
 
     switch (memmap)
     {
-    case MEMMAP_ASTROWARS:
+    case  MEMMAP_ASTROWARS:
+        c  = (UBYTE) from_astrowars_spr[oldsprite[whichpvi][whichsprite].colour];
         xx = oldsprite[whichpvi][whichsprite].x * 4 / 3; // 1 PVI = 1.3' non-PVI
-    adefault:
+    acase MEMMAP_GALAXIA:
+    case  MEMMAP_LASERBATTLE:
+    case  MEMMAP_LAZARIAN:
+        c  = (UBYTE) from_galaxia_spr[  oldsprite[whichpvi][whichsprite].colour];
+        xx = oldsprite[whichpvi][whichsprite].x;
+    acase MEMMAP_MALZAK1:
+    acase MEMMAP_MALZAK2:
+        c  = (UBYTE) from_malzak_spr[   oldsprite[whichpvi][whichsprite].colour];
         xx = oldsprite[whichpvi][whichsprite].x;
     }
 
@@ -167,26 +165,21 @@ MODULE void drawminorrow(int whichpvi, int whichsprite)
         {   expand = TRUE;
             for (x = 0; x < oldsprite[whichpvi][whichsprite].size; x++, xx++)
             {   if (xx >= PVI_XSIZE)
-                {   return;
+                {   goto DONE;
                 } // implied else
 
                 coinops_colltable[whichpvi][cpuy][xx] |= (0x10 << whichsprite);
 
                 switch (memmap)
                 {
-                case MEMMAP_ASTROWARS:
-                    c = (UBYTE) from_astrowars_spr[oldsprite[whichpvi][whichsprite].colour];
-                    rast2 = cpuy - 16;
-                acase MEMMAP_GALAXIA:
-                    c = (UBYTE) from_galaxia_spr[  oldsprite[whichpvi][whichsprite].colour];
+                case  MEMMAP_ASTROWARS:
+                case  MEMMAP_GALAXIA:
                     rast2 = cpuy - 16;
                 acase MEMMAP_LASERBATTLE:
-                case MEMMAP_LAZARIAN:
-                    c = (UBYTE) from_galaxia_spr[  oldsprite[whichpvi][whichsprite].colour];
+                case  MEMMAP_LAZARIAN:
                     rast2 = cpuy - 14;
                 acase MEMMAP_MALZAK1:
-                case MEMMAP_MALZAK2:
-                    c = (UBYTE) from_malzak_spr[   oldsprite[whichpvi][whichsprite].colour];
+                case  MEMMAP_MALZAK2:
                     rast2 = cpuy;
                 }
 
@@ -195,20 +188,16 @@ MODULE void drawminorrow(int whichpvi, int whichsprite)
                  && rast2      <  machines[machine].height
                  && xx         >= HIDDEN_X
                  && xx         <  HIDDEN_X + machines[machine].width
-                 && c          != screen[xx - HIDDEN_X][rast2]
                  && (machine != MALZAK || cpuy >= 11) // to avoid sprites in status area
                  && spritemode != SPRITEMODE_INVISIBLE
                 )
-                {   changepixel
-                    (   xx - HIDDEN_X,
-                        rast2,
-                        c
-                    );
+                {   changefgpixel(xx - HIDDEN_X, rast2, c);
         }   }   }
         else
         {   xx += oldsprite[whichpvi][whichsprite].size;
             expand = FALSE;
         }
+
         if (memmap == MEMMAP_ASTROWARS && (i == 2 || i == 5 || i == 8))
         {   if (expand)
             {   if
@@ -216,16 +205,23 @@ MODULE void drawminorrow(int whichpvi, int whichsprite)
                  && rast2      <  machines[machine].height
                  && xx         >= HIDDEN_X
                  && xx         <  HIDDEN_X + machines[machine].width
-                 && c          != screen[xx - HIDDEN_X][rast2]
                  && spritemode != SPRITEMODE_INVISIBLE
                 )
-                {   changepixel
-                    (   xx - HIDDEN_X,
-                        rast2,
-                        c
-                    );
+                {   changefgpixel(xx - HIDDEN_X, rast2, c);
             }   }
             xx++;
+    }   }
+
+DONE:
+    oldsprite[whichpvi][whichsprite].minorrow++;
+    if (oldsprite[whichpvi][whichsprite].minorrow == oldsprite[whichpvi][whichsprite].size)
+    {   oldsprite[whichpvi][whichsprite].minorrow = 0;
+
+        if (oldsprite[whichpvi][whichsprite].majorrow == 9)
+        {   oldspritedone(whichpvi, whichsprite);
+        } else
+        {   oldsprite[whichpvi][whichsprite].majorrow++;
+            newmajorrow(whichpvi, whichsprite);
 }   }   }
 
 MODULE __inline void drawsprites(int whichpvi)
@@ -242,16 +238,63 @@ MODULE __inline void drawsprites(int whichpvi)
         }
         if (oldsprite[whichpvi][whichsprite].majorrow != -1)
         {   drawminorrow(whichpvi, whichsprite);
-            newminorrow(whichpvi, whichsprite);
 }   }   }
 
 EXPORT void oldpvi(void)
-{   FAST FLAG  sounding;
-    FAST UBYTE ogc;
-    FAST int   kx, x, x1, x2,
-               ky, y, y1, y2;
+{   // assert(machines[machine].coinop);
 
-    inframe = TRUE;
+    cpux = cpuy = 0;
+    do
+    {   oldpvi_anypixel();
+    } while (inframe);
+}
+
+EXPORT void oldpvi_anypixel(void)
+{   if (cpux == 0)
+    {   breakrastline();
+        if (cpuy == 0)
+        {   oldpvi_startofframe();
+        } elif (cpuy == 269)
+        {   pvi_vblank();
+    }   }
+    elif (cpux == 227 - 1 && cpuy < 269) // 312 - 43
+    {   drawsprites(0);
+        if (machines[machine].pvis >= 2)
+        {   pvibase += 0x100; // switch to 2nd PVI
+            drawsprites(1);
+            if (machines[machine].pvis >= 3)
+            {   pvibase += 0x100; // switch to 3rd PVI
+                drawsprites(2);
+            }
+            pvibase = machines[machine].pvibase;
+        }
+        if (collisions)
+        {   oldpvi_collisions();
+    }   }
+
+    if (cpux == nextinst)
+    {   oldcycles = cycles_2650;
+        checkstep();
+        one_instruction();
+        nextinst += (cycles_2650 - oldcycles) * 3; // in pixels
+        if (nextinst >= 227)
+        {   nextinst -= 227;
+    }   }
+
+    if (cpux == 227 - 1)
+    {   cpux = 0;
+        if (cpuy == 312 - 1)
+        {   cpuy = 0;
+            oldpvi_endofframe();
+        } else
+        {   cpuy++;
+    }   }
+    else
+    {   cpux++;
+}   }
+
+MODULE void oldpvi_startofframe(void)
+{   inframe = TRUE;
 
     // "The data is valid only at vertical reset." - 2636 PVI datasheet, p. 10.
     // But enabling these lines breaks Interton BOXING :-(
@@ -322,48 +365,24 @@ EXPORT void oldpvi(void)
     }
     psu &= ~(PSU_S);
     interrupt_2650 = FALSE; // "Interrupts are reset on the trailing edge of the vertical reset signal." - 2636 PVI datasheet, p. 3.
+}
 
-    for (cpuy = 0; cpuy < 269; cpuy++) // 312 - 43
-    {   /* For each rastline, we emulate the CPU first, and then the PVI.
-        This is because on the real machine, the PVI would presumably generate the
-        interrupt, write to the newsprite registers, etc. at the end of the rastline.
-        So, by that time the CPU would have executed a rastline's worth of
-        instructions. */
-        emulate_rast();
+MODULE void oldpvi_endofframe(void)
+{   FAST int   kx, x, x1, x2,
+               ky, y, y1, y2;
+    FAST FLAG  sounding;
+    FAST UBYTE ogc;
 
-        drawsprites(0);
-        if (machines[machine].pvis >= 2)
-        {   pvibase += 0x100; // switch to 2nd PVI
-            drawsprites(1);
-            if (machines[machine].pvis >= 3)
-            {   pvibase += 0x100; // switch to 3rd PVI
-                drawsprites(2);
-            }
-            pvibase = machines[machine].pvibase;
-        }
-
-        if (collisions)
-        {   oldpvi_collisions();
-    }   }
-
-    cpuy = 269; // 312 - 43
-    pvi_vblank();
-
-    // We don't call oldspritedone() for truncated sprites (ie. ones that were partly-drawn when we hit raster 272).
-    // This seems to be authentic, eg. see Interton PINBALLA.
-
-    for (cpuy = 269; cpuy < 312; cpuy++) // 312 - 43
-    {   emulate_rast();
-    }
+    inframe = FALSE;
 
 #ifdef SHOWRUMBLE
     if (rumbling[0])
     {   for (y = 0; y < machines[machine].height; y++)
-        {   changepixel(             0, y, 15 - screen[             0][y]);
+        {   changefgpixel(                          0, y, 15 - screen[                          0][y]);
     }   }
     if (rumbling[1])
     {   for (y = 0; y < machines[machine].height; y++)
-        {   changepixel(machines[machine].width - 1, y, 15 - screen[machines[machine].width - 1][y]);
+        {   changefgpixel(machines[machine].width - 1, y, 15 - screen[machines[machine].width - 1][y]);
     }   }
 #endif
 
@@ -394,9 +413,9 @@ EXPORT void oldpvi(void)
                      && (ky * 8) + y - 16 < 240
                     )
                     {   if (astrowars_tiles[(memory[scrnaddr] * 8) + y] & (128 >> x))
-                        {   changepixel((kx * 8) + x, (ky * 8) + y - 16, ogc);
+                        {   changefgpixel((kx * 8) + x, (ky * 8) + y - 16, ogc);
                         } else
-                        {   changepixel((kx * 8) + x, (ky * 8) + y - 16, BLACK);
+                        {   changefgpixel((kx * 8) + x, (ky * 8) + y - 16, BLACK);
         }   }   }   }   }
         else
         {   ogc = RED;
@@ -411,7 +430,7 @@ EXPORT void oldpvi(void)
                  &&  y >=  0
                  &&  y < 240
                 )
-                {   changepixel(x, y, ogc);
+                {   changefgpixel(x, y, ogc);
     }   }   }   }
 
     if (machine == MALZAK)
@@ -509,6 +528,9 @@ MODULE void newmajorrow(int whichpvi, int whichsprite)
 MODULE void oldspritedone(int whichpvi, int whichsprite)
 {   // pvibase is expected to be set according to the PVI you are using
 
+    // We don't call oldspritedone() for truncated sprites (ie. ones that were partly-drawn when we hit raster 272).
+    // This seems to be authentic, eg. see Interton PINBALLA.
+
     oldsprite[whichpvi][whichsprite].majorrow = -1;
 
     pviwrite(PVI_BGCOLLIDE   , (UBYTE) (pviread(PVI_BGCOLLIDE   ) | (8 >> whichsprite)), TRUE);
@@ -560,29 +582,6 @@ MODULE void initsprites(void)
         {   for (whichsprite = 0; whichsprite < 4; whichsprite++)
             {    oldsprite[i][whichsprite].starty += 2;
 }   }   }   }
-
-MODULE void emulate_rast(void)
-{   breakrastline();
-
-#ifdef MALZAK_885KHZ
-    if (machine == MALZAK) // 227 / 4 = 56.75
-    {   // This relies on the fact that 312 % 4 == 0
-        if (cpuy % 4 == 0)
-        {   slice_2650 += 56;
-        } else
-        {   slice_2650 += 57;
-    }   }
-    else // 227 / 3 = 75.6'
-#endif
-    {   // This relies on the fact that 312 % 3 == 0
-        if (cpuy % 3 == 0)
-        {   slice_2650 += 75;
-        } else
-        {   slice_2650 += 76;
-    }   }
-
-    cpu_2650_untapable();
-}
 
 MODULE void oldpvi_collisions(void)
 {   FAST UBYTE t1[3], t2[3],

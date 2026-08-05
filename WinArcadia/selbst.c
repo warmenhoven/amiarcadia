@@ -55,7 +55,9 @@ IMPORT UWORD                      console[4],
                                   keypads[2][NUMKEYS],
                                   mirror_r[32768],
                                   mirror_w[32768];
-IMPORT ULONG                      frames,
+IMPORT ULONG                      cycles_2650,
+                                  frames,
+                                  oldcycles,
                                   verbosetape;
 IMPORT int                        blink,
                                   drawmode,
@@ -335,9 +337,9 @@ EXPORT void selbst_emulate(void)
                 {   t = eti641_chars[tempvdu & 0x7F][xx] ^ 0xFF;
                     for (yy = 0; yy < 8; yy++)
                     {   if (t & (0x80 >> yy))
-                        {   changepixel((x * 8) + xx, (y * 8) + yy, vdu_fgc);
+                        {   changefgpixel((x * 8) + xx, (y * 8) + yy, vdu_fgc);
                         } else
-                        {   changepixel((x * 8) + xx, (y * 8) + yy, vdu_bgc);
+                        {   changebgpixel((x * 8) + xx, (y * 8) + yy, vdu_bgc);
                 }   }   }
 #else
                 for (yy = 0; yy < 8; yy++)
@@ -350,7 +352,7 @@ EXPORT void selbst_emulate(void)
                     }   }
                     for (xx = 0; xx < SELBST_CHARWIDTH; xx++)
                     {   if ((t & (0x80 >> xx)) && (x * SELBST_CHARWIDTH) + xx < SELBST_BOXWIDTH)
-                        {   changepixel((x * SELBST_CHARWIDTH) + xx, yyy, tempfgc);
+                        {   changefgpixel((x * SELBST_CHARWIDTH) + xx, yyy, tempfgc);
                     }   }
                     yyy++;
                 }
@@ -1192,7 +1194,7 @@ EXPORT void selbst_drawhelpgrid(void)
             for (xx = 0; xx < 8; xx++)
             {   for (yy = 0; yy < 8; yy++)
                 {   if (xx == 0 || xx == 8 - 1 || yy == 0 || yy == 8 - 1)
-                    {   changepixel(startx + xx, starty + yy, GREY1);
+                    {   changefgpixel(startx + xx, starty + yy, GREY1);
 }   }   }   }   }   }
 
 EXPORT void selbst_reset(void)
@@ -1218,3 +1220,11 @@ EXPORT void selbst_reset(void)
     } else
     {   iar = 0;
 }   }
+
+EXPORT void selbst_one_instruction(void)
+{   oldcycles = cycles_2650;
+    checkstep();
+    do_tape();
+    one_instruction();
+    slice_2650 -= (cycles_2650 - oldcycles);
+}

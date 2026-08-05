@@ -248,7 +248,7 @@ EXPORT const struct MenuStruct menuinfo1[MENUITEMS] = {
 { "SETTINGS.EMULATOR.SENSEGAME"    , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUITEM_SENSEGAME
 { "SETTINGS.EMULATOR.SHOWTIPS"     , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUITEM_SHOWTOD
 { "SETTINGS.EMULATOR.STUBS"        , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUITEM_USESTUBS
-{ ""                               , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUFAKE_FRAMEBASED
+{ ""                               , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     spare
 { ""                               , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUFAKE_LOGTOFILE
 { "SETTINGS.EMULATOR.PATHS"        , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUITEM_PATHS
 { ""                               , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUFAKE_FILTER
@@ -447,9 +447,9 @@ EXPORT const struct MenuStruct menuinfo1[MENUITEMS] = {
 { "SETTINGS.DOS.NOTWINDOS"         , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
 { "SETTINGS.DOS.CDDOS"             , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
 { "SETTINGS.DOS.P1DOS"             , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //  93 MENUOPT_P1DOS
-{ "SETTINGS.DOS.NOCD2650DOS"       , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
-{ "SETTINGS.EMULATOR.FRAMEBASED"   , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUOPT_FRAMEBASED
-{ "SETTINGS.EMULATOR.PIXELBASED"   , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUOPT_PIXELBASED
+{ "SETTINGS.DOS.NOCD2650DOS"       , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //  94
+{ ""                               , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //  95 spare
+{ ""                               , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //  96 spare
 { "SETTINGS.EMULATOR.APPENDLOG"    , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
 { "SETTINGS.EMULATOR.IGNORELOG"    , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
 { "SETTINGS.EMULATOR.REPLACELOG"   , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
@@ -585,7 +585,6 @@ IMPORT     int                        aifffile,
                                       filter,
                                       flagline,
                                       foundgames,
-                                      framebased,
                                       fullscreen,
                                       game,
                                       generate,
@@ -2117,16 +2116,6 @@ EXPORT void updatemenu(int which)
     acase MENUITEM_USESTUBS:
         ghost(which, machine != ARCADIA && machine != INTERTON);
         tick(which, usestubs);
-    acase MENUFAKE_FRAMEBASED:
-        enable2(MENUOPT_FRAMEBASED, machine == ARCADIA || machine == BINBUG || machine == CD2650 || machine == PHUNSY);
-        enable2(MENUOPT_PIXELBASED, machine == ARCADIA || machine == BINBUG || machine == CD2650 || machine == PHUNSY);
-        if (framebased)
-        {     checkmx(MENUOPT_FRAMEBASED, MENUOPT_FRAMEBASED, MENUOPT_PIXELBASED);
-            uncheckmx(MENUOPT_PIXELBASED);
-        } else
-        {   uncheckmx(MENUOPT_FRAMEBASED);
-              checkmx(MENUOPT_PIXELBASED, MENUOPT_FRAMEBASED, MENUOPT_PIXELBASED);
-        }
     acase MENUFAKE_LOGTOFILE:
         switch (logfile)
         {
@@ -3826,9 +3815,6 @@ EXPORT void handle_menu2(int command)
     acase MENUOPT_DOS_UDOS:      twin_dosver = TWIN_UDOS;   twin_dir_disk(TRUE, 0);
     acase MENUOPT_DOS_NOTWINDOS: twin_dosver = TWIN_NODOS;  twin_dir_disk(TRUE, 0);
     // "Settings|Emulator »" submenu
-    acase MENUOPT_FRAMEBASED:
-    case  MENUOPT_PIXELBASED:
-        flipbool(&framebased, command, FALSE);
     acase MENUOPT_APPEND:
         if (logfile != LOGFILE_APPEND)
         {   logfile_close();

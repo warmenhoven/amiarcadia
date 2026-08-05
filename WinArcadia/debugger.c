@@ -38,7 +38,8 @@
 
 // EXPORTED VARIABLES-----------------------------------------------------
 
-EXPORT       FLAG                     rexx      = FALSE;
+EXPORT       FLAG                     donecpu,
+                                      rexx      = FALSE;
 EXPORT       TEXT                     thearg[7][MAX_PATH + 80 + 1],
                                       fn_asm[   MAX_PATH      + 1],
                                       userinput[MAX_PATH + 80 + 1] = "";
@@ -145,7 +146,6 @@ IMPORT       int                      base,
                                       disassembling,
                                       firstdosequiv, lastdosequiv,
                                       flagline,
-                                      framebased,
                                       fromnum,
                                       interrupt_2650,
                                       lastparse,
@@ -182,7 +182,6 @@ IMPORT       int                      base,
                                       tolimit,
                                       tonum,
                                       trace,
-                                      traceorstep,
                                       twin_dosver,
                                       useguideray,
                                       userlabels,
@@ -515,11 +514,21 @@ EXPORT FLAG debug_command(void)
         }
     acase MENUITEM_S:
         if (allowable(TRUE))
-        {   step = traceorstep = TRUE;
-            if (rexx)
-            {   one_instruction();
-            } else
-            {   emu_unpause();
+        {   step = TRUE;
+            donecpu = FALSE;
+            switch (machine)
+            {
+            case  ARCADIA:                 do {  arcadia_anypixel(); } while (!donecpu);
+            acase INTERTON: case ELEKTOR:  do {   newpvi_anypixel(); } while (!donecpu);
+            acase PIPBUG:                  pipbug_one_instruction();
+            acase BINBUG:                  do {   binbug_anypixel(); } while (!donecpu);
+            acase INSTRUCTOR:                si50_one_instruction();
+            acase TWIN:                      twin_one_instruction();
+            acase CD2650:                  do {   cd2650_anypixel(); } while (!donecpu);
+            acase PHUNSY:                  do {   phunsy_anypixel(); } while (!donecpu);
+            acase SELBST:                  selbst_one_instruction();
+            acase MIKIT:                    mikit_one_instruction();
+            acase MALZAK:   case ZACCARIA: do {   oldpvi_anypixel(); } while (!donecpu);
         }   }
     acase MENUFAKE_SPR:
         if
@@ -571,7 +580,6 @@ EXPORT FLAG debug_command(void)
                 emu_unpause();
             } else
             {   step = TRUE;
-                traceorstep = (trace || step) ? TRUE : FALSE;
                 emu_unpause();
         }   }
     acase MENUITEM_ASM:
@@ -1864,13 +1872,13 @@ EXPORT FLAG debug_command(void)
         }   }
     acase MENUITEM_G:
         if (thearg[1][0])
-        {   if (paused)
-            {   address1 = parse_expression((STRPTR) thearg[1], MAX_ADDR, FALSE);
-                DISCARD bp_add(address1, 0, COND_UN, 0);
-                emu_unpause();
+        {   address1 = parse_expression((STRPTR) thearg[1], MAX_ADDR, FALSE);
+            DISCARD bp_add(address1, 0, COND_UN, 0);
+            if (paused)
+            {   emu_unpause();
                 zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_ENGINE_GOING, "Unpausing...\n\n"));
-            } // else print an error message?
-        } else
+        }   }
+        else
         {   if (paused)
             {   emu_unpause();
                 zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_ENGINE_GOING,   "Unpausing...\n\n"));
@@ -3163,7 +3171,6 @@ EXPORT FLAG debug_command(void)
                     "CPU tracing"
             )   );
             fliplog(&trace);
-            traceorstep = (trace || step) ? TRUE : FALSE;
             if (trace && verbosity == VERBOSITY_TABLE)
             {   zprintf
                 (   TEXTPEN_TRACE,
@@ -7240,11 +7247,10 @@ EXPORT FLAG hasrastlines(void)
 {   if
     (   machine == ARCADIA
      || machines[machine].pvis
-     || (   !framebased
-         && (   machine == BINBUG
-             || machine == CD2650
-             || machine == PHUNSY
-    )   )   )
+     || machine == BINBUG
+     || machine == CD2650
+     || machine == PHUNSY
+    )
     {   return TRUE;
     }
 

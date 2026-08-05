@@ -42,7 +42,9 @@ IMPORT UWORD                      console[4],
                                   keypads[2][NUMKEYS],
                                   mirror_r[32768],
                                   mirror_w[32768];
-IMPORT ULONG                      frames;
+IMPORT ULONG                      cycles_2650,
+                                  frames,
+                                  oldcycles;
 IMPORT int                        drawunlit,
                                   frameskip,
                                   game,
@@ -212,15 +214,35 @@ EXPORT void mikit_setmemmap(void)
 }   }   }
 
 EXPORT void mikit_emulate(void)
-{   FAST int colour,
-             i;
+{   FAST int   colour,
+               i;
+    FAST ULONG endcycle;
 
     inframe = TRUE;
 
     // 1MHz = 1,000,000 cycles per second
     // 1,000,000 ÷ 50 = 20,000
     slice_2650 += 20000;
-    cpu_2650_untapable();
+    // assert(slice_2650 >= 1);
+
+    endcycle = cycles_2650 + slice_2650;
+    if (endcycle < cycles_2650)
+    {   // cycle counter will overflow, so we need to use the slow method
+        while (slice_2650 >= 1)
+        {   oldcycles = cycles_2650;
+            checkstep();
+            one_instruction();
+            slice_2650 -= (cycles_2650 - oldcycles);
+    }   }
+    else
+    {   // cycle counter will not overflow, so we can use a faster method
+        oldcycles = cycles_2650;
+        while (cycles_2650 < endcycle)
+        {   checkstep();
+            one_instruction();
+        }
+        slice_2650 -= (cycles_2650 - oldcycles);
+    }
 
     wa_checkinput();
     mikit_emuinput();
@@ -356,3 +378,10 @@ EXPORT void mikit_reset(void)
     } else
     {   iar = 0;
 }   }
+
+EXPORT void mikit_one_instruction(void)
+{   oldcycles = cycles_2650;
+    checkstep();
+    one_instruction();
+    slice_2650 -= (cycles_2650 - oldcycles);
+}

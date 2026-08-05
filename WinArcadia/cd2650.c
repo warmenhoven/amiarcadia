@@ -33,17 +33,6 @@
 // machine's "viewpoint" (ie. a column at a time), instead of from the
 // user's (ie. a row at a time).
 
-#define DOCPU                 \
-if (cpux == nextinst)         \
-{   oldcycles = cycles_2650;  \
-    checkstep();              \
-    do_tape();                \
-    one_instruction();        \
-    nextinst += (cycles_2650 - oldcycles) * (fastcd2650 ? 8 : 12); \
-    if (nextinst >= 904)      \
-    {   nextinst -= 904;      \
-}   }
-
 #define CD2650_FD1771_COMMAND  0x80 // used for command AND status!
 #define CD2650_FD1771_STATUS   0x80 // used for command AND status!
 #define CD2650_FD1771_TRACK    0x81
@@ -102,7 +91,6 @@ IMPORT       int                  ambient,
                                   drive_mode,
                                   drive_idmode,
                                   editscreen,
-                                  framebased,
                                   game,
                                   keymap,
                                   language,
@@ -161,9 +149,7 @@ EXPORT       int                  cd2650_biosver    = CD2650_SUPERVISOR,
 
 // MODULE FUNCTIONS-------------------------------------------------------
 
-MODULE void cd2650_runcpu(void);
-MODULE void draw_cd2650(void);
-MODULE void run_cpu(int until);
+MODULE void cd2650_endofframe(void);
 
 // CODE-------------------------------------------------------------------
 
@@ -364,49 +350,70 @@ EXPORT void cd2650_setmemmap(void)
 }   }
 
 EXPORT void cd2650_emulate(void)
+{   // assert(machine == CD2650);
+
+    cpux = cpuy = 0;
+    do
+    {   cd2650_anypixel();
+    } while (inframe);
+}
+
+EXPORT void cd2650_anypixel(void)
 {   FAST UBYTE t;
-    FAST int   kx, x, x1, x2,
-               ky, y, y1, y2;
+    FAST int   x1, x2,
+               y1, y2;
 
-    inframe = TRUE;
-
-    if (framebased)
-    {   slice_2650 += fastcd2650 ? 29832 : 19888;
-        cd2650_runcpu();
-        draw_cd2650();
-    } else
-    {   for (cpuy = 0; cpuy <= 191; cpuy++)
-        {   breakrastline();
-            y1 = cpuy / 12;
-            y2 = cpuy % 12;
-            if (y2 >= 10)
-            {   for (cpux = 0; cpux <= 639; cpux++)
-                {   changebgpixel(cpux, cpuy, vdu_bgc);
-                    DOCPU;
-                }
-                run_cpu(904);
-            } else
-            {   for (cpux = 0; cpux <= 639; cpux++)
-                {   x1 = cpux /  8;
-                    x2 = cpux %  8;
-#ifdef SHOWCHARSET
-                    if (x1 < 16 && y1 < 16) t = (y1 * 16) + x1; else
-#endif
-                    t  = memory[0x1000 + (x1 * 16) + y1] & 0x7F;
-                    if (cd2650_chars_bmp[t][y2] & (0x80 >> x2))
-                    {   changepixel(cpux, cpuy, vdu_fgc);
-                    } else
-                    {   changebgpixel(cpux, cpuy, vdu_bgc);
-                    }
-                    DOCPU;
-                }
-                run_cpu(904);
-        }   }
-
-        for (cpuy = 192; cpuy <= 263; cpuy++)
-        {   breakrastline();
-            run_cpu(904);
+    if (cpux == 0)
+    {   breakrastline();
+        if (cpuy == 0)
+        {   inframe = TRUE;
     }   }
+
+    if (cpuy < 192 && cpux < 640)
+    {   y1 = cpuy / 12;
+        y2 = cpuy % 12;
+        if (y2 >= 10)
+        {   changethisbgpixel(vdu_bgc);
+        } else
+        {   x1 = cpux /  8;
+            x2 = cpux %  8;
+#ifdef SHOWCHARSET
+            if (x1 < 16 && y1 < 16) t = (y1 * 16) + x1; else
+#endif
+            t  = memory[0x1000 + (x1 * 16) + y1] & 0x7F;
+            if (cd2650_chars_bmp[t][y2] & (0x80 >> x2))
+            {   changethisfgpixel(vdu_fgc);
+            } else
+            {   changethisbgpixel(vdu_bgc);
+    }   }   }
+
+    if (cpux == nextinst)
+    {   oldcycles = cycles_2650;
+        checkstep();
+        do_tape();
+        one_instruction();
+        nextinst += (cycles_2650 - oldcycles) * (fastcd2650 ? 8 : 12); // in pixels
+        if (nextinst >= 904)
+        {   nextinst -= 904;
+    }   }
+
+    if (cpux == 904 - 1)
+    {   cpux = 0;
+        if (cpuy == 264 - 1)
+        {   cpuy = 0;
+            cd2650_endofframe();
+        } else
+        {   cpuy++;
+    }   }
+    else
+    {   cpux++;
+}   }
+
+MODULE void cd2650_endofframe(void)
+{   FAST int kx, x, x1, x2,
+             ky, y, y1, y2;
+
+    inframe = FALSE;
 
     if (editscreen)
     {   kx = (scrnaddr - 0x1000) / 16;
@@ -419,12 +426,12 @@ EXPORT void cd2650_emulate(void)
         {   for (y = y1; y <= y2; y++)
             {   if
                 (   (x == x1 || x == x2 || y == y1 || y == y2)
-                 && x >= 0
-                 && x < 640
-                 && y >= 0
-                 && y < 192
+                 && x >=   0
+                 && x <  640
+                 && y >=   0
+                 && y <  192
                 )
-                {   changepixel(x, y, RED);
+                {   changefgpixel(x, y, RED);
     }   }   }   }
 
     fd1771_spindown();
@@ -1083,7 +1090,7 @@ EXPORT void cd2650_drawhelpgrid(void)
             for (xx = 0; xx < 8; xx++)
             {   for (yy = 0; yy < 12; yy++)
                 {   if (xx == 0 || xx == 8 - 1 || yy == 0 || yy == 12 - 1)
-                    {   changepixel(startx + xx, starty + yy, GREY1);
+                    {   changefgpixel(startx + xx, starty + yy, GREY1);
 }   }   }   }   }   }
 
 EXPORT FLAG cd2650_edit_screen(UWORD code)
@@ -2211,56 +2218,6 @@ EXPORT void cd2650_serialize_cos(void)
             cd2650_dir_disk(TRUE, whichdrive);
 }   }   }
 
-MODULE void cd2650_runcpu(void)
-{   FAST ULONG endcycle;
-
-    // assert(slice_2650 >= 1);
-
-    endcycle = cycles_2650 + slice_2650;
-    if (endcycle < cycles_2650)
-    {   // cycle counter will overflow, so we need to use the slow method
-        while (slice_2650 >= 1)
-        {   oldcycles = cycles_2650;
-            checkstep();
-            do_tape();
-            one_instruction();
-            slice_2650 -= (cycles_2650 - oldcycles);
-    }   }
-    else
-    {   // cycle counter will not overflow, so we can use a faster method
-        oldcycles = cycles_2650;
-        while (cycles_2650 < endcycle)
-        {   checkstep();
-            do_tape();
-            one_instruction();
-        }
-        slice_2650 -= (cycles_2650 - oldcycles);
-}   }
-
-MODULE void draw_cd2650(void)
-{   FAST UBYTE t;
-    FAST int   x1, x2,
-               y1, y2;
-
-    for (y1 = 0; y1 < 16; y1++)
-    {   for (y2 = 0; y2 < 10; y2++)
-        {   for (x1 = 0; x1 < 80; x1++)
-            {
-#ifdef SHOWCHARSET
-                if (x1 < 16 && y1 < 16) t = (y1 * 16) + x1; else
-#endif
-                t = memory[0x1000 + (x1 * 16) + y1] & 0x7F;
-                for (x2 = 0; x2 < 8; x2++)
-                {   if (cd2650_chars_bmp[t][y2] & (0x80 >> x2))
-                    {   changepixel(  (x1 * 8) + x2, (y1 * 12) + y2, vdu_fgc);
-                    } else
-                    {   changebgpixel((x1 * 8) + x2, (y1 * 12) + y2, vdu_bgc);
-        }   }   }   }
-        for (y2 = 10; y2 < 12; y2++)
-        {   for (x1 = 0; x1 < 640; x1++)
-            {   changebgpixel(x1, (y1 * 12) + y2, vdu_bgc);
-}   }   }   }
-
 EXPORT void cd2650_inject_file(STRPTR thefilename)
 {   int   contiguous,
           i, j,
@@ -2412,19 +2369,3 @@ DONE3:
 END:
     cd_progdir();
 }
-
-MODULE void run_cpu(int until)
-{   // This is a quicker equivalent to repeatedly incrementing cpux and calling do_cpu().
-
-    cpux = nextinst;
-    while (cpux < until)
-    {   oldcycles = cycles_2650;
-        checkstep();
-        do_tape();
-        one_instruction();
-        nextinst += (cycles_2650 - oldcycles) * (fastcd2650 ? 8 : 12); // in pixels
-        cpux = nextinst;
-    }
-    if (nextinst >= 904)
-    {   nextinst -= 904;
-}   }

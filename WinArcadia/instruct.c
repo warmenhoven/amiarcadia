@@ -53,7 +53,9 @@ IMPORT       UWORD                    console[4],
                                       keypads[2][NUMKEYS],
                                       mirror_r[32768],
                                       mirror_w[32768];
-IMPORT       ULONG                    frames,
+IMPORT       ULONG                    cycles_2650,
+                                      frames,
+                                      oldcycles,
                                       si50_bigctrls,
                                       verbosetape;
 IMPORT       int                      console_start,
@@ -1039,4 +1041,12 @@ EXPORT void si50_updatedips(FLAG force)
     if (force || (si50_toggles &   2) != (old_si50_toggles &   2)) bu_select(SUBWINDOW_DIPS, IDC_PARALLEL_BIT1, si50_toggles &   2);
     if (force || (si50_toggles &   1) != (old_si50_toggles &   1)) bu_select(SUBWINDOW_DIPS, IDC_PARALLEL_BIT0, si50_toggles &   1);
     old_si50_toggles = si50_toggles;
+}
+
+EXPORT void si50_one_instruction(void)
+{   oldcycles = cycles_2650;
+    checkstep();
+    do_tape();
+    one_instruction();
+    slice_2650 -= (cycles_2650 - oldcycles);
 }

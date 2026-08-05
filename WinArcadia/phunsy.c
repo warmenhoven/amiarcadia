@@ -65,19 +65,6 @@
 #define MDCR_BLOCKNUMLEN          1333       // length of blocknumber in cpu cycles
 #define MDCR_BIT                  56         // 6000 bps
 
-#define DOCPU                 \
-if (cpux == nextinst)         \
-{   oldcycles = cycles_2650;  \
-    checkstep();              \
-    mdcr_exec();              \
-    do_tape();                \
-    one_instruction();        \
-    nextinst += (cycles_2650 - oldcycles) * 8; \
-    if (nextinst >= 512)      \
-    {   nextinst -= 512;      \
-}   }
-// nextinst range is -128..383
-
 // IMPORTED VARIABLES-----------------------------------------------------
 
 IMPORT       FLAG                     capslock,
@@ -113,7 +100,6 @@ IMPORT       int                      absxmin,
                                       drawmode,
                                       drawunlit,
                                       editscreen,
-                                      framebased,
                                       game,
                                       interrupt_2650,
                                       inverse,
@@ -177,12 +163,11 @@ MODULE       int                      mdcrdatapos,
 
 // MODULE FUNCTIONS-------------------------------------------------------
 
-MODULE void draw_phunsy(void);
 MODULE void phunsy_emuinput(void);
 MODULE void phunsy_drawdigit(int position);
 MODULE void phunsy_drawdot(int position);
-MODULE void phunsy_runcpu(void);
-MODULE void run_cpu(int until);
+MODULE void phunsy_startofframe(void);
+MODULE void phunsy_endofframe(void);
 
 // CODE-------------------------------------------------------------------
 
@@ -191,7 +176,7 @@ EXPORT void phunsy_setmemmap(void)
 
     // assert(memmap == MEMMAP_PHUNSY);
 
-    nextinst = -128;
+    nextinst = 0;
     ticks = rate = 0;
 
     if (phunsy_biosver == PHUNSY_MINIMONITOR)
@@ -295,12 +280,98 @@ EXPORT void phunsy_setmemmap(void)
 }
 
 EXPORT void phunsy_emulate(void)
+{   // assert(machine == PHUNSY);
+
+    cpux = cpuy = 0;
+    do
+    {   phunsy_anypixel();
+    } while (inframe);
+}
+
+EXPORT void phunsy_anypixel(void)
 {   FAST UBYTE fgc,
                t;
-    FAST int   kx, x, x1, x2,
-               ky, y, y1, y2;
+    FAST int   x1, x2,
+               y1, y2;
 
-    inframe = TRUE;
+    if (cpux == 0)
+    {   breakrastline();
+        if (cpuy == 0)
+        {   phunsy_startofframe();
+    }   }
+
+    if (cpuy < 256 && cpux >= 128)
+    {   y1 = cpuy / 8;
+        y2 = cpuy % 8;
+        if (cpuy == 156 && cpux == 256 && ticks) // halfway through frame
+        {   ticks--;
+            if (ticks == 0)
+            {   ticks = rate;
+                interrupt_2650 = TRUE;
+                checkinterrupt();
+        }   }
+        x1 = (cpux - 128) / 6;
+        x2 = (cpux - 128) % 6;
+#ifdef SHOWCHARSET
+        if (x1 < 16 && y1 < 16) t = (y1 * 16) + x1; else
+#endif
+        t = memory[0x1000 + (y1 * 64) + x1];
+        if (t >= 128)
+        {   if ((t & 0x70) == 0)
+            {   fgc = vdu_bgc;
+            } elif ((t & 0x70) == 0x70)
+            {   fgc = vdu_fgc;
+            } else
+            {   if (inverse)
+                {   fgc = 22 - ((t & 0x70) >> 4); // 1..6 -> 21..16
+                } else
+                {   fgc = 15 + ((t & 0x70) >> 4); // 1..6 -> 16..21
+            }   }
+            t &= 0x0F;
+            if (phunsy_gfx[t][y2] & (0x20 >> x2))
+            {   changethisfgpixel(fgc);
+            } else
+            {   changethisbgpixel(vdu_bgc);
+        }   }
+        else
+        {   if (t == 0)
+            {   t = 0x20; // maybe we shouldn't be doing this?
+            } elif (t <= 0x1F)
+            {   t += 0x40;
+            } elif (t >= 0x40 && t <= 0x5F)
+            {   t -= 0x40;
+            }
+            if (phunsy_chars[t][y2] & (0x20 >> x2))
+            {   changethisfgpixel(vdu_fgc);
+            } else
+            {   changethisbgpixel(vdu_bgc);
+    }   }   }
+
+    if (cpux == nextinst)
+    {   oldcycles = cycles_2650;
+        checkstep();
+        mdcr_exec();
+        do_tape();
+        one_instruction();
+        nextinst += (cycles_2650 - oldcycles) * 8; // in pixels
+        if (nextinst >= 512)
+        {   nextinst -= 512;
+    }   }
+
+    if (cpux == 512 - 1)
+    {   cpux = 0;
+        if (cpuy == 313 - 1)
+        {   cpuy = 0;
+            phunsy_endofframe();
+        } else
+        {   cpuy++;
+    }   }
+    else
+    {   cpux++;
+}   }
+
+MODULE void phunsy_startofframe(void)
+{   inframe = TRUE;
 
     if (showleds)
     {   // this segment display is persistent, not transient
@@ -313,105 +384,19 @@ EXPORT void phunsy_emulate(void)
         phunsy_drawdot(6);
     }
 
-    if (framebased)
-    {   // 1,001,600 cycles per second / 50 frames per second = 20032 cycles per frame
+    if (phunsy_biosver == PHUNSY_PHUNSY && ticks) // start/end of frame
+    {   ticks--;
+        if (ticks == 0)
+        {   ticks = rate;
+            interrupt_2650 = TRUE;
+            checkinterrupt();
+}   }   }
 
-        slice_2650 += 10016;
-        phunsy_runcpu();
-        if (ticks)
-        {   ticks--;
-            if (ticks == 0)
-            {   ticks = rate;
-                interrupt_2650 = TRUE;
-                checkinterrupt();
-        }   }
+MODULE void phunsy_endofframe(void)
+{   FAST int kx, x, x1, x2,
+             ky, y, y1, y2;
 
-        slice_2650 += 10016;
-        phunsy_runcpu();
-        if (ticks)
-        {   ticks--;
-            if (ticks == 0)
-            {   ticks = rate;
-                interrupt_2650 = TRUE;
-                checkinterrupt();
-        }   }
-
-        // Our ticks are only approximate (ideally they would occur based on the precise cycle of the
-        // initiating WRTE command).
-
-        draw_phunsy();
-    } else
-    {   cpux = cpuy = 0;
-        if (phunsy_biosver == PHUNSY_PHUNSY && ticks) // start/end of frame
-        {   ticks--;
-            if (ticks == 0)
-            {   ticks = rate;
-                interrupt_2650 = TRUE;
-                checkinterrupt();
-        }   }
-
-        for (cpuy = 0; cpuy <= 255; cpuy++)
-        {   breakrastline();
-            if (cpuy == 156 && phunsy_biosver == PHUNSY_PHUNSY && ticks)
-            {   ticks--;
-                if (ticks == 0)
-                {   ticks = rate;
-                    interrupt_2650 = TRUE;
-                    checkinterrupt();
-            }   }
-            y1 = cpuy / 8;
-            y2 = cpuy % 8;
-            run_cpu(128);
-            for (cpux = 128; cpux < 512; cpux++)
-            {   if (cpuy == 156 && cpux == 256 && ticks) // halfway through frame
-                {   ticks--;
-                    if (ticks == 0)
-                    {   ticks = rate;
-                        interrupt_2650 = TRUE;
-                        checkinterrupt();
-                }   }
-                x1 = (cpux - 128) / 6;
-                x2 = (cpux - 128) % 6;
-#ifdef SHOWCHARSET
-                if (x1 < 16 && y1 < 16) t = (y1 * 16) + x1; else
-#endif
-                t = memory[0x1000 + (y1 * 64) + x1];
-                if (t >= 128)
-                {   if ((t & 0x70) == 0)
-                    {   fgc = vdu_bgc;
-                    } elif ((t & 0x70) == 0x70)
-                    {   fgc = vdu_fgc;
-                    } else
-                    {   if (inverse)
-                        {   fgc = 22 - ((t & 0x70) >> 4); // 1..6 -> 21..16
-                        } else
-                        {   fgc = 15 + ((t & 0x70) >> 4); // 1..6 -> 16..21
-                    }   }
-                    t &= 0x0F;
-                    if (phunsy_gfx[t][y2] & (0x20 >> x2))
-                    {   changethisabspixel(fgc);
-                    } else
-                    {   changethisbgpixel(vdu_bgc);
-                }   }
-                else
-                {   if (t == 0)
-                    {   t = 0x20; // maybe we shouldn't be doing this?
-                    } elif (t <= 0x1F)
-                    {   t += 0x40;
-                    } elif (t >= 0x40 && t <= 0x5F)
-                    {   t -= 0x40;
-                    }
-                    if (phunsy_chars[t][y2] & (0x20 >> x2))
-                    {   changethisabspixel(vdu_fgc);
-                    } else
-                    {   changethisbgpixel(vdu_bgc);
-                }   }
-                DOCPU;
-        }   }
-        for (cpuy = 256; cpuy <= 312; cpuy++)
-        {   breakrastline();
-            run_cpu(512);
-    }   }
+    inframe = FALSE;
 
     if (editscreen)
     {   kx =  scrnaddr           % 64;
@@ -429,7 +414,7 @@ EXPORT void phunsy_emulate(void)
                  &&  y >=  0
                  &&  y < 256
                 )
-                {   changepixel(x, y, RED);
+                {   changefgpixel(x, y, RED);
     }   }   }   }
 
     wa_checkinput();
@@ -1336,7 +1321,7 @@ EXPORT void phunsy_drawhelpgrid(void)
             for (xx = 0; xx < 6; xx++)
             {   for (yy = 0; yy < 8; yy++)
                 {   if (xx == 0 || xx == 6 - 1 || yy == 0 || yy == 8 - 1)
-                    {   changepixel(128 - absxmin + startx + xx, starty + yy, GREY1);
+                    {   changefgpixel(128 - absxmin + startx + xx, starty + yy, GREY1);
 }   }   }   }   }   }
 
 MODULE void phunsy_emuinput(void)
@@ -1619,40 +1604,40 @@ MODULE void phunsy_drawdigit(int position)
 #endif
 
             if (drawcorners)
-            {   changepixel(x + (xx * 4)     + xxx, y + (yy * 4)    , colour);
-                changepixel(x + (xx * 4) + 1 + xxx, y + (yy * 4)    , colour);
-                changepixel(x + (xx * 4) + 2 + xxx, y + (yy * 4)    , colour);
-                changepixel(x + (xx * 4) + 3 + xxx, y + (yy * 4)    , colour);
-                changepixel(x + (xx * 4)     + xxx, y + (yy * 4) + 1, colour);
-                changepixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 1, colour);
-                changepixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 1, colour);
-                changepixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 1, colour);
-                changepixel(x + (xx * 4)     + xxx, y + (yy * 4) + 2, colour);
-                changepixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 2, colour);
-                changepixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 2, colour);
-                changepixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 2, colour);
-                changepixel(x + (xx * 4)     + xxx, y + (yy * 4) + 3, colour);
-                changepixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 3, colour);
-                changepixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 3, colour);
-                changepixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 3, colour);
+            {   changefgpixel(x + (xx * 4)     + xxx, y + (yy * 4)    , colour);
+                changefgpixel(x + (xx * 4) + 1 + xxx, y + (yy * 4)    , colour);
+                changefgpixel(x + (xx * 4) + 2 + xxx, y + (yy * 4)    , colour);
+                changefgpixel(x + (xx * 4) + 3 + xxx, y + (yy * 4)    , colour);
+                changefgpixel(x + (xx * 4)     + xxx, y + (yy * 4) + 1, colour);
+                changefgpixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 1, colour);
+                changefgpixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 1, colour);
+                changefgpixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 1, colour);
+                changefgpixel(x + (xx * 4)     + xxx, y + (yy * 4) + 2, colour);
+                changefgpixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 2, colour);
+                changefgpixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 2, colour);
+                changefgpixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 2, colour);
+                changefgpixel(x + (xx * 4)     + xxx, y + (yy * 4) + 3, colour);
+                changefgpixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 3, colour);
+                changefgpixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 3, colour);
+                changefgpixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 3, colour);
             } else
-            {   changepixel(x + (xx * 4)     + xxx, y + (yy * 4)    , BLACK);
-                changepixel(x + (xx * 4) + 1 + xxx, y + (yy * 4)    , BLACK);
-                changepixel(x + (xx * 4) + 2 + xxx, y + (yy * 4)    , BLACK);
-                changepixel(x + (xx * 4) + 3 + xxx, y + (yy * 4)    , BLACK);
-                changepixel(x + (xx * 4)     + xxx, y + (yy * 4) + 1, BLACK);
-                changepixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 1, BLACK);
-                changepixel(x + (xx * 4)     + xxx, y + (yy * 4) + 2, BLACK);
-                changepixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 2, BLACK);
-                changepixel(x + (xx * 4)     + xxx, y + (yy * 4) + 3, BLACK);
-                changepixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 3, BLACK);
-                changepixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 3, BLACK);
-                changepixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 3, BLACK);
+            {   changefgpixel(x + (xx * 4)     + xxx, y + (yy * 4)    , BLACK);
+                changefgpixel(x + (xx * 4) + 1 + xxx, y + (yy * 4)    , BLACK);
+                changefgpixel(x + (xx * 4) + 2 + xxx, y + (yy * 4)    , BLACK);
+                changefgpixel(x + (xx * 4) + 3 + xxx, y + (yy * 4)    , BLACK);
+                changefgpixel(x + (xx * 4)     + xxx, y + (yy * 4) + 1, BLACK);
+                changefgpixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 1, BLACK);
+                changefgpixel(x + (xx * 4)     + xxx, y + (yy * 4) + 2, BLACK);
+                changefgpixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 2, BLACK);
+                changefgpixel(x + (xx * 4)     + xxx, y + (yy * 4) + 3, BLACK);
+                changefgpixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 3, BLACK);
+                changefgpixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 3, BLACK);
+                changefgpixel(x + (xx * 4) + 3 + xxx, y + (yy * 4) + 3, BLACK);
 
-                changepixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 1, colour);
-                changepixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 1, colour);
-                changepixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 2, colour);
-                changepixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 2, colour);
+                changefgpixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 1, colour);
+                changefgpixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 1, colour);
+                changefgpixel(x + (xx * 4) + 1 + xxx, y + (yy * 4) + 2, colour);
+                changefgpixel(x + (xx * 4) + 2 + xxx, y + (yy * 4) + 2, colour);
             }
 
             drawcontrolspixel(controlsx + xx, yy + 1, colour);
@@ -1685,42 +1670,42 @@ MODULE void phunsy_drawdot(int position)
 
     if (drawcorners)
     {   if (showleds)
-        {   changepixel(x    , y    , colour);
-            changepixel(x + 1, y    , colour);
-            changepixel(x + 2, y    , colour);
-            changepixel(x + 3, y    , colour);
-            changepixel(x    , y + 1, colour);
-            changepixel(x + 1, y + 1, colour);
-            changepixel(x + 2, y + 1, colour);
-            changepixel(x + 3, y + 1, colour);
-            changepixel(x    , y + 2, colour);
-            changepixel(x + 1, y + 2, colour);
-            changepixel(x + 2, y + 2, colour);
-            changepixel(x + 3, y + 2, colour);
-            changepixel(x    , y + 3, colour);
-            changepixel(x + 1, y + 3, colour);
-            changepixel(x + 2, y + 3, colour);
-            changepixel(x + 3, y + 3, colour);
+        {   changefgpixel(x    , y    , colour);
+            changefgpixel(x + 1, y    , colour);
+            changefgpixel(x + 2, y    , colour);
+            changefgpixel(x + 3, y    , colour);
+            changefgpixel(x    , y + 1, colour);
+            changefgpixel(x + 1, y + 1, colour);
+            changefgpixel(x + 2, y + 1, colour);
+            changefgpixel(x + 3, y + 1, colour);
+            changefgpixel(x    , y + 2, colour);
+            changefgpixel(x + 1, y + 2, colour);
+            changefgpixel(x + 2, y + 2, colour);
+            changefgpixel(x + 3, y + 2, colour);
+            changefgpixel(x    , y + 3, colour);
+            changefgpixel(x + 1, y + 3, colour);
+            changefgpixel(x + 2, y + 3, colour);
+            changefgpixel(x + 3, y + 3, colour);
         }
         drawcontrolspixel(controlsx, 7, colour);
     } else
     {   if (showleds)
-        {   changepixel(x    , y    , BLACK);
-            changepixel(x + 1, y    , BLACK);
-            changepixel(x + 2, y    , BLACK);
-            changepixel(x + 3, y    , BLACK);
-            changepixel(x    , y + 1, BLACK);
-            changepixel(x + 3, y + 1, BLACK);
-            changepixel(x    , y + 2, BLACK);
-            changepixel(x + 3, y + 2, BLACK);
-            changepixel(x    , y + 3, BLACK);
-            changepixel(x + 1, y + 3, BLACK);
-            changepixel(x + 2, y + 3, BLACK);
-            changepixel(x + 3, y + 3, BLACK);
-            changepixel(x + 1, y + 1, colour);
-            changepixel(x + 2, y + 1, colour);
-            changepixel(x + 1, y + 2, colour);
-            changepixel(x + 2, y + 2, colour);
+        {   changefgpixel(x    , y    , BLACK);
+            changefgpixel(x + 1, y    , BLACK);
+            changefgpixel(x + 2, y    , BLACK);
+            changefgpixel(x + 3, y    , BLACK);
+            changefgpixel(x    , y + 1, BLACK);
+            changefgpixel(x + 3, y + 1, BLACK);
+            changefgpixel(x    , y + 2, BLACK);
+            changefgpixel(x + 3, y + 2, BLACK);
+            changefgpixel(x    , y + 3, BLACK);
+            changefgpixel(x + 1, y + 3, BLACK);
+            changefgpixel(x + 2, y + 3, BLACK);
+            changefgpixel(x + 3, y + 3, BLACK);
+            changefgpixel(x + 1, y + 1, colour);
+            changefgpixel(x + 2, y + 1, colour);
+            changefgpixel(x + 1, y + 2, colour);
+            changefgpixel(x + 2, y + 2, colour);
         }
         drawcontrolspixel(controlsx, 7, colour);
 }   }
@@ -1911,97 +1896,4 @@ EXPORT void phunsy_reset(void)
     // LED digits
     for (i = 0; i < DIGITLEDS; i++)
     {   digitleds[i] = 0x3F; // PHUNSY LED hardware doesn't allow blank digits
-}   }
-
-MODULE void draw_phunsy(void)
-{   FAST int   x, xx, y, yy;
-    FAST UBYTE fgc,
-               imagery;
-
-    // assert(machine == PHUNSY);
-
-    // generate screen[][] and display[] based on memory[]
-
-    for (x = 0; x < 64; x++)
-    {   for (y = 0; y < 32; y++)
-        {   imagery = memory[0x1000 + (y * 64) + x];
-            if (imagery >= 128)
-            {   if ((imagery & 0x70) == 0)
-                {   fgc = vdu_bgc;
-                } elif ((imagery & 0x70) == 0x70)
-                {   fgc = vdu_fgc;
-                } else
-                {   if (inverse)
-                    {   fgc = 22 - ((imagery & 0x70) >> 4); // 1..6 -> 21..16
-                    } else
-                    {   fgc = 15 + ((imagery & 0x70) >> 4); // 1..6 -> 16..21
-                }   }
-                imagery &= 0x0F;
-
-                for (yy = 0; yy < 8; yy++)
-                {   for (xx = 0; xx < 6; xx++)
-                    {   if (phunsy_gfx[imagery][yy] & (0x80 >> xx))
-                        {   changepixel(128 - absxmin + (x * 6) + xx, (y * 8) + yy, fgc);
-                        } else
-                        {   changebgpixel(128 - absxmin + (x * 6) + xx, (y * 8) + yy, vdu_bgc);
-            }   }   }   }
-            else
-            {   if (imagery == 0)
-                {   imagery = 0x20; // maybe we shouldn't be doing this?
-                } elif (imagery <= 0x1F)
-                {   imagery += 0x40;
-                } elif (imagery >= 0x40 && imagery <= 0x5F)
-                {   imagery -= 0x40;
-                }
-                for (yy = 0; yy < 8; yy++)
-                {   for (xx = 0; xx < 6; xx++)
-                    {   if (phunsy_chars[imagery][yy] & (0x20 >> xx))
-                        {   changepixel(128 - absxmin + (x * 6) + xx, (y * 8) + yy, vdu_fgc);
-                        } else
-                        {   changebgpixel(128 - absxmin + (x * 6) + xx, (y * 8) + yy, vdu_bgc);
-}   }   }   }   }   }   }
-
-MODULE void phunsy_runcpu(void)
-{   FAST ULONG endcycle;
-
-    // assert(slice_2650 >= 1);
-
-    endcycle = cycles_2650 + slice_2650;
-    if (endcycle < cycles_2650)
-    {   // cycle counter will overflow, so we need to use the slow method
-        while (slice_2650 >= 1)
-        {   oldcycles = cycles_2650;
-            checkstep();
-            mdcr_exec();
-            do_tape();
-            one_instruction();
-            slice_2650 -= (cycles_2650 - oldcycles);
-    }   }
-    else
-    {   // cycle counter will not overflow, so we can use a faster method
-        oldcycles = cycles_2650;
-        while (cycles_2650 < endcycle)
-        {   checkstep();
-            mdcr_exec();
-            do_tape();
-            one_instruction();
-        }
-        slice_2650 -= (cycles_2650 - oldcycles);
-}   }
-
-MODULE void run_cpu(int until)
-{   // This is a quicker equivalent to repeatedly incrementing cpux and calling do_cpu().
-
-    cpux = nextinst;
-    while (cpux < until)
-    {   oldcycles = cycles_2650;
-        checkstep();
-        mdcr_exec();
-        do_tape();
-        one_instruction();
-        nextinst += (cycles_2650 - oldcycles) * 8; // in pixels
-        cpux = nextinst;
-    }
-    if (nextinst >= 512)
-    {   nextinst -= 512;
 }   }

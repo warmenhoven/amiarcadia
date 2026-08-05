@@ -210,6 +210,7 @@ IMPORT int                  ambient,
                             key4,
                             machine,
                             memmap,
+                            nextinst,
                             offset,
                             p1bgcol[4],
                             p2bgcol[4],
@@ -253,6 +254,8 @@ MODULE void do_cvs(void);
 
 EXPORT void astrowars_setmemmap(void)
 {   int i, address, mirror;
+
+    nextinst = 0;
 
     for (i = 0x1400; i <= 0x7FFF; i++)
     {   memory[i] = 0; // important
@@ -341,13 +344,14 @@ EXPORT void astrowars_setmemmap(void)
 
     cpl = 227 / 3; // 75.6'
     machines[machine].cpf = (int) ((227.0 / 3.0) * 312.0);
-    region = REGION_PAL;
 
     init_cvs_stars();
 }
 
 EXPORT void galaxia_setmemmap(void)
 {   int i, address, mirror;
+
+    nextinst = 0;
 
     for (i = 0x1400; i <= 0x7FFF; i++)
     {   memory[i] = 0; // important
@@ -434,7 +438,6 @@ EXPORT void galaxia_setmemmap(void)
 
     cpl = 227 / 3; // 75.6'
     machines[machine].cpf = (int) ((227.0 / 3.0) * 312.0);
-    region = REGION_PAL;
 
     init_cvs_stars();
 
@@ -448,6 +451,8 @@ EXPORT void lb_setmemmap(void)
 {   int address,
         i,
         mirror;
+
+    nextinst = 0;
 
     for (i = 0x1400; i <= 0x7FFF; i++)
     {   memory[i] = 0;
@@ -551,11 +556,11 @@ EXPORT void lb_setmemmap(void)
     lb_snd           = 0;
 
     abeff1           =
-        abeff2           =
+    abeff2           =
     useshell         =
     circle           =
-        neg1             =
-        neg2             = 0; // are these the correct initial values?
+    neg1             =
+    neg2             = 0; // are these the correct initial values?
 
     machines[machine].pvis = 3;
     pvibase = 0x1500;
@@ -582,7 +587,6 @@ EXPORT void lb_setmemmap(void)
 
     cpl = 227 / 3; // 75.6'
     machines[machine].cpf = (int) ((227.0 / 3.0) * 312.0);
-    region = REGION_PAL;
 }
 
 EXPORT void astrowars_drawscreen(void)
@@ -617,9 +621,9 @@ EXPORT void astrowars_drawscreen(void)
             for (aa = 7; aa >= 0; aa--)
             {   for (bb = 0; bb < 8; bb++)
                 {   if (astrowars_tiles[localoffset + bb] & (128 >> aa))
-                    {   changepixel(starta + aa, startb + bb, WHITE);
+                    {   changefgpixel(starta + aa, startb + bb, WHITE);
                     } else
-                    {   changepixel(starta + aa, startb + bb, BLACK);
+                    {   changebgpixel(starta + aa, startb + bb, BLACK);
     }   }   }   }   }
 #else
     for (b = 2; b < 32; b++)        // Y-axis from guest's viewpoint,          X-axis from user's viewpoint
@@ -632,7 +636,7 @@ EXPORT void astrowars_drawscreen(void)
             for (aa = 7; aa >= 0; aa--)
             {   for (bb = 0; bb < 8; bb++)
                 {   if (astrowars_tiles[localoffset + bb] & (128 >> aa))
-                    {   changepixel(starta + aa, startb + bb, astrowars_colours[g_bank1[(b * 32) + a] & 7]);
+                    {   changefgpixel(starta + aa, startb + bb, astrowars_colours[g_bank1[(b * 32) + a] & 7]);
                         coinops_colltable[0][startb + bb + 16][starta + aa + HIDDEN_X] |= 8; // tile pixel. [0][16..255][16..255]
                     } else
                     {   changebgpixel(starta + aa, startb + bb, BLACK);
@@ -690,14 +694,14 @@ EXPORT void galaxia_drawscreen(void)
                     if ((memory[0x1800 + (b * 32) + a] & 0x7F) >= 0x10)
                     {   if (galaxia_tiles1[contents + bb] & (128 >> aa))
                         {   if (galaxia_tiles2[contents + bb] & (128 >> aa))
-                            {   changepixel(starta + aa, ourstartb + bb, galaxia_colours[g_bank1[(b * 32) + a] & 3][3]);
+                            {   changefgpixel(starta + aa, ourstartb + bb, galaxia_colours[g_bank1[(b * 32) + a] & 3][3]);
                             } else
-                            {   changepixel(starta + aa, ourstartb + bb, galaxia_colours[g_bank1[(b * 32) + a] & 3][2]);
+                            {   changefgpixel(starta + aa, ourstartb + bb, galaxia_colours[g_bank1[(b * 32) + a] & 3][2]);
                             }
                             coinops_colltable[0][ourstartb + bb + 16][starta + aa + HIDDEN_X] |= 8; // tile pixel. [0][16..255][16..255]
                         } else
                         {   if (galaxia_tiles2[contents + bb] & (128 >> aa))
-                            {   changepixel(starta + aa, ourstartb + bb, galaxia_colours[g_bank1[(b * 32) + a] & 3][1]);
+                            {   changefgpixel(starta + aa, ourstartb + bb, galaxia_colours[g_bank1[(b * 32) + a] & 3][1]);
                                 coinops_colltable[0][ourstartb + bb + 16][starta + aa + HIDDEN_X] |= 8; // tile pixel. [0][16..255][16..255]
                             } else
                             {   changebgpixel(starta + aa, ourstartb + bb, galaxia_colours[g_bank1[(b * 32) + a] & 3][0]); // or just BLACK
@@ -705,14 +709,14 @@ EXPORT void galaxia_drawscreen(void)
                     else
                     {   if (galaxia_tiles1[contents + bb] & (128 >> aa))
                         {   if (galaxia_tiles2[contents + bb] & (128 >> aa))
-                            {   changepixel(starta + aa, ourstartb + bb, galaxia_colours2[g_bank1[(b * 32) + a] & 3][3]);
+                            {   changefgpixel(starta + aa, ourstartb + bb, galaxia_colours2[g_bank1[(b * 32) + a] & 3][3]);
                             } else
-                            {   changepixel(starta + aa, ourstartb + bb, galaxia_colours2[g_bank1[(b * 32) + a] & 3][2]);
+                            {   changefgpixel(starta + aa, ourstartb + bb, galaxia_colours2[g_bank1[(b * 32) + a] & 3][2]);
                             }
                             coinops_colltable[0][ourstartb + bb + 16][starta + aa + HIDDEN_X] |= 8; // tile pixel. [0][16..255][16..255]
                         } else
                         {   if (galaxia_tiles2[contents + bb] & (128 >> aa))
-                            {   changepixel(starta + aa, ourstartb + bb, galaxia_colours2[g_bank1[(b * 32) + a] & 3][1]);
+                            {   changefgpixel(starta + aa, ourstartb + bb, galaxia_colours2[g_bank1[(b * 32) + a] & 3][1]);
                                 coinops_colltable[0][ourstartb + bb + 16][starta + aa + HIDDEN_X] |= 8; // tile pixel. [0][16..255][16..255]
                             } else
                             {   changebgpixel(starta + aa, ourstartb + bb, galaxia_colours2[g_bank1[(b * 32) + a] & 3][0]); // or just BLACK
@@ -734,6 +738,38 @@ EXPORT void lb_drawscreen(void)
           shell;
 
     // assert(memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN);
+
+    for (x = 0; x < 30; x++)
+    {   for (y = 2; y < 32; y++)
+        {   t = memory[0x1800 + (y * 32) + x];
+            for (yy = 0; yy < 8; yy++)
+            {   for (xx = 0; xx < 8; xx++)
+                {   if (tilesptr[(t * 8) + yy] & (128 >> xx))
+                    {   if (tilesptr[2048 + (t * 8) + yy] & (128 >> xx))
+                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
+                            {   changefgpixel((x * 8) + xx, ((y - 2) * 8) + yy, WHITE);
+                            } else
+                            {   changefgpixel((x * 8) + xx, ((y - 2) * 8) + yy, YELLOW);
+                        }   }
+                        else
+                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
+                            {   changefgpixel((x * 8) + xx, ((y - 2) * 8) + yy, PURPLE);
+                            } else
+                            {   changefgpixel((x * 8) + xx, ((y - 2) * 8) + yy, RED);
+                    }   }   }
+                    else
+                    {   if (tilesptr[2048 + (t * 8) + yy] & (128 >> xx))
+                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
+                            {   changefgpixel((x * 8) + xx, ((y - 2) * 8) + yy, CYAN);
+                            } else
+                            {   changefgpixel((x * 8) + xx, ((y - 2) * 8) + yy, GREEN);
+                        }   }
+                        else
+                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
+                            {   changefgpixel((x * 8) + xx, ((y - 2) * 8) + yy, BLUE);
+                            } else
+                            {   changebgpixel((x * 8) + xx, ((y - 2) * 8) + yy, BLACK);
+    }   }   }   }   }   }   }
 
 #ifdef SHOWCHARSET
     TRANSIENT int i = 0;
@@ -776,14 +812,14 @@ EXPORT void lb_drawscreen(void)
             }   }   }
 
             if (shell)
-            {   changepixel(x - 8, y, WHITE);
-            } elif (eff1 || eff2)
+            {   changefgpixel(x - 8, y, WHITE);
+            } elif ((eff1 || eff2) && screen[x - 8][y] == BLACK)
             {   switch (circle)
                 {
-                case  0: changepixel(x - 8, y, BLACK);
-                acase 1: changepixel(x - 8, y, GREEN); // unused?
-                acase 2: changepixel(x - 8, y, abeff1 ? RED   : YELLOW);
-                acase 3: changepixel(x - 8, y, BLUE);
+                case  0: changefgpixel(x - 8, y, BLACK);
+                acase 1: changefgpixel(x - 8, y, GREEN); // unused?
+                acase 2: changefgpixel(x - 8, y, abeff1 ? RED   : YELLOW);
+                acase 3: changefgpixel(x - 8, y, BLUE);
         }   }   }
 
         for (x = 128; x < 248; x++)
@@ -814,47 +850,15 @@ EXPORT void lb_drawscreen(void)
             }   }   }
 
             if (shell)
-            {   changepixel(x - 8, y, WHITE);
-            } elif (eff1 || eff2)
+            {   changefgpixel(x - 8, y, WHITE);
+            } elif ((eff1 || eff2) && screen[x - 8][y] == BLACK)
             {   switch (circle)
                 {
-                case  0: changepixel(x - 8, y, BLACK);
-                acase 1: changepixel(x - 8, y, GREEN); // unused?
-                acase 2: changepixel(x - 8, y, abeff1 ? RED : YELLOW);
-                acase 3: changepixel(x - 8, y, BLUE);
+                case  0: changefgpixel(x - 8, y, BLACK);
+                acase 1: changefgpixel(x - 8, y, GREEN); // unused?
+                acase 2: changefgpixel(x - 8, y, abeff1 ? RED : YELLOW);
+                acase 3: changefgpixel(x - 8, y, BLUE);
     }   }   }   }
-
-    for (x = 0; x < 30; x++)
-    {   for (y = 2; y < 32; y++)
-        {   t = memory[0x1800 + (y * 32) + x];
-            for (yy = 0; yy < 8; yy++)
-            {   for (xx = 0; xx < 8; xx++)
-                {   if (tilesptr[(t * 8) + yy] & (128 >> xx))
-                    {   if (tilesptr[2048 + (t * 8) + yy] & (128 >> xx))
-                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, WHITE);
-                            } else
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, YELLOW);
-                        }   }
-                        else
-                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, PURPLE);
-                            } else
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, RED);
-                    }   }   }
-                    else
-                    {   if (tilesptr[2048 + (t * 8) + yy] & (128 >> xx))
-                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, CYAN);
-                            } else
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, GREEN);
-                        }   }
-                        else
-                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, BLUE);
-                            } else
-                            {   changebgpixel((x * 8) + xx, ((y - 2) * 8) + yy, BLACK);
-    }   }   }   }   }   }   }
 
 #ifndef SHOWCHARSET
     if (lb_spriteenable)
@@ -866,19 +870,19 @@ EXPORT void lb_drawscreen(void)
                 if (xx >= 0 && yy >= 0 && yy < COINOP_BOXHEIGHT)
                 {   colour = (t & 0xC0) >> 6;
                     if (colour && xx     < COINOP_BOXWIDTH)
-                    {   changepixel(xx    , yy, colour);
+                    {   changefgpixel(xx    , yy, colour);
                     }
                     colour = (t & 0x30) >> 4;
                     if (colour && xx + 1 < COINOP_BOXWIDTH)
-                    {   changepixel(xx + 1, yy, colour);
+                    {   changefgpixel(xx + 1, yy, colour);
                     }
                     colour = (t & 0x0C) >> 2;
                     if (colour && xx + 2 < COINOP_BOXWIDTH)
-                    {   changepixel(xx + 2, yy, colour);
+                    {   changefgpixel(xx + 2, yy, colour);
                     }
                     colour = (t & 0x03);
                     if (colour && xx + 3 < COINOP_BOXWIDTH)
-                    {   changepixel(xx + 3, yy, colour);
+                    {   changefgpixel(xx + 3, yy, colour);
     }   }   }   }   }
 #endif
 }
@@ -1085,11 +1089,11 @@ EXPORT void zaccaria_writeport(int port, UBYTE data)
         acase MEMMAP_LASERBATTLE:
         case MEMMAP_LAZARIAN:
             abeff1   = (data & 0x01) ? 0 : 1;
-                abeff2   = (data & 0x02) ? 0 : 1;
+            abeff2   = (data & 0x02) ? 0 : 1;
             useshell = (data & 0x04) ? 0 : 1;
             circle   = (data & 0x18) >> 3;
-                neg1     = (data & 0x20) ? 0 : 1;
-                neg2     = (data & 0x40) ? 0 : 1;
+            neg1     = (data & 0x20) ? 0 : 1;
+            neg2     = (data & 0x40) ? 0 : 1;
         }
     acase 1:
         if (memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN)
@@ -1662,7 +1666,7 @@ MODULE void do_cvs(void)
                         {   awga_collide |= 0x80;
                             p1rumble = 25;
                     }   }
-                    changepixel(bx, y - 8, YELLOW);
+                    changefgpixel(bx, y - 8, YELLOW);
                     coinops_colltable[0][y + 8][bx + HIDDEN_X] |= 4; // CVS pixel. [0][16..255][16..255]
     }   }   }   }
 
@@ -1677,7 +1681,7 @@ MODULE void do_cvs(void)
              && yy < machines[machine].height
              && screen[xx][yy] == BLACK
             )
-            {   changepixel(xx, yy, (yy % 6) + 1);
+            {   changefgpixel(xx, yy, (yy % 6) + 1);
     }   }   }
     starscroll++;
 }
@@ -2115,7 +2119,7 @@ EXPORT void zaccaria_drawhelpgrid(void)
             for (aa = 7; aa >= 0; aa--)
             {   for (bb = 0; bb < 8; bb++)
                 {   if (aa == 7 || aa == 0 || bb == 0 || bb == 7)
-                    {   changepixel(starta + aa, startb + bb, GREY1);
+                    {   changefgpixel(starta + aa, startb + bb, GREY1);
 }   }   }   }   }   }
 
 #define KXLIMIT 31

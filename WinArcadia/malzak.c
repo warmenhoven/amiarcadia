@@ -84,6 +84,7 @@ IMPORT int                  ambient,
                             key4,
                             machine,
                             memmap,
+                            nextinst,
                             offset,
                             p1bgcol[4],
                             p2bgcol[4],
@@ -318,12 +319,12 @@ $80..$FF: RED */
             )
             {   if (m_tiles[(code * 32) + (yy * 2)] & (1 << xx))
                 {   if (!inverted)
-                    {   changepixel(x + xx, y + yy, colour);
+                    {   changefgpixel(x + xx, y + yy, colour);
                         coinops_colltable[0][y + yy][x + xx + HIDDEN_X] |= 8;
                 }   }
                 else
                 {   if (inverted)
-                    {   changepixel(x + xx, y + yy, colour);
+                    {   changefgpixel(x + xx, y + yy, colour);
                         coinops_colltable[0][y + yy][x + xx + HIDDEN_X] |= 8;
         }   }   }   }
 
@@ -336,12 +337,12 @@ $80..$FF: RED */
             )
             {   if (m_tiles[(code * 32) + (yy * 2) + 1] & (1 << xx))
                 {   if (!inverted)
-                    {   changepixel(x + xx + 8, y + yy, colour);
+                    {   changefgpixel(x + xx + 8, y + yy, colour);
                         coinops_colltable[0][y + yy][x + xx + 8 + HIDDEN_X] |= 8;
                 }   }
                 else
                 {   if (inverted)
-                    {   changepixel(x + xx + 8, y + yy, colour);
+                    {   changefgpixel(x + xx + 8, y + yy, colour);
                         coinops_colltable[0][y + yy][x + xx + 8 + HIDDEN_X] |= 8;
 }   }   }   }   }   }
 
@@ -404,6 +405,8 @@ EXPORT void malzak_setmemmap(void)
     FILE* TheLocalHandle; // LocalHandle is a variable of winbase.h
 
     // assert(memmap == MEMMAP_MALZAK1 || memmap == MEMMAP_MALZAK2);
+
+    nextinst = 0;
 
     for (i = 0x1000; i <= 0x7FFF; i++)
     {   memory[i] = 0; // important
@@ -586,15 +589,8 @@ EXPORT void malzak_setmemmap(void)
     }
     p1bgcol[0] = 1;
 
-#ifdef MALZAK_885KHZ
-    set_cpl(227 / 4); // 56.75
-    machines[machine].cpf = (int) ((227.0 / 4.0) * 312.0);
-#endif
-#ifdef MALZAK_1180KHZ
     set_cpl(227 / 3); // 75.6'
     machines[machine].cpf = (int) ((227.0 / 3.0) * 312.0);
-#endif
-    region = REGION_PAL;
 }
 
 EXPORT void malzak_drawscreen(void)
@@ -949,11 +945,11 @@ MODULE void malzak_drawtext(UBYTE code, int x, int y)
                 {   t = m_contiguous[((code - 32) * 10) + yy];
                 }
                 if (t & (0x20 >> xx))
-                {   changepixel(x + xx, y + (yy * 2)    , fgc);
-                    changepixel(x + xx, y + (yy * 2) + 1, fgc);
+                {   changefgpixel(x + xx, y + (yy * 2)    , fgc);
+                    changefgpixel(x + xx, y + (yy * 2) + 1, fgc);
                 } else
-                {   changepixel(x + xx, y + (yy * 2)    , bgc);
-                    changepixel(x + xx, y + (yy * 2) + 1, bgc);
+                {   changebgpixel(x + xx, y + (yy * 2)    , bgc);
+                    changebgpixel(x + xx, y + (yy * 2) + 1, bgc);
     }   }   }   }
     else
     {   for (yy = 0; yy < 10; yy++)
@@ -971,9 +967,9 @@ MODULE void malzak_drawtext(UBYTE code, int x, int y)
                 {   t = m_contiguous[((code - 32) * 10) + yy];
                 }
                 if (t & (0x20 >> xx))
-                {   changepixel(x + xx, y + yy, fgc);
+                {   changefgpixel(x + xx, y + yy, fgc);
                 } else
-                {   changepixel(x + xx, y + yy, bgc);
+                {   changebgpixel(x + xx, y + yy, bgc);
 }   }   }   }   }
 
 EXPORT void malzak_drawhelpgrid(void)
@@ -989,7 +985,7 @@ EXPORT void malzak_drawhelpgrid(void)
             {   for (yy = 0; yy < 10; yy++)
                 {   for (xx = 0; xx < 6; xx++)
                     {   if (xx == 0 || xx == 5 || yy == 0 || yy == 9)
-                        {   changepixel((x * 6) + xx, (y * 10) + yy, GREY3);
+                        {   changefgpixel((x * 6) + xx, (y * 10) + yy, GREY3);
     }   }   }   }   }   }
 
     if (drawmode == 1 || drawmode == 3)
@@ -1006,7 +1002,7 @@ EXPORT void malzak_drawhelpgrid(void)
                          && ssy + yy >= 0
                          && ssy + yy <  COINOP_BOXHEIGHT
                         )
-                        {   changepixel(ssx + xx, ssy + yy, GREY6);
+                        {   changefgpixel(ssx + xx, ssy + yy, GREY6);
 }   }   }   }   }   }   }
 
 EXPORT void malzak2_updatedips(void)

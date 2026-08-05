@@ -100,7 +100,7 @@ MODULE FLAG               tr_arrow[4];
 MODULE void class_getnewletter(void);
 MODULE void game_getnewletter(void);
 MODULE void tr_alternate(void);
-MODULE void tr_changepixel(int x, int y, int colour);
+MODULE void tr_changefgpixel(int x, int y, int colour);
 MODULE void tr_changebgpixel(int x, int y, int colour);
 MODULE FLAG checkword(int screenstart, int reallength, int ideallength);
 
@@ -555,7 +555,7 @@ EXPORT void tr_simulate(void)
         for (xx = 0; xx < 5; xx++)
         {   for (y = 0; y < 7; y++)
             {   if (tr_chars[t][y] & (0x80 >> xx))
-                {   tr_changepixel(  8 + (x * 7) + xx, y + 2, vdu_fgc);
+                {   tr_changefgpixel(8 + (x * 7) + xx, y + 2, vdu_fgc);
                 } else
                 {   tr_changebgpixel(8 + (x * 7) + xx, y + 2, vdu_bgc);
     }   }   }   }
@@ -563,15 +563,15 @@ EXPORT void tr_simulate(void)
     for (i = 0; i < 8; i++)
     {   if (tr_underline[i])
         {   for (xx = 0; xx < 5; xx++)
-            {   tr_changepixel(8 + (i * 7) + xx, 11, vdu_fgc);
+            {   tr_changefgpixel(8 + (i * 7) + xx, 11, vdu_fgc);
     }   }   }
 
     for (i = 0; i < 4; i++)
     {   if (tr_arrow[i])
-        {   tr_changepixel(4, 1 + (i * 3), vdu_fgc);
-            tr_changepixel(3, 2 + (i * 3), vdu_fgc);
-            tr_changepixel(4, 2 + (i * 3), vdu_fgc);
-            tr_changepixel(4, 3 + (i * 3), vdu_fgc);
+        {   tr_changefgpixel(4, 1 + (i * 3), vdu_fgc);
+            tr_changefgpixel(3, 2 + (i * 3), vdu_fgc);
+            tr_changefgpixel(4, 2 + (i * 3), vdu_fgc);
+            tr_changefgpixel(4, 3 + (i * 3), vdu_fgc);
     }   }
 
     playsound(FALSE);
@@ -639,15 +639,15 @@ EXPORT void tr_reset(void)
     tr_remaining = 0;
 }
 
-MODULE void tr_changepixel(int x, int y, int colour)
+MODULE void tr_changefgpixel(int x, int y, int colour)
 {
 #ifdef BIGTYPERIGHT
-    changepixel( x * 2     ,  y * 2     , colour);
-    changepixel((x * 2) + 1,  y * 2     , colour);
-    changepixel( x * 2     , (y * 2) + 1, colour);
-    changepixel((x * 2) + 1, (y * 2) + 1, colour);
+    changefgpixel( x * 2     ,  y * 2     , colour);
+    changefgpixel((x * 2) + 1,  y * 2     , colour);
+    changefgpixel( x * 2     , (y * 2) + 1, colour);
+    changefgpixel((x * 2) + 1, (y * 2) + 1, colour);
 #else
-    changepixel( x         ,  y         , colour);
+    changefgpixel( x         ,  y         , colour);
 #endif
 
     drawcontrolspixel(x, y, colour);

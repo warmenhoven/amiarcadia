@@ -3744,11 +3744,9 @@
 #define ID_DEMULTIPLEX_TRANSPARENT      40509
 #define ID_DEMULTIPLEX_OPAQUE           40510
 #define ID_DEBUG_WARN                   40511
-#define ID_EMULATOR_FRAMEBASED          40512
-#define ID_EMULATOR_PIXELBASED          40513
-#define ID_DEBUG_N_4                    40515
-#define ID_DEBUG_SWAPDISKS              40516
-#define ID_DEBUG_LIST                   40517
+#define ID_DEBUG_N_4                    40512
+#define ID_DEBUG_SWAPDISKS              40513
+#define ID_DEBUG_LIST                   40514
 #define ID_STATIC                       -1
 
 // Next default values for new objects
@@ -3756,7 +3754,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        657
-#define _APS_NEXT_COMMAND_VALUE         40518
+#define _APS_NEXT_COMMAND_VALUE         40515
 #define _APS_NEXT_CONTROL_VALUE         4394
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

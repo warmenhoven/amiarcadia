@@ -520,7 +520,7 @@ EXPORT const int menucode[MENUITEMS] = {
     ID_EMULATOR_SENSEGAME,       // 212
     ID_EMULATOR_SHOWTOD,
     ID_EMULATOR_USESTUBS,
-    -1, // MENUFAKE_FRAMEBASED
+    -1, // spare
     -1, // MENUFAKE_LOGTOFILE
     ID_EMULATOR_PATHS,
 // "Settings|Filters »" submenu
@@ -734,8 +734,8 @@ EXPORT const int menucode[MENUITEMS] = {
     ID_DOS_CDDOS,
     ID_DOS_P1DOS,
     ID_DOS_NOCD2650DOS,
-    ID_EMULATOR_FRAMEBASED,
-    ID_EMULATOR_PIXELBASED,
+    -1, // spare
+    -1, // spare
     ID_LOG_APPEND,               //  97 "Settings|Emulator »" submenu
     ID_LOG_IGNORE,
     ID_LOG_REPLACE,
@@ -1139,8 +1139,10 @@ IDI_E_UFOSHOOTING,      // 156
 
 IMPORT       FLAG                        aborting,
                                          consoleopened,
+                                         forcepause,
                                          loadedconfig,
                                          modal,
+                                         pausing,
                                          repaintmemmap,
                                          rexx,
                                          softctrl,
@@ -1691,6 +1693,7 @@ APIRET APIENTRY rexx_pause(           CONST CHAR* name, ULONG numargs, RXSTRING 
 APIRET APIENTRY rexx_peek(            CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr);
 APIRET APIENTRY rexx_quit(            CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr);
 APIRET APIENTRY rexx_revert(          CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr);
+APIRET APIENTRY rexx_runmachine(      CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr);
 APIRET APIENTRY rexx_saveacbm(        CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr);
 APIRET APIENTRY rexx_saveas(          CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr);
 APIRET APIENTRY rexx_savebmp(         CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr);
@@ -2908,6 +2911,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
      || RexxRegisterFunctionExe("QUIT"            , (RexxFunctionHandler*) rexx_quit            ) != RXFUNC_OK
      || RexxRegisterFunctionExe("RELOAD"          , (RexxFunctionHandler*) rexx_revert          ) != RXFUNC_OK
      || RexxRegisterFunctionExe("REVERT"          , (RexxFunctionHandler*) rexx_revert          ) != RXFUNC_OK
+     || RexxRegisterFunctionExe("RUNMACHINE"      , (RexxFunctionHandler*) rexx_runmachine      ) != RXFUNC_OK
      || RexxRegisterFunctionExe("SAVEACBM"        , (RexxFunctionHandler*) rexx_saveacbm        ) != RXFUNC_OK
      || RexxRegisterFunctionExe("SAVEAS"          , (RexxFunctionHandler*) rexx_saveas          ) != RXFUNC_OK
      || RexxRegisterFunctionExe("SAVEBMP"         , (RexxFunctionHandler*) rexx_savebmp         ) != RXFUNC_OK
@@ -7924,6 +7928,34 @@ APIRET APIENTRY rexx_turbo(CONST CHAR* name, ULONG numargs, RXSTRING args[], CON
     return RXFUNC_OK;
 }
 
+APIRET APIENTRY rexx_runmachine(CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr)
+{   if (!allowable(FALSE))
+    {   return RXFUNC_OK;
+    }
+    
+    rexx = TRUE;
+    while (!pausing)
+    {   switch (machine)
+        {
+        case  ARCADIA:                 while (!pausing)       arcadia_anypixel();
+        acase INTERTON: case ELEKTOR:  while (!pausing)        newpvi_anypixel();
+        acase PIPBUG:                  while (!pausing) pipbug_one_instruction();
+        acase BINBUG:                  while (!pausing)        binbug_anypixel();
+        acase INSTRUCTOR:              while (!pausing)   si50_one_instruction();
+        acase TWIN:                    while (!pausing)   twin_one_instruction();
+        acase CD2650:                  while (!pausing)        cd2650_anypixel();
+        acase PHUNSY:                  while (!pausing)        phunsy_anypixel();
+        acase SELBST:                  while (!pausing) selbst_one_instruction();
+        acase MIKIT:                   while (!pausing)  mikit_one_instruction();
+        acase MALZAK:   case ZACCARIA: while (!pausing)        oldpvi_anypixel();
+    }   }
+    pausing = FALSE;
+    emu_pause();
+    rexx = FALSE;
+
+    return RXFUNC_OK;
+}
+
 APIRET APIENTRY rexx_activate(      CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { if (iconified) uniconify(FALSE);              return RXFUNC_OK; }
 APIRET APIENTRY rexx_activatewindow(CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { SetActiveWindow(MainWindowPtr);               return RXFUNC_OK; }
 APIRET APIENTRY rexx_closecontrols( CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { close_subwindow(SUBWINDOW_CONTROLS);          return RXFUNC_OK; }
@@ -7953,9 +7985,9 @@ APIRET APIENTRY rexx_openpalette(   CONST CHAR* name, ULONG numargs, RXSTRING ar
 APIRET APIENTRY rexx_opensprites(   CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { open_spriteeditor();                          return RXFUNC_OK; }
 APIRET APIENTRY rexx_opentapedeck(  CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { open_tapedeck();                              return RXFUNC_OK; }
 APIRET APIENTRY rexx_paste(         CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { edit_pastetext();                             return RXFUNC_OK; }
-APIRET APIENTRY rexx_pause(         CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { emu_pause();                                  return RXFUNC_OK; }
+APIRET APIENTRY rexx_pause(         CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { forcepause = TRUE; emu_pause(); forcepause = FALSE; return RXFUNC_OK; }
 APIRET APIENTRY rexx_quit(          CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { cleanexit(EXIT_SUCCESS);                      return RXFUNC_OK; }
-APIRET APIENTRY rexx_unpause(       CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { emu_unpause();                                return RXFUNC_OK; }
+APIRET APIENTRY rexx_unpause(       CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { forcepause = TRUE; emu_unpause(); forcepause = FALSE; return RXFUNC_OK; }
 APIRET APIENTRY rexx_viewhighscores(CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { view_hiscores();                              return RXFUNC_OK; }
 APIRET APIENTRY rexx_windowtoback(  CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { SetWindowPos(MainWindowPtr, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE); return RXFUNC_OK; }
 APIRET APIENTRY rexx_windowtofront( CONST CHAR* name, ULONG numargs, RXSTRING args[], CONST UCHAR* queuename, RXSTRING* retstr) { SetWindowPos(MainWindowPtr, HWND_TOP,    0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE); return RXFUNC_OK; }
@@ -8396,6 +8428,7 @@ ULONG APIENTRY rexx_any(PRXSTRING command, PUSHORT flags, PRXSTRING retstr)
     if (!stricmp(args[0].strptr, "QUIT"          )) return rexx_quit(          args[0].strptr, numargs - 1, &args[1], NULL, retstr);
     if (!stricmp(args[0].strptr, "RELOAD"        )) return rexx_revert(        args[0].strptr, numargs - 1, &args[1], NULL, retstr);
     if (!stricmp(args[0].strptr, "REVERT"        )) return rexx_revert(        args[0].strptr, numargs - 1, &args[1], NULL, retstr);
+    if (!stricmp(args[0].strptr, "RUNMACHINE"    )) return rexx_runmachine(    args[0].strptr, numargs - 1, &args[1], NULL, retstr);
     if (!stricmp(args[0].strptr, "SAVEACBM"      )) return rexx_saveacbm(      args[0].strptr, numargs - 1, &args[1], NULL, retstr);
     if (!stricmp(args[0].strptr, "SAVEAS"        )) return rexx_saveas(        args[0].strptr, numargs - 1, &args[1], NULL, retstr);
     if (!stricmp(args[0].strptr, "SAVEBMP"       )) return rexx_savebmp(       args[0].strptr, numargs - 1, &args[1], NULL, retstr);

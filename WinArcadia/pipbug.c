@@ -312,6 +312,7 @@ EXPORT void pipbug_emulate(void)
                t,
                tempfgc,
                tempvdu;
+    FAST ULONG endcycle;
 
     inframe = TRUE;
 
@@ -332,7 +333,28 @@ EXPORT void pipbug_emulate(void)
         // 1,000,000 / 50 = 20,000
         slice_2650 += 20000;
     }
-    pipbin_runcpu();
+    // assert(slice_2650 >= 1);
+
+    endcycle = cycles_2650 + slice_2650;
+    if (endcycle < cycles_2650)
+    {   // cycle counter will overflow, so we need to use the slow method
+        while (slice_2650 >= 1)
+        {   oldcycles = cycles_2650;
+            checkstep();
+            pipbin_io();
+            one_instruction();
+            slice_2650 -= (cycles_2650 - oldcycles);
+    }   }
+    else
+    {   // cycle counter will not overflow, so we can use a faster method
+        oldcycles = cycles_2650;
+        while (cycles_2650 < endcycle)
+        {   checkstep();
+            pipbin_io();
+            one_instruction();
+        }
+        slice_2650 -= (cycles_2650 - oldcycles);
+    }
 
     if (frameskip != FRAMESKIP_INFINITE && frames % (ULONG) frameskip == 0)
     {   xlimit = machines[machine].width;
@@ -417,7 +439,7 @@ EXPORT void pipbug_emulate(void)
                     firstbit = 0x01 << (pipbug_charwidth2 - 1);
                     for (xx = 0; xx < pipbug_charwidth2; xx++)
                     {   if ((t & (firstbit >> xx)) && (x * pipbug_charwidth) + xx < machines[PIPBUG].width)
-                        {   changepixel
+                        {   changefgpixel
                             (   (x * pipbug_charwidth ) + xx + ((pipbug_vdu == VDU_ELEKTERMINAL) ? 2 : 0) + absxmin,
                                 (y * pipbug_charheight) + yy + ((pipbug_vdu == VDU_ELEKTERMINAL) ? 2 : 0) + absymin,
                                 tempfgc
@@ -435,32 +457,6 @@ EXPORT void pipbug_emulate(void)
     wa_checkinput();
     endofframe(vdu_bgc);
 }
-
-EXPORT void pipbin_runcpu(void)
-{   FAST ULONG endcycle;
-
-    // assert(slice_2650 >= 1);
-
-    endcycle = cycles_2650 + slice_2650;
-    if (endcycle < cycles_2650)
-    {   // cycle counter will overflow, so we need to use the slow method
-        while (slice_2650 >= 1)
-        {   oldcycles = cycles_2650;
-            checkstep();
-            pipbin_io();
-            one_instruction();
-            slice_2650 -= (cycles_2650 - oldcycles);
-    }   }
-    else
-    {   // cycle counter will not overflow, so we can use a faster method
-        oldcycles = cycles_2650;
-        while (cycles_2650 < endcycle)
-        {   checkstep();
-            pipbin_io();
-            one_instruction();
-        }
-        slice_2650 -= (cycles_2650 - oldcycles);
-}   }
 
 EXPORT void pipbin_io(void)
 {   // assert(machine == PIPBUG || machine == BINBUG);
@@ -3275,7 +3271,7 @@ EXPORT void pipbug_drawhelpgrid(void)
             for (xx = 0; xx < pipbug_charwidth; xx++)
             {   for (yy = 0; yy < pipbug_charheight; yy++)
                 {   if (xx == 0 || xx == pipbug_charwidth - 1 || yy == 0 || yy == pipbug_charheight - 1)
-                    {   changepixel(absxmin + startx + xx, absymin + starty + yy, GREY1);
+                    {   changefgpixel(absxmin + startx + xx, absymin + starty + yy, GREY1);
 }   }   }   }   }   }
 
 #ifdef COLOURPIPBUG
@@ -4406,3 +4402,10 @@ MODULE void rotate_vector(void)
         earthy = (earthx * sin(TILT_RAD)) + (earthy * cos(TILT_RAD));
 }   }
 
+EXPORT void pipbug_one_instruction(void)
+{   oldcycles = cycles_2650;
+    checkstep();
+    pipbin_io();
+    one_instruction();
+    slice_2650 -= (cycles_2650 - oldcycles);
+}

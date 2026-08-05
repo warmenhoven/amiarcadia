@@ -1,15 +1,15 @@
-#define DECIMALVERSION       "36.54 beta"
-#define INTEGERVERSION       "36.54"
+#define DECIMALVERSION       "36.55"
+#define INTEGERVERSION       "36.55"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x54
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (26.7.2026)" // d.m.yyyy format
-#define RELEASEDATE          "26-07-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "26 July 2026" // full month and year
+#define MINORVERSION         0x55
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (5.8.2026)" // d.m.yyyy format
+#define RELEASEDATE          "05-08-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "5 August 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
-#define NEWCONFIGVERSION     "36.5"  // V36.5      +
-#define OLDCONFIGVERSION     "36.21" // V36.21 beta-36.4
-#define VERYOLDCONFIGVERSION "36.2"  // V36.2  beta-36.2
+#define NEWCONFIGVERSION     "36.54" // V36.54 final+
+#define OLDCONFIGVERSION     "36.5"  // V36.5       -36.54 beta
+#define VERYOLDCONFIGVERSION "36.21" // V36.21 beta -36.4
 #define RELEASING
 // comment this out during development
 
@@ -105,16 +105,10 @@ aa:
 // So MNGPLAY is a workaround for the bug.
 // Also you must run MNGPlay with the undocumented 24 switch, eg.: MNGPlay foo.mng 24
 
-// #define BENCHMARK_GFX
-// to just test speed of graphics operations
 // #define BENCHMARK_EMU
 // to just test speed of CPU+XVI emulation
 // #define BENCHMARK_CPU
 // to just test speed of CPU emulation
-
-// #define OPCOLOURS
-// (Arcadia/Interton/Elektor only)
-// whether to show on-screen what instructions are being executed and when.
 
 #define WIDEINSTRUCTOR
 // whether Instructor 50 display should be widened and italicized
@@ -130,10 +124,6 @@ aa:
 
 #define REPEATRATE 10 // keys repeat every 10 frames (ie. 5 times per second for PAL)
 // for WinArcadia, at least, it is also limited by the host key repeat settings (in Windows Control Panel)
-
-// #define MALZAK_885KHZ (too glitchy)
-#define MALZAK_1180KHZ
-// define one (only!) of these (for master PAL clock divided by 4 or 3 respectively)
 
 // #define SHOWCHARSET
 // if you want to examine the character generator PROM contents
@@ -1661,7 +1651,7 @@ typedef UWORD MEMFLAG;
 #define MENUITEM_SENSEGAME        212
 #define MENUITEM_SHOWTOD          213
 #define MENUITEM_USESTUBS         214
-#define MENUFAKE_FRAMEBASED       215
+// spare                          215
 #define MENUFAKE_LOGTOFILE        216
 #define MENUITEM_PATHS            217
 // "Settings|Filters »" submenu
@@ -1887,8 +1877,8 @@ typedef UWORD MEMFLAG;
 #define MENUOPT_P1DOS              93
 #define MENUOPT_NOCD2650DOS        94
 // "Settings|Emulator »" submenu
-#define MENUOPT_FRAMEBASED         95
-#define MENUOPT_PIXELBASED         96
+// spare                           95
+// spare                           96
 #define MENUOPT_APPEND             97
 #define MENUOPT_IGNORE             98
 #define MENUOPT_REPLACE            99
@@ -4187,15 +4177,13 @@ EXPORT void ie_inputmirrors(int address);
 EXPORT void ie_stringchar(UBYTE data, int address);
 EXPORT void ie_viewscreen(void);
 EXPORT void newpvi(void);
+EXPORT void newpvi_anypixel(void);
 EXPORT void newpvi_drawhelpgrid(void);
 EXPORT void pviwrite(signed int address, UBYTE data, FLAG ispvi);
 EXPORT void pvi_memmap(void);
 EXPORT void pvi_vblank(void);
 EXPORT void pvi_view_udgs(void);
 EXPORT void view_ram_pvi(void);
-EXPORT void changeabspixel(int x, int y, int colour);
-EXPORT void changethisabspixel(int colour);
-EXPORT void changethisbgpixel(int colour);
 EXPORT void changerelpixel(int x, int y, int colour);
 EXPORT void set_retuning(void);
 EXPORT FLAG pvi_edit_screen(UWORD code);
@@ -4204,6 +4192,7 @@ EXPORT FLAG interpret_pvis(int address);
 // coin-ops.c
 EXPORT void do_autocoin(void);
 EXPORT void oldpvi(void);
+EXPORT void oldpvi_anypixel(void);
 EXPORT void serialize_coinops(void);
 EXPORT void coinop_playerinput(int source, int dest);
 
@@ -4559,8 +4548,10 @@ EXPORT void apply_scale3x(void);
 EXPORT void apply_scale4x(void);
 EXPORT void calc_margins(void);
 EXPORT void change_colour_names(void);
-EXPORT void changepixel(int x, int y, int colour);
+EXPORT void changefgpixel(int x, int y, int colour);
 EXPORT void changebgpixel(int x, int y, int colour);
+EXPORT void changethisfgpixel(int colour);
+EXPORT void changethisbgpixel(int colour);
 EXPORT void drawcontrolspixel(int x, int y, int colour);
 EXPORT void drawctrlglow(int leftx, int lefty, FLAG lit);
 EXPORT void drawdigit(int position, UBYTE value);
@@ -4598,6 +4589,7 @@ EXPORT void update_papertape(int whichunit, FLAG force, FLAG interim);
 EXPORT void update_tapedeck(FLAG force);
 
 // arcadia.c
+EXPORT void arcadia_anypixel(void);
 EXPORT void arcadia_drawhelpgrid(void);
 EXPORT FLAG arcadia_edit_screen(UWORD code);
 EXPORT void arcadia_setmemmap(void);
@@ -4630,6 +4622,7 @@ EXPORT FLAG interpret_psgs(int address);
 
 // pipbug.c
 EXPORT void pipbug_emulate(void);
+EXPORT void pipbug_one_instruction(void);
 EXPORT float pipbug_getpitch(UWORD value);
 EXPORT void pipbug_setmemmap(void);
 EXPORT UBYTE pipbug_readport(int port);
@@ -4643,7 +4636,6 @@ EXPORT void pipbug_drawhelpgrid(void);
 EXPORT void pipbin_biosdetails(int ea);
 EXPORT void pipbin_io(void);
 EXPORT void pipbin_readtty(void);
-EXPORT void pipbin_runcpu(void);
 EXPORT void pipbin_prtdemo(void);
 EXPORT void euy_margins(void);
 EXPORT void euy_printchar(UBYTE thechar, FLAG eti);
@@ -4661,6 +4653,7 @@ EXPORT void pipbug_redrawleds(void);
 EXPORT void industrial_reset(void);
 
 // binbug.c
+EXPORT void binbug_anypixel(void);
 EXPORT void binbug_emulate(void);
 EXPORT void binbug_setmemmap(void);
 EXPORT void binbug_viewscreen(void);
@@ -4713,6 +4706,7 @@ EXPORT void fd1771_spindown(void);
 // instruct.c
 EXPORT void instructor_biosdetails(int ea);
 EXPORT void si50_emulate(void);
+EXPORT void si50_one_instruction(void);
 EXPORT void si50_setmemmap(void);
 EXPORT void si50_viewscreen(void);
 EXPORT UBYTE si50_readport(int port);
@@ -4723,6 +4717,7 @@ EXPORT void si50_updatedips(FLAG force);
 
 // twin.c
 EXPORT void twin_emulate(void);
+EXPORT void twin_one_instruction(void);
 EXPORT void twin_setmemmap(void);
 EXPORT UBYTE twin_readport(int port);
 EXPORT void twin_writeport(int port, UBYTE data);
@@ -4763,6 +4758,7 @@ EXPORT void udos_to_disk(int whichdrive);
 EXPORT void udos_to_ram(void);
 
 // cd2650.c
+EXPORT void cd2650_anypixel(void);
 EXPORT void cd2650_emulate(void);
 EXPORT void cd2650_setmemmap(void);
 EXPORT void cd2650_viewscreen(void);
@@ -4831,6 +4827,7 @@ EXPORT void zaccaria_viewscreen(void);
 EXPORT void zaccaria_writeport(int port, UBYTE data);
 
 // phunsy.c
+EXPORT void phunsy_anypixel(void);
 EXPORT void phunsy_emulate(void);
 EXPORT UBYTE phunsy_readport(int port);
 EXPORT void phunsy_writeport(int port, UBYTE data);
@@ -4864,6 +4861,7 @@ EXPORT void fixy(void);
 
 // selbst.c
 EXPORT void selbst_emulate(void);
+EXPORT void selbst_one_instruction(void);
 EXPORT void selbst_setmemmap(void);
 EXPORT UBYTE selbst_readport(int port);
 EXPORT void selbst_writeport(int port, UBYTE data);
@@ -4874,6 +4872,7 @@ EXPORT void selbst_reset(void);
 
 // mikit.c
 EXPORT void mikit_emulate(void);
+EXPORT void mikit_one_instruction(void);
 EXPORT void mikit_setmemmap(void);
 EXPORT UBYTE mikit_readport(int port);
 EXPORT float mikit_retune(UBYTE hertz);

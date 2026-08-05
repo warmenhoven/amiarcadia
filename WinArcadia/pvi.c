@@ -133,7 +133,8 @@ MODULE const UBYTE bitfor[160] =
 
 // IMPORTED VARIABLES-------------------------------------------------- */
 
-IMPORT       FLAG                  inframe,
+IMPORT       FLAG                  donecpu,
+                                   inframe,
                                    lmb, mmb, rmb,
                                    protect[4];
 IMPORT       ASCREEN               screen[BOXWIDTH][BOXHEIGHT];
@@ -735,50 +736,106 @@ MODULE FLAG overlaps(int leftx1, int leftx2, int topy1, int topy2, int xsize, in
 MODULE void readsprites(void);
 MODULE void newraster(void);
 MODULE UBYTE pviread(int address);
-MODULE __inline void do_cpu(void);
 #ifdef DEBUGSPRITES
     MODULE void getimgbits(UBYTE data);
 #endif
-MODULE void run_cpu(int until);
+MODULE void newpvi_startofframe(void);
+MODULE void newpvi_endofframe(void);
 
 // 8. CODE----------------------------------------------------------------
 
 EXPORT void newpvi(void)
-{   FAST int i, j,
-             kheight,
-             whichsprite,
-             x, xx, y, yy;
-PERSIST const UBYTE mininumber[5][5] = {
-{ 6, // ##.
-  2, // .#.
-  2, // .#.
-  2, // .#.
-  7, // ###
-},
-{ 7, // ###
-  1, // ..#
-  7, // ###
-  4, // #..
-  7, // ###
-},
-{ 6, // ##.
-  2, // .#.
-  2, // .#.
-  2, // .#.
-  7, // ###
-},
-{ 5, // #.#
-  5, // #.#
-  7, // ###
-  1, // ..#
-  1, // ..#
-},
-{ 7, // ###
-  5, // #.#
-  7, // ###
-  5, // #.#
-  7, // ###
-} };
+{   // assert(machine == INTERTON || machine == ELEKTOR);
+
+    cpux = cpuy = 0;
+    do
+    {   newpvi_anypixel();
+    } while (inframe);
+}
+
+EXPORT void newpvi_anypixel(void)
+{   FAST int whichsprite;
+
+    if (cpux == 0)
+    {   breakrastline();
+        if (cpuy == 0)
+        {   newpvi_startofframe();
+    }   }
+
+    if (cpuy == 0 || (cpuy >= n1 && cpuy < n3)) // typically n1 is 43 and and n3 is 312
+    {   if (cpux < n4)
+        {   bgcread = memory[0x1F00 + PVI_BGCOLOUR];
+            if (memmap != MEMMAP_E && (memory[IE_NOISE] & 0x20)) // invert
+            {   if (bgcread & 8) // background/grid enable
+                {   changethisbgpixel(bgcread & 7);
+                } else
+                {   changethisbgpixel(WHITE);
+            }   }
+            else
+            {   if (bgcread & 8) // background/grid enable
+                {   if (darkenbg)
+                    {   changethisbgpixel(15 - (bgcread & 7));
+                    } else
+                    {   changethisbgpixel( 7 - (bgcread & 7));
+                }   }
+                else
+                {   changethisbgpixel(BLACK);
+            }   }
+        }
+        elif (cpuy)
+        {   if (cpux == n4)
+            {   if (cpuy == n1)
+                {   unvblank();
+                } elif (cpuy == n2) // ie. USG_YMARGIN + (269 / 2). "Conversion takes place during the active scan". Typically 177
+                {   wa_checkinput();
+                    ie_emuinput();
+                }
+                newraster();
+            } elif (cpux == 12)
+            {   readsprites();    // this timing might not...
+                checkinterrupt(); // ...be right for NTSC?
+            } elif (cpux >= 49)
+            {   onepixel();
+                if (cpux == 226)
+                {   for (whichsprite = 0; whichsprite < 4; whichsprite++)
+                    {   if (newsprite[whichsprite].ending)
+                        {   newsprite[whichsprite].ending =
+                            newsprite[whichsprite].active = FALSE;
+                            newsprite[whichsprite].starty = newsprite[whichsprite].newstarty;
+                            newsprite[whichsprite].dup    = TRUE;
+                            if (prevsprite[multiframe][whichsprite][prevsprnum[whichsprite]].inuse)
+                            {   prevsprnum[whichsprite]++;
+        }   }   }   }   }   }
+        else
+        {   if (cpux == n4)
+            {   pvi_vblank();
+    }   }   }
+
+    if (cpux == nextinst)
+    {   oldcycles = cycles_2650;
+        checkstep();
+        do_tape(); // for Elektor
+        one_instruction();
+        nextinst += (cycles_2650 - oldcycles) * ppc; // in pixels
+        donecpu = TRUE;
+        if (nextinst >= 227)
+        {   nextinst -= cpl;
+    }   }
+
+    if (cpux == 227 - 1)
+    {   cpux = 0;
+        if (cpuy == n3 - 1)
+        {   cpuy = 0;
+            newpvi_endofframe();
+        } else
+        {   cpuy++;
+    }   }
+    else
+    {   cpux++;
+}   }
+
+MODULE void newpvi_startofframe(void)
+{   int i, j;
 
     inframe = TRUE;
 
@@ -795,195 +852,6 @@ PERSIST const UBYTE mininumber[5][5] = {
     }   }
     memset(&colltable[0][0],     0, sizeof(colltable));
     memset(&dmascreen[0][0], BLACK, sizeof(dmascreen));
-
-    cpuy = 0;
-    breakrastline();
-    for (cpux = 0; cpux < n4; cpux++)
-    {   bgcread = memory[0x1F00 + PVI_BGCOLOUR];
-        if (memmap != MEMMAP_E && (memory[IE_NOISE] & 0x20)) // invert
-        {   if (bgcread & 8) // background/grid enable
-            {   changethisbgpixel(bgcread & 7);
-            } else
-            {   changethisbgpixel(WHITE);
-        }   }
-        else
-        {   if (bgcread & 8) // background/grid enable
-            {   if (darkenbg)
-                {   changethisbgpixel(15 - (bgcread & 7));
-                } else
-                {   changethisbgpixel( 7 - (bgcread & 7));
-            }   }
-            else
-            {   changethisbgpixel(BLACK);
-        }   }
-        do_cpu();
-    }
-    pvi_vblank();
-    run_cpu(227); // the rest of raster 0
-
-    for (cpuy = 1; cpuy < n1; cpuy++) // typically 43
-    {   breakrastline();
-        run_cpu(227);
-    }
-
-    for (cpuy = n1; cpuy < n3; cpuy++) // typically n1 is 43 and and n3 is 312
-    {   breakrastline();
-        if (cpuy == n1)
-        {   run_cpu(n4);
-            unvblank();
-        } else
-        {   for (cpux = 0; cpux < n4; cpux++)
-            {   bgcread = memory[0x1F00 + PVI_BGCOLOUR];
-                if (memmap != MEMMAP_E && (memory[IE_NOISE] & 0x20)) // invert
-                {   if (bgcread & 8) // background/grid enable
-                    {   changethisbgpixel(bgcread & 7);
-                    } else
-                    {   changethisbgpixel(WHITE);
-                }   }
-                else
-                {   if (bgcread & 8) // background/grid enable
-                    {   if (darkenbg)
-                        {   changethisbgpixel(15 - (bgcread & 7));
-                        } else
-                        {   changethisbgpixel( 7 - (bgcread & 7));
-                    }   }
-                    else
-                    {   changethisbgpixel(BLACK);
-                }   }
-                do_cpu();
-            }
-            if (cpuy == n2) // ie. USG_YMARGIN + (269 / 2). "Conversion takes place during the active scan". Typically 177
-            {   wa_checkinput();
-                ie_emuinput();
-        }   }
-        newraster();
-        run_cpu(12);
-        readsprites();    // this timing might not
-        checkinterrupt(); // be right for NTSC?
-        run_cpu(49);
-        for (cpux = 49; cpux < 227; cpux++)
-        {   onepixel();
-        }
-
-        for (whichsprite = 0; whichsprite < 4; whichsprite++)
-        {   if (newsprite[whichsprite].ending)
-            {   newsprite[whichsprite].ending =
-                newsprite[whichsprite].active = FALSE;
-                newsprite[whichsprite].starty = newsprite[whichsprite].newstarty;
-                newsprite[whichsprite].dup    = TRUE;
-                if (prevsprite[multiframe][whichsprite][prevsprnum[whichsprite]].inuse)
-                {   prevsprnum[whichsprite]++;
-    }   }   }   }
-
-    if (demultiplex != 0 && frames >= (ULONG) spriteflips && spritemode != SPRITEMODE_INVISIBLE)
-    {   for (i = 0; i < 4; i++)
-        {   for (j = 0; j < PREVSPRITES; j++)
-            {   prevspritedone[i][j] = FALSE;
-            }
-         /* if (prevsprite[multiframe][i][j].inuse)
-            {    zprintf
-                 (   "#%d: X=%d, Y=%d, colour=%d\n",
-                     i,
-                     prevsprite[multiframe][i][j].leftx,
-                     prevsprite[multiframe][i][j].topy,
-                     prevsprite[multiframe][i][j].colour
-                 );
-            } */
-        }
-
-        for (i = spriteflips; i >= 1; i--)
-        {   drawmultiplexedsprites((spriteflip + i) % (spriteflips + 1));
-    }   }
-    if (spriteflip == spriteflips)
-    {   spriteflip = 0;
-    } else
-    {   spriteflip++;
-    }
-
-#ifdef SHOWRUMBLE
-    if (rumbling[0])
-    {   for (y = 0; y < machines[machine].height; y++)
-        {   changepixel(                          0, y, 15 - screen[                          0][y]);
-    }   }
-    if (rumbling[1])
-    {   for (y = 0; y < machines[machine].height; y++)
-        {   changepixel(machines[machine].width - 1, y, 15 - screen[machines[machine].width - 1][y]);
-    }   }
-#endif
-
-    if (editscreen)
-    {   xx      = 31;
-        yy      = 19 + ((ky / 6) * 40);
-        kheight = 42;
-        for (y = 0; y < kheight; y++)
-        {   for (x = 0; x < 130; x++)
-            {   if (y == 0 || y == kheight - 1 || x == 0 || x == 129)
-                {   changerelpixel
-                    (   xx + x,
-                        yy + y,
-                        PINK
-                    );
-        }   }   }
-        for (y = 0; y < 5; y++)
-        {   for (x = 0; x < 3; x++)
-            {   if (mininumber[(memory[0x1FA8 + (ky / 6)] & 0xC0) >> 6][y] & (4 >> x))
-                {   changerelpixel(xx + 131 + x, yy + 18 + y, PINK);
-        }   }   }
-
-        yy = 19 + ((ky / 3) * 20);
-        if (ky % 3 == 0)
-        {   kheight = 4;
-        } else
-        {   kheight = 11;
-            if (ky % 3 == 1)
-            {   yy +=  2;
-            } else
-            {   yy += 11;
-        }   }
-        for (y = 0; y < kheight; y++)
-        {   for (x = 0; x < 130; x++)
-            {   if (y == 0 || y == kheight - 1 || x == 0 || x == 129)
-                {   changerelpixel
-                    (   xx + x,
-                        yy + y,
-                        ORANGE
-                    );
-        }   }   }
-        if (memory[0x1FA8 + (ky / 6)] & (1 << (ky % 6)))
-        {   for (y = 0; y < 5; y++)
-            {   for (x = 0; x < 3; x++)
-                {   if (mininumber[4][y] & (4 >> x))
-                    {   changerelpixel(27 + x, yy + (kheight / 2) - 2 + y, ORANGE);
-        }   }   }   }
-        else
-        {   for (y = 0; y < 5; y++)
-            {   for (x = 0; x < 3; x++)
-                {   if (mininumber[(memory[0x1FA8 + (ky / 6)] & 0xC0) >> 6][y] & (4 >> x))
-                    {   changerelpixel(27 + x, yy + (kheight / 2) - 2 + y, ORANGE);
-        }   }   }   }
-
-        xx = 31 + ( kx      *  8);
-        yy = 19 + ((ky / 3) * 20);
-        if (ky % 3 == 0)
-        {   kheight = 4;
-        } else
-        {   kheight = 20;
-            yy +=  2;
-        }
-        for (y = 0; y < kheight; y++)
-        {   for (x = 0; x < 10; x++)
-            {   if (y == 0 || y == kheight - 1 || x == 0 || x == 9)
-                {   changerelpixel
-                    (   xx + x,
-                        yy + y,
-                        GREY1
-                    );
-    }   }   }   }
-
-    if (drawmode)
-    {   newpvi_drawhelpgrid();
-    }
-    endofframe(bgc);
 }
 
 MODULE __inline void onepixel(void)
@@ -1153,13 +1021,8 @@ SCORE:
     if (pixelcolour == bgc)
     {   changethisbgpixel(pixelcolour);
     } else
-    {   changethisabspixel(pixelcolour);
-    }
-
-    // CPU------------------------------------------------------------
-
-    do_cpu();
-}
+    {   changethisfgpixel(pixelcolour);
+}   }
 
 EXPORT void pviwrite(signed int address, UBYTE data, FLAG ispvi)
 {   /* Writes to memory from the PVI always go through this
@@ -2095,7 +1958,7 @@ EXPORT void newpvi_drawhelpgrid(void)
         {   // assert(region == REGION_PAL);
             for (x = -49; x <= -44; x++)
             {   changerelpixel(x, -43, GREY4);
-                for (y = 1; y <= 268; y++)
+                for (y = 0; y <= 268; y++)
                 {   changerelpixel(x, y, GREY4);
             }   }
             for (x =   0; x <=  10; x++)
@@ -2144,12 +2007,12 @@ EXPORT void newpvi_drawhelpgrid(void)
         if (usemargins)
         {   for (y = 0; y < n3; y++)
             {   for (x = 0; x < 227; x++)
-                {   changeabspixel(x, y, dmascreen[y][x]);
+                {   changefgpixel(x, y, dmascreen[y][x]);
         }   }   }
         else
         {   for (y = absymin; y <= absymax; y++)
             {   for (x = 60; x <= 223; x++)
-                {   changeabspixel(x, y, dmascreen[y][x]);
+                {   changefgpixel(x, y, dmascreen[y][x]);
 }   }   }   }   }
 
 MODULE void unvblank(void)
@@ -2360,32 +2223,17 @@ PERSIST const int consolecolours[8] =
         {   newspritedone(whichsprite);
 }   }   }
 
-EXPORT void changeabspixel(int x, int y, int colour)
-{   /* For usemargins, the entire routine could be:
-    changepixel(x, y, colour); */
-
-    if (x >= absxmin && x <= absxmax && y >= absymin && y <= absymax)
-    {   changepixel(x - absxmin, y - absymin, colour);
-}   }
-EXPORT void changethisabspixel(int colour)
-{   /* For usemargins, the entire routine could be:
-    changepixel(cpux, cpuy, colour); */
-
-    if (cpux >= absxmin && cpux <= absxmax && cpuy >= absymin && cpuy <= absymax)
-    {   changepixel(cpux - absxmin, cpuy - absymin, colour);
-}   }
-EXPORT void changethisbgpixel(int colour)
-{   /* For usemargins, the entire routine could be:
-    changepixel(cpux, cpuy, colour); */
-
-    if (cpux >= absxmin && cpux <= absxmax && cpuy >= absymin && cpuy <= absymax)
-    {   changebgpixel(cpux - absxmin, cpuy - absymin, colour);
-}   }
 EXPORT void changerelpixel(int x, int y, int colour)
-{   x += USG_XMARGIN;
-    y += USG_YMARGIN;
+{   if (usemargins)
+    {   x += USG_XMARGIN;
+        y += USG_YMARGIN;
+    } elif (machine == ARCADIA)
+    {   x -= UVI_HIDELEFT;
+    } else
+    {   x -= PVI_HIDELEFT;
+    }
 
-    changeabspixel(x, y, colour);
+    changefgpixel(x, y, colour);
 }
 
 MODULE void newraster(void)
@@ -2428,25 +2276,6 @@ MODULE void newraster(void)
             else
             {   bgc = 7; // black
 }   }   }   }
-
-MODULE __inline void do_cpu(void)
-{
-#ifdef OPCOLOURS
-    if (cpuy >= absymin && cpuy <= absymax)
-    {   changethisabspixel(table_opcolours_2650[supercpu][opcode]);
-    }
-    screen_iar[cpux][cpuy] = iar;
-#endif
-
-    if (cpux == nextinst)
-    {   oldcycles = cycles_2650;
-        checkstep();
-        do_tape(); // for Elektor
-        one_instruction();
-        nextinst += (cycles_2650 - oldcycles) * ppc; // in pixels
-        if (nextinst >= 227)
-        {   nextinst -= cpl;
-}   }   }
 
 EXPORT void set_retuning(void)
 {   // assert(machine == INTERTON || machine == ELEKTOR);
@@ -2728,22 +2557,6 @@ MODULE void getimgbits(UBYTE data)
 }
 #endif
 
-MODULE void run_cpu(int until)
-{   // This is a quicker equivalent to repeatedly incrementing cpux and calling do_cpu().
-
-    cpux = nextinst;
-    while (cpux < until)
-    {   oldcycles = cycles_2650;
-        checkstep();
-        do_tape(); // for Elektor
-        one_instruction();
-        nextinst += (cycles_2650 - oldcycles) * ppc; // in pixels
-        cpux = nextinst;
-    }
-    if (nextinst >= 227)
-    {   nextinst -= cpl;
-}   }
-
 EXPORT FLAG interpret_pvis(int address)
 {   FAST          int    whichpvi;
     PERSIST const STRPTR spritesizes[4] = { "single", "double", "quadruple", "octuple" };
@@ -2924,4 +2737,153 @@ EXPORT FLAG interpret_pvis(int address)
     }
 
     return TRUE;
+}
+
+MODULE void newpvi_endofframe(void)
+{   FAST int i, j,
+             kheight,
+             x, xx, y, yy;
+PERSIST const UBYTE mininumber[5][5] = {
+{ 6, // ##.
+  2, // .#.
+  2, // .#.
+  2, // .#.
+  7, // ###
+},
+{ 7, // ###
+  1, // ..#
+  7, // ###
+  4, // #..
+  7, // ###
+},
+{ 6, // ##.
+  2, // .#.
+  2, // .#.
+  2, // .#.
+  7, // ###
+},
+{ 5, // #.#
+  5, // #.#
+  7, // ###
+  1, // ..#
+  1, // ..#
+},
+{ 7, // ###
+  5, // #.#
+  7, // ###
+  5, // #.#
+  7, // ###
+} };
+
+    inframe = FALSE;
+
+    if (demultiplex != 0 && frames >= (ULONG) spriteflips && spritemode != SPRITEMODE_INVISIBLE)
+    {   for (i = 0; i < 4; i++)
+        {   for (j = 0; j < PREVSPRITES; j++)
+            {   prevspritedone[i][j] = FALSE;
+            }
+         /* if (prevsprite[multiframe][i][j].inuse)
+            {    zprintf
+                 (   "#%d: X=%d, Y=%d, colour=%d\n",
+                     i,
+                     prevsprite[multiframe][i][j].leftx,
+                     prevsprite[multiframe][i][j].topy,
+                     prevsprite[multiframe][i][j].colour
+                 );
+            } */
+        }
+
+        for (i = spriteflips; i >= 1; i--)
+        {   drawmultiplexedsprites((spriteflip + i) % (spriteflips + 1));
+    }   }
+    if (spriteflip == spriteflips)
+    {   spriteflip = 0;
+    } else
+    {   spriteflip++;
+    }
+
+#ifdef SHOWRUMBLE
+    if (rumbling[0])
+    {   for (y = 0; y < machines[machine].height; y++)
+        {   changefgpixel(                          0, y, 15 - screen[                          0][y]);
+    }   }
+    if (rumbling[1])
+    {   for (y = 0; y < machines[machine].height; y++)
+        {   changefgpixel(machines[machine].width - 1, y, 15 - screen[machines[machine].width - 1][y]);
+    }   }
+#endif
+
+    if (editscreen)
+    {   xx      = 31;
+        yy      = 19 + ((ky / 6) * 40);
+        kheight = 42;
+        for (y = 0; y < kheight; y++)
+        {   for (x = 0; x < 130; x++)
+            {   if (y == 0 || y == kheight - 1 || x == 0 || x == 129)
+                {   changerelpixel
+                    (   xx + x,
+                        yy + y,
+                        PINK
+                    );
+        }   }   }
+        for (y = 0; y < 5; y++)
+        {   for (x = 0; x < 3; x++)
+            {   if (mininumber[(memory[0x1FA8 + (ky / 6)] & 0xC0) >> 6][y] & (4 >> x))
+                {   changerelpixel(xx + 131 + x, yy + 18 + y, PINK);
+        }   }   }
+
+        yy = 19 + ((ky / 3) * 20);
+        if (ky % 3 == 0)
+        {   kheight = 4;
+        } else
+        {   kheight = 11;
+            if (ky % 3 == 1)
+            {   yy +=  2;
+            } else
+            {   yy += 11;
+        }   }
+        for (y = 0; y < kheight; y++)
+        {   for (x = 0; x < 130; x++)
+            {   if (y == 0 || y == kheight - 1 || x == 0 || x == 129)
+                {   changerelpixel
+                    (   xx + x,
+                        yy + y,
+                        ORANGE
+                    );
+        }   }   }
+        if (memory[0x1FA8 + (ky / 6)] & (1 << (ky % 6)))
+        {   for (y = 0; y < 5; y++)
+            {   for (x = 0; x < 3; x++)
+                {   if (mininumber[4][y] & (4 >> x))
+                    {   changerelpixel(27 + x, yy + (kheight / 2) - 2 + y, ORANGE);
+        }   }   }   }
+        else
+        {   for (y = 0; y < 5; y++)
+            {   for (x = 0; x < 3; x++)
+                {   if (mininumber[(memory[0x1FA8 + (ky / 6)] & 0xC0) >> 6][y] & (4 >> x))
+                    {   changerelpixel(27 + x, yy + (kheight / 2) - 2 + y, ORANGE);
+        }   }   }   }
+
+        xx = 31 + ( kx      *  8);
+        yy = 19 + ((ky / 3) * 20);
+        if (ky % 3 == 0)
+        {   kheight = 4;
+        } else
+        {   kheight = 20;
+            yy +=  2;
+        }
+        for (y = 0; y < kheight; y++)
+        {   for (x = 0; x < 10; x++)
+            {   if (y == 0 || y == kheight - 1 || x == 0 || x == 9)
+                {   changerelpixel
+                    (   xx + x,
+                        yy + y,
+                        GREY1
+                    );
+    }   }   }   }
+
+    if (drawmode)
+    {   newpvi_drawhelpgrid();
+    }
+    endofframe(bgc);
 }

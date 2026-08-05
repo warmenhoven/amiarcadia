@@ -28,8 +28,8 @@
 
 // DEFINES----------------------------------------------------------------
 
-// #define CHECKDRAWS
-// whether changepixel() should bounds check the coordinates
+#define CHECKDRAWS
+// whether changefgpixel/changebgpixel() should bounds check the coordinates
 
 // These are for ETI-640 (ie. BINBUG). See ETI Circuits #3, p. 32.
 // Method A (ideal ETI-640)...
@@ -279,7 +279,8 @@ IMPORT       int                  ambient,
                                   selbst_biosver,
                                   showdebugger[2],
                                   showleds,
-                                  traceorstep,
+                                  step,
+                                  trace,
                                   usemargins,
                                   usespeech,
                                   vdu_columns,
@@ -439,28 +440,28 @@ EXPORT void draw_guide_ray(FLAG erasing)
         case ARCADIA:
         case INTERTON:
         case ELEKTOR:
-            if (traceorstep || (inframe && (cpux % 227 || cpuy % n3 ))) // because we don't want to annoy the gamers with it
+            if (trace || step || (inframe && (cpux % 227 || cpuy % n3 ))) // because we don't want to annoy the gamers with it
             {   guideray_x = cpux % 227; // this can happen, eg. R F command
                 guideray_y = cpuy % n3;  // this can happen, eg. R F command
             } else
             {   return;
             }
         acase BINBUG:
-            if (traceorstep || (inframe && (cpux % 384 || cpuy % 312))) // because we don't want to annoy the gamers with it. This is no mistake
+            if (trace || step || (inframe && (cpux % 384 || cpuy % 312))) // because we don't want to annoy the gamers with it. This is no mistake
             {   guideray_x = cpux % 768;
                 guideray_y = cpuy % 313;
             } else
             {   return;
             }
         acase CD2650:
-            if (traceorstep || (inframe && (cpux % 904 || cpuy % 264))) // because we don't want to annoy the gamers with it
+            if (trace || step || (inframe && (cpux % 904 || cpuy % 264))) // because we don't want to annoy the gamers with it
             {   guideray_x = cpux % 904;
                 guideray_y = cpuy % 264;
             } else
             {   return;
             }
         acase PHUNSY:
-            if (traceorstep || (inframe && (cpux % 384 || cpuy % 313))) // because we don't want to annoy the gamers with it
+            if (trace || step || (inframe && (cpux % 384 || cpuy % 313))) // because we don't want to annoy the gamers with it
             {   guideray_x = (cpux % 640) + 128;
                 guideray_y =  cpuy % 313;
             } else
@@ -468,7 +469,7 @@ EXPORT void draw_guide_ray(FLAG erasing)
             }
         acase MALZAK:
         case ZACCARIA:
-            if (traceorstep || (cpuy >= 1 && cpuy < COINOP_BOXHEIGHT)) // because we don't want to annoy the gamers with it
+            if (trace || step || (cpuy >= 1 && cpuy < COINOP_BOXHEIGHT)) // because we don't want to annoy the gamers with it
             {   guideray_y = cpuy;
             } else
             {   return;
@@ -541,9 +542,9 @@ MODULE void draw_line(int x1, int y1, int x2, int y2, FLAG erasing)
         for (i = 0; i <= dx; i++)
         {   if (!(nowx < absxmin || nowx > absxmax || nowy < absymin || nowy > absymax))
             {   if (erasing)
-                {   changeabspixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] ==  0) ? 23 : (screen[nowx - absxmin][nowy - absymin] - 1));
+                {   changefgpixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] ==  0) ? 23 : (screen[nowx - absxmin][nowy - absymin] - 1));
                 } else
-                {   changeabspixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] == 23) ?  0 : (screen[nowx - absxmin][nowy - absymin] + 1));
+                {   changefgpixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] == 23) ?  0 : (screen[nowx - absxmin][nowy - absymin] + 1));
             }   }
             if (err >= 0)
             {   err -= dx2;
@@ -558,9 +559,9 @@ MODULE void draw_line(int x1, int y1, int x2, int y2, FLAG erasing)
         for (i = 0; i <= dy; i++)
         {   if (!(nowx < absxmin || nowx > absxmax || nowy < absymin || nowy > absymax))
             {   if (erasing)
-                {   changeabspixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] ==  0) ? 23 : (screen[nowx - absxmin][nowy - absymin] - 1));
+                {   changefgpixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] ==  0) ? 23 : (screen[nowx - absxmin][nowy - absymin] - 1));
                 } else
-                {   changeabspixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] == 23) ?  0 : (screen[nowx - absxmin][nowy - absymin] + 1));
+                {   changefgpixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] == 23) ?  0 : (screen[nowx - absxmin][nowy - absymin] + 1));
             }   }
             if (err >= 0)
             {   err -= dy2;
@@ -935,11 +936,6 @@ EXPORT void show_position(int x, int y, FLAG setting)
             y = machines[machine].height - 1 - x;
             x = temp;
         }
-
-        #ifdef OPCOLOURS
-            sprintf(coords, "$%X: %s", screen_iar[x][y], opcodes_2650[style][memory[screen_iar[x][y]]].name);
-            return;
-        #endif
 
         // ux,uy are the coordinates we tell the user; they are currently in USG coords.
         // px,py are the coordinates in PVI coords (only used for Arcadia/Interton/Elektor).
@@ -2480,7 +2476,7 @@ EXPORT void fixupcolours(void)
     )
     {   for (x = 0; x < machines[machine].width; x++)
         {   for (y = 0; y < machines[machine].height; y++)
-            {   screen[x][y] = (UBYTE) vdu_bgc; // NOT changepixel()!
+            {   screen[x][y] = (UBYTE) vdu_bgc; // NOT changebgpixel()!
     }   }   }
 
     draw_margins();
@@ -2596,18 +2592,18 @@ EXPORT ULONG setkybdcolour(int gid)
     return 0; // key not found in diagram
 }
 
-EXPORT void changepixel(int x, int y, int colour)
+EXPORT void changefgpixel(int x, int y, int colour)
 {
 #ifdef CHECKDRAWS
     if (x < 0 || y < 0 || x >= machines[machine].width || y >= machines[machine].height)
-    {   zprintf
+    {   /* zprintf
         (   TEXTPEN_ERROR,
-            "changepixel(): illegal coords: %d,%d! Valid coords are 0,0..%d,%d.\n",
+            "changefgpixel(): illegal coords: %d,%d! Valid coords are 0,0..%d,%d.\n",
             x,
             y,
             machines[machine].width  - 1,
             machines[machine].height - 1
-        );
+        ); */
         return;
     }
 #endif
@@ -2629,14 +2625,14 @@ EXPORT void changebgpixel(int x, int y, int colour)
 {
 #ifdef CHECKDRAWS
     if (x < 0 || y < 0 || x >= machines[machine].width || y >= machines[machine].height)
-    {   zprintf
+    {   /* zprintf
         (   TEXTPEN_ERROR,
-            "changepixel(): illegal coords: %d,%d! Valid coords are 0,0..%d,%d.\n",
+            "changebgpixel(): illegal coords: %d,%d! Valid coords are 0,0..%d,%d.\n",
             x,
             y,
             machines[machine].width  - 1,
             machines[machine].height - 1
-        );
+        ); */
         return;
     }
 #endif
@@ -2668,38 +2664,38 @@ EXPORT void drawglow(int x, int y, int colour)
     {   return;
     }
 
-    changepixel(x + 1, y    , colour);
-    changepixel(x + 2, y    , colour);
-    changepixel(x + 3, y    , colour);
-    changepixel(x + 4, y    , colour);
-    changepixel(x    , y + 1, colour);
-    changepixel(x + 1, y + 1, colour);
-    changepixel(x + 2, y + 1, colour);
-    changepixel(x + 3, y + 1, colour);
-    changepixel(x + 4, y + 1, colour);
-    changepixel(x + 5, y + 1, colour);
-    changepixel(x    , y + 2, colour);
-    changepixel(x + 1, y + 2, colour);
-    changepixel(x + 2, y + 2, colour);
-    changepixel(x + 3, y + 2, colour);
-    changepixel(x + 4, y + 2, colour);
-    changepixel(x + 5, y + 2, colour);
-    changepixel(x    , y + 3, colour);
-    changepixel(x + 1, y + 3, colour);
-    changepixel(x + 2, y + 3, colour);
-    changepixel(x + 3, y + 3, colour);
-    changepixel(x + 4, y + 3, colour);
-    changepixel(x + 5, y + 3, colour);
-    changepixel(x    , y + 4, colour);
-    changepixel(x + 1, y + 4, colour);
-    changepixel(x + 2, y + 4, colour);
-    changepixel(x + 3, y + 4, colour);
-    changepixel(x + 4, y + 4, colour);
-    changepixel(x + 5, y + 4, colour);
-    changepixel(x + 1, y + 5, colour);
-    changepixel(x + 2, y + 5, colour);
-    changepixel(x + 3, y + 5, colour);
-    changepixel(x + 4, y + 5, colour);
+    changefgpixel(x + 1, y    , colour);
+    changefgpixel(x + 2, y    , colour);
+    changefgpixel(x + 3, y    , colour);
+    changefgpixel(x + 4, y    , colour);
+    changefgpixel(x    , y + 1, colour);
+    changefgpixel(x + 1, y + 1, colour);
+    changefgpixel(x + 2, y + 1, colour);
+    changefgpixel(x + 3, y + 1, colour);
+    changefgpixel(x + 4, y + 1, colour);
+    changefgpixel(x + 5, y + 1, colour);
+    changefgpixel(x    , y + 2, colour);
+    changefgpixel(x + 1, y + 2, colour);
+    changefgpixel(x + 2, y + 2, colour);
+    changefgpixel(x + 3, y + 2, colour);
+    changefgpixel(x + 4, y + 2, colour);
+    changefgpixel(x + 5, y + 2, colour);
+    changefgpixel(x    , y + 3, colour);
+    changefgpixel(x + 1, y + 3, colour);
+    changefgpixel(x + 2, y + 3, colour);
+    changefgpixel(x + 3, y + 3, colour);
+    changefgpixel(x + 4, y + 3, colour);
+    changefgpixel(x + 5, y + 3, colour);
+    changefgpixel(x    , y + 4, colour);
+    changefgpixel(x + 1, y + 4, colour);
+    changefgpixel(x + 2, y + 4, colour);
+    changefgpixel(x + 3, y + 4, colour);
+    changefgpixel(x + 4, y + 4, colour);
+    changefgpixel(x + 5, y + 4, colour);
+    changefgpixel(x + 1, y + 5, colour);
+    changefgpixel(x + 2, y + 5, colour);
+    changefgpixel(x + 3, y + 5, colour);
+    changefgpixel(x + 4, y + 5, colour);
 }
 
 EXPORT void drawdigit(int position, UBYTE value)
@@ -3196,4 +3192,11 @@ EXPORT void view_controls_engine(void)
 
     wheremouse = -1;
     fix_keyrects(); // probably not needed anymore
+}
+
+EXPORT void changethisfgpixel(int colour)
+{   changefgpixel(cpux - absxmin, cpuy - absymin, colour);
+}
+EXPORT void changethisbgpixel(int colour)
+{   changebgpixel(cpux - absxmin, cpuy - absymin, colour);
 }

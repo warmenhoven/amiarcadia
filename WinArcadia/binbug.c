@@ -415,7 +415,6 @@ EXPORT void binbug_setmemmap(void)
         mirror;
 
     machines[BINBUG].cpf = fastbinbug ? 40000.0 : 20000.0;
-    nextinst = 0;
 
     for (i =  0x400; i <= 0x57FF; i++)
     {   memory[i] = 0;

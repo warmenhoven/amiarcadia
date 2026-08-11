@@ -176,7 +176,6 @@ EXPORT void phunsy_setmemmap(void)
 
     // assert(memmap == MEMMAP_PHUNSY);
 
-    nextinst = 0;
     ticks = rate = 0;
 
     if (phunsy_biosver == PHUNSY_MINIMONITOR)

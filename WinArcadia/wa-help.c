@@ -2481,6 +2481,7 @@ MODULE BOOL CALLBACK GameInfoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
             0
         );
 
+        update_variant(TRUE);
         enablegads();
 
         move_subwindow(SUBWINDOW_GAMEINFO);

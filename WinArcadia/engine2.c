@@ -176,7 +176,6 @@ IMPORT       ULONG                    arcadia_viewcontrolsas,
                                       crc64_l,
                                       cycles_2650,
                                       elektor_bigctrls,
-                                      fractionator,
                                       frames,
                                       interton_bigctrls,
                                       lb_snd,
@@ -2256,8 +2255,9 @@ EXPORT UBYTE getdigit(UBYTE data)
 }   }
 
 EXPORT void serialize_cos(void)
-{   int i, j,
-        x, y;
+{   int   i, j,
+          x, y;
+    ULONG temp;
 
     if (serializemode == SERIALIZE_WRITE)
     {   cosversion = machines[machine].cosversion;
@@ -2326,7 +2326,10 @@ EXPORT void serialize_cos(void)
     switch (machine)
     {
     case ARCADIA:
-        serialize_long((ULONG*) &fractionator);
+        if (cosversion < 39)
+        {   temp = 0; // to avoid spurious warning
+            serialize_long((ULONG*) &temp);
+        }
         serialize_byte_int((int*) &region);
     //lint -fallthrough
     case INTERTON:
@@ -2334,16 +2337,10 @@ EXPORT void serialize_cos(void)
         for (i =      0; i <= 0x7FFF; i++) /*  32K   */ serialize_byte(&memory[i]);
         serialize_long((ULONG*) &nextinst);
         serialize_long((ULONG*) &cpl);
-        if (serializemode == SERIALIZE_READ)
-        {   set_cpl(cpl); // not really needed for INTERTON (only for ARCADIA)
-        }
     acase ELEKTOR:
         for (i =  0x800; i <= 0x1FFF; i++) /*   6K   */ serialize_byte(&memory[i]);
         serialize_long((ULONG*) &nextinst);
         serialize_long((ULONG*) &cpl);
-        if (serializemode == SERIALIZE_READ)
-        {   set_cpl(cpl); // not really needed for ELEKTOR
-        }
         serialize_byte_int(&elektor_biosver);
         serialize_long((ULONG*) &cheevosize);
         for (i = 0; i < cheevosize; i++)
@@ -4178,10 +4175,11 @@ EXPORT int parse_bytes(void)
         newmachine = memmapinfo[newmemmap].machine;
         if (cosversion != machines[newmachine].cosversion)
         {   if
-            (   (newmachine == PIPBUG && cosversion >= 41)
-             || (newmachine == BINBUG && cosversion >= 42)
-             || (newmachine == TWIN   && cosversion >= 39)
-             || (newmachine == CD2650 && cosversion >= 42)
+            (   (newmachine == ARCADIA && cosversion >= 38)
+             || (newmachine == PIPBUG  && cosversion >= 41)
+             || (newmachine == BINBUG  && cosversion >= 42)
+             || (newmachine == TWIN    && cosversion >= 39)
+             || (newmachine == CD2650  && cosversion >= 42)
             )
             {   ; // OK
             } else
@@ -4558,6 +4556,7 @@ EXPORT int parse_bytes(void)
     }   }
 #endif
 
+    generate_autotext();
     patchrom(); // do this after RetroAchievements (so our patches don't mess up their hashing)
 
     if (kind == KIND_COR)

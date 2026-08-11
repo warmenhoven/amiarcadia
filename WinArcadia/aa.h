@@ -1,10 +1,10 @@
-#define DECIMALVERSION       "36.55"
-#define INTEGERVERSION       "36.55"
+#define DECIMALVERSION       "36.6 beta"
+#define INTEGERVERSION       "36.60"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x55
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (5.8.2026)" // d.m.yyyy format
-#define RELEASEDATE          "05-08-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "5 August 2026" // full month and year
+#define MINORVERSION         0x60
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (12.8.2026)" // d.m.yyyy format
+#define RELEASEDATE          "12-08-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "12 August 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
 #define NEWCONFIGVERSION     "36.54" // V36.54 final+
@@ -2396,6 +2396,7 @@ typedef UWORD MEMFLAG;
 #define I_BOWLINGPOS          148
 #define I_BOXINGPOS           149
 #define I_CAPTUREPOS          150
+#define GRANDPRIXPOS          150
 #define CASINOPOS             152
 #define CHESS1POS             153
 #define CHESS2POS             154
@@ -4428,7 +4429,6 @@ EXPORT int getsmallimage2(int thegame, int thememmap);
 EXPORT void longcomma(ULONG value, STRPTR out);
 EXPORT FLAG wantellipse(int localkey);
 EXPORT void zstrncpy(char* to, const char* from, size_t n);
-EXPORT void set_cpl(int newcpl);
 EXPORT void set_filename(void);
 // cpu monitor
 EXPORT FLAG getmoncolour(int whichmongad, ULONG* whichemupen, int* whichemubrush);
@@ -4439,6 +4439,8 @@ EXPORT void get_disk_byte(int whichdrive, UBYTE whichtrack, UBYTE whichsector, i
 EXPORT FLAG load_disk(FLAG wantasl, int whichdrive, FLAG user);
 EXPORT void set_drive_mode(int newdrivemode);
 EXPORT void update_disk(int whichdrive);
+// game info
+EXPORT void update_variant(FLAG force);
 // high scores
 EXPORT void clearhs(void);
 EXPORT FLAG enableclearhs(void);
@@ -4551,7 +4553,9 @@ EXPORT void change_colour_names(void);
 EXPORT void changefgpixel(int x, int y, int colour);
 EXPORT void changebgpixel(int x, int y, int colour);
 EXPORT void changethisfgpixel(int colour);
+EXPORT void changethisfgpixel_slow(int colour);
 EXPORT void changethisbgpixel(int colour);
+EXPORT void changethisbgpixel_slow(int colour);
 EXPORT void drawcontrolspixel(int x, int y, int colour);
 EXPORT void drawctrlglow(int leftx, int lefty, FLAG lit);
 EXPORT void drawdigit(int position, UBYTE value);

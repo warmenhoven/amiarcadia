@@ -74,7 +74,6 @@ IMPORT int                  ambient,
                             console_a,
                             console_b,
                             console_reset,
-                            cpl,
                             credits,
                             drawmode,
                             game,
@@ -84,7 +83,6 @@ IMPORT int                  ambient,
                             key4,
                             machine,
                             memmap,
-                            nextinst,
                             offset,
                             p1bgcol[4],
                             p2bgcol[4],
@@ -406,8 +404,6 @@ EXPORT void malzak_setmemmap(void)
 
     // assert(memmap == MEMMAP_MALZAK1 || memmap == MEMMAP_MALZAK2);
 
-    nextinst = 0;
-
     for (i = 0x1000; i <= 0x7FFF; i++)
     {   memory[i] = 0; // important
     }
@@ -589,7 +585,6 @@ EXPORT void malzak_setmemmap(void)
     }
     p1bgcol[0] = 1;
 
-    set_cpl(227 / 3); // 75.6'
     machines[machine].cpf = (int) ((227.0 / 3.0) * 312.0);
 }
 

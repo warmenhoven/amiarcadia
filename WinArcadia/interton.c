@@ -28,7 +28,6 @@ IMPORT int                  cpl,
                             filesize,
                             game,
                             memmap,
-                            nextinst,
                             pvibase,
                             randomizememory,
                             usestubs;
@@ -239,9 +238,6 @@ EXPORT void interton_setmemmap(void)
     memory[IE_NOISE] = 0x04; // Come Come never writes to NOISE, but expects tones to be audible anyway
 
     pvi_memmap();
-
-    nextinst = 0;
-    set_cpl(227);
 
     set_retuning();
 }

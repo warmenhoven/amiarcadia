@@ -2542,12 +2542,12 @@ MODULE BOOL CALLBACK SpeedDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM
                 SetDlgItemText(hwnd, IDC_FRAMESKIP_NUM, gtempstring);
         }   }
         elif (lParam == (long) GetDlgItem(hwnd, IDC_CPL))
-        {   set_cpl(SendMessage
+        {   cpl = SendMessage
             (   GetDlgItem(hwnd, IDC_CPL),
                 TBM_GETPOS,
                 0,
                 0
-            )); // because LOWORD(lParam) is not always correct
+            ); // because LOWORD(lParam) is not always correct
             sprintf(gtempstring, "%d", cpl);
             SetDlgItemText(hwnd, IDC_CPL_NUM, gtempstring);
         }

@@ -540,11 +540,11 @@ MODULE void draw_line(int x1, int y1, int x2, int y2, FLAG erasing)
     {   // initialize the error term
         err = dy2 - dx;
         for (i = 0; i <= dx; i++)
-        {   if (!(nowx < absxmin || nowx > absxmax || nowy < absymin || nowy > absymax))
+        {   if (nowx >= absxmin && nowx <= absxmax && nowy >= absymin && nowy <= absymax)
             {   if (erasing)
-                {   changefgpixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] ==  0) ? 23 : (screen[nowx - absxmin][nowy - absymin] - 1));
+                {   changefgpixel(nowx - absxmin, nowy - absymin, (screen[nowx - absxmin][nowy - absymin] ==  0) ? 23 : (screen[nowx - absxmin][nowy - absymin] - 1));
                 } else
-                {   changefgpixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] == 23) ?  0 : (screen[nowx - absxmin][nowy - absymin] + 1));
+                {   changefgpixel(nowx - absxmin, nowy - absymin, (screen[nowx - absxmin][nowy - absymin] == 23) ?  0 : (screen[nowx - absxmin][nowy - absymin] + 1));
             }   }
             if (err >= 0)
             {   err -= dx2;
@@ -557,11 +557,11 @@ MODULE void draw_line(int x1, int y1, int x2, int y2, FLAG erasing)
     {   // initialize the error term
         err = dx2 - dy;
         for (i = 0; i <= dy; i++)
-        {   if (!(nowx < absxmin || nowx > absxmax || nowy < absymin || nowy > absymax))
+        {   if (nowx >= absxmin && nowx <= absxmax && nowy >= absymin && nowy <= absymax)
             {   if (erasing)
-                {   changefgpixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] ==  0) ? 23 : (screen[nowx - absxmin][nowy - absymin] - 1));
+                {   changefgpixel(nowx - absxmin, nowy - absymin, (screen[nowx - absxmin][nowy - absymin] ==  0) ? 23 : (screen[nowx - absxmin][nowy - absymin] - 1));
                 } else
-                {   changefgpixel(nowx, nowy, (screen[nowx - absxmin][nowy - absymin] == 23) ?  0 : (screen[nowx - absxmin][nowy - absymin] + 1));
+                {   changefgpixel(nowx - absxmin, nowy - absymin, (screen[nowx - absxmin][nowy - absymin] == 23) ?  0 : (screen[nowx - absxmin][nowy - absymin] + 1));
             }   }
             if (err >= 0)
             {   err -= dy2;
@@ -2596,14 +2596,17 @@ EXPORT void changefgpixel(int x, int y, int colour)
 {
 #ifdef CHECKDRAWS
     if (x < 0 || y < 0 || x >= machines[machine].width || y >= machines[machine].height)
-    {   /* zprintf
+    {
+#ifndef RELEASING
+        zprintf
         (   TEXTPEN_ERROR,
             "changefgpixel(): illegal coords: %d,%d! Valid coords are 0,0..%d,%d.\n",
             x,
             y,
             machines[machine].width  - 1,
             machines[machine].height - 1
-        ); */
+        );
+#endif
         return;
     }
 #endif
@@ -2625,14 +2628,17 @@ EXPORT void changebgpixel(int x, int y, int colour)
 {
 #ifdef CHECKDRAWS
     if (x < 0 || y < 0 || x >= machines[machine].width || y >= machines[machine].height)
-    {   /* zprintf
+    {
+#ifndef RELEASING
+        zprintf
         (   TEXTPEN_ERROR,
             "changebgpixel(): illegal coords: %d,%d! Valid coords are 0,0..%d,%d.\n",
             x,
             y,
             machines[machine].width  - 1,
             machines[machine].height - 1
-        ); */
+        );
+#endif
         return;
     }
 #endif
@@ -2653,13 +2659,63 @@ EXPORT void changebgpixel(int x, int y, int colour)
 #endif
 }   }
 
+EXPORT void changethisfgpixel_slow(int colour)
+{   FAST int x, y;
+
+    x = cpux - absxmin;
+    y = cpuy - absymin;
+    if (x < 0 || y < 0 || x >= machines[machine].width || y >= machines[machine].height) // important!
+    {   return;
+    }
+
+    if
+    (   screen[x][y] != (UBYTE) colour
+#ifdef WIN32
+     || demultiplex == 1 // needed for Grand Slam Tennis
+#endif
+    )
+    {   screen[x][y] = (UBYTE) colour;
+#ifdef AMIGA
+        drawpixel(x, y, colour);
+#endif
+#ifdef WIN32
+        drawbgpixel(x, y, colour);
+        fgtable[y][x] = 1;
+#endif
+}   }
+
+EXPORT void changethisbgpixel_slow(int colour)
+{   FAST int x, y;
+
+    x = cpux - absxmin;
+    y = cpuy - absymin;
+    if (x < 0 || y < 0 || x >= machines[machine].width || y >= machines[machine].height) // important!
+    {   return;
+    }
+
+    if
+    (   screen[x][y] != (UBYTE) colour
+#ifdef WIN32
+     || demultiplex == 1 // needed for Grand Slam Tennis
+#endif
+    )
+    {   screen[x][y] = (UBYTE) colour;
+#ifdef AMIGA
+        drawpixel(x, y, colour);
+#endif
+#ifdef WIN32
+        drawbgpixel(x, y, colour);
+        fgtable[y][x] = 0;
+#endif
+}   }
+
 EXPORT void drawglow(int x, int y, int colour)
 {   if
     (   !showleds
-     && (   machine == PIPBUG
-         || machine == BINBUG
-         || machine == PHUNSY
-         || machine == SELBST
+     || (   machine != PIPBUG
+         && machine != BINBUG
+         && machine != PHUNSY
+         && machine != SELBST
     )   )
     {   return;
     }

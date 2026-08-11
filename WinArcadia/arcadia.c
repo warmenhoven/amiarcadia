@@ -33,8 +33,6 @@
 // EXPORTED VARIABLES-----------------------------------------------------
 
 EXPORT       UBYTE                 bgc;
-EXPORT       ULONG                 fractionator;
-EXPORT       int                   frac[4];
 
 // IMPORTED VARIABLES-----------------------------------------------------
 
@@ -154,9 +152,7 @@ IMPORT       struct SubWindowStruct   subwin[SUBWINDOWS];
     IMPORT       int               slice_2650;
 #endif
 
-IMPORT void (* drawpixel   ) (int x, int y, int   colour);
 #ifdef WIN32
-IMPORT void (* drawbgpixel ) (int x, int y, int   colour);
 IMPORT void (* drawrawpixel) (int x, int y, ULONG colour);
 #endif
 
@@ -990,11 +986,7 @@ EXPORT void arcadia_setmemmap(void)
 
         mirror_r[address] =
         mirror_w[address] = (UWORD) mirror;
-    }
-
-    nextinst = 0;
-    set_cpl(227);
-}
+}   }
 
 EXPORT void arcadia_viewscreen(void)
 {   int y;
@@ -1392,7 +1384,7 @@ MODULE __inline void onepixel(void)
     bgc = from_a[flag_cacheable][bgc_cached & 0x07];
 
     if (uviy < voffset || uviy >= voffsetend || cpux < hoffsetstart || cpux >= hoffsetend)
-    {   changethisbgpixel(bgc);
+    {   changethisbgpixel_slow(bgc);
         colltable[cpuy][cpux] = 0;
     } else
     {   x = (cpux - hoffsetstart) & 7; // or % 8
@@ -2194,7 +2186,6 @@ EXPORT void arcadia_reset(void)
 
     spriteflip   =
     udgflip      = 0;
-    fractionator = 0;
     /* This clearing helps avoid these problems:
        (a) Resetting from Dr. Slump game screen to title screen turns
            on constant rumbling (due to sprite imagery being retained
@@ -2554,7 +2545,7 @@ EXPORT void arcadia_anypixel(void)
         {   if (!dejitter)
             {   flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
             }
-            changethisbgpixel(from_a[flag_cacheable][bgc_cached & 0x07]);
+            changethisbgpixel_slow(from_a[flag_cacheable][bgc_cached & 0x07]);
         } elif (cpux == n4)
         {   vblank();
     }   }
@@ -2574,7 +2565,7 @@ EXPORT void arcadia_anypixel(void)
         {   if (!dejitter)
             {   flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
             }
-            changethisbgpixel(from_a[flag_cacheable][bgc_cached & 0x07]);
+            changethisbgpixel_slow(from_a[flag_cacheable][bgc_cached & 0x07]);
             colltable[cpuy][cpux] = 0;
         }
         if (cpux == 0 && cpuy == n2) // ie. USG_YMARGIN + ((n3 - USGMARGIN) / 2). "Conversion takes place during the active scan".

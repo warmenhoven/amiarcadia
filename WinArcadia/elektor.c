@@ -68,12 +68,10 @@ IMPORT       UBYTE                memory[32768],
 IMPORT       UWORD                iar,
                                   mirror_r[32768],
                                   mirror_w[32768];
-IMPORT       int                  cpl,
-                                  elektor_biosver,
+IMPORT       int                  elektor_biosver,
                                   game,
                                   machine,
                                   memmap,
-                                  nextinst,
                                   offset,
                                   pvibase,
                                   verbosity,
@@ -1121,9 +1119,6 @@ E_LINEOUT4, E_LINEOUT5, E_LINEOUT6, E_LINEOUT7  // $1DFC..$1DFF
         watchwrites                      =  WATCH_ALL;
     }
 #endif
-
-    nextinst = 0;
-    set_cpl(226); // when using 227, bottom left pair of BIOS digits are not always visible
 
     set_retuning();
 }

@@ -231,7 +231,6 @@ EXPORT void cd2650_setmemmap(void)
         i, j;
 
     machines[CD2650].cpf = fastcd2650 ? 29832.0 : 19888.0;
-    nextinst = 0;
 
     switch (cd2650_biosver)
     {

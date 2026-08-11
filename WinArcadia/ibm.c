@@ -2715,7 +2715,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case  ARCADIA:  whichgame  = ARCADIASTUBPOS;
         acase INTERTON: whichgame  = INTERTONSTUBPOS;
     }   }
-    set_filename();
+    if (!gotfilename)
+    {   set_filename();
+    }
     change_machine(machine, memmap, FALSE);
 
     allglyphs = (langs[language].codepage == CODEPAGE_ENG) ? TRUE : FALSE;
@@ -2951,7 +2953,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {   if (paused)
         {   wa_checkinput();
             process_code();
-            update_controlstip(FALSE);
         } else
         {   wait_first();
             emulate();
@@ -3979,12 +3980,7 @@ EXPORT void settitle(void)
             RA_UpdateAppTitle("");
     }   }
     else
-    {   strcpy(titlebartext, hostmachines[machine].titlebartext);
-        if (game && file_game[0])
-        {   strcat(titlebartext, ": ");
-            strcat(titlebartext, file_game);
-        }
-        settitle_engine();
+    {   settitle_engine();
 
 #ifdef VERBOSE
         zprintf(TEXTPEN_VERBOSE, "Setting title to %s.\n", titlebartext);

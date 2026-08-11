@@ -767,19 +767,19 @@ EXPORT void newpvi_anypixel(void)
         {   bgcread = memory[0x1F00 + PVI_BGCOLOUR];
             if (memmap != MEMMAP_E && (memory[IE_NOISE] & 0x20)) // invert
             {   if (bgcread & 8) // background/grid enable
-                {   changethisbgpixel(bgcread & 7);
+                {   changethisbgpixel_slow(bgcread & 7);
                 } else
-                {   changethisbgpixel(WHITE);
+                {   changethisbgpixel_slow(WHITE);
             }   }
             else
             {   if (bgcread & 8) // background/grid enable
                 {   if (darkenbg)
-                    {   changethisbgpixel(15 - (bgcread & 7));
+                    {   changethisbgpixel_slow(15 - (bgcread & 7));
                     } else
-                    {   changethisbgpixel( 7 - (bgcread & 7));
+                    {   changethisbgpixel_slow( 7 - (bgcread & 7));
                 }   }
                 else
-                {   changethisbgpixel(BLACK);
+                {   changethisbgpixel_slow(BLACK);
             }   }
         }
         elif (cpuy)
@@ -1019,9 +1019,9 @@ SCORE:
     // Render-----------------------------------------------------
 
     if (pixelcolour == bgc)
-    {   changethisbgpixel(pixelcolour);
+    {   changethisbgpixel_slow(pixelcolour);
     } else
-    {   changethisfgpixel(pixelcolour);
+    {   changethisfgpixel_slow(pixelcolour);
 }   }
 
 EXPORT void pviwrite(signed int address, UBYTE data, FLAG ispvi)

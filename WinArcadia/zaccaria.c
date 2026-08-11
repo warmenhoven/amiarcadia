@@ -200,7 +200,6 @@ IMPORT int                  ambient,
                             console_a,
                             console_b,
                             console_reset,
-                            cpl,
                             editscreen,
                             hostcontroller[2],
                             game,
@@ -210,7 +209,6 @@ IMPORT int                  ambient,
                             key4,
                             machine,
                             memmap,
-                            nextinst,
                             offset,
                             p1bgcol[4],
                             p2bgcol[4],
@@ -254,8 +252,6 @@ MODULE void do_cvs(void);
 
 EXPORT void astrowars_setmemmap(void)
 {   int i, address, mirror;
-
-    nextinst = 0;
 
     for (i = 0x1400; i <= 0x7FFF; i++)
     {   memory[i] = 0; // important
@@ -342,7 +338,6 @@ EXPORT void astrowars_setmemmap(void)
         p2sprcol[i] = 0;
     }
 
-    cpl = 227 / 3; // 75.6'
     machines[machine].cpf = (int) ((227.0 / 3.0) * 312.0);
 
     init_cvs_stars();
@@ -350,8 +345,6 @@ EXPORT void astrowars_setmemmap(void)
 
 EXPORT void galaxia_setmemmap(void)
 {   int i, address, mirror;
-
-    nextinst = 0;
 
     for (i = 0x1400; i <= 0x7FFF; i++)
     {   memory[i] = 0; // important
@@ -436,7 +429,6 @@ EXPORT void galaxia_setmemmap(void)
         p2sprcol[i] = 0;
     }
 
-    cpl = 227 / 3; // 75.6'
     machines[machine].cpf = (int) ((227.0 / 3.0) * 312.0);
 
     init_cvs_stars();
@@ -451,8 +443,6 @@ EXPORT void lb_setmemmap(void)
 {   int address,
         i,
         mirror;
-
-    nextinst = 0;
 
     for (i = 0x1400; i <= 0x7FFF; i++)
     {   memory[i] = 0;
@@ -585,7 +575,6 @@ EXPORT void lb_setmemmap(void)
         p2sprcol[i] = 0;
     }
 
-    cpl = 227 / 3; // 75.6'
     machines[machine].cpf = (int) ((227.0 / 3.0) * 312.0);
 }
 

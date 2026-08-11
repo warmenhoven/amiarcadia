@@ -171,7 +171,6 @@ IMPORT       int                      absxmin, absxmax,
                                       fastselbst,
                                       filesize,
                                       flagline,
-                                      frac[4],
                                       fullscreen,
                                       game,
                                       guestrmb,
@@ -629,9 +628,9 @@ EXPORT void change_machine(int whichmachine, int whichmemmap, FLAG user)
     ppc = machines[machine].ppc;
     if (whichgame == -1)
     {   if (machine == ARCADIA || machine == INTERTON)
-        {   set_cpl(227);
+        {   cpl = 227;
         } elif (machine == ELEKTOR)
-        {   set_cpl(226);
+        {   cpl = 226;
         }
         for (i = 0; i < 6; i++)
         {   p1sprcol[i] =
@@ -780,9 +779,9 @@ EXPORT void change_machine(int whichmachine, int whichmemmap, FLAG user)
         }   }
         whichoverlay      = (int)   known[whichgame].whichoverlay;
         if ((machine == ARCADIA || machine == INTERTON || machine == ELEKTOR) && known[whichgame].cpl)
-        {   set_cpl(        (int)   known[whichgame].cpl);
+        {   cpl           = (int)   known[whichgame].cpl;
         } else
-        {   set_cpl(                227);
+        {   cpl           = 227;
         }
 
         if (machine != PIPBUG && machine != INSTRUCTOR) // because these machines use these known[] structure fields for other purposes
@@ -1159,6 +1158,7 @@ EXPORT void update_monitor(FLAG force)
     update_monitor_psgs(force);
     update_monitor_xvi(force);
     update_industrial(force);
+    update_variant(force);
 }
 
 EXPORT void update_monitor_cpu(FLAG force)
@@ -4161,22 +4161,6 @@ FAST const TEXT arrow[10][10 + 1] = {
     redraw_roll(whichunit);
 }
 
-EXPORT void set_cpl(int newcpl)
-{   // assert(newcpl <= 227);
-
-    cpl = newcpl;
-
-    switch (cpl % 4)
-    {
-    case  0: frac[0] = frac[1] = frac[2] = frac[3] =  cpl / 4;
-    acase 1: frac[0] = frac[1]           = frac[3] =  cpl / 4;
-                                 frac[2]           = (cpl / 4) + 1;
-    acase 2: frac[0]           = frac[2]           =  cpl / 4;
-                       frac[1]           = frac[3] = (cpl / 4) + 1;
-    acase 3: frac[0]                               =  cpl / 4;
-                       frac[1] = frac[2] = frac[3] = (cpl / 4) + 1;
-}   }
-
 #ifdef WIN32
 EXPORT void handle_keydown(UINT code)
 #endif
@@ -5693,3 +5677,381 @@ EXPORT void set_filename(void)
     acase MEMMAP_TYPERIGHT:                          changefilepart((STRPTR) fn_game, (STRPTR) path_games, (STRPTR) file_game, "Type-right.cos");
     adefault:                                        changefilepart((STRPTR) fn_game, (STRPTR) path_games, (STRPTR) file_game, "");
 }   }
+
+EXPORT void update_variant(FLAG force)
+{   FAST    int   val;
+    PERSIST UBYTE t1, t2;
+    PERSIST TEXT  thestring[80 + 1];
+PERSIST const STRPTR hypergates[4] =
+{ "Hyperspace and gates",
+  "Hyperspace only",
+  "Gates only",
+  "Neither feature"
+}, openings[4] =
+{ "both openings",
+  "top opening",
+  "bottom opening",
+  "neither opening"
+}, mines[9] =
+{ "blocked by obstacles",
+  "go over obstacles",
+  "destroy obstacles",
+  "blckd by obstcls and vis mines",
+  "blckd by obstcls but dstry vis mines",
+  "go over obstacls but dstry vis mines",
+  "blckd by obstcls and invis mines",
+  "blckd by obstcls but dstry invis mines",
+  "go over obstcls but dstry invis mines",
+}, players[4] =
+{ "human only",
+  "human vs. human",
+  "human vs. cnsle",
+  "human vs. human"
+}, balls[4] =
+{ "normal",
+  "guided",
+  "catch",
+  "pntrtng"
+}, numplayers[3] =
+{ "Human vs. console game",
+  "Human vs. human game",
+  "Console vs. console demo"
+}, airseaattack[5] =
+{ "Ship vs. large submarine",
+  "Ship vs. small submarine",
+  "Submarine vs. aeroplane",
+  "Shooting gallery",
+  "Shooting gallery"
+}, airseabattle[5] =
+{ "Ship vs. large submarine",
+  "Ship vs. small submarine",
+  "Rocket launcher vs. aeroplane",
+  "Shooting gallery",
+  "Shooting gallery"
+}, carraces[5] =
+{ "Grand prix",
+  "Rally",
+  "Slalom (1st track)",
+  "Slalom (2nd track)",
+  "Slalom (3rd track)"
+}, features[20] =
+{ "no features",
+  "no features",
+  "controlled depth charge",
+  "controlled depth charge",
+  "no features",
+  "no features",
+  "controlled depth charge",
+  "controlled depth charge",
+  "no features",
+  "controlled speed",
+  "controlled missiles",
+  "controlled speed and missiles",
+  "no features",
+  "no features",
+  "controlled missiles",
+  "controlled missiles",
+  "rebounding missiles",
+  "rebounding missiles",
+  "controlled rebounding missiles",
+  "controlled rebounding missiles",
+}, hunting1[4] =
+{ "No movement",
+  "Move bullet",
+  "Move man",
+  "Turn man"
+}, hunting2[8] =
+{ "unltd normal shots + time",
+  "unltd normal shots + time",
+  "unltd normal shots + time",
+  "unltd rflcting shots + time",
+  "unltd normal shots, ltd time",
+  "20 normal shots, unltd time",
+  "20 normal shots, ltd time",
+  "20 rflctng shots, ltd time"
+}, shootgal[4] =
+{ "unlimited normal shots",
+  "unlimited normal shots",
+  "20 normal shots",
+  "20 reflecting shots"
+};
+
+    if
+    (   !subwin[SUBWINDOW_GAMEINFO].hwnd
+     || (   machine != ARCADIA
+         && machine != INTERTON
+         && machine != ELEKTOR
+    )   )
+    {   return;
+    }
+
+    switch (whichgame)
+    {
+    // ARCADIA games
+    case BREAKAWAYPOS: // game-1 is $1AFC, opt-1 is $1AFD
+        if (!force && t1 == memory[0x1AFC] && t2 == memory[0x1AFD])
+        {   return;
+        }
+        t1 = memory[0x1AFC];
+        t2 = memory[0x1AFD];
+        sprintf
+        (   thestring,
+            "%s, %s %s paddle(s), %s, %s ball, %s walls",
+            ( memory[0x1AFC] <=  3) ? "6 balls" : "5 mins",
+            ( memory[0x1AFC] <= 11) ? "normal"  : "shrinking",
+            ((memory[0x1AFD] &   3) <= 1) ? "long"  : "short",
+            players[(memory[0x1AFC] & 15) / 4],
+            balls[   memory[0x1AFC] &  3     ],
+            ( memory[0x1AFD] &   1      ) ? "invis" : "vis"        );
+    acase CATTRAXPOS: // game-1 is $18FB, opt-1 is $1AF5
+        if (!force && t1 == memory[0x18FB] && t2 == memory[0x1AF5])
+        {   return;
+        }
+        t1 = memory[0x18FB];
+        t2 = memory[0x1AF5];
+        sprintf
+        (   thestring,
+            "%s, %s red dog, %s",
+            hypergates[memory[0x18FB] & 3],
+            (memory[0x1AF5] > 3) ? "fast" : "slow",
+            openings[memory[0x1AF5] & 3]
+        );
+    acase A_CIRCUSPOS: // game is $1AE4, player is bit 4 of $18DF
+        if (!force && t1 == memory[0x1AE4] && t2 == (memory[0x18DF] & 0x10))
+        {   return;
+        }
+        t1 = memory[0x1AE4];
+        t2 = memory[0x18DF] & 0x10;
+        sprintf
+        (   thestring,
+            "%d player(s), %s balloons, %s platforms",
+            (memory[0x18DF] & 0x10) ? 2 : 1,
+            (((memory[0x1AE4] - 1) & 3) >= 2) ? "bounce off" : "pass through",
+            (((memory[0x1AE4] - 1) & 7) >= 4) ? "has"        : "lacks"
+        );
+    acase A_COMBATPOS: // game is $18E6 (actual value rather than BCD)
+    case A_COMBATODPOS:
+        if (!force && t1 == memory[0x18E6])
+        {   return;
+        }
+        t1 = memory[0x18E6];
+        if (memory[0x18E6] >= 1 && memory[0x18E6] <= 72)
+        {   sprintf
+            (   thestring,
+                "Tanks, %s %s %s missiles %s",
+                (((memory[0x18E6] - 1) & 7) >= 4) ? "fast"  : "slow",
+                (((memory[0x18E6] - 1) & 3) >= 2) ? "short" : "long",
+                (((memory[0x18E6] - 1) & 3) >= 2) ? "bendy" : "strght",
+                mines[((memory[0x18E6] - 1) / 8)]
+            );
+        } elif (memory[0x18E6] >= 73 && memory[0x18E6] <= 88)
+        {   sprintf
+            (   thestring,
+                "Planes %c, %s %s %s missiles %s",
+                (memory[0x18E6] >= 81) ? 'B' : 'A',
+                (((memory[0x18E6] - 1) & 7) >= 4) ? "fast"  : "slow",
+                (((memory[0x18E6] - 1) & 3) >= 2) ? "short" : "long",
+                (((memory[0x18E6] - 1) & 3) >= 2) ? "bendy" : "strght",
+                mines[1]
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase ESCAPEPOS: // game-1 is $18FB, opt-1 is $1AF4
+        if (!force && t1 == memory[0x18FB] && t2 == memory[0x1AF4])
+        {   return;
+        }
+        t1 = memory[0x18FB];
+        t2 = memory[0x1AF4];
+        sprintf
+        (   thestring,
+            "%d bullet(s), %d robots",
+            memory[0x18FB] & 3,
+            8 + ((memory[0x1AF4] & 3) * 4)
+        );
+    acase JUNGLERPOS: // game-1 is r5, opt-1 is r6
+        if (!force && t1 == r[5] && t2 == r[6])
+        {   return;
+        }
+        t1 = r[5];
+        t2 = r[6];
+        sprintf
+        (   thestring,
+            "%s mode, maze #%d, %d enemy/ies, %s speed",
+            (r[5] <= 7) ? "Game" : "Demo",
+            1 + (r[5] % 8),
+            (r[6] >= 4) ? 2 : 1,
+            ((r[6] & 3) >= 2) ? "fast" : "slow"
+        );
+    acase NIBBLEMENPOS: // game-1 is $18FB, opt-1 is $1AF5
+    case SUPERGOBBLERPOS:
+        if (!force && t1 == memory[0x18FB] && t2 == memory[0x1AF5])
+        {   return;
+        }
+        t1 = memory[0x18FB];
+        t2 = memory[0x1AF5];
+        sprintf
+        (   thestring,
+            "%s, %s red ghost, %s",
+            hypergates[memory[0x18FB] & 3],
+            (memory[0x1AF5] > 3) ? "fast" : "slow",
+            openings[memory[0x1AF5] & 3]
+        );
+    acase R2DTANKPOS: // game+$10 is $18EA, opt+$10 is $18E9
+        if (!force && t1 == memory[0x18EA] && t2 == memory[0x18E9])
+        {   return;
+        }
+        t1 = memory[0x18EA];
+        t2 = memory[0x18E9];
+        sprintf
+        (   thestring,
+            "%s, %d fences",
+            (memory[0x18EA] >= 0x11 && memory[0x18EA] <= 0x13) ? (char*) numplayers[memory[0x18EA] - 0x11]      : "?",
+            (memory[0x18E9] >= 0x11 && memory[0x18E9] <= 0x13) ?                  ((memory[0x18E9] - 0x11) * 2) : 0
+        );
+    acase ROBOTKILLERPOS: // game-1 is $18FB, opt-1 is $1AF4
+        if (!force && t1 == memory[0x18FB] && t2 == memory[0x1AF4])
+        {   return;
+        }
+        t1 = memory[0x18FB];
+        t2 = memory[0x1AF4];
+        sprintf
+        (   thestring,
+            "%d bullet(s), %s difficulty, %d robots",
+             memory[0x18FB] & 3,
+            (memory[0x1AF4] <= 3) ? "easy" : "hard",
+            8 + ((memory[0x1AF4] & 3) * 4)
+        );
+    acase TANKSALOTPOS: // game-1 is $18FB, opt-1 is $1AF5
+        if (!force && t1 == memory[0x18FB] && t2 == memory[0x1AF5])
+        {   return;
+        }
+        t1 = memory[0x18FB];
+        t2 = memory[0x1AF5];
+        sprintf
+        (   thestring,
+            "%s warp man, %s gates, %d warp base positions",
+            ((memory[0x18FB] & 3) <= 1) ? "Can" : "Can't",
+            ((memory[0x18FB] & 7) <= 3) ? "has" : "lacks",
+            ((memory[0x1AF5] & 3) <= 2) ? (4 - (memory[0x1AF5] & 3)) : 0
+        );
+    // INTERTON and ELEKTOR games
+    acase AIRSEAATTACKPOS: // game is $1F5C (in BCD format)
+        if (!force && t1 == memory[0x1F5C])
+        {   return;
+        }
+        t1 = memory[0x1F5C];
+        if
+        (   (memory[0x1F5C] & 0xF0) <= 0x20
+         && (memory[0x1F5C] & 0x0F) <= 0x09
+        )
+        {   val = (((memory[0x1F5C] & 0xF0) >> 4) * 10)
+                +   (memory[0x1F5C] & 0x0F      )
+                - 1;
+            sprintf
+            (   thestring,
+                "%s, %s, %d player(s)",
+                airseaattack[val / 4],
+                features[    val    ],
+                ((val & 1) || val == 8 || val == 10) ? 2 : 1
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase AIRSEABATTLEPOS: // game is $1F5C (in BCD format)
+        if (!force && t1 == memory[0x1F5C])
+        {   return;
+        }
+        t1 = memory[0x1F5C];
+        if
+        (    memory[0x1F5C]         <= 0x20
+         && (memory[0x1F5C] & 0x0F) <= 0x09
+        )
+        {   val = (((memory[0x1F5C] & 0xF0) >> 4) * 10)
+                +   (memory[0x1F5C] & 0x0F      )
+                - 1;
+            sprintf
+            (   thestring,
+                "%s, %s, %d player(s)",
+                airseabattle[val / 4],
+                features[    val    ],
+                ((val & 1) || val == 8 || val == 10) ? 2 : 1
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase CARRACESPOS: // game-1 is $1F1E
+    case GRANDPRIXPOS:
+        if (!force && t1 == memory[0x1F1E])
+        {   return;
+        }
+        t1 = memory[0x1F1E];
+        if (memory[0x1F1E] <= 9)
+        {   sprintf
+            (   thestring,
+                "%s, %s",
+                carraces[memory[0x1F1E] / 2],
+                (memory[0x1F1E] & 1) ? "1 player" : "2 players" 
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase I_HUNTINGPOS: // game is $1F5C (in BCD format)
+    case E_HUNTINGPOS:
+        if (!force && t1 == memory[0x1F5C])
+        {   return;
+        }
+        t1 = memory[0x1F5C];
+        if
+        (    memory[0x1F5C]         <= 0x64
+         && (memory[0x1F5C] & 0x0F) <= 0x09
+        )
+        {   val = (((memory[0x1F5C] & 0xF0) >> 4) * 10)
+                +   (memory[0x1F5C] & 0x0F      )
+                - 1;
+            sprintf
+            (   thestring,
+                "%s, %s, %s fish, %d trgts, %s",
+                hunting1[ val / 16],
+                hunting2[(val % 16) / 2],
+                (val % 16 <= 3) ? "no"         : ((val      <= 15) ? "right" : "lt+rt"),
+                (val % 16 <= 1) ? 8            : ((val % 16 <=  3) ? 12      : 16            ),
+                (val %  2     ) ? "2 players"  : "1 player"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase SHOOTGALPOS: // game is $1F5C (in BCD format)
+        if (!force && t1 == memory[0x1F5C])
+        {   return;
+        }
+        t1 = memory[0x1F5C];
+        if
+        (    memory[0x1F5C]         <= 0x32
+         && (memory[0x1F5C] & 0x0F) <= 0x09
+        )
+        {   val = (((memory[0x1F5C] & 0xF0) >> 4) * 10)
+                +   (memory[0x1F5C] & 0x0F      )
+                - 1;
+            sprintf
+            (   thestring,
+                "%s, %s, %s fish, %d targets, %s",
+                hunting1[ val / 8],
+                shootgal[(val % 8) / 2],
+                (val % 8 <= 1) ? "no" : ((val <= 7) ? "right" : "lt+rt"),
+                (val % 8 <= 1) ? 8    : 16,
+                (val % 2     ) ? "2 players" : "1 player"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    adefault:
+        if (!force)
+        {   return;
+        }
+        strcpy(thestring, "-");
+    }
+
+    st_set2(SUBWINDOW_GAMEINFO, IDC_AUTOSENSE9, thestring);
+ // zprintf(TEXTPEN_VERBOSE, "Variant text length is %d.\n", strlen(thestring));
+}

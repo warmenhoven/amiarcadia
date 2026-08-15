@@ -1,8 +1,8 @@
 // INCLUDES---------------------------------------------------------------
 
 #define MAJORVERSION   0x04
-#define MINORVERSION   0x60
-#define INTEGERVERSION "4.60" // for RetroAchievements
+#define MINORVERSION   0x70
+#define INTEGERVERSION "4.70" // for RetroAchievements
 
 #include <jni.h>
 
@@ -21,6 +21,7 @@
 #define TRUE      (~0)
 #define KILOBYTE  1024
 #define EOS       0
+#define ENDOF(x)  &x[strlen((const char*) x)]
 #define DISCARD   (void)
 typedef signed   char  FLAG;
 typedef signed   char  SBYTE;
@@ -144,6 +145,7 @@ typedef unsigned char  ASCREEN;
 #define HOMERUNPOS            456
 #define KOTONOHAPOS           458
 // Interton
+#define SHOOTOUTPOS           130
 #define SUPERINVPOS           131
 #define INTERTONSTUBPOS       132
 #define INTELLIGENCE1POS      133
@@ -162,12 +164,14 @@ typedef unsigned char  ASCREEN;
 #define I_BOWLINGPOS          148
 #define I_BOXINGPOS           149
 #define I_CAPTUREPOS          150
+#define GRANDPRIXPOS          151
 #define CASINOPOS             152
 #define CHESS1POS             153
 #define CHESS2POS             154
 #define I_CIRCUSPOS           155
 #define COCKPITPOS            156
 #define MASTERMINDPOS         157
+#define I_COMBATAPOS          158
 #define I_COMBATBPOS          159
 #define DRAUGHTSPOS           160
 #define I_GOLFPOS             161
@@ -185,7 +189,9 @@ typedef unsigned char  ASCREEN;
 #define MOTOCROSSPOS          173
 #define MUSICALGAMESPOS       174
 #define PADDLEGAMESPOS        175
+#define PINBALLAPOS           176
 #define PINBALLBPOS           177
+#define PLANETDEFENDERPOS     178
 #define SHOOTGALPOS           179
 #define SOCCERBPOS            181
 #define SOLITAIREPOS          182

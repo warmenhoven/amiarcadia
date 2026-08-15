@@ -60,6 +60,8 @@ public class OptionsActivity extends Activity
         setContentView(R.layout.activity_options);
         if (MainActivity.lock)
         {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        } else
+        {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
         MainActivity.semipaused = true;

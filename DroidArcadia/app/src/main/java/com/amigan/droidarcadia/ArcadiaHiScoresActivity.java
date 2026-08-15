@@ -45,6 +45,8 @@ public class ArcadiaHiScoresActivity extends Activity
 
         if (MainActivity.lock)
         {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        } else
+        {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
         hs_1           = findViewById(R.id.hs_1);

@@ -634,10 +634,37 @@ EXPORT void lb_drawscreen(void)
 
     // assert(memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN);
 
-    for (x = 0; x < COINOP_BOXWIDTH; x++)
-    {   for (y = 0; y < COINOP_BOXHEIGHT; y++)
-        {   changepixel(x, y, BLACK);
-    }   }
+    for (x = 0; x < 30; x++)
+    {   for (y = 2; y < 32; y++)
+        {   t = memory[0x1800 + (y * 32) + x];
+            for (yy = 0; yy < 8; yy++)
+            {   for (xx = 0; xx < 8; xx++)
+                {   if (tilesptr[(t * 8) + yy] & (128 >> xx))
+                    {   if (tilesptr[2048 + (t * 8) + yy] & (128 >> xx))
+                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
+                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, WHITE);
+                            } else
+                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, YELLOW);
+                        }   }
+                        else
+                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
+                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, PURPLE);
+                            } else
+                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, RED);
+                    }   }   }
+                    else
+                    {   if (tilesptr[2048 + (t * 8) + yy] & (128 >> xx))
+                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
+                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, CYAN);
+                            } else
+                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, GREEN);
+                        }   }
+                        else
+                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
+                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, BLUE);
+                            } else
+                            {   changebgpixel((x * 8) + xx, ((y - 2) * 8) + yy, BLACK);
+    }   }   }   }   }   }   }
 
     for (y = 0; y < COINOP_BOXHEIGHT; y++)
     {   UBYTE eff1_val = memory_effects[((y + 16) & 0xff) | 0x100];
@@ -676,7 +703,7 @@ EXPORT void lb_drawscreen(void)
 
             if (shell)
             {   changepixel(x - 8, y, WHITE);
-            } elif (eff1 || eff2)
+            } elif ((eff1 || eff2) && screen[x - 8][y] == BLACK)
             {   switch (circle)
                 {
                 case  3: changepixel(x - 8, y, BLUE);
@@ -714,7 +741,7 @@ EXPORT void lb_drawscreen(void)
 
             if (shell)
             {   changepixel(x - 8, y, WHITE);
-            } elif (eff1 || eff2)
+            } elif ((eff1 || eff2) && screen[x - 8][y] == BLACK)
             {   switch (circle)
                 {
                 case  3: changepixel(x - 8, y, BLUE);
@@ -723,39 +750,7 @@ EXPORT void lb_drawscreen(void)
                 acase 0: changepixel(x - 8, y, BLACK);
 	}   }   }   }
 
-    for (x = 0; x < 30; x++)
-    {   for (y = 2; y < 32; y++)
-        {   t = memory[0x1800 + (y * 32) + x];
-            for (yy = 0; yy < 8; yy++)
-            {   for (xx = 0; xx < 8; xx++)
-                {   if (tilesptr[(t * 8) + yy] & (128 >> xx))
-                    {   if (tilesptr[2048 + (t * 8) + yy] & (128 >> xx))
-                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, WHITE);
-                            } else
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, YELLOW);
-                        }   }
-                        else
-                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, PURPLE);
-                            } else
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, RED);
-                    }   }   }
-                    else
-                    {   if (tilesptr[2048 + (t * 8) + yy] & (128 >> xx))
-                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, CYAN);
-                            } else
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, GREEN);
-                        }   }
-                        else
-                        {   if (tilesptr[4096 + (t * 8) + yy] & (128 >> xx))
-                            {   changepixel((x * 8) + xx, ((y - 2) * 8) + yy, BLUE);
-                            } else
-                            {   changebgpixel((x * 8) + xx, ((y - 2) * 8) + yy, BLACK);
-    }   }   }   }   }   }   }
-
-    if (lb_spriteenable)
+     if (lb_spriteenable)
     {   for (y = 0; y < 32; y++)
         {   for (x = 0; x < 8; x++)
             {   t = lb_sprites[(256 * lb_spritecode) + x + (y * 8)];

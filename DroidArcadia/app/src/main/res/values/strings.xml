@@ -155,4 +155,5 @@
 <string name="multiplex">Sprites: Multiplex</string>
 <string name="transparent">Sprites: Transparent</string>
 <string name="opaque">Sprites: Opaque</string>
+<string name="variant">Current variant</string>
 </resources>

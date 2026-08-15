@@ -57,8 +57,10 @@ public class DIPsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dips);
-        if (MainActivity.lock) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        if (MainActivity.lock)
+        {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        } else
+        {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
           label_coinadip         = findViewById(R.id.label_coinadip);

@@ -45,8 +45,10 @@ public class RAActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_raoptions);
-        if (MainActivity.lock) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        if (MainActivity.lock)
+        {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        } else
+        {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
                   layout_ra        = findViewById(R.id.layout_ra);

@@ -387,6 +387,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         loadconfig();
         if (lock)
         {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        } else
+        {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
         sizecontrollers();
         loadhs();
@@ -701,7 +703,17 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         this.recreate();
         // don't call this.finish()!
     }
+
+    @Override
+    protected void onResume()
+    {   super.onResume();
     
+        if (lock)
+        {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        } else
+        {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }   }
+
     private final Runnable thethread = new Runnable()
     {   public void run()
         {   if (paused || semipaused)

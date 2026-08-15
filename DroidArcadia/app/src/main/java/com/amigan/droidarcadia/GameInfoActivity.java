@@ -27,12 +27,15 @@ public class GameInfoActivity extends Activity
 
         if (MainActivity.lock)
         {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        } else
+        {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
         TextView  gameinfo_name      = findViewById(R.id.gameinfo_name);
         ImageView gameinfo_box       = findViewById(R.id.gameinfo_box);
         TextView  gameinfo_credits   = findViewById(R.id.gameinfo_credits);
         TextView  gameinfo_reference = findViewById(R.id.gameinfo_reference);
+        TextView  gameinfo_variant   = findViewById(R.id.gameinfo_variant);
         TextView  gameinfo_text      = findViewById(R.id.gameinfo_text);
         TextView  button_gameguide   = findViewById(R.id.button_gameguide);
 
@@ -46,7 +49,10 @@ public class GameInfoActivity extends Activity
         gameinfo_reference.setText(getResources().getString(R.string.reference) + ": " + thestring3);
 
         String   thestring4         = new String(getautotext(3), StandardCharsets.ISO_8859_1);
-        gameinfo_text.setText(thestring4);
+        gameinfo_variant.setText(getResources().getString(R.string.variant) + ": " + thestring4);
+
+        String   thestring5         = new String(getautotext(4), StandardCharsets.ISO_8859_1);
+        gameinfo_text.setText(thestring5);
 
         Drawable img;
         int      glyph = getglyph();

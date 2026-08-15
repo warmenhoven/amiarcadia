@@ -1003,7 +1003,7 @@ MODULE void drawfakesprites(void)
                                         {   if (demultiplex == 1) // transparent
                                             {   xxx = x + xx - absxmin;
                                                 yyy = y + yy - absymin;
-                                                if (xxx >= 0 && xxx <= absxmax - USG_XMARGIN - UVI_HIDELEFT && yyy >= USG_YMARGIN && yyy <= absymax)
+                                                if (xxx >= 0 && xxx <= absxmax - USG_XMARGIN - UVI_HIDELEFT && yyy >= USG_YMARGIN && yyy < machines[machine].height)
                                                 {   blendedcolour = blend(from_a[localflagging][spr[flipper][whichsprite].colour], pastbgc[yyy]);
                                                     screen[xxx][yyy] = from_a[localflagging][spr[flipper][whichsprite].colour];
                                                     drawrawpixel(xxx, yyy, blendedcolour);
@@ -1023,13 +1023,13 @@ MODULE void drawfakesprites(void)
                                 {   xxx = x +  xx      - absxmin;
                                     yyy = y + (yy * 2) - absymin;
                                     if (demultiplex == 1) // transparent
-                                    {   if (yyy >= USG_YMARGIN && yyy <= absymax)
+                                    {   if (yyy >= USG_YMARGIN && yyy < machines[machine].height)
                                         {   blendedcolour = blend(from_a[localflagging][spr[flipper][whichsprite].colour], pastbgc[yyy]);
                                             screen[xxx][yyy] = from_a[localflagging][spr[flipper][whichsprite].colour];
                                             drawrawpixel(xxx, yyy, blendedcolour);
                                         }
                                         yyy++;
-                                        if (yyy >= USG_YMARGIN && yyy <= absymax)
+                                        if (yyy >= USG_YMARGIN && yyy < machines[machine].height)
                                         {   blendedcolour = blend(from_a[localflagging][spr[flipper][whichsprite].colour], pastbgc[yyy]);
                                             screen[xxx][yyy] = from_a[localflagging][spr[flipper][whichsprite].colour];
                                             drawrawpixel(xxx, yyy, blendedcolour);

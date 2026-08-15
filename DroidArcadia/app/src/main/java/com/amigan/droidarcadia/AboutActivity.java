@@ -23,6 +23,8 @@ public class AboutActivity extends Activity
 
         if (MainActivity.lock)
         {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        } else
+        {   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
         TextView about_nameandversion = findViewById(R.id.about_nameandversion);
@@ -32,7 +34,7 @@ public class AboutActivity extends Activity
         TextView link1_button         = findViewById(R.id.link1_button);
         TextView link2_button         = findViewById(R.id.link2_button);
 
-        about_nameandversion.setText("DroidArcadia 4.6");
+        about_nameandversion.setText("DroidArcadia 4.7");
         /* Toast.makeText(AboutActivity.this, "Versions are " + Build.VERSION.SDK_INT + "," + Build.VERSION_CODES.O, Toast.LENGTH_LONG).show(); // "25,26" for Nox
         if
         (   !Build.HARDWARE.toLowerCase().contains("nox")
@@ -41,7 +43,7 @@ public class AboutActivity extends Activity
          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O // ie. less than Android 8.0 (less than API 26)
         ) // Nox returns VERSION.SDK_INT of 25 but thinks 25 >= 26!?
         { */
-            LocalDate releasedate = LocalDate.of(2026, Month.JUNE, 16);
+            LocalDate releasedate = LocalDate.of(2026, Month.AUGUST, 15);
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG);
             String formatteddate = releasedate.format(dateFormatter);
             about_releasedate.setText(formatteddate);

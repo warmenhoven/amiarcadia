@@ -63,6 +63,16 @@
             android:textSize="18sp"
             android:text="-"
             android:gravity="center"
+        />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/gameinfo_variant"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            android:text="-"
+            android:gravity="center"
             android:layout_marginBottom="30dp"
         />
 

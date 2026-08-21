@@ -154,6 +154,7 @@ EXPORT       int                bottomheight,
                                 DisplayWidth,
                                 DisplayHeight,
                                 fastwide,
+                                historyline          = -1,
                                 hostcontroller[2]    = { CONTROLLER_NONE, CONTROLLER_NONE },
                                 hostheight,
                                 hostwidth,
@@ -819,7 +820,6 @@ MODULE FLAG                    cheevos_reopen      = FALSE,
 // MODULE FLAG                 win8                = FALSE;
 MODULE TEXT                    coinstring[2][40 + 1];
 MODULE int                     highestid           = 0,
-                               historyline         = -1,
                                minwinwidth,
 #ifdef MEASURECAPSLOCK
                                measurement,
@@ -8305,7 +8305,7 @@ EXPORT void resize(int newsize, FLAG force)
 {   if (force || newsize != size)
     {   closewindow();
         size = newsize;
-        openwindow(FALSE);
+        openwindow(TRUE);
 }   }
 
 LRESULT CALLBACK MagnifierWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)

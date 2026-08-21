@@ -340,7 +340,6 @@ EXPORT void pipbug_emulate(void)
     {   // cycle counter will overflow, so we need to use the slow method
         while (slice_2650 >= 1)
         {   oldcycles = cycles_2650;
-            checkstep();
             pipbin_io();
             one_instruction();
             slice_2650 -= (cycles_2650 - oldcycles);
@@ -349,8 +348,7 @@ EXPORT void pipbug_emulate(void)
     {   // cycle counter will not overflow, so we can use a faster method
         oldcycles = cycles_2650;
         while (cycles_2650 < endcycle)
-        {   checkstep();
-            pipbin_io();
+        {   pipbin_io();
             one_instruction();
         }
         slice_2650 -= (cycles_2650 - oldcycles);
@@ -4404,7 +4402,6 @@ MODULE void rotate_vector(void)
 
 EXPORT void pipbug_one_instruction(void)
 {   oldcycles = cycles_2650;
-    checkstep();
     pipbin_io();
     one_instruction();
     slice_2650 -= (cycles_2650 - oldcycles);

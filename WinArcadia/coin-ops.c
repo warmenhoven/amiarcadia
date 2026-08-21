@@ -274,7 +274,6 @@ EXPORT void oldpvi_anypixel(void)
 
     if (cpux == nextinst)
     {   oldcycles = cycles_2650;
-        checkstep();
         one_instruction();
         nextinst += (cycles_2650 - oldcycles) * 3; // in pixels
         if (nextinst >= 227)

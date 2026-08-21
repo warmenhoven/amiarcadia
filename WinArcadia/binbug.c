@@ -2395,7 +2395,6 @@ EXPORT void binbug_anypixel(void)
 
     if (cpux == nextinst)
     {   oldcycles = cycles_2650;
-        checkstep();
         pipbin_io();
         one_instruction();
         if (fastbinbug) nextinst += (cycles_2650 - oldcycles) * 6; else nextinst += (cycles_2650 - oldcycles) * 12; // in pixels

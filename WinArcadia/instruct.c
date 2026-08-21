@@ -1045,7 +1045,6 @@ EXPORT void si50_updatedips(FLAG force)
 
 EXPORT void si50_one_instruction(void)
 {   oldcycles = cycles_2650;
-    checkstep();
     do_tape();
     one_instruction();
     slice_2650 -= (cycles_2650 - oldcycles);

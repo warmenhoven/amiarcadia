@@ -474,11 +474,292 @@ MODULE       int    monitorx, monitory;
 
 (None)
 
-// MODULE ARRAYS----------------------------------------------------------
+MODULE ARRAYS---------------------------------------------------------- */
 
-(None)
+MODULE const STRPTR hypergates[4] =
+{ "Hyperspace and gates",
+  "Hyperspace only",
+  "Gates only",
+  "Neither feature"
+}, openings[4] =
+{ "both openings",
+  "top opening",
+  "bottom opening",
+  "neither opening"
+}, mines[9] =
+{ "blocked by obstacles",
+  "go over obstacles",
+  "destroy obstacles",
+  "blckd by obstcls and vis mines",
+  "blckd by obstcls but dstry vis mines",
+  "go over obstacls but dstry vis mines",
+  "blckd by obstcls and invis mines",
+  "blckd by obstcls but dstry invis mines",
+  "go over obstcls but dstry invis mines",
+}, players[4] =
+{ "human only",
+  "human vs. human",
+  "human vs. cnsle",
+  "human vs. human"
+}, balls[4] =
+{ "normal",
+  "guided",
+  "catch",
+  "pntrtng"
+}, numplayers[3] =
+{ "Human vs. console game",
+  "Human vs. human game",
+  "Console vs. console demo"
+}, airseaattack[5] =
+{ "Ship vs. large submarine",
+  "Ship vs. small submarine",
+  "Submarine vs. aeroplane",
+  "Shooting gallery",
+  "Shooting gallery"
+}, airseabattle[5] =
+{ "Ship vs. large submarine",
+  "Ship vs. small submarine",
+  "Rocket launcher vs. aeroplane",
+  "Shooting gallery",
+  "Shooting gallery"
+}, carraces[5] =
+{ "Grand prix",
+  "Rally",
+  "Slalom (1st track)",
+  "Slalom (2nd track)",
+  "Slalom (3rd track)"
+}, features[20] =
+{ "no features",
+  "no features",
+  "controlled depth charge",
+  "controlled depth charge",
+  "no features",
+  "no features",
+  "controlled depth charge",
+  "controlled depth charge",
+  "no features",
+  "controlled speed",
+  "controlled missiles",
+  "controlled speed and missiles",
+  "no features",
+  "no features",
+  "controlled missiles",
+  "controlled missiles",
+  "rebounding missiles",
+  "rebounding missiles",
+  "controlled rebounding missiles",
+  "controlled rebounding missiles",
+}, headon[9] =
+{ "Black human vs. 1 purple console. Avoid car",
+  "Black human vs. 2 purple consoles. Avoid cars",
+  "Red human vs. 1 purple console. Hit car",
+  "Red human vs. 2 purple consoles. Hit cars",
+  "Red hmn vs. 1 ylw cnsle, then grn hmn vs. 1 ylw cnsle. Avoid car",
+  "Red hmn vs. 2 ylw cnsls, then grn hmn vs. 2 ylw cnsls. Avoid cars",
+  "Red hmn vs. 1 blue cnsle, then grn hmn vs. 1 blue cnsle. Hit car",
+  "Red hmn vs. 2 blue cnsls, then grn hmn vs. 2 blue cnsls. Hit cars",
+  "Black human vs. blue human. Alternating"
+}, hunting1[4] =
+{ "No movement",
+  "Move bullet",
+  "Move man",
+  "Turn man"
+}, hunting2[8] =
+{ "unltd normal shots + time",
+  "unltd normal shots + time",
+  "unltd normal shots + time",
+  "unltd rflcting shots + time",
+  "unltd normal shots, ltd time",
+  "20 normal shots, unltd time",
+  "20 normal shots, ltd time",
+  "20 rflctng shots, ltd time"
+}, shootgal[4] =
+{ "unlimited normal shots",
+  "unlimited normal shots",
+  "20 normal shots",
+  "20 reflecting shots"
+}, invaders[4] =
+{ "blue",
+  "black",
+  "red",
+  "purple"
+}, olympics1[12] =
+{ "tennis singles",
+  "tennis doubles",
+  "football",
+  "ice hockey",
+  "table tennis",
+  "volleyball",
+  "basketball 1",
+  "basketball 2",
+  "pinball",
+  "wipe-out",
+  "pinball",
+  "wipe-out"
+}, olympics2[5] =
+{ "amateur",
+  "progress",
+  "professional",
+  "trick 1",
+  "trick 2"
+}, planetdefender[4] =
+{ "Yellow",
+  "Red",
+  "Green",
+  "White"
+}, superinvaders[15] =
+{ "auto launching + detonation",
+  "auto launching + detonation",
+  "mnl launching but auto detonation",
+  "mnl launching but auto detonation",
+  "auto launching but mnl detonation",
+  "auto launching but mnl detonation",
+  "auto launching + detonation",
+  "auto launching + detonation",
+  "mnl launching but auto detonation",
+  "mnl launching but auto detonation",
+  "auto launching but mnl detonation",
+  "auto launching but mnl detonation",
+  "auto launching + detonation",
+  "mnl launching but auto detonation",
+  "auto launching but mnl detonation"
+}, i_combat[26] =
+{ "Tanks, day, clear, long range",              // game  1
+  "Tanks, day, absrbnt brcds #2, long range",
+  "Tanks, day, absrbnt brcds #3, long range",
+  "Tanks, day, absrbnt brcds #4, long range",
+  "Tanks, day, minefields #5, long range",      // game  5
+  "Tanks, day, minefields #6, long range",
+  "Tanks, day, rbndng brcds #2, long range",
+  "Tanks, day, rbndng brcds #4, long range",
+  "Tanks, night, clear, long range",
+  "Tanks, night, absrbnt brcds #2, long range", // game 10
+  "Tanks, night, absrbnt brcds #3, long range",
+  "Tanks, night, absrbnt brcds #4, long range",
+  "Tanks, night, rbndng brcds #2, long range",
+  "Tanks, night, rbndng brcds #4, long range",
+  "Tanks, day, clear, short range",             // game 15
+  "Tanks, night, clear, short range",
+  "Single biplanes, clouds #5, long range",
+  "Double biplanes, clouds #5, long range",
+  "Single biplanes, clouds #6, long range",
+  "Double biplanes, clouds #6, long range",     // game 20
+  "Single biplanes, clouds #5, short range",
+  "Single jets, clouds #5, long range",
+  "Double jets, clouds #5, long range",
+  "Single jets, clouds #6, long range",
+  "Double jets, clouds #6, long range",         // game 25
+  "Single jets, clouds #6, short range"         // game 26
+}, musicalgames[8] =
+{ "Free play",
+  "Plays \"When the Saints Go Marching In\"",
+  "Simon, 1 human copying console, 4 notes",
+  "Simon, 2 humans copying console, 4 notes",
+  "Simon, 1 human copying console, 6 notes",
+  "Simon, 2 humans copying console, 6 notes",
+  "Simon, 2 humans copying 2 humans, 4 notes",
+  "Simon, 2 humans copying 2 humans, 6 notes"
+}, wintersports[8] =
+{ "Ski jump, no wind, 1 player",
+  "Ski jump, no wind, 2 players",
+  "Ski jump, steady wind force from varying direction, 1 player",
+  "Ski jump, steady wind force from varying direction, 2 players",
+  "Ski jump, varying wind force + direction, 1 player",
+  "Ski jump, varying wind force + direction, 2 players",
+  "Slalom, 1 player",
+  "Slalom, 1 player", // this is no mistake
+}, treasurehunt[4] =
+{ "Normal",
+  "Normal",
+  "Pictorial symbols",
+  "Arrows + numerals"
+}, challenge[7] =
+{ "left human vs. right human",
+  "easy console vs. human",
+  "normal console vs. human",
+  "hard console vs. human",
+  "human vs. easy console",
+  "human vs. normal console",
+  "human vs. hard console"
+}, spacewar[4] =
+{ "Enemy attack",
+  "Space docking manoeuvre",
+  "Duel in outer space",
+  "Double attack"
+}, monsterman[3] =
+{ "easy",
+  "normal",
+  "hard"
+}, supermaze[6] =
+{ "Normal maze",
+  "Hidden maze",
+  "Invisible maze",
+  "Changing maze",
+  "Moving maze",
+  "Cat and mouse"
+}, i_bowling[16] =
+{ "Toppling in Twos, 2 alternating players, 9 pins",
+  "Toppling with Figures, 2 alternating players, 1/3/4/1/2/3 pins",
+  "Foxhunting, 2 alternating players, 9 pins",
+  "Foxhunting with Figures, 2 alternating players, 1/3/4/1/2/3 pins",
+  "Headpin, 2 alternating players, 9 pins",
+  "Bowling, 2 alternating players, 10 pins",
+  "Tandem, 2 simultaneous players, 9 pins",
+  "Toppling with Figures, 2 simultaneous players, 1/3/4/1/2/3 pins",
+  "Foxhunting, 2 simultaneous players, 9 pins",
+  "Foxhunting with Figures, 2 simultaneous players, 1/3/4/1/2/3 pins",
+  "Headpin Simultaneous, 2 simultaneous players, 9 pins",
+  "Tandem Bowling, 2 simultaneous players, 10 pins",
+  "Toppling, 1 player, 9 pins",
+  "Toppling with Figures, 1 player, 1/3/4/1/2/3 pins",
+  "Headpin, 1 player, 9 pins",
+  "Bowling, 1 player, 10 pins"
+}, shootout[3] =
+{ "2 players, unlimited",
+  "2 players, 6",
+  "1 player, 99"
+}, casino[3] =
+{ "Roulette, 1/2 players",
+  "One-Armed Bandit, 1 player",
+  "One-Armed Bandit, 2 players",
+}, draughts[15] =
+{ "Normal rules, human vs. human, must take men",
+  "Normal rules, human vs. human, can take men",
+  "Normal rules, human vs. easy console, must take men",
+  "Normal rules, human vs. easy console, can take men",
+  "Normal rules, human vs. normal console, must take men",
+  "Normal rules, human vs. normal console, can take men",
+  "Normal rules, human vs. hard console, must take men",
+  "Normal rules, human vs. hard console, can take men",
+  "Inverted rules, human vs. easy console, must take men",
+  "Inverted rules, human vs. easy console, can take men",
+  "Inverted rules, human vs. normal console, must take men",
+  "Inverted rules, human vs. normal console, can take men",
+  "Inverted rules, human vs. hard console, must take men",
+  "Inverted rules, human vs. hard console, can take men",
+  "Board editor"
+}, backgammon[4] =
+{ "Human (rolled by console) vs. human (rolled by console)",   // "4"
+  "Human (rolled by console) vs. console (rolled by console)", // "1"
+  "Human (rolled by human) vs. console (rolled by console)",   // "2"
+  "Human (rolled by human) vs. console (rolled by human)"      // "3"
+}, horseracing[4] =
+{ "no obstacles",
+  "water jump",
+  "double oxer",
+  "changing obstacles"
+}, i_capture[3] =
+{ "human vs. human",
+  "human vs. console",
+  "console vs. human"
+}, chess[4] =
+{ "normal",
+  "random",
+  "forwards",
+  "backwards"
+};
 
-MODULE FUNCTIONS------------------------------------------------------- */
+// MODULE FUNCTIONS-------------------------------------------------------
 
 MODULE int buttontranslate(int player, int which);
 MODULE void calcrunningtime(void);
@@ -5679,102 +5960,10 @@ EXPORT void set_filename(void)
 }   }
 
 EXPORT void update_variant(FLAG force)
-{   FAST    int   val;
-    PERSIST UBYTE t1, t2;
-    PERSIST TEXT  thestring[80 + 1];
-PERSIST const STRPTR hypergates[4] =
-{ "Hyperspace and gates",
-  "Hyperspace only",
-  "Gates only",
-  "Neither feature"
-}, openings[4] =
-{ "both openings",
-  "top opening",
-  "bottom opening",
-  "neither opening"
-}, mines[9] =
-{ "blocked by obstacles",
-  "go over obstacles",
-  "destroy obstacles",
-  "blckd by obstcls and vis mines",
-  "blckd by obstcls but dstry vis mines",
-  "go over obstacls but dstry vis mines",
-  "blckd by obstcls and invis mines",
-  "blckd by obstcls but dstry invis mines",
-  "go over obstcls but dstry invis mines",
-}, players[4] =
-{ "human only",
-  "human vs. human",
-  "human vs. cnsle",
-  "human vs. human"
-}, balls[4] =
-{ "normal",
-  "guided",
-  "catch",
-  "pntrtng"
-}, numplayers[3] =
-{ "Human vs. console game",
-  "Human vs. human game",
-  "Console vs. console demo"
-}, airseaattack[5] =
-{ "Ship vs. large submarine",
-  "Ship vs. small submarine",
-  "Submarine vs. aeroplane",
-  "Shooting gallery",
-  "Shooting gallery"
-}, airseabattle[5] =
-{ "Ship vs. large submarine",
-  "Ship vs. small submarine",
-  "Rocket launcher vs. aeroplane",
-  "Shooting gallery",
-  "Shooting gallery"
-}, carraces[5] =
-{ "Grand prix",
-  "Rally",
-  "Slalom (1st track)",
-  "Slalom (2nd track)",
-  "Slalom (3rd track)"
-}, features[20] =
-{ "no features",
-  "no features",
-  "controlled depth charge",
-  "controlled depth charge",
-  "no features",
-  "no features",
-  "controlled depth charge",
-  "controlled depth charge",
-  "no features",
-  "controlled speed",
-  "controlled missiles",
-  "controlled speed and missiles",
-  "no features",
-  "no features",
-  "controlled missiles",
-  "controlled missiles",
-  "rebounding missiles",
-  "rebounding missiles",
-  "controlled rebounding missiles",
-  "controlled rebounding missiles",
-}, hunting1[4] =
-{ "No movement",
-  "Move bullet",
-  "Move man",
-  "Turn man"
-}, hunting2[8] =
-{ "unltd normal shots + time",
-  "unltd normal shots + time",
-  "unltd normal shots + time",
-  "unltd rflcting shots + time",
-  "unltd normal shots, ltd time",
-  "20 normal shots, unltd time",
-  "20 normal shots, ltd time",
-  "20 rflctng shots, ltd time"
-}, shootgal[4] =
-{ "unlimited normal shots",
-  "unlimited normal shots",
-  "20 normal shots",
-  "20 reflecting shots"
-};
+{   FAST    int    val;
+    FAST    STRPTR digits;
+    PERSIST UBYTE  t1, t2;
+    PERSIST TEXT   thestring[80 + 1];
 
     if
     (   !subwin[SUBWINDOW_GAMEINFO].hwnd
@@ -5787,7 +5976,7 @@ PERSIST const STRPTR hypergates[4] =
 
     switch (whichgame)
     {
-    // ARCADIA games
+    // ARCADIA games------------------------------------------------------
     case BREAKAWAYPOS: // game-1 is $1AFC, opt-1 is $1AFD
         if (!force && t1 == memory[0x1AFC] && t2 == memory[0x1AFD])
         {   return;
@@ -5824,8 +6013,8 @@ PERSIST const STRPTR hypergates[4] =
         t2 = memory[0x18DF] & 0x10;
         sprintf
         (   thestring,
-            "%d player(s), %s balloons, %s platforms",
-            (memory[0x18DF] & 0x10) ? 2 : 1,
+            "%s, %s balloons, %s platforms",
+            (  memory[0x18DF]   & 0x10)       ? "2 players"  : "1 player",
             (((memory[0x1AE4] - 1) & 3) >= 2) ? "bounce off" : "pass through",
             (((memory[0x1AE4] - 1) & 7) >= 4) ? "has"        : "lacks"
         );
@@ -5922,6 +6111,17 @@ PERSIST const STRPTR hypergates[4] =
             (memory[0x1AF4] <= 3) ? "easy" : "hard",
             8 + ((memory[0x1AF4] & 3) * 4)
         );
+    acase SUPERBUG1POS:
+    case SUPERBUG2POS:
+        if (!force && t1 == memory[0x1A0E]) // level-1 is $1A0E
+        {   return;
+        }
+        t1 = memory[0x1A0E];
+        sprintf
+        (   thestring,
+            "%d seconds per stage",
+            50 - (memory[0x1A0E] * 10)
+        );
     acase TANKSALOTPOS: // game-1 is $18FB, opt-1 is $1AF5
         if (!force && t1 == memory[0x18FB] && t2 == memory[0x1AF5])
         {   return;
@@ -5935,7 +6135,26 @@ PERSIST const STRPTR hypergates[4] =
             ((memory[0x18FB] & 7) <= 3) ? "has" : "lacks",
             ((memory[0x1AF5] & 3) <= 2) ? (4 - (memory[0x1AF5] & 3)) : 0
         );
-    // INTERTON and ELEKTOR games
+    acase A_CAPTUREPOS: // level and limited time flag are $18E0
+        if (!force && t1 == memory[0x18E0])
+        {   return;
+        }
+        t1 = memory[0x18E0];
+        if
+        (   (memory[0x18E0] & 0x70) >= 0x10
+         && (memory[0x18E0] & 0x70) <= 0x60
+        )
+        {   sprintf
+            (   thestring,
+                "%s, %d advantage(s), %s time",
+                ((memory[0x18E0] & 0x70) == 0x60) ? "2 players" : "1 player",
+                ((memory[0x18E0] & 0x70) == 0x60) ? 0           : (((memory[0x18E0] & 0x70) >> 4) - 1),
+                ( memory[0x18E0] & 0x02         ) ? "limited"   : "unlimited"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    // INTERTON and ELEKTOR games-----------------------------------------
     acase AIRSEAATTACKPOS: // game is $1F5C (in BCD format)
         if (!force && t1 == memory[0x1F5C])
         {   return;
@@ -5950,10 +6169,10 @@ PERSIST const STRPTR hypergates[4] =
                 - 1;
             sprintf
             (   thestring,
-                "%s, %s, %d player(s)",
+                "%s, %s, %s",
                 airseaattack[val / 4],
                 features[    val    ],
-                ((val & 1) || val == 8 || val == 10) ? 2 : 1
+                ((val & 1) || val == 8 || val == 10) ? "2 players" : "1 player"
             );
         } else
         {   strcpy(thestring, "?");
@@ -5972,10 +6191,10 @@ PERSIST const STRPTR hypergates[4] =
                 - 1;
             sprintf
             (   thestring,
-                "%s, %s, %d player(s)",
+                "%s, %s, %s",
                 airseabattle[val / 4],
                 features[    val    ],
-                ((val & 1) || val == 8 || val == 10) ? 2 : 1
+                ((val & 1) || val == 8 || val == 10) ? "2 players" : "1 player"
             );
         } else
         {   strcpy(thestring, "?");
@@ -5992,6 +6211,20 @@ PERSIST const STRPTR hypergates[4] =
                 "%s, %s",
                 carraces[memory[0x1F1E] / 2],
                 (memory[0x1F1E] & 1) ? "1 player" : "2 players" 
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase HEADONPOS: // game-1 is $1F4E
+        if (!force && t1 == memory[0x1F4E])
+        {   return;
+        }
+        t1 = memory[0x1F4E];
+        if (memory[0x1F4E] <= 8)
+        {   sprintf
+            (   thestring,
+                "%s.",
+                headon[memory[0x1F4E]]
             );
         } else
         {   strcpy(thestring, "?");
@@ -6021,6 +6254,468 @@ PERSIST const STRPTR hypergates[4] =
         } else
         {   strcpy(thestring, "?");
         }
+    acase _4INAROWPOS: // game-1 is $1F0E
+        if (!force && t1 == memory[0x1F0E])
+        {   return;
+        }
+        t1 = memory[0x1F0E];
+        if (memory[0x1F0E] <= 13)
+        {   sprintf
+            (   thestring,
+                "%s, %s, %s",
+                (memory[0x1F0E] <= 6) ? "7*6"      : "8*6",
+                (memory[0x1F0E] %  7) ? "1 player" : "2 players",
+                challenge[memory[0x1F0E] % 7]
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase I_BOWLINGPOS: // game is $1F1E (in BCD format)
+        if (!force && t1 == memory[0x1F1E])
+        {   return;
+        }
+        t1 = memory[0x1F1E];
+        if
+        (   ( memory[0x1F1E]         <= 0x16)
+         && ((memory[0x1F1E] & 0x0F) <= 0x09)
+        )
+        {   val = (((memory[0x1F1E] & 0xF0) >> 4) * 10)
+                +   (memory[0x1F1E] & 0x0F      )
+                - 1;
+            strcpy(thestring, i_bowling[val]);
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase CASINOPOS: // game is $1F6A
+        if (!force && t1 == memory[0x1F6A])
+        {   return;
+        }
+        t1 = memory[0x1F6A];
+        if (memory[0x1F6A] >= 1 && memory[0x1F6A] <= 3)
+        {   strcpy(thestring, casino[memory[0x1F6A] - 1]);
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase I_CIRCUSPOS: // game-1 is lower nybble of $1F1E
+        if (!force && t1 == (memory[0x1F1E] & 0x0F))
+        {   return;
+        }
+        t1 = memory[0x1F1E] & 0x0F;
+        sprintf
+        (   thestring,
+            "%s, %s, %s, %s",
+            ( memory[0x1F1E]      & 0x08) ? "Non-moving" : "Moving",
+            ( memory[0x1F1E]      & 0x04) ? "strips"     : "balloons",
+            ( memory[0x1F1E]      & 0x02) ? "fast"       : "slow",
+            ((memory[0x1F1E] + 1) & 0x02) ? "2 players"  : "1 player"
+        );
+    acase I_COMBATAPOS: // game is $1F0E (in BCD format)
+    case I_COMBATBPOS:
+        if (!force && t1 == memory[0x1F0E])
+        {   return;
+        }
+        t1 = memory[0x1F0E];
+        if
+        (   ( memory[0x1F0E]         <= 0x26)
+         && ((memory[0x1F0E] & 0x0F) <= 0x09)
+        )
+        {   val = (((memory[0x1F0E] & 0xF0) >> 4) * 10)
+                +   (memory[0x1F0E] & 0x0F      )
+                - 1;
+            strcpy(thestring, i_combat[val]);
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase DRAUGHTSPOS: // game is $1F1E
+        if (!force && t1 == memory[0x1F1E])
+        {   return;
+        }
+        t1 = memory[0x1F1E];
+        if (memory[0x1F1E] >= 1 && memory[0x1F1E] <= 15)
+        {   strcpy(thestring, draughts[memory[0x1F1E] - 1]);
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase MASTERMINDPOS: // game is $1FA9 (in BCD format)
+        if (!force && t1 == memory[0x1FA9])
+        {   return;
+        }
+        t1 = memory[0x1FA9];
+        if
+        (   ( memory[0x1FA9]         <= 0x24)
+         && ((memory[0x1FA9] & 0x0F) <= 0x09)
+        )
+        {   val = (((memory[0x1FA9] & 0xF0) >> 4) * 10)
+                +   (memory[0x1FA9] & 0x0F      )
+                - 1;
+            sprintf
+            (   thestring,
+                "%s, %s duplicates, range 1-%d, %s",
+                ( val < 12     ) ? "Figures"   : "Symbols",
+                ((val % 12) < 6) ? "has"       : "lacks",
+                ((val %  6) / 2) + 6, // 6..8
+                ( val &  1     ) ? "2 players" : "1 player"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase INVADERAPOS: // game-1 is $1F0F
+    case INVADERBPOS:
+        if (!force && t1 == memory[0x1F0F])
+        {   return;
+        }
+        t1 = memory[0x1F0F];
+        if (memory[0x1F0F] <= 15)
+        {   sprintf
+            (   thestring,
+                "%s bases, %s sky, %s, %s missiles, %s",
+                (memory[0x1F0F] & 8) ? "Lacks"     : "Has",
+                invaders[memory[0x1F0F] / 4],
+                (memory[0x1F0F] & 4) ? "fast"      : "slow",
+                (memory[0x1F0F] & 2) ? "guided"    : "unguided",
+                (memory[0x1F0F] & 1) ? "2 players" : "1 player"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase MONSTERMANPOS: // game is $1F0F-1
+        if (!force && t1 == memory[0x1F0F])
+        {   return;
+        }
+        t1 = memory[0x1F0F];
+        if (memory[0x1F0F] <= 11)
+        {   sprintf
+            (   thestring,
+                "Spider can%s leave, %s, %s, %d insect(s)",
+                (memory[0x1F0F] >= 4 && memory[0x1F0F] <= 7) ? "not" : "",
+                monsterman[memory[0x1F0F] / 4],
+                (memory[0x1F0F] & 2) ? "fast" : "slow",
+                (((memory[0x1F0F] % 4) / 2) * 2) + 1
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase MUSICALGAMESPOS: // game-1 is $1F1E
+        if (!force && t1 == memory[0x1F1E])
+        {   return;
+        }
+        t1 = memory[0x1F1E];
+        if (memory[0x1F1E] <= 7)
+        {   strcpy(thestring, musicalgames[memory[0x1F1E]]);
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase PADDLEGAMESPOS: // game is $1FAD (in BCD format)
+        if (!force && t1 == memory[0x1FAD])
+        {   return;
+        }
+        t1 = memory[0x1FAD];
+        if
+        (   ( memory[0x1FAD]         <= 0x60)
+         && ((memory[0x1FAD] & 0x0F) <= 0x09)
+        )
+        {   val = (((memory[0x1FAD] & 0xF0) >> 4) * 10)
+                +   (memory[0x1FAD] & 0x0F      )
+                - 1;
+            sprintf
+            (   thestring,
+                "%s, %s, %s difficulty",
+                (val >= 41 && val <= 50) ? "1 player" : "2 players",
+                olympics1[val / 5],
+                olympics2[val % 5]
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase PINBALLAPOS: // game-1 is $1F50
+    case PINBALLBPOS:
+        if (!force && t1 == memory[0x1F50])
+        {   return;
+        }
+        t1 = memory[0x1F50];
+        if (memory[0x1F50] <= 7)
+        {   sprintf
+            (   thestring,
+                "%s flippers, %s, %s",
+                (memory[0x1F50] & 0x04) ? "Double"    : "Single",
+                (memory[0x1F50] & 0x02) ? "fast"      : "slow",
+                (memory[0x1F50] & 0x01) ? "2 players" : "1 player"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase PLANETDEFENDERPOS: // game is $1F50 (in BCD format)
+        if (!force && t1 == memory[0x1F50])
+        {   return;
+        }
+        t1 = memory[0x1F50];
+        if
+        (   ( memory[0x1F50]         <= 0x16)
+         && ((memory[0x1F50] & 0x0F) <= 0x09)
+        )
+        {   val = (((memory[0x1F50] & 0xF0) >> 4) * 10)
+                +   (memory[0x1F50] & 0x0F      )
+                - 1;
+            sprintf
+            (   thestring,
+                "%s msls, firing rate %d, %s cruise msls, %s trgt ctrl",
+                planetdefender[val / 4],
+                (val / 4) + 1,
+                (val & 2) ? "smart" : "dumb",
+                (val & 1) ? "fast"  : "slow"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase SHOOTOUTPOS: // game-1 is $1F1E
+        if (!force && t1 == memory[0x1F1E])
+        {   return;
+        }
+        t1 = memory[0x1F1E];
+        if (memory[0x1F1E] <= 23)
+        {   sprintf
+            (   thestring,
+                "%s shots, can%s run after firing, %sdestructable %s",
+                shootout[memory[0x1F1E] / 8],
+                (memory[0x1F1E] & 4) ? ""      : "not",
+                (memory[0x1F1E] & 2) ? ""      : "in",
+                (memory[0x1F1E] & 1) ? "coach" : "cactus"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase SPACEWARPOS: // game is (($1F67-1)*2)+1+$1F68
+        if (!force && t1 == memory[0x1F67] && t2 == memory[0x1F68])
+        {   return;
+        }
+        t1 = memory[0x1F67];
+        t2 = memory[0x1F68];
+        if
+        (   memory[0x1F67] >= 1
+         && memory[0x1F67] <= 4
+         && memory[0x1F68] <= 1
+        )
+        {   val = ((memory[0x1F67] - 1) * 2) + memory[0x1F68];
+            sprintf
+            (   thestring,
+                "%s, %s, %s",
+                spacewar[val / 2],
+                (val <= 1) ? "1 player" : "2 players",
+                (val &  1) ? "fast"     : "slow"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase SUPERINVPOS: // game is $1F6B (in BCD format)
+        if (!force && t1 == memory[0x1F6B])
+        {   return;
+        }
+        t1 = memory[0x1F6B];
+        if
+        (   ( memory[0x1F6B]         <= 0x15)
+         && ((memory[0x1F6B] & 0x0F) <= 0x09)
+        )
+        {   val = (((memory[0x1F6B] & 0xF0) >> 4) * 10)
+                +   (memory[0x1F6B] & 0x0F      )
+                - 1;
+            sprintf
+            (   thestring,
+                "%s scoring, %s, %s, %s",
+                (val <= 11) ? "High"    : "Low",
+                (val <=  5) ? "slow"    : "fast",
+                superinvaders[val],
+                (val &   1) ? "2 plyrs" : "1 plyr"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase SUPERKNOCKOUTPOS: // game-1 is $1F5A
+        if (!force && t1 == memory[0x1F5A])
+        {   return;
+        }
+        t1 = memory[0x1F5A];
+        if (memory[0x1F5A] <= 127)
+        {   sprintf
+            (   thestring,
+                "%d bls, %s w-out, %s obstcls, %s inv wl, %s ctch-it, %s pk-brk, %s",
+                (memory[0x1F5A] & 0x40) ? 10        : 5,
+                (memory[0x1F5A] & 0x20) ? "has"     : "lks",
+                (memory[0x1F5A] & 0x10) ? "has"     : "lks",
+                (memory[0x1F5A] & 0x08) ? "has"     : "lks",
+                (memory[0x1F5A] & 0x04) ? "has"     : "lks",
+                (memory[0x1F5A] & 0x02) ? "has"     : "lks",
+                (memory[0x1F5A] & 0x01) ? "2 plyrs" : "1 plyr"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase SUPERMAZEPOS: // game-1 is $1F0F
+        if (!force && t1 == memory[0x1F0F])
+        {   return;
+        }
+        t1 = memory[0x1F0F];
+        if (memory[0x1F0F] <= 23)
+        {   sprintf
+            (   thestring,
+                "%s, %s, %s",
+                supermaze[memory[0x1F0F] / 4],
+                (memory[0x1F0F] & 2) ? "fast"      : "slow",
+                (memory[0x1F0F] & 1) ? "2 players" : "1 player"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase MEMORY1POS: // game is $1F1F (in BCD format)
+        if (!force && t1 == memory[0x1F1F])
+        {   return;
+        }
+        t1 = memory[0x1F1F];
+        if
+        (   ( memory[0x1F1F]         <= 0x16)
+         && ((memory[0x1F1F] & 0x0F) <= 0x09)
+        )
+        {   val = (((memory[0x1F1F] & 0xF0) >> 4) * 10)
+                +   (memory[0x1F1F] & 0x0F      )
+                - 1;
+            sprintf
+            (   thestring,
+                "%s, %s flag position, %d squares, %s",
+                treasurehunt[val / 4],
+                (val & 4) ? "variable"  : "fixed",
+                (val & 2) ? 56          : 30,
+                (val & 1) ? "2 players" : "1 player"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase WINTERSPORTSPOS: // game-1 is $1F6B
+        if (!force && t1 == memory[0x1F6B])
+        {   return;
+        }
+        t1 = memory[0x1F6B];
+        if (memory[0x1F6B] <= 7)
+        {   strcpy(thestring, wintersports[memory[0x1F6B]]);
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase I_MATH1POS: // players and digits (and rows) are $1FAD, difficulty and operations and rows are $1FAC
+    case E_MATH1POS:
+        if (!force && t1 == memory[0x1FAD] && t2 == memory[0x1FAC])
+        {   return;
+        }
+        t1 = memory[0x1FAD];
+        t2 = memory[0x1FAC];
+        sprintf
+        (   thestring,
+            "%s, ",
+            (memory[0x1FAD] & 0x80) ? "2 players" : "1 player"
+        );
+        if
+        (   (memory[0x1FAC] >=  4 && memory[0x1FAC] <=  5)
+         || (memory[0x1FAC] >=  8 && memory[0x1FAC] <= 11)
+         || (memory[0x1FAC] >= 16 && memory[0x1FAC] <= 23)
+        )
+        {   strcat(thestring, "easy, ");
+        } elif
+        (   (memory[0x1FAC] >=  6 && memory[0x1FAC] <=  7)
+         || (memory[0x1FAC] >= 12 && memory[0x1FAC] <= 15)
+         || (memory[0x1FAC] >= 24 && memory[0x1FAC] <= 31)
+        )
+        {   strcat(thestring, "hard, ");
+        } else
+        {   strcat(thestring, "?, ");
+        }
+        switch (memory[0x1FAD] & 0x7F) // 'Cl' key
+        {
+        case  0x23: case 0x2B: case 0x33: digits =   "1"; //   1+  1+  1+  1,   1+  1+  1,   1+  1
+        acase 0x22: case 0x2A: case 0x32: digits =  "22"; //  22+ 22+ 22+ 22,  22+ 22+ 22,  22+ 22
+        acase 0x21: case 0x29: case 0x31: digits = "333"; // 333+333+333+333, 333+333+333, 333+333
+        adefault:                         digits =   "?";
+        }
+        switch (memory[0x1FAC]) // '0' key
+        {
+        case   4: case  6: sprintf(ENDOF(thestring), "%s+%s"      , digits, digits);
+        acase  5: case  7: sprintf(ENDOF(thestring), "%s-%s"      , digits, digits);
+        acase  8: case 12: sprintf(ENDOF(thestring), "%s+%s+%s"   , digits, digits, digits);
+        acase  9: case 13: sprintf(ENDOF(thestring), "%s+%s-%s"   , digits, digits, digits);
+        acase 10: case 14: sprintf(ENDOF(thestring), "%s-%s+%s"   , digits, digits, digits);
+        acase 11: case 15: sprintf(ENDOF(thestring), "%s-%s-%s"   , digits, digits, digits);
+        acase 16: case 24: sprintf(ENDOF(thestring), "%s+%s+%s+%s", digits, digits, digits, digits);
+        acase 17: case 25: sprintf(ENDOF(thestring), "%s+%s+%s-%s", digits, digits, digits, digits);
+        acase 18: case 26: sprintf(ENDOF(thestring), "%s+%s-%s+%s", digits, digits, digits, digits);
+        acase 19: case 27: sprintf(ENDOF(thestring), "%s+%s-%s-%s", digits, digits, digits, digits);
+        acase 20: case 28: sprintf(ENDOF(thestring), "%s-%s+%s+%s", digits, digits, digits, digits);
+        acase 21: case 29: sprintf(ENDOF(thestring), "%s-%s+%s-%s", digits, digits, digits, digits);
+        acase 22: case 30: sprintf(ENDOF(thestring), "%s-%s-%s+%s", digits, digits, digits, digits);
+        acase 23: case 31: sprintf(ENDOF(thestring), "%s-%s-%s-%s", digits, digits, digits, digits);
+        adefault:          strcat(thestring, "?");
+        }
+    acase I_MATH2POS:
+        if (!force && t1 == memory[0x1FAD] && t2 == memory[0x1FAC])
+        {   return;
+        }
+        t1 = memory[0x1FAD];
+        t2 = memory[0x1FAC];
+        sprintf
+        (   thestring,
+            "%s, ",
+            (memory[0x1FAD] & 0x80) ? "2 players" : "1 player"
+        );
+        switch ((memory[0x1FAC] * 256) + (memory[0x1FAD] & 0x7F))
+        {
+        case  0x0431: strcat(thestring, "333*333");
+        acase 0x0432: strcat(thestring, "22*22");
+        acase 0x0433: strcat(thestring, "1*1");
+        acase 0x0531: strcat(thestring, "333/333");
+        acase 0x0532: strcat(thestring, "333/22");
+        acase 0x0533: strcat(thestring, "22/1");
+        acase 0x0629: strcat(thestring, "333+333*333");
+        acase 0x062A: strcat(thestring, "22+22*22");
+        acase 0x062B: strcat(thestring, "1+1*1");
+        acase 0x0729: strcat(thestring, "333-333*333");
+        acase 0x072A: strcat(thestring, "22-22*22");
+        acase 0x072B: strcat(thestring, "1-1*1");
+        acase 0x0829: strcat(thestring, "333*333+333");
+        acase 0x082A: strcat(thestring, "22*22+22");
+        acase 0x082B: strcat(thestring, "1*1+1");
+        acase 0x0929: strcat(thestring, "333*333-333");
+        acase 0x092A: strcat(thestring, "22*22-22");
+        acase 0x092B: strcat(thestring, "1*1-1");
+        acase 0x0A29: strcat(thestring, "333/333+333");
+        acase 0x0A2A: strcat(thestring, "333/22+22");
+        acase 0x0A2B: strcat(thestring, "22/1+1");
+        acase 0x0B29: strcat(thestring, "333/333-333");
+        acase 0x0B2A: strcat(thestring, "333/22-22");
+        acase 0x0B2B: strcat(thestring, "22/1-1");
+        acase 0x0C29: strcat(thestring, "333/333*333");
+        acase 0x0C2A: strcat(thestring, "333/22*22");
+        acase 0x0C2B: strcat(thestring, "22/1*1");
+        acase 0x0D21: strcat(thestring, "333*333+333+333");
+        acase 0x0D22: strcat(thestring, "22*22+22+22");
+        acase 0x0D23: strcat(thestring, "1*1+1+1");
+        acase 0x0E21: strcat(thestring, "333*333+333-333");
+        acase 0x0E22: strcat(thestring, "22*22+22-22");
+        acase 0x0E23: strcat(thestring, "1*1+1-1");
+        acase 0x0F21: strcat(thestring, "333*333-333-333");
+        acase 0x0F22: strcat(thestring, "22*22-22-22");
+        acase 0x0F23: strcat(thestring, "1*1-1-1");
+        acase 0x1021: strcat(thestring, "333/333+333+333");
+        acase 0x1022: strcat(thestring, "333/22+22+22");
+        acase 0x1023: strcat(thestring, "22/1+1+1");
+        acase 0x1121: strcat(thestring, "333/333+333-333");
+        acase 0x1122: strcat(thestring, "333/22+22-22");
+        acase 0x1123: strcat(thestring, "22/1+1-1");
+        acase 0x1221: strcat(thestring, "333/333+333*333");
+        acase 0x1222: strcat(thestring, "333/22+22*22");
+        acase 0x1223: strcat(thestring, "22/1+1*1");
+        acase 0x1321: strcat(thestring, "333/333-333+333");
+        acase 0x1322: strcat(thestring, "333/22-22+22");
+        acase 0x1323: strcat(thestring, "22/1-1+1");
+        acase 0x1421: strcat(thestring, "333/333-333*333");
+        acase 0x1422: strcat(thestring, "333/22-22*22");
+        acase 0x1423: strcat(thestring, "22/1-1*1");
+        adefault:     strcat(thestring, "?");
+        }
     acase SHOOTGALPOS: // game is $1F5C (in BCD format)
         if (!force && t1 == memory[0x1F5C])
         {   return;
@@ -6045,6 +6740,90 @@ PERSIST const STRPTR hypergates[4] =
         } else
         {   strcpy(thestring, "?");
         }
+    acase BACKGAMMONPOS: // game is $1004 ("1".."3" are $01..$03, "4" is $00)
+        if (!force && t1 == memory[0x1004])
+        {   return;
+        }
+        t1 = memory[0x1004];
+        if (memory[0x1004] <= 3)
+        {   strcpy(thestring, backgammon[memory[0x1004]]);
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase I_CAPTUREPOS: // game is $1F6D ("01".."93" are $00..$1D)
+        if (!force && t1 == memory[0x1F6D])
+        {   return;
+        }
+        t1 = memory[0x1F6D];
+        if (memory[0x1F6D] <= 0x1D)
+        {   sprintf
+            (   thestring,
+                "%s time, %d advantage(s), %s",
+                (memory[0x1F6D] <= 14) ? "Unlimited" : "Limited",
+                (memory[0x1F6D] % 15) / 3,
+                i_capture[memory[0x1F6D] % 3]
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase CHESS1POS: // intelligence is high nybble of $13D1, game is high nybble of $13D2
+        if (!force && t1 == memory[0x13D1] && t2 == memory[0x13D2])
+        {   return;
+        }
+        t1 = memory[0x13D1];
+        t2 = memory[0x13D2];
+        if
+        (   (memory[0x13D1] & 0xF0) >= 0x10
+         && (memory[0x13D1] & 0xF0) <= 0x60
+         && (memory[0x13D2] & 0xF0) >= 0x10
+         && (memory[0x13D2] & 0xF0) <= 0x40
+        )
+        {   sprintf
+            (   thestring,
+                "Intelligence of %d, %s mode",
+                       (memory[0x13D1] & 0xF0) >> 4,
+                chess[((memory[0x13D2] & 0xF0) >> 4) - 1]
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase CHESS2POS: // intelligence-1 is low nybble of $1B92, game is high nybble of $1B93
+        if (!force && t1 == memory[0x1B92] && t2 == memory[0x1B93])
+        {   return;
+        }
+        t1 = memory[0x1B92];
+        t2 = memory[0x1B93];
+        if
+        (   (memory[0x1B92] & 0x0F) <= 0x08
+         && (memory[0x1B93] & 0xF0) >= 0x10
+         && (memory[0x1B93] & 0xF0) <= 0x40
+        )
+        {   sprintf
+            (   thestring,
+                "Intelligence of %d, %s mode",
+                        (memory[0x1B92] & 0x0F)       + 1,
+                chess[((memory[0x1B93] & 0xF0) >> 4) - 1]
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase I_HORSERACINGPOS: // game is $1F65 ("1".."16" are $C1..$D0)
+    case HIPPODROMEPOS:
+        if (!force && t1 == memory[0x1F65])
+        {   return;
+        }
+        t1 = memory[0x1F65];
+        if (memory[0x1F65] >= 0xC1 && memory[0x1F65] <= 0xD0)
+        {   sprintf
+            (   thestring,
+                "%s move, %s, %s",
+                 (memory[0x1F65] <= 0xC8)      ? "Horses"   : "Obstacles",
+                horseracing[((memory[0x1F65] - 0xC1) % 8) / 2],
+                ((memory[0x1F65] -  0xC1) & 1) ? "1 player" : "2 players"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
     adefault:
         if (!force)
         {   return;
@@ -6052,6 +6831,6 @@ PERSIST const STRPTR hypergates[4] =
         strcpy(thestring, "-");
     }
 
+    // zprintf(TEXTPEN_VERBOSE, "Variant text length is %d.\n", strlen(thestring));
     st_set2(SUBWINDOW_GAMEINFO, IDC_AUTOSENSE9, thestring);
- // zprintf(TEXTPEN_VERBOSE, "Variant text length is %d.\n", strlen(thestring));
 }

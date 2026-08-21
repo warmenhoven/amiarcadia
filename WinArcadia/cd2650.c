@@ -388,7 +388,6 @@ EXPORT void cd2650_anypixel(void)
 
     if (cpux == nextinst)
     {   oldcycles = cycles_2650;
-        checkstep();
         do_tape();
         one_instruction();
         nextinst += (cycles_2650 - oldcycles) * (fastcd2650 ? 8 : 12); // in pixels

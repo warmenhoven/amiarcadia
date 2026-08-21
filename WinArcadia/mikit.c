@@ -230,7 +230,6 @@ EXPORT void mikit_emulate(void)
     {   // cycle counter will overflow, so we need to use the slow method
         while (slice_2650 >= 1)
         {   oldcycles = cycles_2650;
-            checkstep();
             one_instruction();
             slice_2650 -= (cycles_2650 - oldcycles);
     }   }
@@ -238,8 +237,7 @@ EXPORT void mikit_emulate(void)
     {   // cycle counter will not overflow, so we can use a faster method
         oldcycles = cycles_2650;
         while (cycles_2650 < endcycle)
-        {   checkstep();
-            one_instruction();
+        {   one_instruction();
         }
         slice_2650 -= (cycles_2650 - oldcycles);
     }
@@ -381,7 +379,6 @@ EXPORT void mikit_reset(void)
 
 EXPORT void mikit_one_instruction(void)
 {   oldcycles = cycles_2650;
-    checkstep();
     one_instruction();
     slice_2650 -= (cycles_2650 - oldcycles);
 }

@@ -36,7 +36,8 @@ typedef BOOL (WINAPI* AttachConsole_t)(DWORD dwProcessId);
 
 // EXPORTED VARIABLES-----------------------------------------------------
 
-EXPORT       FLAG                  repaintmemmap;
+EXPORT       FLAG                  ignoreghosting       = FALSE,
+                                   repaintmemmap;
 EXPORT       TEXT                  datatip[1024 + 1];
 EXPORT       int                   candy[CANDIES]       = { TRUE, TRUE, TRUE, FALSE, TRUE },
                                    sprviewcolour,
@@ -3313,7 +3314,7 @@ MODULE BOOL CALLBACK OutputDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARA
         {   SendMessage(RichTextGadget, EM_SETSEL, 0, 0);
         }
     acase WM_NOTIFY:
-        if (((NMHDR*) lParam)->hwndFrom == RichTextGadget && ((NMHDR*) lParam)->code == EN_SELCHANGE)
+        if (((NMHDR*) lParam)->hwndFrom == RichTextGadget && ((NMHDR*) lParam)->code == EN_SELCHANGE && !ignoreghosting)
         {   EnableWindow(GetDlgItem(subwin[SUBWINDOW_OUTPUT].hwnd, IDC_COPYSELECTION), (((SELCHANGE*) lParam)->chrg.cpMin != ((SELCHANGE*) lParam)->chrg.cpMax) ? TRUE : FALSE);
 
             return 0;

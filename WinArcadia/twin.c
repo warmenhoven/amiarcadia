@@ -1623,7 +1623,6 @@ MODULE void twin_runcpu(void)
     {   // cycle counter will overflow, so we need to use the slow method
         while (slice_2650 >= 1)
         {   oldcycles = cycles_2650;
-            checkstep();
             one_instruction();
             checkinterrupt();
             slice_2650 -= (cycles_2650 - oldcycles);
@@ -1632,8 +1631,7 @@ MODULE void twin_runcpu(void)
     {   // cycle counter will not overflow, so we can use a faster method
         oldcycles = cycles_2650;
         while (cycles_2650 < endcycle)
-        {   checkstep();
-            one_instruction();
+        {   one_instruction();
             checkinterrupt();
         }
         slice_2650 -= (cycles_2650 - oldcycles);
@@ -3268,7 +3266,6 @@ EXPORT void twin_get_commands(int whichdrive, int whichfile, FLAG multiline)
 
 EXPORT void twin_one_instruction(void)
 {   oldcycles = cycles_2650;
-    checkstep();
     one_instruction();
     checkinterrupt();
     slice_2650 -= (cycles_2650 - oldcycles);

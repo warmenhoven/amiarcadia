@@ -1,6 +1,7 @@
 // INCLUDES---------------------------------------------------------------
 
 #ifdef AMIGA
+    #include <gadgets/string.h>   // for STRINGA_TextVal
     #include "amiga.h"
     #include <dos/dostags.h>      // for SystemTags()
     #ifdef __amigaos4__
@@ -147,6 +148,7 @@ IMPORT       int                      base,
                                       firstdosequiv, lastdosequiv,
                                       flagline,
                                       fromnum,
+                                      historyline,
                                       interrupt_2650,
                                       lastparse,
                                       logbios,
@@ -229,10 +231,13 @@ IMPORT const struct MenuStruct        menuinfo1[MENUITEMS],
     IMPORT   UWORD                    wbver;
     IMPORT   BPTR                     ProgLock;
     IMPORT   struct Catalog*          CatalogPtr;
+    IMPORT   struct Gadget*           gadgets[GIDS + 1];
+    IMPORT   struct Window*           MainWindowPtr;
 #endif
 #ifdef WIN32
     IMPORT   int                      CatalogPtr; // APTR doesn't work
-    IMPORT   HWND                     MainWindowPtr;
+    IMPORT   HWND                     hDebugger,
+                                      MainWindowPtr;
 #endif
 
 // MODULE VARIABLES-------------------------------------------------------
@@ -514,7 +519,17 @@ EXPORT FLAG debug_command(void)
         }
     acase MENUITEM_S:
         if (allowable(TRUE))
-        {   step = TRUE;
+        {   if (!rexx)
+            {   userinput[0] = EOS;
+                historyline = -1;
+#ifdef WIN32
+                SendMessage(hDebugger, WM_SETTEXT, 0, (LPARAM) userinput); // to clear the "S"
+#endif
+#ifdef AMIGA
+                SetGadgetAttrs(gadgets[GID_MA_ST4], MainWindowPtr, NULL, STRINGA_TextVal, userinput, TAG_END); // to clear the "S". This refreshes automatically
+#endif
+            }
+            step = TRUE;
             donecpu = FALSE;
             switch (machine)
             {
@@ -562,9 +577,9 @@ EXPORT FLAG debug_command(void)
     acase MENUITEM_O:
         if (allowable(TRUE))
         {   // shouldn't we resolve mirrors first?
+            DISCARD number_to_friendly(iar, friendly, TRUE, 0, 15, TRUE);
             if ((memory[iar] & 0x78) == 0x38) // %x0111xxx
-            {   DISCARD number_to_friendly(iar, friendly, TRUE, 0, 15, TRUE);
-                zprintf
+            {   zprintf
                 (   TEXTPEN_TRACE,
                     LLL(
                         MSG_ENGINE_STEPPINGOVER,
@@ -576,11 +591,15 @@ EXPORT FLAG debug_command(void)
                 if (verbosity == VERBOSITY_MINIMUM) // ie. if we are not going to call view_next_2650()
                 {   zprintf(TEXTPEN_TRACE, "\n");
                 }
-                memflags[(iar & PAGE) + ((iar + table_size_2650[memory[iar]]) & NONPAGE)] |= STEPPOINT;
+                memflags[(iar & PAGE) + ((iar + table_size_2650[memory[iar]]) & NONPAGE)] |= TEMPBREAKPOINT;
                 emu_unpause();
             } else
-            {   step = TRUE;
-                emu_unpause();
+            {   zprintf
+                (   TEXTPEN_TRACE,
+                    "%s at %s is not a subroutine call!\n\n", // localize
+                    opcodes[style][memory[iar]].name,
+                    friendly
+                );
         }   }
     acase MENUITEM_ASM:
         if (allowable(TRUE))
@@ -712,6 +731,8 @@ EXPORT FLAG debug_command(void)
             for (i = 0; i <= MAX_ADDR; i++)
             {   if (memflags[i] & BREAKPOINT)
                 {   DISCARD number_to_friendly(i, (STRPTR) friendly, TRUE, 0, 15, TRUE);
+                    zprintf(TEXTPEN_CLIOUTPUT, "%s", friendly);
+
                     if (bp[i].the2nd == COND_UN)
                     {   zprintf(TEXTPEN_CLIOUTPUT, "\n");
                     } else
@@ -725,6 +746,11 @@ EXPORT FLAG debug_command(void)
                             secondstring
                         );
                     }
+                    ok = TRUE;
+                }
+                if (memflags[i] & TEMPBREAKPOINT)
+                {   DISCARD number_to_friendly(i, (STRPTR) friendly, TRUE, 0, 15, TRUE);
+                    zprintf(TEXTPEN_CLIOUTPUT, "%s (temporary)\n", friendly);
                     ok = TRUE;
             }   }
             if (ok)

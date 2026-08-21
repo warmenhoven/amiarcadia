@@ -342,7 +342,8 @@ IMPORT const struct KnownStruct       known[KNOWNGAMES];
     IMPORT const int                  memmap_to_smlimage[MEMMAPS];
 #endif
 #ifdef WIN32
-    IMPORT       FLAG                 quitting;
+    IMPORT       FLAG                 ignoreghosting,
+                                      quitting;
     IMPORT       TEXT                 file_bkgrnd[MAX_PATH + 1],
                                       fn_bkgrnd[MAX_PATH + 1],
                                       path_bkgrnd[MAX_PATH + 1];
@@ -1767,7 +1768,8 @@ EXPORT void zprintf(UNUSED int whichcolour, const char* format, ...)
     PERSIST   FLAG      already = FALSE;
     FAST      int       j,
                         start, end;
-    FAST      CHARRANGE cr;
+    FAST      CHARRANGE cr,
+                        usersel;
 #endif
 
     // This function isn't callable recursively
@@ -1816,6 +1818,9 @@ EXPORT void zprintf(UNUSED int whichcolour, const char* format, ...)
         return;
     }
 
+    ignoreghosting = TRUE;
+
+    SendMessage(RichTextGadget, EM_EXGETSEL,     0,              (LPARAM) &usersel);
     SendMessage(RichTextGadget, EM_SETSEL,       -1,             -1);
     SendMessage(RichTextGadget, EM_EXGETSEL,     0,              (LPARAM) &cr);
     start = cr.cpMin;
@@ -1833,6 +1838,9 @@ EXPORT void zprintf(UNUSED int whichcolour, const char* format, ...)
 
     SendMessage(RichTextGadget, EM_SETSEL,       end,            end);
     SendMessage(RichTextGadget, EM_SCROLLCARET,  0,              0);
+    SendMessage(RichTextGadget, EM_EXSETSEL,     0,              (LPARAM) &usersel);
+
+    ignoreghosting = FALSE;
 
     if (!already && !quitting && storedmenu1 == -1 && storedmenu2 == -1 && storedcode == 0 && storedaltcode == 0)
     {   already = TRUE;

@@ -1223,7 +1223,6 @@ EXPORT void selbst_reset(void)
 
 EXPORT void selbst_one_instruction(void)
 {   oldcycles = cycles_2650;
-    checkstep();
     do_tape();
     one_instruction();
     slice_2650 -= (cycles_2650 - oldcycles);

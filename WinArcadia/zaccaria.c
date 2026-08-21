@@ -807,7 +807,7 @@ EXPORT void lb_drawscreen(void)
                 {
                 case  0: changefgpixel(x - 8, y, BLACK);
                 acase 1: changefgpixel(x - 8, y, GREEN); // unused?
-                acase 2: changefgpixel(x - 8, y, abeff1 ? RED   : YELLOW);
+                acase 2: changefgpixel(x - 8, y, abeff1 ? RED : YELLOW);
                 acase 3: changefgpixel(x - 8, y, BLUE);
         }   }   }
 

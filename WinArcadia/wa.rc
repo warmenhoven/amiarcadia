@@ -2943,7 +2943,7 @@ BEGIN
             MENUITEM "SWAP <1st-start> <1st-end> <2nd-start>", ID_DEBUG_SWAP
             MENUITEM "TRAIN [<value>]",             ID_DEBUG_TRAIN
         END
-        POPUP "Einstellungen (&O)"
+        POPUP "&Optionen"
         BEGIN
             MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
             MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
@@ -3575,7 +3575,7 @@ BEGIN
                                                         ID_DEBUG_SWAP
                 MENUITEM "TRAIN [<value>]",             ID_DEBUG_TRAIN
             END
-            POPUP "Einstellungen (&O)"
+            POPUP "&Optionen"
             BEGIN
                 MENUITEM "BASE 2|% (binary)",           ID_DEBUG_BASE_BINARY
                 MENUITEM "BASE 8|@ (octal)",            ID_DEBUG_BASE_OCTAL
@@ -10089,7 +10089,7 @@ BEGIN
                     167,392,8
 END
 
-IDD_CONTROLS_ELEKTOR_SML DIALOG DISCARDABLE  0, 0, 251, 256
+IDD_CONTROLS_ELEKTOR_SML DIALOG DISCARDABLE  0, 0, 233, 242
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Elektor TV Games Computer Controls"
@@ -10099,7 +10099,7 @@ BEGIN
     CONTROL         "Large image?",IDC_LARGEIMAGE,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,7,9,98,12
     CTEXT           "Hover over a button for more information.\nLeft-click to press a button.\nRight-click to redefine a button.",
-                    IDL_HOVER7,9,85,232,31
+                    IDL_HOVER7,14,85,205,31
     RTEXT           "Overlay:",IDL_CONTROLS_OVERLAY,8,27,105,10
     LTEXT           "-",IDC_CONTROLS_OVERLAY,118,26,97,10,SS_CENTERIMAGE | 
                     SS_SUNKEN
@@ -16508,7 +16508,7 @@ BEGIN
                     10
 END
 
-IDD_CONTROLS_ELEKTOR_BIG DIALOG DISCARDABLE  0, 0, 485, 346
+IDD_CONTROLS_ELEKTOR_BIG DIALOG DISCARDABLE  0, 0, 445, 322
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Elektor TV Games Computer Controls"
@@ -16518,7 +16518,7 @@ BEGIN
     CONTROL         "Large image?",IDC_LARGEIMAGE,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,7,9,98,12
     CTEXT           "Hover over a button for more information.\nLeft-click to press a button.\nRight-click to redefine a button.",
-                    IDL_HOVER7,223,28,250,56
+                    IDL_HOVER7,223,28,210,56
     RTEXT           "Overlay:",IDL_CONTROLS_OVERLAY,8,28,105,10
     LTEXT           "-",IDC_CONTROLS_OVERLAY,118,27,98,10,SS_CENTERIMAGE | 
                     SS_SUNKEN
@@ -19327,8 +19327,8 @@ IDI_E_MAZES             ICON    DISCARDABLE     "e-mazes.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 36,6,0,0
- PRODUCTVERSION 36,6,0,0
+ FILEVERSION 36,6,1,1
+ PRODUCTVERSION 36,6,1,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -19346,14 +19346,14 @@ BEGIN
             VALUE "Comments", "Think Signetics. Sig 'em! We want you to have the best.\0"
             VALUE "CompanyName", "Amigan Software\0"
             VALUE "FileDescription", "WinArcadia multi-emulator\0"
-            VALUE "FileVersion", "36.6\0"
+            VALUE "FileVersion", "36.61\0"
             VALUE "InternalName", "WinArcadia\0"
             VALUE "LegalCopyright", "Copyright © 2006-2026 James Jacobs\0"
             VALUE "LegalTrademarks", "WinArcadia\0"
             VALUE "OriginalFilename", "WinArcadia.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "WinArcadia\0"
-            VALUE "ProductVersion", "36.6\0"
+            VALUE "ProductVersion", "36.61\0"
             VALUE "SpecialBuild", "\0"
         END
     END

@@ -1,10 +1,10 @@
-#define DECIMALVERSION       "36.6 beta"
-#define INTEGERVERSION       "36.60"
+#define DECIMALVERSION       "36.61"
+#define INTEGERVERSION       "36.61"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x60
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (12.8.2026)" // d.m.yyyy format
-#define RELEASEDATE          "12-08-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "12 August 2026" // full month and year
+#define MINORVERSION         0x61
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (22.8.2026)" // d.m.yyyy format
+#define RELEASEDATE          "22-08-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "22 August 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
 #define NEWCONFIGVERSION     "36.54" // V36.54 final+
@@ -852,7 +852,7 @@ typedef UWORD MEMFLAG;
 #define BIOS                 0x40
 #define BREAKPOINT           0x80
 #define AUDIBLE             0x100
-#define STEPPOINT           0x200
+#define TEMPBREAKPOINT      0x200 // for O (step over subroutine) command
 #define VISIBLE             0x400
 #define TRAINABLE           0x800
 #define BANKU              0x1000
@@ -2377,7 +2377,9 @@ typedef UWORD MEMFLAG;
 #define FROGGER3POS           849
 #define HOMERUNPOS            855
 #define KOTONOHAPOS           857
+
 // Interton
+#define SHOOTOUTPOS           130
 #define SUPERINVPOS           131
 #define INTERTONSTUBPOS       132
 #define INTELLIGENCE1POS      133
@@ -2396,13 +2398,14 @@ typedef UWORD MEMFLAG;
 #define I_BOWLINGPOS          148
 #define I_BOXINGPOS           149
 #define I_CAPTUREPOS          150
-#define GRANDPRIXPOS          150
+#define GRANDPRIXPOS          151
 #define CASINOPOS             152
 #define CHESS1POS             153
 #define CHESS2POS             154
 #define I_CIRCUSPOS           155
 #define COCKPITPOS            156
 #define MASTERMINDPOS         157
+#define I_COMBATAPOS          158
 #define I_COMBATBPOS          159
 #define DRAUGHTSPOS           160
 #define I_GOLFPOS             161
@@ -2420,7 +2423,9 @@ typedef UWORD MEMFLAG;
 #define MOTOCROSSPOS          173
 #define MUSICALGAMESPOS       174
 #define PADDLEGAMESPOS        175
+#define PINBALLAPOS           176
 #define PINBALLBPOS           177
+#define PLANETDEFENDERPOS     178
 #define SHOOTGALPOS           179
 #define SOCCERBPOS            181
 #define SOLITAIREPOS          182
@@ -2432,6 +2437,7 @@ typedef UWORD MEMFLAG;
 #define MUNCHANDCRUNCH1POS    191
 #define SUPERKNOCKOUTPOS      193
 #define AIRSEAATTACKPOS       194
+#define I_HORSERACINGPOS      195
 #define COMEFRUTASPOS3        201
 #define I_TETRISPOS1          206
 #define I_TETRISPOS2          207
@@ -4157,7 +4163,6 @@ EXPORT void one_instruction(void);
 EXPORT void pullras(void);
 EXPORT void pushras(void);
 EXPORT void set_pause(int thetype);
-EXPORT void checkstep(void);
 EXPORT void do_tape(void);
 
 // disasm.c

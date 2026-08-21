@@ -348,7 +348,6 @@ EXPORT void phunsy_anypixel(void)
 
     if (cpux == nextinst)
     {   oldcycles = cycles_2650;
-        checkstep();
         mdcr_exec();
         do_tape();
         one_instruction();

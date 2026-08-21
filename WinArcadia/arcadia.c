@@ -2580,7 +2580,6 @@ EXPORT void arcadia_anypixel(void)
 
     if (cpux == nextinst)
     {   oldcycles = cycles_2650;
-        checkstep();
         one_instruction();
         nextinst += (cycles_2650 - oldcycles) * 4; // in pixels
         donecpu = TRUE;

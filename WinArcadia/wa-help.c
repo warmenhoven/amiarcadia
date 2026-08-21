@@ -2033,6 +2033,7 @@ MODULE BOOL CALLBACK GameInfoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
         DISCARD SetDlgItemText(hwnd, IDL_AUTOLABEL6, "CRC32/64:");
         setdlgtext(hwnd, IDL_AUTOLABEL7,        MSG_INFO_COMPLANG,     "Language:");
         setdlgtext(hwnd, IDL_AUTOLABEL8,        MSG_INFO_ADDRESS,      "Start address:");
+        setdlgtext(hwnd, IDL_AUTOLABEL9,        MSG_INFO_VARIANT,      "Current variant:"),
         setdlgtext(hwnd, IDL_1STBUTTON,         MSG_1STBUTTON,         "1st button");
         setdlgtext(hwnd, IDL_2NDBUTTON,         MSG_2NDBUTTON,         "2nd button");
         setdlgtext(hwnd, IDL_3RDBUTTON,         MSG_3RDBUTTON,         "3rd button");

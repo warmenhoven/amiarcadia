@@ -813,7 +813,6 @@ EXPORT void newpvi_anypixel(void)
 
     if (cpux == nextinst)
     {   oldcycles = cycles_2650;
-        checkstep();
         do_tape(); // for Elektor
         one_instruction();
         nextinst += (cycles_2650 - oldcycles) * ppc; // in pixels
@@ -2233,8 +2232,9 @@ EXPORT void changerelpixel(int x, int y, int colour)
     {   x -= PVI_HIDELEFT;
     }
 
-    changefgpixel(x, y, colour);
-}
+    if (x >= 0 && y >= 0 && x < machines[machine].width && y < machines[machine].height) // important for PLANETDE
+    {   changefgpixel(x, y, colour);
+}   }
 
 MODULE void newraster(void)
 {   pviy = cpuy - USG_YMARGIN;

@@ -28,7 +28,7 @@
 
 // DEFINES----------------------------------------------------------------
 
-#define CHECKDRAWS
+// #define CHECKDRAWS
 // whether changefgpixel/changebgpixel() should bounds check the coordinates
 
 // These are for ETI-640 (ie. BINBUG). See ETI Circuits #3, p. 32.

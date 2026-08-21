@@ -479,7 +479,6 @@ EXPORT void cpu_2650_tapable(void)
     {   // cycle counter will overflow, so we need to use the slow method
         while (slice_2650 >= 1)
         {   oldcycles = cycles_2650;
-            checkstep();
             do_tape();
             one_instruction();
             slice_2650 -= (cycles_2650 - oldcycles);
@@ -488,8 +487,7 @@ EXPORT void cpu_2650_tapable(void)
     {   // cycle counter will not overflow, so we can use a faster method
         oldcycles = cycles_2650;
         while (cycles_2650 < endcycle)
-        {   checkstep();
-            do_tape();
+        {   do_tape();
             one_instruction();
         }
         slice_2650 -= (cycles_2650 - oldcycles);
@@ -725,7 +723,6 @@ EXPORT void one_instruction(void)
             draw_guide_ray(TRUE);
         } elif (step)
         {   step = FALSE;
-            memflags[iar] &= ~(STEPPOINT);
             pausing = TRUE;
         } else
         {   updatescreen();
@@ -747,6 +744,35 @@ EXPORT void one_instruction(void)
     else
     {   cpu_emu();
     }
+
+    if (memflags[iar] & (TEMPBREAKPOINT | BREAKPOINT))
+    {   if (memflags[iar] & TEMPBREAKPOINT)
+        {   memflags[iar] &= ~(TEMPBREAKPOINT);
+
+            zprintf
+            (   TEXTPEN_DEBUG,
+                LLL(
+                    MSG_CPU_REACHEDSUBEND,
+                    "Reached end of subroutine or interrupt and returned to $%X.\n\n"
+                ),
+                (unsigned int) iar // should use friendly instead
+            );
+            set_pause(TYPE_RUNTO);
+        }
+        if ((memflags[iar] & BREAKPOINT) && conditional(&bp[iar], 0, FALSE, 0))
+        {   DISCARD number_to_friendly(iar   , (STRPTR) friendly , TRUE, 0, 15, TRUE);
+            DISCARD number_to_friendly(oldiar, (STRPTR) friendly2, TRUE, 0, 15, TRUE);
+            zprintf
+            (   TEXTPEN_DEBUG,
+                LLL(
+                    MSG_CPU_HITBP,
+                    "Hit code breakpoint at %s! Previous IAR/PC was %s.\n\n"
+                ),
+                friendly,
+                friendly2
+            );
+            set_pause(TYPE_BP);
+    }   }
 
     if (pausing && !rexx)
     {   runto();
@@ -4211,10 +4237,11 @@ MODULE void checkrelbranch(void)
 
 EXPORT void set_pause(int thetype)
 {   if
-    (   (thetype == TYPE_BP    && pausebreak)
-     || (thetype == TYPE_LOG   && pauselog  )
-     ||  thetype == TYPE_RUNTO
-    )
+    (   !step
+     && (   (thetype == TYPE_BP    && pausebreak)
+         || (thetype == TYPE_LOG   && pauselog  )
+         ||  thetype == TYPE_RUNTO
+    )   )
     {   pausing = TRUE;
 }   }
 
@@ -4236,40 +4263,6 @@ MODULE void runto(void)
         aa_checkinput();
 #endif
 }   }
-
-EXPORT void checkstep(void)
-{   if (memflags[iar] & (STEPPOINT | BREAKPOINT))
-    {   if (memflags[iar] & STEPPOINT)
-        {   memflags[iar] &= ~(STEPPOINT);
-
-            zprintf
-            (   TEXTPEN_DEBUG,
-                LLL(
-                    MSG_CPU_REACHEDSUBEND,
-                    "Reached end of subroutine or interrupt and returned to $%X.\n\n"
-                ),
-                (unsigned int) iar // should use friendly instead
-            );
-            set_pause(TYPE_RUNTO);
-        }
-        if (memflags[iar] & BREAKPOINT)
-        {   if (conditional(&bp[iar], 0, FALSE, 0))
-            {   DISCARD number_to_friendly(iar   , (STRPTR) friendly , TRUE, 0, 15, TRUE);
-                DISCARD number_to_friendly(oldiar, (STRPTR) friendly2, TRUE, 0, 15, TRUE);
-                zprintf
-                (   TEXTPEN_DEBUG,
-                    LLL(
-                        MSG_CPU_HITBP,
-                        "Hit code breakpoint at %s! Previous IAR/PC was %s.\n\n"
-                    ),
-                    friendly,
-                    friendly2
-                );
-                set_pause(TYPE_BP);
-        }   }
-        if (pausing)
-        {   runto();
-}   }   }
 #endif
 
 MODULE void logindirectbios(void)

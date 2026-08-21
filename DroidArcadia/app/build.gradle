@@ -25,7 +25,7 @@ android {
         maxSdkVersion 28
         targetSdk 30
         versionCode 1
-        versionName "4.7"
+        versionName "4.71"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {

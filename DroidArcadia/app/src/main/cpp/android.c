@@ -671,6 +671,25 @@ MODULE const STRPTR hypergates[4] =
   "Inverted rules, human vs. hard console, must take men",
   "Inverted rules, human vs. hard console, can take men",
   "Board editor"
+}, backgammon[4] =
+{ "Human (rolled by console) vs. human (rolled by console)",   // "4"
+  "Human (rolled by console) vs. console (rolled by console)", // "1"
+  "Human (rolled by human) vs. console (rolled by console)",   // "2"
+  "Human (rolled by human) vs. console (rolled by human)"      // "3"
+}, horseracing[4] =
+{ "no obstacles",
+  "water jump",
+  "double oxer",
+  "changing obstacles"
+}, i_capture[3] =
+{ "human vs. human",
+  "human vs. console",
+  "console vs. human"
+}, chess[4] =
+{ "normal",
+  "random",
+  "forwards",
+  "backwards"
 };
 
 // MODULE FUNCTIONS-------------------------------------------------------
@@ -3611,7 +3630,7 @@ MODULE STRPTR update_variant(void)
 
     switch (whichgame)
     {
-    // ARCADIA games
+    // ARCADIA games------------------------------------------------------
     case BREAKAWAYPOS: // game-1 is $1AFC, opt-1 is $1AFD
         sprintf
         (   thestring,
@@ -3633,8 +3652,8 @@ MODULE STRPTR update_variant(void)
     acase A_CIRCUSPOS: // game is $1AE4, player is bit 4 of $18DF
         sprintf
         (   thestring,
-            "%d player(s), %s balloons, %s platforms",
-            (memory[0x18DF] & 0x10) ? 2 : 1,
+            "%s, %s balloons, %s platforms",
+            (  memory[0x18DF]   & 0x10)       ? "2 players"  : "1 player",
             (((memory[0x1AE4] - 1) & 3) >= 2) ? "bounce off" : "pass through",
             (((memory[0x1AE4] - 1) & 7) >= 4) ? "has"        : "lacks"
         );
@@ -3717,7 +3736,22 @@ MODULE STRPTR update_variant(void)
             ((memory[0x18FB] & 7) <= 3) ? "has" : "lacks",
             ((memory[0x1AF5] & 3) <= 2) ? (4 - (memory[0x1AF5] & 3)) : 0
         );
-    // INTERTON and ELEKTOR games
+    acase A_CAPTUREPOS: // level and limited time flag are $18E0
+        if
+        (   (memory[0x18E0] & 0x70) >= 0x10
+         && (memory[0x18E0] & 0x70) <= 0x60
+        )
+        {   sprintf
+            (   thestring,
+                "%s, %d advantage(s), %s time",
+                ((memory[0x18E0] & 0x70) == 0x60) ? "2 players" : "1 player",
+                ((memory[0x18E0] & 0x70) == 0x60) ? 0           : (((memory[0x18E0] & 0x70) >> 4) - 1),
+                ( memory[0x18E0] & 0x02         ) ? "limited"   : "unlimited"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    // INTERTON and ELEKTOR games-----------------------------------------
     acase AIRSEAATTACKPOS: // game is $1F5C (in BCD format)
         if
         (   (memory[0x1F5C] & 0xF0) <= 0x20
@@ -3728,10 +3762,10 @@ MODULE STRPTR update_variant(void)
                 - 1;
             sprintf
             (   thestring,
-                "%s, %s, %d player(s)",
+                "%s, %s, %s",
                 airseaattack[val / 4],
                 features[    val    ],
-                ((val & 1) || val == 8 || val == 10) ? 2 : 1
+                ((val & 1) || val == 8 || val == 10) ? "2 players" : "1 player"
             );
         } else
         {   strcpy(thestring, "?");
@@ -3746,10 +3780,10 @@ MODULE STRPTR update_variant(void)
                 - 1;
             sprintf
             (   thestring,
-                "%s, %s, %d player(s)",
+                "%s, %s, %s",
                 airseabattle[val / 4],
                 features[    val    ],
-                ((val & 1) || val == 8 || val == 10) ? 2 : 1
+                ((val & 1) || val == 8 || val == 10) ? "2 players" : "1 player"
             );
         } else
         {   strcpy(thestring, "?");
@@ -4184,6 +4218,68 @@ MODULE STRPTR update_variant(void)
                 (val % 8 <= 1) ? "no" : ((val <= 7) ? "right" : "lt+rt"),
                 (val % 8 <= 1) ? 8    : 16,
                 (val % 2     ) ? "2 players" : "1 player"
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase BACKGAMMONPOS: // game is $1004 ("1".."3" are $01..$03, "4" is $00)
+        if (memory[0x1004] <= 3)
+        {   strcpy(thestring, backgammon[memory[0x1004]]);
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase I_CAPTUREPOS: // game is $1F6D ("01".."93" are $00..$1D)
+        if (memory[0x1F6D] <= 0x1D)
+        {   sprintf
+            (   thestring,
+                "%s time, %d advantage(s), %s",
+                (memory[0x1F6D] <= 14) ? "Unlimited" : "Limited",
+                (memory[0x1F6D] % 15) / 3,
+                i_capture[memory[0x1F6D] % 3]
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase CHESS1POS: // intelligence is high nybble of $13D1, game is high nybble of $13D2
+        if
+        (   (memory[0x13D1] & 0xF0) >= 0x10
+         && (memory[0x13D1] & 0xF0) <= 0x60
+         && (memory[0x13D2] & 0xF0) >= 0x10
+         && (memory[0x13D2] & 0xF0) <= 0x40
+        )
+        {   sprintf
+            (   thestring,
+                "Intelligence of %d, %s mode",
+                       (memory[0x13D1] & 0xF0) >> 4,
+                chess[((memory[0x13D2] & 0xF0) >> 4) - 1]
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase CHESS2POS: // intelligence-1 is low nybble of $1B92, game is high nybble of $1B93
+        if
+        (   (memory[0x1B92] & 0x0F) <= 0x08
+         && (memory[0x1B93] & 0xF0) >= 0x10
+         && (memory[0x1B93] & 0xF0) <= 0x40
+        )
+        {   sprintf
+            (   thestring,
+                "Intelligence of %d, %s mode",
+                        (memory[0x1B92] & 0x0F)       + 1,
+                chess[((memory[0x1B93] & 0xF0) >> 4) - 1]
+            );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase I_HORSERACINGPOS: // game is $1F65 ("1".."16" are $C1..$D0)
+    case HIPPODROMEPOS:
+        if (memory[0x1F65] >= 0xC1 && memory[0x1F65] <= 0xD0)
+        {   sprintf
+            (   thestring,
+                "%s move, %s, %s",
+                 (memory[0x1F65] <= 0xC8)      ? "Horses"   : "Obstacles",
+                horseracing[((memory[0x1F65] - 0xC1) % 8) / 2],
+                ((memory[0x1F65] -  0xC1) & 1) ? "1 player" : "2 players"
             );
         } else
         {   strcpy(thestring, "?");

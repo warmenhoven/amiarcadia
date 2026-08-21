@@ -1,8 +1,8 @@
 // INCLUDES---------------------------------------------------------------
 
 #define MAJORVERSION   0x04
-#define MINORVERSION   0x70
-#define INTEGERVERSION "4.70" // for RetroAchievements
+#define MINORVERSION   0x71
+#define INTEGERVERSION "4.71" // for RetroAchievements
 
 #include <jni.h>
 
@@ -203,6 +203,7 @@ typedef unsigned char  ASCREEN;
 #define MUNCHANDCRUNCH1POS    191
 #define SUPERKNOCKOUTPOS      193
 #define AIRSEAATTACKPOS       194
+#define I_HORSERACINGPOS      195
 #define COMEFRUTASPOS3        201
 #define I_TETRISPOS1          206
 #define I_TETRISPOS2          207

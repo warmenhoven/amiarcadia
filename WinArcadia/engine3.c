@@ -201,7 +201,6 @@ IMPORT       int                      absxmin, absxmax,
                                       queuekeystrokes,
                                       recmode,
                                       regionstart,
-                                      rotate,
                                       rotating,
                                       si50_id,
                                       si50_io,
@@ -1173,6 +1172,7 @@ EXPORT void change_machine(int whichmachine, int whichmemmap, FLAG user)
         usecsperframe[REGION_PAL ] = (int) (1000000.0 / machines[machine].fps[REGION_PAL ]);
     }
 
+    drawpixelroutine(); // must be before resize()!
     if
     (   MainWindowPtr
      && (   oldwide   != wide
@@ -1181,12 +1181,6 @@ EXPORT void change_machine(int whichmachine, int whichmemmap, FLAG user)
     )   )
     {   resize(size, TRUE);
     }
-    if (memmapinfo[memmap].rotate)
-    {   rotating = rotate ? TRUE : FALSE;
-    } else
-    {   rotating = FALSE;
-    }
-    drawpixelroutine();
 
 #ifdef WIN32
     bigicon = LoadImage(InstancePtr, MAKEINTRESOURCE(memmap_to[memmap].icon           ), IMAGE_ICON, 32, 32, 0);
@@ -1255,6 +1249,9 @@ EXPORT void change_machine(int whichmachine, int whichmemmap, FLAG user)
     }
     updatemenu(MENUITEM_CHEEVOS2);
 #endif
+
+    generate_autotext(); // to update glyph and game name on status bar
+    setselection();
 
     if (user)
     {   set_filename();

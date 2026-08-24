@@ -134,6 +134,7 @@ IMPORT       int       anims,
                        realsize,
                        realwide,
                        recmode,
+                       rotate,
                        rotating,
                        scanlines,
                        showdebugger[2],
@@ -173,7 +174,6 @@ IMPORT       HDC       OurhDC;
 IMPORT       HFONT     hFont;
 IMPORT       HINSTANCE InstancePtr;
 IMPORT       HWND      hDebugger,
-                       hSideBar,
                        hStatusBar,
                        MagnifierWindowPtr,
                        MainWindowPtr;
@@ -2153,9 +2153,14 @@ MODULE void drawbgpixel_10_rot(int x, int y, int colour) { ROTATEPIXEL; drawbgpi
 MODULE void drawbgpixel_11_rot(int x, int y, int colour) { ROTATEPIXEL; drawbgpixel_11(x, y, colour); }
 
 EXPORT void drawpixelroutine(void)
-{   if (rotating)
-    {   // assert(machines[machine].width == machines[machine].height);
-        widthheight = machines[machine].width - 1;
+{   if (memmapinfo[memmap].rotate)
+    {   rotating = rotate ? TRUE : FALSE;
+        if (rotating)
+        {   // assert(machines[machine].width == machines[machine].height);
+            widthheight = machines[machine].width - 1;
+    }   }
+    else
+    {   rotating = FALSE;
     }
 
     switch (fastsize)
@@ -2477,7 +2482,7 @@ EXPORT void redrawscreen(void)
     for (y = 0; y < machines[machine].height; y++)
     {   for (x = 0; x < machines[machine].width; x++)
         {   if (fgtable[y][x])
-            {   drawpixel(x, y, screen[x][y]);
+            {   drawpixel(  x, y, screen[x][y]);
             } else
             {   drawbgpixel(x, y, screen[x][y]);
     }   }   }

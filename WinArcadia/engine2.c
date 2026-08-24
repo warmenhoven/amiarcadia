@@ -1960,6 +1960,7 @@ EXPORT void dosidebar(void)
         }   }
         elif (memmap == auditlist[sidebar[currentgame]].memmap)
         {   docommand(MENUITEM_REINITIALIZE);
+            setselection();
         } else
         {   switch (auditlist[sidebar[currentgame]].memmap)
             {
@@ -1971,7 +1972,9 @@ EXPORT void dosidebar(void)
             acase MEMMAP_MALZAK2:     change_machine(MALZAK  , MEMMAP_MALZAK2    , TRUE);
             acase MEMMAP_8550:        change_machine(PONG    , MEMMAP_8550       , TRUE);
             acase MEMMAP_8600:        change_machine(PONG    , MEMMAP_8600       , TRUE);
-    }   }   }
+            }
+            setselection();
+    }   }
 
 #ifdef AMIGA
     updatesidebartips();
@@ -4208,6 +4211,7 @@ EXPORT int parse_bytes(void)
             say((STRPTR) tempstring);
         return 0;
         }
+        change_machine(newmachine, newmemmap, FALSE);
         if
         (   machine == ARCADIA
          || machine == INTERTON

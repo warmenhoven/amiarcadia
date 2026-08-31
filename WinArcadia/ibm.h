@@ -235,6 +235,24 @@ typedef void*               APTR;
 #define EMUPEN_DARKPURPLE    0x00CC00CC
 #define EMUPEN_DARKCYAN      0x00CCCC00
 #define EMUPEN_PINK          0x00CCCCFF
+#define EMUPEN_RED1          0x009090CC
+#define EMUPEN_RED2          0x007878CC
+#define EMUPEN_RED3          0x006060CC
+#define EMUPEN_RED4          0x004848CC
+#define EMUPEN_RED5          0x003030CC
+#define EMUPEN_RED6          0x001818CC
+#define EMUPEN_GREEN1        0x0090CC90
+#define EMUPEN_GREEN2        0x0078CC78
+#define EMUPEN_GREEN3        0x0060CC60
+#define EMUPEN_GREEN4        0x0048CC48
+#define EMUPEN_GREEN5        0x0030CC30
+#define EMUPEN_GREEN6        0x0018CC18
+#define EMUPEN_PURPLE1       0x00CC90CC
+#define EMUPEN_PURPLE2       0x00CC78CC
+#define EMUPEN_PURPLE3       0x00CC60CC
+#define EMUPEN_PURPLE4       0x00CC48CC
+#define EMUPEN_PURPLE5       0x00CC30CC
+#define EMUPEN_PURPLE6       0x00CC18CC
 
                               // RRGGBB
 #define EMURGBPEN_RED        0x00FF8888
@@ -254,6 +272,7 @@ typedef void*               APTR;
 #define EMURGBPEN_DARKPURPLE 0x00CC00CC
 #define EMURGBPEN_DARKCYAN   0x0000CCCC
 #define EMURGBPEN_PINK       0x00FFCCCC
+// no need for EMURGBPEN_REDn/GREENn/PURPLEn
 
 typedef struct bmiData
 {

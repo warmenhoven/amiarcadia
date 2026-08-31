@@ -196,6 +196,7 @@ IMPORT       int                      absxmin, absxmax,
                                       pipbug_vdu,
                                       phunsy_biosver,
                                       ponghertz,
+                                      pong_variant,
                                       post,
                                       ppc,
                                       queuekeystrokes,
@@ -225,6 +226,7 @@ IMPORT       int                      absxmin, absxmax,
                                       tr_accuracy,
                                       tr_class,
                                       tr_errors,
+                                      tr_game,
                                       tr_level,
                                       tr_remaining,
                                       tr_textcursor,
@@ -2726,6 +2728,7 @@ EXPORT void update_music(void)
     {   if (newpsgnote[i] != oldpsgnote[i])
         {   drawupnote((i == 6) ? 0 : (i + 1), oldpsgnote[i]);
     }   }
+
     if (memmap == MEMMAP_F)
     {   drawdownnote(1, newpsgnote[0], EMUBRUSH_DARKCYAN);
         drawdownnote(2, newpsgnote[1], EMUBRUSH_DARKCYAN);
@@ -2742,9 +2745,20 @@ EXPORT void update_music(void)
     switch (machine)
     {
     case ARCADIA:
-        if   ((newvol & 0x18) == 0x18) drawdownnote(0, newpsgnote[6], EMUBRUSH_DARKPURPLE);
-        elif ((newvol & 0x18) == 0x10) drawdownnote(0, newpsgnote[6], EMUBRUSH_DARKRED);
-        elif ((newvol & 0x18) == 0x08) drawdownnote(0, newpsgnote[6], EMUBRUSH_DARKGREEN);
+#ifdef WIN32
+        if ((newvol & 7) == 7)
+        {
+#endif
+            if   ((newvol & 0x18) == 0x18) drawdownnote(0, newpsgnote[6], EMUBRUSH_DARKPURPLE);
+            elif ((newvol & 0x18) == 0x10) drawdownnote(0, newpsgnote[6], EMUBRUSH_DARKRED);
+            elif ((newvol & 0x18) == 0x08) drawdownnote(0, newpsgnote[6], EMUBRUSH_DARKGREEN);
+#ifdef WIN32
+        } else
+        {   if   ((newvol & 0x18) == 0x18) drawdownnote(0, newpsgnote[6], EMUBRUSH_PURPLE1 + (newvol & 7) - 1);
+            elif ((newvol & 0x18) == 0x10) drawdownnote(0, newpsgnote[6], EMUBRUSH_RED1    + (newvol & 7) - 1);
+            elif ((newvol & 0x18) == 0x08) drawdownnote(0, newpsgnote[6], EMUBRUSH_GREEN1  + (newvol & 7) - 1);
+        }
+#endif
     acase INTERTON:
     case ELEKTOR:
         if (memmap == MEMMAP_E)
@@ -5967,8 +5981,18 @@ EXPORT void update_variant(FLAG force)
      || (   machine != ARCADIA
          && machine != INTERTON
          && machine != ELEKTOR
+         && machine != PONG
     )   )
     {   return;
+    }
+
+    if (machine == PONG)
+    {   if (!force && t1 == (UBYTE) pong_variant)
+        {   return;
+        }
+        t1 = (UBYTE) pong_variant;
+        st_set2(SUBWINDOW_GAMEINFO, IDC_AUTOSENSE9, pongvarname[pong_variant]);
+        return;
     }
 
     switch (whichgame)

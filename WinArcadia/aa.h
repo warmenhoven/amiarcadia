@@ -1,10 +1,10 @@
-#define DECIMALVERSION       "36.62"
-#define INTEGERVERSION       "36.62"
+#define DECIMALVERSION       "36.63"
+#define INTEGERVERSION       "36.63"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x62
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (24.8.2026)" // d.m.yyyy format
-#define RELEASEDATE          "24-08-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "24 August 2026" // full month and year
+#define MINORVERSION         0x63
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (31.8.2026)" // d.m.yyyy format
+#define RELEASEDATE          "31-08-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "31 August 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
 #define NEWCONFIGVERSION     "36.54" // V36.54 final+
@@ -1084,25 +1084,48 @@ typedef UWORD MEMFLAG;
 #define DARKPINK          DARKRED
 #define GUESTCOLOURS      24
 
-#define EMUBRUSH_RED         0
-#define EMUBRUSH_BLUE        1
-#define EMUBRUSH_GREEN       2
-#define EMUBRUSH_YELLOW      3
-#define EMUBRUSH_ORANGE      4
-#define EMUBRUSH_PURPLE      5
-#define EMUBRUSH_CYAN        6
-#define EMUBRUSH_GREY        7
-#define EMUBRUSH_WHITE       8
-#define EMUBRUSH_BLACK       9
-#define EMUBRUSH_DARKRED    10
-#define EMUBRUSH_DARKBLUE   11
-#define EMUBRUSH_DARKGREEN  12
-#define EMUBRUSH_DARKYELLOW 13
-#define EMUBRUSH_DARKORANGE 14
-#define EMUBRUSH_DARKPURPLE 15
-#define EMUBRUSH_DARKCYAN   16
-#define EMUBRUSH_PINK       17
-#define EMUBRUSHES          18
+#define EMUBRUSH_RED          0
+#define EMUBRUSH_BLUE         1
+#define EMUBRUSH_GREEN        2
+#define EMUBRUSH_YELLOW       3
+#define EMUBRUSH_ORANGE       4
+#define EMUBRUSH_PURPLE       5
+#define EMUBRUSH_CYAN         6
+#define EMUBRUSH_GREY         7
+#define EMUBRUSH_WHITE        8
+#define EMUBRUSH_BLACK        9
+#define EMUBRUSH_DARKRED     10
+#define EMUBRUSH_DARKBLUE    11
+#define EMUBRUSH_DARKGREEN   12
+#define EMUBRUSH_DARKYELLOW  13
+#define EMUBRUSH_DARKORANGE  14
+#define EMUBRUSH_DARKPURPLE  15
+#define EMUBRUSH_DARKCYAN    16
+#define EMUBRUSH_PINK        17
+#ifdef AMIGA
+    #define EMUBRUSHES       18
+#endif
+#ifdef WIN32
+    #define EMUBRUSH_RED1    18
+    #define EMUBRUSH_RED2    19
+    #define EMUBRUSH_RED3    20
+    #define EMUBRUSH_RED4    21
+    #define EMUBRUSH_RED5    22
+    #define EMUBRUSH_RED6    23
+    #define EMUBRUSH_GREEN1  24
+    #define EMUBRUSH_GREEN2  25
+    #define EMUBRUSH_GREEN3  26
+    #define EMUBRUSH_GREEN4  27
+    #define EMUBRUSH_GREEN5  28
+    #define EMUBRUSH_GREEN6  29
+    #define EMUBRUSH_PURPLE1 30
+    #define EMUBRUSH_PURPLE2 31
+    #define EMUBRUSH_PURPLE3 32
+    #define EMUBRUSH_PURPLE4 33
+    #define EMUBRUSH_PURPLE5 34
+    #define EMUBRUSH_PURPLE6 35
+    #define EMUBRUSHES       36
+#endif
 
 // host joysticks
 #define DAPTER_1    (1 <<  0)

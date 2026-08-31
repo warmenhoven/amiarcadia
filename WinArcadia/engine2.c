@@ -3361,8 +3361,12 @@ EXPORT void patchrom(void)
         acase IKANASHIPOS:
             memory[ 0x275] = trainer_time          ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
         acase INVADERAPOS:
+            memory[ 0x240] = trainer_invincibility ? 0x0A : 0x0B; // ANDI,r0 %00001011     -> ANDI,r0 %00001010
+
             memory[ 0x377] = trainer_lives         ? 0x00 : 0x01; // SUBI,r2 1             -> SUBI,r2 0
         acase INVADERBPOS:
+            memory[ 0x238] = trainer_invincibility ? 0x0A : 0x0B; // ANDI,r0 %00001011     -> ANDI,r0 %00001010
+
             memory[ 0x36C] = trainer_lives         ? 0x00 : 0x01; // SUBI,r2 1             -> SUBI,r2 0
         acase JOURNEYPOS:
             memory[0x2408] = trainer_lives         ? 0x00 : 0x01; // SUBI,r1 1             -> SUBI,r1 0

@@ -921,10 +921,10 @@ EXPORT UBYTE zaccaria_readport(int port)
             {   // assert(memmap == MEMMAP_GALAXIA);
                 t = (UBYTE) (ga_dips  & 0x80);
             }
-            if (coinop_joy1right) t |= 0x20; // set bit 5 (%00100000)
-            if (coinop_joy1left ) t |= 0x10; // set bit 4 (%00010000)
-            if (coinop_joy2right) t |= 0x08; // set bit 3 (%00001000)
-            if (coinop_joy2left ) t |= 0x04; // set bit 2 (%00000100)
+            if (coinop_joy1right || (!rotating && coinop_joy1up  )) t |= 0x20; // set bit 5 (%00100000)
+            if (coinop_joy1left  || (!rotating && coinop_joy1down)) t |= 0x10; // set bit 4 (%00010000)
+            if (coinop_joy2right                                  ) t |= 0x08; // set bit 3 (%00001000)
+            if (coinop_joy2left                                   ) t |= 0x04; // set bit 2 (%00000100)
         acase MEMMAP_LAZARIAN:
             switch (mux)
             {

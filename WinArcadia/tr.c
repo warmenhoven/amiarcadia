@@ -47,6 +47,7 @@ EXPORT int     since,
                tr_accuracy,
                tr_class,
                tr_errors,
+               tr_game,
                tr_level,
                tr_remaining,
                tr_textcursor,
@@ -88,8 +89,7 @@ IMPORT FILE*   MacroHandle;
 
 // MODULE VARIABLES-------------------------------------------------------
 
-MODULE int                tr_game,
-                          tr_lives,
+MODULE int                tr_lives,
                           tr_score,
                           tr_screencursor,
                           tr_usergame;

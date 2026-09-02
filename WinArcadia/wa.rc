@@ -19327,8 +19327,8 @@ IDI_E_MAZES             ICON    DISCARDABLE     "e-mazes.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 36,6,3,1
- PRODUCTVERSION 36,6,3,1
+ FILEVERSION 36,6,4,2
+ PRODUCTVERSION 36,6,4,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -19346,14 +19346,14 @@ BEGIN
             VALUE "Comments", "Think Signetics. Sig 'em! We want you to have the best.\0"
             VALUE "CompanyName", "Amigan Software\0"
             VALUE "FileDescription", "WinArcadia multi-emulator\0"
-            VALUE "FileVersion", "36.63\0"
+            VALUE "FileVersion", "36.64\0"
             VALUE "InternalName", "WinArcadia\0"
             VALUE "LegalCopyright", "Copyright © 2006-2026 James Jacobs\0"
             VALUE "LegalTrademarks", "WinArcadia\0"
             VALUE "OriginalFilename", "WinArcadia.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "WinArcadia\0"
-            VALUE "ProductVersion", "36.63\0"
+            VALUE "ProductVersion", "36.64\0"
             VALUE "SpecialBuild", "\0"
         END
     END

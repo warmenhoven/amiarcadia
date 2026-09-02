@@ -535,6 +535,7 @@ EXPORT void make_display(void)
     if (!(SelectObject(OurhDC, OurhBitMap)))
     {   rq("SelectObject() failed!");
     }
+
     drawpixelroutine();
 
     stars = malloc(sizeof(ULONG) * destwidth * destheight);

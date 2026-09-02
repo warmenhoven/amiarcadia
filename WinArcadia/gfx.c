@@ -2711,12 +2711,14 @@ EXPORT void changethisbgpixel_slow(int colour)
 
 EXPORT void drawglow(int x, int y, int colour)
 {   if
-    (   !showleds
-     || (   machine != PIPBUG
-         && machine != BINBUG
-         && machine != PHUNSY
-         && machine != SELBST
-    )   )
+    (   machine != INSTRUCTOR
+     && machine != MIKIT
+     && (   !showleds
+         || (   machine != PIPBUG
+             && machine != BINBUG
+             && machine != PHUNSY
+             && machine != SELBST
+    )   )   )
     {   return;
     }
 
@@ -3087,6 +3089,10 @@ MODULE __inline void segment_drawpixel(int x, int y, int colour)
 
 EXPORT void drawcontrolspixel(int x, int y, int colour)
 {   FAST int x1, x2;
+
+    if (!subwin[SUBWINDOW_CONTROLS].hwnd)
+    {   return; // important!
+    }
 
     switch (machine)
     {

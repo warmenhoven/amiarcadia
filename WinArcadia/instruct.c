@@ -500,7 +500,7 @@ EXPORT void si50_writeport(int port, UBYTE data)
             return;
         }
         zeroed[si50_position] = 0;
-\
+
         digitleds[si50_position] = data;
         drawsegments(si50_position);
     acase 0xFA:

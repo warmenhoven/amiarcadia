@@ -4094,7 +4094,6 @@ EXPORT void openwindow(FLAG reopen)
     }
 
     update_menuheight();
-
     if (showmenubars[wsm])
     {   if (!(MenuPtr = LoadMenu(InstancePtr, MAKEINTRESOURCE(langs[language].mainmenu))))
         {   rq("LoadMenu() failed for main menu!");
@@ -4102,6 +4101,7 @@ EXPORT void openwindow(FLAG reopen)
     else
     {   MenuPtr = NULL;
     }
+
     MainWindowPtr = CreateWindowEx
     (   0,
         g_szClassName,
@@ -4339,10 +4339,10 @@ EXPORT void openwindow(FLAG reopen)
     }
 
     openwindow_3d();
-    if (reopen)
-    {   reopen_subwindows();
-    }
     make_display();
+    if (reopen)
+    {   reopen_subwindows(); // this must be after make_display() because it can call redrawscreen()
+    }
 
     update_toolbar();
     updatemenus();

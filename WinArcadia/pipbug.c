@@ -194,7 +194,7 @@ IMPORT       RECT                 therect;
 IMPORT       MEMFLAG              memflags[ALLTOKENS];
 #ifdef AMIGA
     IMPORT   struct Catalog*      CatalogPtr;
-    IMPORT   struct Gadget*       gadgets[GIDS + 1];
+    IMPORT   struct Gadget*       gadgets[GIDS];
     IMPORT   struct PaletteStruct pencolours[COLOURSETS][PENS];
     IMPORT   UBYTE                bytepens[PENS];
     IMPORT   LONG                 emupens[EMUBRUSHES];

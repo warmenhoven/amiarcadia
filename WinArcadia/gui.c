@@ -723,7 +723,7 @@ IMPORT const UBYTE                    cd2650_chars_defbmp[96][10],
                                       windowed_size,
                                       windowed_wide;
     IMPORT       Object*              images[IMAGES];
-    IMPORT       struct Gadget*       gadgets[GIDS + 1];
+    IMPORT       struct Gadget*       gadgets[GIDS];
     IMPORT       struct List          BigSpeedBarList;
     IMPORT       struct Menu*         MenuPtr;
     IMPORT       struct Node         *BigSpeedBarNodePtr[BIGGADGETS + 1],

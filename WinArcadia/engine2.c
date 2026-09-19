@@ -71,7 +71,7 @@
         #include <arpa/inet.h>
         #include <errno.h>
     #endif
-    #if !defined(__amigaos4__) && !defined(__MORPHOS__)
+    #ifndef __amigaos4__
         IMPORT int errno;
     #endif
 #endif
@@ -336,7 +336,7 @@ IMPORT const struct KnownStruct       known[KNOWNGAMES];
     IMPORT       int                  throb;
     IMPORT       struct Catalog*      CatalogPtr;
     IMPORT       struct Library*      SocketBase;
-    IMPORT       struct Gadget*       gadgets[GIDS + 1];
+    IMPORT       struct Gadget*       gadgets[GIDS];
     IMPORT       struct Window*       MainWindowPtr;
     IMPORT       Object*              images[IMAGES];
     IMPORT const int                  memmap_to_smlimage[MEMMAPS];

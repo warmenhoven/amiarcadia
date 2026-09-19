@@ -2624,6 +2624,24 @@ EXPORT void changefgpixel(int x, int y, int colour)
 #endif
 }   }
 
+EXPORT void changefgpixel_slow(int x, int y, int colour)
+{   if (x < 0 || y < 0 || x >= machines[machine].width || y >= machines[machine].height)
+    {   return;
+    }
+
+    if
+    (   screen[x][y] != (UBYTE) colour
+#ifdef WIN32
+     || demultiplex == 1 // needed for Space Squadron
+#endif
+    )
+    {   screen[x][y] = (UBYTE) colour;
+        drawpixel(x, y, colour);
+#ifdef WIN32
+        fgtable[y][x] = 1;
+#endif
+}   }
+
 EXPORT void changebgpixel(int x, int y, int colour)
 {
 #ifdef CHECKDRAWS

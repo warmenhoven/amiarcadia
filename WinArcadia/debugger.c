@@ -231,7 +231,7 @@ IMPORT const struct MenuStruct        menuinfo1[MENUITEMS],
     IMPORT   UWORD                    wbver;
     IMPORT   BPTR                     ProgLock;
     IMPORT   struct Catalog*          CatalogPtr;
-    IMPORT   struct Gadget*           gadgets[GIDS + 1];
+    IMPORT   struct Gadget*           gadgets[GIDS];
     IMPORT   struct Window*           MainWindowPtr;
 #endif
 #ifdef WIN32

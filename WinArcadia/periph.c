@@ -100,7 +100,7 @@ IMPORT struct SubWindowStruct subwin[SUBWINDOWS];
     IMPORT        ULONG       emulongpens[EMUBRUSHES],
                               tiptag1;
     IMPORT struct Catalog*    CatalogPtr;
-    IMPORT struct Gadget*     gadgets[GIDS + 1];
+    IMPORT struct Gadget*     gadgets[GIDS];
     IMPORT struct Image*      images[IMAGES];
     IMPORT struct Window*     MainWindowPtr;
 #endif
@@ -559,7 +559,7 @@ EXPORT void update_floppydrive(FLAG force, int whichdrive)
         {   if (!drive[viewingdrive].inserted || viewingbyte == -1)
             {   gtempstring[0] = '-';
                 gtempstring[1] = EOS;
-                setdrivegad(ID_DISK_0 + i, EMUPEN_GREY);
+                setdrivegad(IDC_DISK_0 + i, EMUPEN_GREY);
             } else
             {   blockcontents[i] = t;
                 if (viewdiskas == 0 || (machine == BINBUG && i < 2))
@@ -570,7 +570,7 @@ EXPORT void update_floppydrive(FLAG force, int whichdrive)
                     gtempstring[1] = EOS;
                 }
                 whichpen = getdiskbytecolour(drive[viewingdrive].viewstart + i);
-                setdrivegad(ID_DISK_0 + i, whichpen);
+                setdrivegad(IDC_DISK_0 + i, whichpen);
             }
             refreshtips = TRUE;
     }   }

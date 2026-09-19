@@ -271,10 +271,10 @@ EXPORT void open_floppydrive(FLAG needupdate)
     case  BINBUG:
     case  CD2650:
         open_subwindow(SUBWINDOW_FLOPPYDRIVE, MAKEINTRESOURCE(IDD_FLOPPYDRIVE_BINBUG), FloppyDriveDlgProc);
-        make_tips(SUBWINDOW_FLOPPYDRIVE, 256, ID_DISK_0);
+        make_tips(SUBWINDOW_FLOPPYDRIVE, 256, IDC_DISK_0);
     acase TWIN:
         open_subwindow(SUBWINDOW_FLOPPYDRIVE, MAKEINTRESOURCE(IDD_FLOPPYDRIVES_TWIN ), FloppyDriveDlgProc);
-        make_tips(SUBWINDOW_FLOPPYDRIVE, 128, ID_DISK_0);
+        make_tips(SUBWINDOW_FLOPPYDRIVE, 128, IDC_DISK_0);
     }
     update_floppydrive(TRUE, viewingdrive);
 }
@@ -2209,7 +2209,7 @@ MODULE BOOL CALLBACK FloppyDriveDlgProc(HWND hwnd, UINT Message, WPARAM wParam, 
         SendMessage(    GetDlgItem(hwnd, IDC_DISKREGION1), TBM_SETPAGESIZE,     0,                                1);
 
         for (i = 0; i < diskblocksize; i++)
-        {   GetWindowRect(GetDlgItem(hwnd, ID_DISK_0 + i), &localrect);
+        {   GetWindowRect(GetDlgItem(hwnd, IDC_DISK_0 + i), &localrect);
             thepoint.x        = localrect.left;
             thepoint.y        = localrect.top;
             DISCARD ScreenToClient(hwnd, &thepoint);
@@ -2414,8 +2414,8 @@ MODULE BOOL CALLBACK FloppyDriveDlgProc(HWND hwnd, UINT Message, WPARAM wParam, 
             case EMUPEN_CYAN:       return (LRESULT) hBrush[EMUBRUSH_CYAN];
             }
         adefault:
-            if (gid >= ID_DISK_0 && gid <= ID_DISK_255)
-            {   whichpen = getdiskbytecolour(drive[viewingdrive].viewstart + gid - ID_DISK_0);
+            if (gid >= IDC_DISK_0 && gid <= IDC_DISK_255)
+            {   whichpen = getdiskbytecolour(drive[viewingdrive].viewstart + gid - IDC_DISK_0);
                 SetBkColor((HDC) wParam, whichpen); 
                 switch (whichpen)
                 {

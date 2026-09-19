@@ -3816,4 +3816,89 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Ju = Jump\n" \
 "START (F1): pause/unpause"
 },
+{ // 280. Una-Kiri Dance
+        "Un"   ,                "Ki"   ,
+"-----","-----","-----","-----","-----","-----",
+"Mo/Un","-----","Un"   ,"Mo/Ki","-----","Ki"   ,
+"Al/Un","Un"   ,"Un"   ,"Al/Ki","Ki"   ,"Ki"   ,
+"Pr/Un","Un"   ,"Un"   ,"Pr/Ki","Ki"   ,"Ki"   ,
+"Un"   ,"Un"   ,"Un"   ,"Ki"   ,"Ki"   ,"Ki"   ,
+"On title screen:\n" \
+"Choose character Un(a)/Ki(ri) or START (F1)/A (F2)/B (F3) (free play).\n" \
+"For Una or Kiri, choose speed:\n" \
+"Mo = Moderato (moderate)\n" \
+"Al = Allegro (cheerful)\n" \
+"Pr = Presto (fast)\n" \
+"During game:\n" \
+"Un/Ki = turn character to near left/right (depending on previous facing direction).\n" \
+"Left/right: turn character to far left/right (according to paddle).\n" \
+"RESET (F5) at game over."
+},
+{ // 281. Arcadia Animation Studio
+        "Draw" ,                "-----",
+"-----","-----","-----","-----","-----","-----",
+"Erase","-----","Erase","-----","-----","-----",
+"Erase","Draw" ,"Erase","-----","-----","-----",
+"Erase","Draw" ,"Erase","-----","-----","-----",
+"Done" ,"Draw" ,"Done" ,"-----","-----","-----",
+"Paddle directions: move pointer\n" \
+"Draw = select option/cycle forwards/draw foreground colour\n" \
+"Erase = cycle option backwards/draw background colour"
+},
+{ // 282. Arcadian Music Composer, The
+        "D"    ,                "D"    ,
+"-----","-----","-----","-----","-----","-----",
+"C"    ,"-----","E"    ,"C"    ,"-----","E"    ,
+"F"    ,"G"    ,"A"    ,"F"    ,"G"    ,"A"    ,
+"B"    ,"#"    ,"Tie"  ,"B"    ,"#"    ,"Tie"  ,
+"Rest" ,"End"  ,"Play" ,"Rest" ,"End"  ,"Play" ,
+"On title screen:\n" \
+"START (F1): go to edit mode\n" \
+"In edit mode:\n" \
+"START (F1) (hold down for 2 seconds): load next built-in song (1..5)\n" \
+"A (F2)/B (F3): decrease/increase tempo (65-360 bpm)\n" \
+"A..G = set highlighted note\n" \
+"Paddle left/right: move to previous/next note (1-8)\n" \
+"Paddle up/down: move to previous/next bar (1-32)\n" \
+"Play = cycle through edit mode, play once, play in loop"
+},
+{ // 283. Keda-Maki Catcher
+        "Move" ,                "-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"Hold Move to move right. You will move down automatically when it is released.\n" \
+"RESET (F5) afterwards."
+},
+{ // 284. Psy Mansion 1.1
+        "Fire" ,                "Fire" ,
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","Up"   ,"-----","-----","Up"   ,"-----",
+"-----","Down" ,"-----","-----","Down" ,"-----",
+"-----","-----","-----","-----","-----","-----",
+"START (F1): start game\n" \
+"Paddle left/right: move\n" \
+"Paddle up: open door"
+},
+{ // 285. Windworld
+        "Jump" ,                "-----",
+"-----","-----","-----","-----","-----","-----",
+"Jump" ,"-----","Jump" ,"-----","-----","-----",
+"Jump" ,"Jump" ,"Jump" ,"-----","-----","-----",
+"Jump" ,"Jump" ,"Jump" ,"-----","-----","-----",
+"Jump" ,"Jump" ,"Jump" ,"-----","-----","-----",
+"On title screen:\n" \
+"Jump: start game from last level reached\n" \
+"START (F1): start game from beginning\n" \
+"During game:\n" \
+"START (F1): pause/unpause\n" \
+"Paddle left: move left\n" \
+"Paddle right: jump right\n" \
+"Jump: jump up\n" \
+"At game over:\n" \
+"START (F1): return to title screen"
+},
 };

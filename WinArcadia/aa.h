@@ -1,10 +1,10 @@
-#define DECIMALVERSION       "36.64"
-#define INTEGERVERSION       "36.64"
+#define DECIMALVERSION       "36.65"
+#define INTEGERVERSION       "36.65"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x64
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (2.9.2026)" // d.m.yyyy format
-#define RELEASEDATE          "02-09-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "2 September 2026" // full month and year
+#define MINORVERSION         0x65
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (19.9.2026)" // d.m.yyyy format
+#define RELEASEDATE          "19-09-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "19 September 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
 #define NEWCONFIGVERSION     "36.54" // V36.54 final+
@@ -2121,7 +2121,7 @@ typedef UWORD MEMFLAG;
 #define FRAMESKIP_MAX         10
 #define FRAMESKIP_INFINITE    11
 
-#define OVERLAYS            (279 + 1)
+#define OVERLAYS            (285 + 1)
 #define ARCADIA_OVERLAY        0
 #define ELEKTOR_OVERLAY        1
 #define SI50_OVERLAY           2
@@ -2143,7 +2143,7 @@ typedef UWORD MEMFLAG;
 #define GALAXIA_OVERLAY      231
 #define TYPERIGHT_OVERLAY    236
 
-#define KNOWNGAMES          (859 + 1)
+#define KNOWNGAMES          (865 + 1)
 #define LARGESTKNOWN       59796 // size of largest known game in bytes (AOF version of Pattern)
 
 // Arcadia                           0..  29
@@ -4579,6 +4579,7 @@ EXPORT void apply_scale4x(void);
 EXPORT void calc_margins(void);
 EXPORT void change_colour_names(void);
 EXPORT void changefgpixel(int x, int y, int colour);
+EXPORT void changefgpixel_slow(int x, int y, int colour);
 EXPORT void changebgpixel(int x, int y, int colour);
 EXPORT void changethisfgpixel(int colour);
 EXPORT void changethisfgpixel_slow(int colour);

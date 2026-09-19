@@ -1413,15 +1413,15 @@ MODULE __inline void onepixel(void)
         {   if (imagedata & (0x80 >> x))
             {   t = from_a[flag_cacheable][(thechar & 0x40) ? fgc2 : fgc1];
                 colltable[cpuy][cpux] = 0x10;
-                changethisfgpixel(t);
+                changethisfgpixel_slow(t);
             } elif (thechar & 0x80)
             {   t = from_a[flag_cacheable][innerbgc];
                 colltable[cpuy][cpux] = 0x10;
-                changethisfgpixel(t);
+                changethisfgpixel_slow(t);
             } else
             {   t = from_a[flag_cacheable][outerbgc];
                 colltable[cpuy][cpux] = 0;
-                changethisbgpixel(t);
+                changethisbgpixel_slow(t);
         }   }
         else
         {   if (imagedata & (0x80 >> x))
@@ -1438,11 +1438,11 @@ MODULE __inline void onepixel(void)
                     acase ROBOTKILLERPOS: changethisfgpixel(multicolour_robotkil[minorrow][x]);
                 }   }
                 else
-                {   changethisfgpixel(t);
+                {   changethisfgpixel_slow(t);
                 }
                 colltable[cpuy][cpux] = 0x10;
             } else
-            {   changethisbgpixel(bgc);
+            {   changethisbgpixel_slow(bgc);
                 colltable[cpuy][cpux] = 0;
     }   }   }
 
@@ -1579,7 +1579,7 @@ MODULE __inline void do_sprites(void)
                             {   p2rumble = -p2bgcol[whichsprite];
         }   }   }   }   }   }
 
-        changethisfgpixel(from_a[flag_cacheable][sprcolours]);
+        changethisfgpixel_slow(from_a[flag_cacheable][sprcolours]);
 }   }
 
 MODULE void newdma(void)
@@ -1752,7 +1752,7 @@ MODULE void drawfakesprites(void)
                                             }   }
                                             else // opaque
 #endif
-                                            {   changefgpixel(xxx + absxmin, yyy + absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
+                                            {   changefgpixel_slow(xxx + absxmin, yyy + absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
                     }   }   }   }   }   }   }
                     else
                     {   for (yy = 0; yy < 8; yy++)
@@ -1783,8 +1783,8 @@ MODULE void drawfakesprites(void)
                                     }   }   }
                                     else // opaque
 #endif
-                                    {   changefgpixel(xxx + absxmin, yyy +     absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
-                                        changefgpixel(xxx + absxmin, yyy + 1 + absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
+                                    {   changefgpixel_slow(xxx + absxmin, yyy +     absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
+                                        changefgpixel_slow(xxx + absxmin, yyy + 1 + absymin, from_a[localflagging][spr[flipper][whichsprite].colour]);
 }   }   }   }   }   }   }   }   }   }
 
 MODULE void drawfakeudgs(void)

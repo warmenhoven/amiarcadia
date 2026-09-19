@@ -732,7 +732,7 @@ IMPORT       struct HostMachineStruct hostmachines[MACHINES];
                                       speech_pitch,
                                       speech_voicing,
                                       speech_wpm;
-    IMPORT       struct Gadget*       gadgets[GIDS + 1];
+    IMPORT       struct Gadget*       gadgets[GIDS];
     IMPORT       struct MenuItem*     ItemPtr;
     IMPORT       struct Screen*       ScreenPtr;
     IMPORT       struct Catalog*      CatalogPtr;

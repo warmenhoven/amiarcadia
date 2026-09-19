@@ -417,7 +417,7 @@ IMPORT const STRPTR                   ccstring[4][4],
     IMPORT       struct Window        *MagnifierWindowPtr,
                                       *MainWindowPtr;
     IMPORT       struct PaletteStruct  pencolours[COLOURSETS][PENS];
-    IMPORT       struct Gadget*        gadgets[GIDS + 1];
+    IMPORT       struct Gadget*        gadgets[GIDS];
     IMPORT       struct Image*         images[IMAGES];
     IMPORT const int                   guest_to_emupen[8];
 #endif

@@ -1852,8 +1852,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 {   lmb = TRUE;
         }   }   }
         elif (shift() && hasrastlines())
-        {   hosttoguestmouse(NULL, NULL, &mousex, &mousey, NULL, NULL);
-            rastn = mousey;
+        {   hosttoguestmouse(NULL, NULL, NULL, &rastn, NULL, NULL);
             emu_unpause();
         }
         ignorelmb = FALSE;

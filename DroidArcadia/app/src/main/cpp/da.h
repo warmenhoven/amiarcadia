@@ -1,8 +1,8 @@
 // INCLUDES---------------------------------------------------------------
 
 #define MAJORVERSION   0x04
-#define MINORVERSION   0x71
-#define INTEGERVERSION "4.71" // for RetroAchievements
+#define MINORVERSION   0x72
+#define INTEGERVERSION "4.72" // for RetroAchievements
 
 #include <jni.h>
 
@@ -250,9 +250,9 @@ typedef unsigned char  ASCREEN;
 #define AGGRESSORPOS1         450
 #define AGGRESSORPOS2         451
 // all
-#define KNOWNGAMES           (460 + 1)
+#define KNOWNGAMES           (466 + 1)
 
-#define OVERLAYS             (279 + 1)
+#define OVERLAYS             (285 + 1)
 #define     ARCADIA_OVERLAY     0
 #define     ELEKTOR_OVERLAY     1
 #define    INTERTON_OVERLAY    15

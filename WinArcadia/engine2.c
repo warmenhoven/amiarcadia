@@ -3662,6 +3662,12 @@ EXPORT void patchrom(void)
             memory[ 0x64A] = trainer_time          ? 0x00 : 0xFF; // ADDI,r0 $FF           -> ADDI,r0 0 // energy
         acase UFOSHOOTINGPOS:
             memory[ 0x9E6] = trainer_time          ? 0x00 : 0x01; // LODI,r1 1             -> LODI,r1 0 // ammo
+        acase WINDWORLDPOS:
+            memory[ 0x87D] = trainer_invincibility ? 0x04 : 0x07; // ANDI,r0 %00000111     -> ANDI,r0 %00000100
+// or maybe memory[ 0x87D] = trainer_invincibility ? 0x00 : 0x07; // ANDI,r0 %00000111     -> ANDI,r0 %00000000
+
+            memory[ 0x8CC] = trainer_lives         ? 0x1B : 0x98; // BCFR,eq $8D1          -> BCTR,un $8D1
+            memory[ 0x8D2] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
 #ifdef ADVENTURETRAINER
         adefault:
             if (machine == BINBUG && whichgame == -1)
@@ -4191,7 +4197,7 @@ EXPORT int parse_bytes(void)
         if (cosversion != machines[newmachine].cosversion)
         {   if
             (   (newmachine == ARCADIA && cosversion >= 38)
-             || (newmachine == PIPBUG  && cosversion >= 41)
+             || (newmachine == PIPBUG  && cosversion >= 42)
              || (newmachine == BINBUG  && cosversion >= 42)
              || (newmachine == TWIN    && cosversion >= 39)
              || (newmachine == CD2650  && cosversion >= 42)

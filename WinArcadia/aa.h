@@ -1,15 +1,15 @@
-#define DECIMALVERSION       "36.65"
-#define INTEGERVERSION       "36.65"
+#define DECIMALVERSION       "36.7"
+#define INTEGERVERSION       "36.70"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x65
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (19.9.2026)" // d.m.yyyy format
-#define RELEASEDATE          "19-09-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "19 September 2026" // full month and year
+#define MINORVERSION         0x70
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (28.9.2026)" // d.m.yyyy format
+#define RELEASEDATE          "28-09-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "28 September 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
-#define NEWCONFIGVERSION     "36.54" // V36.54 final+
-#define OLDCONFIGVERSION     "36.5"  // V36.5       -36.54 beta
-#define VERYOLDCONFIGVERSION "36.21" // V36.21 beta -36.4
+#define NEWCONFIGVERSION     "36.7"  // V36.7       +
+#define OLDCONFIGVERSION     "36.54" // V36.54 final-36.65
+#define VERYOLDCONFIGVERSION "36.5"  // V36.5       -36.54 beta
 #define RELEASING
 // comment this out during development
 
@@ -285,107 +285,110 @@ aa:
 #define GL_TENNIS   57
 #define GL_THEEND   58
 #define GL_TURTLES  59
-#define ARCADIAGLYPHS        60
+#define GL_KEDAMAKI 60
+#define GL_PSYMANSI 61
+#define GL_WINDWORL 62
+#define ARCADIAGLYPHS 63
 // INTERTON games
-#define GL_I_37BYTE 60
-#define GL_I_AIRSEA 61
-#define GL_I_BOWLIN 62
-#define GL_I_BOXING 63
-#define GL_I_CANABA 64
-#define GL_I_CAPTUR 65
-#define GL_I_CASINO 66
-#define GL_I_CIRCUS 67
-#define GL_I_COCKPI 68
-#define GL_I_COMBAT 69
-#define GL_I_COMECO 70
-#define GL_I_COMEFR 71
-#define GL_I_COWBOY 72
-#define GL_I_CRAZYC 73
-#define GL_I_FLAPPY 74
-#define GL_I_GOLF   75
-#define GL_I_GRANDP 76
-#define GL_I_HANGMA 77
-#define GL_I_HEADON 78
-#define GL_I_HORSER 79
-#define GL_I_HUNTIN 80
-#define GL_I_HYPERS 81
-#define GL_I_INVADE 82
-#define GL_I_KABOOM 83
-#define GL_I_LABYRI 84
-#define GL_I_LASERA 85
-#define GL_I_LEAPFR 86
-#define GL_I_MONMAN 87
-#define GL_I_MONMUN 88
-#define GL_I_MUNCHA 89
-#define GL_I_MUSICA 90
-#define GL_I_PINBAL 91
-#define GL_I_SHOOTO 92
-#define GL_I_SOCCER 93
-#define GL_I_SPACEW 94
-#define GL_I_SPACEZ 95
-#define GL_I_SUPERI 96
-#define GL_I_SUPERS 97
-#define GL_I_TREASU 98
-#define GL_I_WINTER 99
-#define INTERTONGLYPHS       40
+#define GL_I_37BYTE 63
+#define GL_I_AIRSEA 64
+#define GL_I_BOWLIN 65
+#define GL_I_BOXING 66
+#define GL_I_CANABA 67
+#define GL_I_CAPTUR 68
+#define GL_I_CASINO 69
+#define GL_I_CIRCUS 70
+#define GL_I_COCKPI 71
+#define GL_I_COMBAT 72
+#define GL_I_COMECO 73
+#define GL_I_COMEFR 74
+#define GL_I_COWBOY 75
+#define GL_I_CRAZYC 76
+#define GL_I_FLAPPY 77
+#define GL_I_GOLF   78
+#define GL_I_GRANDP 79
+#define GL_I_HANGMA 80
+#define GL_I_HEADON 81
+#define GL_I_HORSER 82
+#define GL_I_HUNTIN 83
+#define GL_I_HYPERS 84
+#define GL_I_INVADE 85
+#define GL_I_KABOOM 86
+#define GL_I_LABYRI 87
+#define GL_I_LASERA 88
+#define GL_I_LEAPFR 89
+#define GL_I_MONMAN 90
+#define GL_I_MONMUN 91
+#define GL_I_MUNCHA 92
+#define GL_I_MUSICA 93
+#define GL_I_PINBAL 94
+#define GL_I_SHOOTO 95
+#define GL_I_SOCCER 96
+#define GL_I_SPACEW 97
+#define GL_I_SPACEZ 98
+#define GL_I_SUPERI 99
+#define GL_I_SUPERS 100
+#define GL_I_TREASU 101
+#define GL_I_WINTER 102
+#define INTERTONGLYPHS 40
 // ELEKTOR games
-#define GL_E_AGGRES 100
-#define GL_E_AMAZON 101
-#define GL_E_ANIMAT 102
-#define GL_E_ASTERO 103
-#define GL_E_ATTACK 104
-#define GL_E_BASKET 105
-#define GL_E_BURSTI 106
-#define GL_E_CARDTR 107
-#define GL_E_CARGOS 108
-#define GL_E_CARRAC 109
-#define GL_E_CATAPU 110
-#define GL_E_CHICKE 111
-#define GL_E_CHRIST 112
-#define GL_E_CIRCLE 113
-#define GL_E_COSMIC 114
-#define GL_E_DESTRO 115
-#define GL_E_ENTERP 116
-#define GL_E_ENTER2 117
-#define GL_E_ENTER3 118
-#define GL_E_EXPLOD 119
-#define GL_E_FLYING 120
-#define GL_E_HAMISH 121
-#define GL_E_HELICO 122
-#define GL_E_HORSER 123
-#define GL_E_HUNTIN 124
-#define GL_E_INVADE 125
-#define GL_E_JACKPO 126
-#define GL_E_LABYRI 127
-#define GL_E_LAUNCH 128
-#define GL_E_MAZES  129
-#define GL_E_MEMORY 130
-#define GL_E_MOLEBA 131
-#define GL_E_MOONLA 132
-#define GL_E_MULTIP 133
-#define GL_E_NEWTON 134
-#define GL_E_NIM    135
-#define GL_E_OFFSHO 136
-#define GL_E_OMEGAL 137
-#define GL_E_PAINTI 138
-#define GL_E_PENALT 139
-#define GL_E_PIANO  140
-#define GL_E_PILOT  141
-#define GL_E_PINBAL 142
-#define GL_E_PVIART 143
-#define GL_E_QUEEN  144
-#define GL_E_RASTER 145
-#define GL_E_ROCKET 146
-#define GL_E_SEAWAR 147
-#define GL_E_SNAKES 148
-#define GL_E_SNAP   149
-#define GL_E_SPACEB 150
-#define GL_E_SPACES 151
-#define GL_E_STEAME 152
-#define GL_E_SUBMAR 153
-#define GL_E_SURVIV 154
-#define GL_E_TINYTI 155
-#define GL_E_UFOSHO 156
+#define GL_E_AGGRES 103
+#define GL_E_AMAZON 104
+#define GL_E_ANIMAT 105
+#define GL_E_ASTERO 106
+#define GL_E_ATTACK 107
+#define GL_E_BASKET 108
+#define GL_E_BURSTI 109
+#define GL_E_CARDTR 110
+#define GL_E_CARGOS 111
+#define GL_E_CARRAC 112
+#define GL_E_CATAPU 113
+#define GL_E_CHICKE 114
+#define GL_E_CHRIST 115
+#define GL_E_CIRCLE 116
+#define GL_E_COSMIC 117
+#define GL_E_DESTRO 118
+#define GL_E_ENTERP 119
+#define GL_E_ENTER2 120
+#define GL_E_ENTER3 121
+#define GL_E_EXPLOD 122
+#define GL_E_FLYING 123
+#define GL_E_HAMISH 124
+#define GL_E_HELICO 125
+#define GL_E_HORSER 126
+#define GL_E_HUNTIN 127
+#define GL_E_INVADE 128
+#define GL_E_JACKPO 129
+#define GL_E_LABYRI 130
+#define GL_E_LAUNCH 131
+#define GL_E_MAZES  132
+#define GL_E_MEMORY 133
+#define GL_E_MOLEBA 134
+#define GL_E_MOONLA 135
+#define GL_E_MULTIP 136
+#define GL_E_NEWTON 137
+#define GL_E_NIM    138
+#define GL_E_OFFSHO 139
+#define GL_E_OMEGAL 140
+#define GL_E_PAINTI 141
+#define GL_E_PENALT 142
+#define GL_E_PIANO  143
+#define GL_E_PILOT  144
+#define GL_E_PINBAL 145
+#define GL_E_PVIART 146
+#define GL_E_QUEEN  147
+#define GL_E_RASTER 148
+#define GL_E_ROCKET 149
+#define GL_E_SEAWAR 150
+#define GL_E_SNAKES 151
+#define GL_E_SNAP   152
+#define GL_E_SPACEB 153
+#define GL_E_SPACES 154
+#define GL_E_STEAME 155
+#define GL_E_SUBMAR 156
+#define GL_E_SURVIV 157
+#define GL_E_TINYTI 158
+#define GL_E_UFOSHO 159
 #define ELEKTORGLYPHS        57
 #define GAMEGLYPHS        (ARCADIAGLYPHS + INTERTONGLYPHS + ELEKTORGLYPHS)
 
@@ -489,8 +492,9 @@ C306C:
 
 #define PERIPH_PRINTER      0 // EA printer
 #define PERIPH_LINEARISATIE 1
-#define PERIPH_MAGNETOMETER 2
-#define PERIPH_FURNACE      3
+#define PERIPH_ROBOT        2
+#define PERIPH_MAGNETOMETER 3
+#define PERIPH_FURNACE      4
 
 #define DIGITLEDS          13 // PIPBUG is 4+3+3+3
 
@@ -511,7 +515,7 @@ C306C:
 #define FIRSTGUESTTONE    0
 #define TONE_1STXVI       0 // 1+ PVI machines, Arcadia, PIPBUG, CD2650, PHUNSY, Pong, Type-right
 #define TONE_2NDXVI       1 // 2+ PVI machines (Galaxia, Laser Battle, Lazarian, Malzak), machine bell
-#define TONE_3RDXVI       2 // 3+ PVI machines (Galaxia, Laser Battle, Lazarian), printer bell
+#define TONE_3RDXVI       2 // 3+ PVI machines (Galaxia, Laser Battle, Lazarian), TWIN printer bell, PIPBUG robot horn
 #define TONE_1STLB1       3 // Laser Battle/Lazarian
 #define TONE_A1           3 // Expanded Elektor (and Galaxia)
 #define TONE_1STLB2       4 // Laser Battle/Lazarian
@@ -2143,7 +2147,7 @@ typedef UWORD MEMFLAG;
 #define GALAXIA_OVERLAY      231
 #define TYPERIGHT_OVERLAY    236
 
-#define KNOWNGAMES          (865 + 1)
+#define KNOWNGAMES          (866 + 1)
 #define LARGESTKNOWN       59796 // size of largest known game in bytes (AOF version of Pattern)
 
 // Arcadia                           0..  29
@@ -2400,6 +2404,7 @@ typedef UWORD MEMFLAG;
 #define FROGGER3POS           849
 #define HOMERUNPOS            855
 #define KOTONOHAPOS           857
+#define WINDWORLDPOS          865
 
 // Interton
 #define SHOOTOUTPOS           130
@@ -2581,7 +2586,7 @@ typedef UWORD MEMFLAG;
 
 #define UNLIT                DARKBLUE
 // BLACK, DARKRED, DARKBLUE, DARKGREEN are supported
-// (but DARKGREEN is too light)
+// (but DARKGREEN was too light)
 
 #define PIPBUG_BLANK     0x80
 #define TWIN_BLANK       0x20
@@ -3407,7 +3412,6 @@ EXPORT struct CanvasStruct
            UBYTE        *display,
                         *byteptr[CANVASHEIGHT];
     struct BitMap*       bitmap;
-    struct RastPort      rastport;
 #endif
 };
 EXPORT struct ChannelStruct
@@ -4171,7 +4175,7 @@ EXPORT void open_floppydrive(FLAG needupdate);
 EXPORT void open_industrial(void);
 EXPORT void open_papertape(void);
 EXPORT void open_tapedeck(void);
-EXPORT void redraw_furnace(void);
+EXPORT void redraw_industrial(void);
 EXPORT void setdrivegad(int gid, int whichpen);
 EXPORT void tools_printer(void);
 EXPORT void update_floppytips(void);
@@ -4684,6 +4688,8 @@ EXPORT void reset_vdu(FLAG full);
 EXPORT void pipbug_reset(void);
 EXPORT void pipbug_redrawleds(void);
 EXPORT void industrial_reset(void);
+EXPORT void set_motion(void);
+EXPORT void set_wheels(void);
 
 // binbug.c
 EXPORT void binbug_anypixel(void);

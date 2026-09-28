@@ -2961,8 +2961,8 @@ MODULE void clear_axes(HWND hwnd)
 MODULE void clear_preview(HWND hwnd)
 {   int x, y;
 
-    for (y = 0; y < PREVIEWHEIGHT; y++)
-    {   for (x = 0; x < PREVIEWWIDTH; x++)
+    for (y = 0; y < PREVIEWHEIGHT / 2; y++)
+    {   for (x = 0; x < PREVIEWWIDTH / 2; x++)
         {   DRAWPREVIEW(x, y, machine == PHUNSY ? BLUE : GREY1);
     }   }
     wpa8(CANVAS_PREVIEW, 0, 0);

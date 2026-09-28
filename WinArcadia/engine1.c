@@ -412,7 +412,7 @@ EXPORT struct MachineStruct machines[MACHINES] =                                
 { { "ARCADIA"   ,                   0,                    0, MEMMAP_ARCADIA,     REGION_NTSC, { 60.1867202475031, 50.0804105952784 }, 2,   0,   29, 50, 0xFF, 39,     0.0, 0,  4, 0, { 1, 112, 254 },      0, FALSE,  -1,   -1, 355, 382, { "START" , "A"     , "B"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   },   ARCADIA_FIRSTHISCORE,   ARCADIA_HISCORES, TRUE,  FALSE, 0,               0, { { "1st"  , "1"    , "2"    , "3"    , "4"    , "5"    , "6"    , "7"    , "8"    , "9"    , "Cl"   , "0"    , "En"   , "x1"   , "x2"   , "x3"   , "x4"   , "Up"   , "Dn"   , "Lt"   , "Rt"   , "2nd"  , "3rd"  , "4th"  , "UpLt" , "UpRt" , "DnLt" , "DnRt" }, { "1st"  , "1"    , "2"    , "3"    , "4"    , "5"    , "6"    , "7"    , "8"    , "9"    , "Cl"   , "0"    , "En"   , "x1"   , "x2"   , "x3"   , "x4"   , "Up"   , "Dn"   , "Lt"   , "Rt"   , "2nd"  , "3rd"  , "4th"  , "UpLt" , "UpRt" , "DnLt" , "DnRt"  } } }, // ARCADIA
   { "INTERTON"  ,                   0,                    0, MEMMAP_D,           REGION_PAL , {  0.0            , 50.0804105952784 }, 2,  30,   37, 42,    0, 38,     0.0, 1,  4, 0, { 1, 112, 225 }, 0x1F00, FALSE,  -1,   -1,  98, 120, { "START" , "SELECT", "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   },                     -1,                  0, TRUE , FALSE, 0,               0, { { "1st"  , "1"    , "2"    , "3"    , "4"    , "5"    , "6"    , "7"    , "8"    , "9"    , "Cl"   , "0"    , "En"   , "x1"   , "x2"   , "x3"   , "x4"   , "Up"   , "Dn"   , "Lt"   , "Rt"   , "2nd"  , "3rd"  , "4th"  , "UpLt" , "UpRt" , "DnLt" , "DnRt" }, { "1st"  , "1"    , "2"    , "3"    , "4"    , "5"    , "6"    , "7"    , "8"    , "9"    , "Cl"   , "0"    , "En"   , "x1"   , "x2"   , "x3"   , "x4"   , "Up"   , "Dn"   , "Lt"   , "Rt"   , "2nd"  , "3rd"  , "4th"  , "UpLt" , "UpRt" , "DnLt" , "DnRt"  } } }, // INTERTON
   { "ELEKTOR"   ,                   0,                    0, MEMMAP_F,           REGION_PAL , {  0.0            , 50.0804105952784 }, 2,  -1,   -1, 36,    0, 38,     0.0, 1,  4, 0, { 1, 111, 225 }, 0x1F00, FALSE,  -1,   -1,  -1,  -1, { "START" , "UC"    , "LC"    , "RESET"    }, { IMAGE_START, IMAGE_UC  , IMAGE_LC   , IMAGE_RESET   },                     -1,                  0, TRUE , FALSE, 0,               0, { { "1st"  , "RCAS" , "WCAS" , "C"    , "BP"   , "REG"  , "8"    , "PC"   , "MEM"  , "4"    , "-"    , "+"    , "0"    , "-----", "-----", "-----", "-----", "Up"   , "Dn"   , "Lt"   , "Rt"   , "2nd"  , "3rd"  , "4th"  , "UpLt" , "UpRt" , "DnLt" , "DnRt" }, { "1st"  , "D"    , "E"    , "F"    , "9"    , "A"    , "B"    , "5"    , "6"    , "7"    , "1"    , "2"    , "3"    , "-----", "-----", "-----", "-----", "Up"   , "Dn"   , "Lt"   , "Rt"   , "2nd"  , "3rd"  , "4th"  , "UpLt" , "UpRt" , "DnLt" , "DnRt"  } } }, // ELEKTOR
-  { "PIPBUG"    ,                   0,                    0, MEMMAP_PIPBUG1,     REGION_PAL , {  0.0            , 50.0             }, 1,  -1,   -1,  0,    0, 42, 20000.0, 0,  0, 4, { 0, 128, 255 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   },                     -1,                  0, FALSE, TRUE , 0,               0,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // PIPBUG
+  { "PIPBUG"    ,                   0,                    0, MEMMAP_PIPBUG1,     REGION_PAL , {  0.0            , 50.0             }, 1,  -1,   -1,  0,    0, 43, 20000.0, 0,  0, 4, { 0, 128, 255 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   },                     -1,                  0, FALSE, TRUE , 0,               0,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // PIPBUG
   { "BINBUG"    ,                   0,                    0, MEMMAP_BINBUG,      REGION_PAL , {  0.0            , 50.0             }, 1,  -1,   -1, 16,    0, 44, 20000.0, 0,  0, 0, { 0, 128, 255 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   },                     -1,                  0, TRUE , FALSE, BINBUG_DISKSIZE, 2, { { "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----"}, { "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----" } } }, // BINBUG
   { "INSTRUCTOR", INSTRUCTOR_BOXWIDTH, INSTRUCTOR_BOXHEIGHT, MEMMAP_O,           REGION_PAL , {  0.0            , 50.0             }, 1,FIRSTSI50EQUIV,LASTSI50EQUIV,32,0,36,17900.0,0,0,8,{0,0, 0 },      0, FALSE,1922, 2692, 305, 354, { "SENS"  , "INT"   , "MON"   , "RST"      }, { IMAGE_START, IMAGE_INT , IMAGE_MON  , IMAGE_RESET   },                     -1,                  0, FALSE, FALSE, 0,               0, { { "-----", "WCAS" , "BKPT" , "C"    , "RCAS" , "REG"  , "8"    , "STEP" , "MEM"  , "4"    , "RUN"  , "NXT"  , "0"    , "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----"}, { "-----", "D"    , "E"    , "F"    , "9"    , "A"    , "B"    , "5"    , "6"    , "7"    , "1"    , "2"    , "3"    , "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----" } } }, // INSTRUCTOR
   { "TWIN"      ,                   0,                    0, MEMMAP_TWIN,        REGION_NTSC, { 60.0            ,  0.0             }, 1,  -1,   -1, 55,    0, 41, 20800.0, 0,  0, 0, { 0,   0,   0 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   },                     -1,                  0, FALSE, FALSE, TWIN_DISKSIZE,   4,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // TWIN
@@ -439,8 +439,8 @@ EXPORT struct MemMapInfoStruct memmapinfo[MEMMAPS] = {                          
 { ARCADIA   , "Emerson Arcadia 2001, type \"H\" (Tele-Fever)" ,     0,     ARCADIA_OVERLAY, ""                         , {1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_ARCADIA     , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, //  7 MEMMAP_H
 { ARCADIA   , "Emerson Arcadia 2001, type \"I\" (Palladium)"  ,     0,     ARCADIA_OVERLAY, ""                         , {1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_ARCADIA     , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, //  8 MEMMAP_I
 #ifdef KEYCLICKS
-{ PIPBUG    , "PIPBUG 1-based machine"                        ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {1,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,1,0,0,0,1} }, //  9 MEMMAP_PIPBUG1
-{ PIPBUG    , "PIPBUG 2-based machine (modified ABC1500)"     ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {0,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,1,0,0,0,1} }, // 10 MEMMAP_PIPBUG2
+{ PIPBUG    , "PIPBUG 1-based machine"                        ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {1,1,1,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,1,0,0,0,1} }, //  9 MEMMAP_PIPBUG1
+{ PIPBUG    , "PIPBUG 2-based machine (modified ABC1500)"     ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {0,1,1,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,1,0,0,0,1} }, // 10 MEMMAP_PIPBUG2
 { BINBUG    , "BINBUG-based machine"                          ,     0,      BINBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_BINBUG      , {0,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,1,0,1,1,1} }, // 11 MEMMAP_BINBUG
 #else
 { PIPBUG    , "PIPBUG 1-based machine"                        ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {1,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0,0,1} }, //  9 MEMMAP_PIPBUG1
@@ -642,6 +642,8 @@ IMPORT       int                      angles,
                                       fastselbst,
                                       filesize,
                                       flagline,
+                                      horn,
+                                      hornpitch,
                                       hostcontroller[2],
                                       hostvolume,
                                       key1,
@@ -3354,6 +3356,10 @@ EXPORT void playsound(FLAG force)
         {   guestpitch[TONE_1STXVI]  = 0x55; // middle A (440 Hz)
             guestvolume[TONE_1STXVI] = 7;
         }
+        if (horn)
+        {   guestpitch[TONE_3RDXVI] = hornpitch ? 2 : 1;
+            guestvolume[TONE_3RDXVI] = 7;
+        }
     acase INSTRUCTOR:
         if (whichgame == SI50_THEMEPOS)
         {   if (iar == 0x1F)
@@ -3604,9 +3610,12 @@ EXPORT void playsound(FLAG force)
                     {   if (i == TONE_2NDXVI) // machine bell
                         {   hertz = 800.0;
                         } else
-                        {   // assert(i == TONE_3RDXVI); // printer bell
-                            hertz = 2000.0; // guess
-                    }   }
+                        {   // assert(i == TONE_3RDXVI);
+                            if (machine == TWIN) // C306C printer bell
+                            {   hertz = 2000.0; // guess
+                            } elif (machine == PIPBUG) // robot horn
+                            {   hertz = hornpitch ? (float) 505.0 : (float) 320.0;
+                    }   }   }
                 acase 3: // TONE_1STLB1 and TONE_A1
                     if (memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN)
                     {   hertz = (float) ( 62500.0 / lb_div[guestpitch[i]]);
@@ -4688,9 +4697,6 @@ MODULE void serializeconfig(void)
     aserialize_bool("candy_tapedeck_phunsy",&candy[1 - 1]      );
     aserialize_bool("candy_hostkybd"      , &candy[2 - 1]      );
     aserialize_bool("candy_printer"       , &candy[3 - 1]      );
-    if (configversion == OLDEST)
-    {   aserialize_bool("candy_controls"  , &candy[4 - 1]      );
-    }
     aserialize_bool("candy_hostpads"      , &candy[5 - 1]      );
 #endif
     aserialize_bool("collisions"          , (int*) &collisions );
@@ -4714,7 +4720,7 @@ MODULE void serializeconfig(void)
 #endif
     aserialize_bool("erasedeleted"        , &erasedel          );
     aserialize_bool("exactspeed"          , &exactspeed        );
-    if (configversion != NEWER)
+    if (configversion == OLDEST)
     {   aserialize_bool("framebased"      , &temp              );
     }
     aserialize_bool("identifyemulator"    , &emuid             );
@@ -4819,20 +4825,13 @@ MODULE void serializeconfig(void)
     aserialize_bool("windowed_toolbar"    , &showtoolbars[  0] );
     aserialize_bool("windowed_sidebar"    , &showsidebars[  0] );
     aserialize_bool("windowed_statusbar"  , &showstatusbars[0] );
-    if (configversion != OLDEST)
-    {   aserialize_bool("writeprotect_floppy0"   , (int*) &drive[0].writeprotect);
-        aserialize_bool("writeprotect_floppy1"   , (int*) &drive[1].writeprotect);
-        aserialize_bool("writeprotect_floppy2"   , (int*) &drive[2].writeprotect);
-        aserialize_bool("writeprotect_floppy3"   , (int*) &drive[3].writeprotect);
-        aserialize_bool("writeprotect_papertape0", (int*) &papertapeprotect[0]);
-        aserialize_bool("writeprotect_papertape1", (int*) &papertapeprotect[1]);
-        aserialize_bool("writeprotect_tape"      , (int*) &tapewriteprotect);
-    } else
-    {   aserialize_bool("writeprotect"           , (int*) &drive[0].writeprotect);
-        aserialize_bool("writeprotect2"          , (int*) &drive[1].writeprotect);
-        aserialize_bool("writeprotect3"          , (int*) &tapewriteprotect);
-        aserialize_bool("writeprotect4"          , (int*) &papertapeprotect[0]);
-    }
+    aserialize_bool("writeprotect_floppy0"   , (int*) &drive[0].writeprotect);
+    aserialize_bool("writeprotect_floppy1"   , (int*) &drive[1].writeprotect);
+    aserialize_bool("writeprotect_floppy2"   , (int*) &drive[2].writeprotect);
+    aserialize_bool("writeprotect_floppy3"   , (int*) &drive[3].writeprotect);
+    aserialize_bool("writeprotect_papertape0", (int*) &papertapeprotect[0]);
+    aserialize_bool("writeprotect_papertape1", (int*) &papertapeprotect[1]);
+    aserialize_bool("writeprotect_tape"      , (int*) &tapewriteprotect);
 
     for (i = 0; i < 24; i++)
     {   for (j = 0; j < COLOURSETS; j++)
@@ -4944,7 +4943,13 @@ MODULE void serializeconfig(void)
     aserialize_int("phunsy_biosversion"   , &phunsy_biosver         ,             0, 1); // mini-monitor, phunsy
     aserialize_int("pipbug_baudrate"      , &pipbug_baudrate        ,             0, 2); // 110, 300, 4800
     aserialize_int("pipbug_biosversion"   , &pipbug_biosver         ,             0, 3); // Artemis, HYBUG, PIPBUG 1, PIPBUG 2
-    aserialize_int("pipbug_peripheral"    , &pipbug_periph          ,             0, 3); // EA printer, Linearization, VM, WFC
+    if (configversion == NEWER)
+    {   aserialize_int("pipbug_peripheral", &pipbug_periph          ,             0, 4); // EA printer, Linearization, Tasman Turtle, VM, WFC
+    } else
+    {   aserialize_int("pipbug_peripheral", &pipbug_periph          ,             0, 3); // EA printer, Linearization, VM, WFC
+        if (pipbug_periph >= 2)
+        {   pipbug_periph++;
+    }   }
     aserialize_int("pipbug_vdu"           , &pipbug_vdu             ,             0, 5); // elekterminal, narrow lcvdu, wide lcvdu, rb, svt-100, vt100
     aserialize_int("pong_angles"          , &angles                 ,             0, 2); // 2, 4, random
     aserialize_int("pong_batsizes"        , &batvalue               ,             0, 3); // short+short, tall+tall, short+tall, tall+short

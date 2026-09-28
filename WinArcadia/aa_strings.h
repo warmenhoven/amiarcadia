@@ -1414,6 +1414,21 @@
 #define MSG_MENU_FILE 1379
 #define MSG_MENU_OPTIONS 1380
 #define MSG_INFO_VARIANT 1381
+#define MSG_MOTION_0 1382
+#define MSG_MOTION_1 1383
+#define MSG_MOTION_2 1384
+#define MSG_MOTION_3 1385
+#define MSG_MOTION_4 1386
+#define MSG_MOTION_5 1387
+#define MSG_MOTION_6 1388
+#define MSG_MOTION_7 1389
+#define MSG_MOTION_8 1390
+#define MSG_LAMPSLIT 1391
+#define MSG_PENDOWN 1392
+#define MSG_HORNPITCH 1393
+#define MSG_HONK 1394
+#define MSG_WHEELMOTORS 1395
+#define MSG_ROBOTMOTION 1396
 
 #endif /* CATCOMP_NUMBERS */
 
@@ -2805,6 +2820,21 @@
 #define MSG_MENU_FILE_STR "File"
 #define MSG_MENU_OPTIONS_STR "Options"
 #define MSG_INFO_VARIANT_STR "Current variant:"
+#define MSG_MOTION_0_STR "Forwards"
+#define MSG_MOTION_1_STR "Pivot anticlockwise (left) about left wheel"
+#define MSG_MOTION_2_STR "Pivot clockwise (right) about right wheel"
+#define MSG_MOTION_3_STR "Rotate anticlockwise (left) about centre"
+#define MSG_MOTION_4_STR "Stopped"
+#define MSG_MOTION_5_STR "Rotate clockwise (right) about centre"
+#define MSG_MOTION_6_STR "Pivot anticlockwise (left) about right wheel"
+#define MSG_MOTION_7_STR "Pivot clockwise (right) about left wheel"
+#define MSG_MOTION_8_STR "Backwards"
+#define MSG_LAMPSLIT_STR "Lamps lit?"
+#define MSG_PENDOWN_STR "Pen down?"
+#define MSG_HORNPITCH_STR "Horn pitch:"
+#define MSG_HONK_STR "Honk"
+#define MSG_WHEELMOTORS_STR "Wheel Motors"
+#define MSG_ROBOTMOTION_STR "Robot Motion"
 
 #endif /* CATCOMP_STRINGS */
 
@@ -4204,6 +4234,21 @@ static const struct CatCompArrayType CatCompArray[] =
     {MSG_MENU_FILE,(STRPTR)MSG_MENU_FILE_STR},
     {MSG_MENU_OPTIONS,(STRPTR)MSG_MENU_OPTIONS_STR},
     {MSG_INFO_VARIANT,(STRPTR)MSG_INFO_VARIANT_STR},
+    {MSG_MOTION_0,(STRPTR)MSG_MOTION_0_STR},
+    {MSG_MOTION_1,(STRPTR)MSG_MOTION_1_STR},
+    {MSG_MOTION_2,(STRPTR)MSG_MOTION_2_STR},
+    {MSG_MOTION_3,(STRPTR)MSG_MOTION_3_STR},
+    {MSG_MOTION_4,(STRPTR)MSG_MOTION_4_STR},
+    {MSG_MOTION_5,(STRPTR)MSG_MOTION_5_STR},
+    {MSG_MOTION_6,(STRPTR)MSG_MOTION_6_STR},
+    {MSG_MOTION_7,(STRPTR)MSG_MOTION_7_STR},
+    {MSG_MOTION_8,(STRPTR)MSG_MOTION_8_STR},
+    {MSG_LAMPSLIT,(STRPTR)MSG_LAMPSLIT_STR},
+    {MSG_PENDOWN,(STRPTR)MSG_PENDOWN_STR},
+    {MSG_HORNPITCH,(STRPTR)MSG_HORNPITCH_STR},
+    {MSG_HONK,(STRPTR)MSG_HONK_STR},
+    {MSG_WHEELMOTORS,(STRPTR)MSG_WHEELMOTORS_STR},
+    {MSG_ROBOTMOTION,(STRPTR)MSG_ROBOTMOTION_STR},
 };
 
 #endif /* CATCOMP_ARRAY */

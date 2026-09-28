@@ -2238,12 +2238,14 @@ MODULE BOOL CALLBACK GameInfoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
         acase HOBOPOS1:
         case  HOBOPOS2:          localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_HOBO     ));
         acase A_HORSERACINGPOS:  localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE((arcadia_viewcontrolsas == 1) ? IDB_BOX_MPT_HORSERACING      : IDB_BOX_HORSERACING));
+        acase JOURNEYPOS:        localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_JOURNEY  ));
         acase JTRON121POS:
         case  JTRON10POS:
         case  JTRON11POS:        localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_JTRON    ));
         acase JUMPBUG1POS:
         case  JUMPBUG2POS:       localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_JUMPBUG  ));
         acase JUNGLERPOS:        localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_JUNGLER  ));
+        acase KOTONOHAPOS:       localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_KOTONOHATOWER));
         acase MACROSSPOS:        localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_MACROSS  ));
         acase MISSILEWARPOS:     localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE((arcadia_viewcontrolsas == 1) ? IDB_BOX_MPT_MISSILEWAR       : IDB_BOX_MISSILEWAR));
         acase MONACOPOS:         localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_MONACOGRANDPRIX));
@@ -2277,6 +2279,7 @@ MODULE BOOL CALLBACK GameInfoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
         acase THEENDPOS1:
         case  THEENDPOS2:        localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_THEEND   ));
         acase TURTLESPOS:        localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_TURTLESTURPIN));
+        acase WINDWORLDPOS:      localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_WINDWORLD));
 
         // Interton
         acase CARRACESPOS:       localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_1 ));

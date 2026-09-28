@@ -528,6 +528,10 @@ SOURCE=".\box-HorseRacing.bmp"
 # End Source File
 # Begin Source File
 
+SOURCE=".\box-Journey.bmp"
+# End Source File
+# Begin Source File
+
 SOURCE=".\box-JTron.bmp"
 # End Source File
 # Begin Source File
@@ -537,6 +541,10 @@ SOURCE=".\box-JumpBug.bmp"
 # Begin Source File
 
 SOURCE=".\box-Jungler.bmp"
+# End Source File
+# Begin Source File
+
+SOURCE=".\box-KotonohaTower.bmp"
 # End Source File
 # Begin Source File
 
@@ -757,6 +765,10 @@ SOURCE=".\box-TheEnd.bmp"
 # Begin Source File
 
 SOURCE=".\box-TurtlesTurpin.bmp"
+# End Source File
+# Begin Source File
+
+SOURCE=".\box-Windworld.bmp"
 # End Source File
 # Begin Source File
 
@@ -1680,6 +1692,10 @@ SOURCE=.\jungler.ico
 # End Source File
 # Begin Source File
 
+SOURCE=.\kedamaki.ico
+# End Source File
+# Begin Source File
+
 SOURCE=.\kotonoha.ico
 # End Source File
 # Begin Source File
@@ -2260,6 +2276,10 @@ SOURCE=.\pong.ico
 # End Source File
 # Begin Source File
 
+SOURCE=.\psymansi.ico
+# End Source File
+# Begin Source File
+
 SOURCE=.\purcross.cur
 # End Source File
 # Begin Source File
@@ -2633,6 +2653,10 @@ SOURCE=".\wa-subwin.c"
 # Begin Source File
 
 SOURCE=.\wa.rc
+# End Source File
+# Begin Source File
+
+SOURCE=.\windworl.ico
 # End Source File
 # Begin Source File
 

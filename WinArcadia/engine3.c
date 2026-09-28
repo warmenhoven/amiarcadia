@@ -414,6 +414,7 @@ IMPORT const STRPTR                   ccstring[4][4],
     IMPORT       struct Catalog*       CatalogPtr;
     IMPORT       struct ClassLibrary*  ClockBase;
     IMPORT       struct IntuitionBase* IntuitionBase;
+    IMPORT       struct Screen*        ScreenPtr;
     IMPORT       struct Window        *MagnifierWindowPtr,
                                       *MainWindowPtr;
     IMPORT       struct PaletteStruct  pencolours[COLOURSETS][PENS];
@@ -5190,13 +5191,15 @@ EXPORT void update_magnifier(void)
 #endif
 #ifdef AMIGA
     hosttoguestmouse(NULL  , NULL  , &guestx, &guesty, &remx, &remy);
+    lockscreen(TRUE);
     ChangeWindowBox
     (   MagnifierWindowPtr,
         MainWindowPtr->LeftEdge + MainWindowPtr->MouseX - (MAGNIFIERWIDTH  / 2),
         MainWindowPtr->TopEdge  + MainWindowPtr->MouseY - (MAGNIFIERHEIGHT / 2),
-        MAGNIFIERWIDTH,
-        MAGNIFIERHEIGHT
+        (ScreenPtr->WBorLeft * 2) + MAGNIFIERWIDTH,
+        (ScreenPtr->WBorTop  * 2) + MAGNIFIERHEIGHT
     );
+    unlockscreen();
 #endif
 
     guestx -= MAGNIFIERHEIGHT / magscalex / 2;

@@ -29,8 +29,9 @@ typedef void*               APTR;
 #define PATH_TAPES          "Tapes"
 #define PATH_BKGRNDS        "Backgrounds"
 
-// #define DEBUGCANVAS
-// whether to check coordinates before drawing to canvases
+#ifndef RELEASING
+    #define DEBUGCANVAS // whether to check coordinates before drawing to canvases
+#endif
 
 // #define LOGCHEEVOS
 // whether to log cheevos calls (RA_#?()) that are not made every frame
@@ -229,9 +230,9 @@ typedef void*               APTR;
 #define EMUPEN_BLACK         0x00000000
 #define EMUPEN_DARKRED       0x000000CC
 #define EMUPEN_DARKBLUE      0x00FF6666
-#define EMUPEN_DARKGREEN     0x0000CC00
-#define EMUPEN_DARKYELLOW    0x0066CCCC
-#define EMUPEN_DARKORANGE    0x000066CC
+#define EMUPEN_DARKGREEN     0x0000AA00
+#define EMUPEN_DARKYELLOW    0x0055AAAA
+#define EMUPEN_DARKORANGE    0x000055AA
 #define EMUPEN_DARKPURPLE    0x00CC00CC
 #define EMUPEN_DARKCYAN      0x00CCCC00
 #define EMUPEN_PINK          0x00CCCCFF
@@ -267,17 +268,17 @@ typedef void*               APTR;
 #define EMURGBPEN_BLACK      0x00000000
 #define EMURGBPEN_DARKRED    0x00CC0000
 #define EMURGBPEN_DARKBLUE   0x006666FF
-#define EMURGBPEN_DARKGREEN  0x0000CC00
-#define EMURGBPEN_DARKORANGE 0x00CC6600
+#define EMURGBPEN_DARKGREEN  0x0000AA00
+#define EMURGBPEN_DARKYELLOW 0x00AAAA55
+#define EMURGBPEN_DARKORANGE 0x00AA5500
 #define EMURGBPEN_DARKPURPLE 0x00CC00CC
 #define EMURGBPEN_DARKCYAN   0x0000CCCC
 #define EMURGBPEN_PINK       0x00FFCCCC
 // no need for EMURGBPEN_REDn/GREENn/PURPLEn
 
 typedef struct bmiData
-{
-  BITMAPINFOHEADER	bmiHeader;
-  RGBQUAD			bmiColors[256];
+{   BITMAPINFOHEADER bmiHeader;
+    RGBQUAD          bmiColors[256];
 } bmiData;
 
 struct LangStruct

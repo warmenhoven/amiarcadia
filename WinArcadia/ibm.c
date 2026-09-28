@@ -1052,6 +1052,10 @@ IDI_TANKSALOT,
 IDI_TENNIS,
 IDI_THEEND,
 IDI_TURTLES,
+// new ones
+IDI_KEDAMAKI,
+IDI_PSYMANSION,
+IDI_WINDWORLD,
 // INTERTON games
 IDI_I_37BYTES,
 IDI_I_AIRSEA,
@@ -8052,6 +8056,8 @@ EXPORT void init_cheevos(void)
 {   // assert(MainWindowPtr);
     // assert(cheevos);
 
+    STRPTR raname;
+
     if (machine != ARCADIA && machine != INTERTON && machine != ELEKTOR)
     {   cheevos = FALSE;
         updatemenu(MENUITEM_CHEEVOS1);
@@ -8106,7 +8112,13 @@ EXPORT void init_cheevos(void)
 #ifdef LOGCHEEVOS
     zprintf(TEXTPEN_VERBOSE, "RA_AttemptLogin(TRUE)\n");
 #endif
-    RA_AttemptLogin(TRUE); // V35.8 hung once when we cancelled this (although it usually works)
+    RA_AttemptLogin(TRUE); // this is what actually shows the requester to the user
+    raname = (STRPTR) RA_UserName();
+    if (raname[0] == EOS) // in case eg. the user cancelled the requester
+    {   cheevos = FALSE;
+        return;
+    }
+
     settitle();
     randomizememory = FALSE;  
     if (RA_HardcoreModeIsActive())

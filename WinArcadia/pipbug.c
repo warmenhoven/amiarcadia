@@ -1,8 +1,11 @@
 // INCLUDES---------------------------------------------------------------
 
 #ifdef AMIGA
+    #include <proto/intuition.h> // for SetGadgetAttrs()
     #include <proto/graphics.h>
     #include <proto/locale.h> // for GetCatalogStr()
+
+    #include <intuition/gadgetclass.h> // for GA_Selected
 
     #include "amiga.h"
     #include <string.h>
@@ -65,8 +68,20 @@
 // #define LOGVHSDOS   if (binbug_dosver == DOS_VHSDOS)
 // #define LOGMICRODOS if (binbug_dosver == DOS_MICRODOS)
 
+// don't change these, they are consistent with what the guest expects
+#define HIT_BACK  8
+#define HIT_FRONT 4
+#define HIT_RIGHT 2
+#define HIT_LEFT  1
+
+#define WHEELBASE 22.92 // distance between wheels in cm
+/* Pivot/rotation algorithm is:
+    ((amount moved by wheels in mm) / (distance between wheels in mm)) * (180 / pi) = amount of turn in degrees
+ie. ((1 (pivot) or 2 (rotate)   mm) /                       229.2 mm ) * (~57.2958) = ~0.25 (pivot) or ~0.5 (rotate) degrees */
+
 // EXPORTED VARIABLES-----------------------------------------------------
 
+EXPORT       FLAG                 userrobot    = FALSE;
 EXPORT       UBYTE                glow,
                                   pitchangle,
                                   rotorspeed,
@@ -90,6 +105,11 @@ EXPORT       ULONG                cpb,
                                   tt_scrntill;
 EXPORT       int                  fastpipbug   = FALSE,
                                   blink        = TRUE,
+                                  horn         = FALSE,
+                                  hornpitch    = 0, // low
+                                  lampson      = FALSE,
+                                  motion       = 4, // stopped
+                                  pendown      = TRUE,
                                   pipbug_vdu   = VDU_LCVDU_WIDE,
                                   pipbug_charwidth,
                                   pipbug_charheight,
@@ -99,13 +119,17 @@ EXPORT       int                  fastpipbug   = FALSE,
                                   printerwidth_full,
                                   printerheight_full,
                                   printerrows_full,
+                                  robotwheel[2] = { 1, 1 },
                                   vdu_columns,
                                   vdu_rows_total,
                                   vdu_rows_visible,
                                   vdu_scrolly,
                                   vdu_x, vdu_y;
 EXPORT       double               mechpower_kw,
-                                  elecpower_kw;
+                                  elecpower_kw,
+                                  robotangle_rad = PI,
+                                  robotx         = INDUSTRIALWIDTH  / 2,
+                                  roboty         = INDUSTRIALHEIGHT / 2;
 
 // IMPORTED VARIABLES-----------------------------------------------------
 
@@ -206,7 +230,9 @@ IMPORT       MEMFLAG              memflags[ALLTOKENS];
 
 // MODULE VARIABLES-------------------------------------------------------
 
+MODULE       FLAG                 robotscreen[INDUSTRIALHEIGHT][INDUSTRIALWIDTH];
 MODULE       TEXT                 dosname[14 + 1];
+MODULE       ULONG                lastpulse = 0;
 MODULE       int                  printercolumns;
 MODULE       double               earthx,
                                   earthy,
@@ -219,7 +245,8 @@ MODULE       double               earthx,
                                   planeroll_deg,
                                   planeroll_rad,
                                   planeyaw_deg,
-                                  planeyaw_rad;
+                                  planeyaw_rad,
+                                  robotangle_deg;
 
 /* MODULE STRUCTURES------------------------------------------------------
 
@@ -236,6 +263,10 @@ MODULE void getdosname(void);
 MODULE void update_wind(void);
 MODULE void draw_line(int x1, int y1, int x2, int y2, ULONG colour);
 MODULE void rotate_vector(void);
+MODULE void circle(int cx, int cy, int r, ULONG whichpen);
+MODULE void robotcircle(int cx, int cy, int r);
+MODULE ULONG robotcirclepen(int px, int py, int cx, int cy);
+MODULE void pulse_robot(void);
 
 // CODE-------------------------------------------------------------------
 
@@ -327,11 +358,45 @@ EXPORT void pipbug_emulate(void)
     if (fastpipbug)
     {   // 2MHz = 2,000,000 clocks per second
         // 2,000,000 / 50 = 40,000
-        slice_2650 += 40000;
+        slice_2650 += 20000;
     } else
     {   // 1MHz = 1,000,000 clocks per second
         // 1,000,000 / 50 = 20,000
+        slice_2650 += 10000;
+    }
+    // assert(slice_2650 >= 1);
+
+    endcycle = cycles_2650 + slice_2650;
+    if (endcycle < cycles_2650)
+    {   // cycle counter will overflow, so we need to use the slow method
+        while (slice_2650 >= 1)
+        {   oldcycles = cycles_2650;
+            pipbin_io();
+            one_instruction();
+            slice_2650 -= (cycles_2650 - oldcycles);
+    }   }
+    else
+    {   // cycle counter will not overflow, so we can use a faster method
+        oldcycles = cycles_2650;
+        while (cycles_2650 < endcycle)
+        {   pipbin_io();
+            one_instruction();
+        }
+        slice_2650 -= (cycles_2650 - oldcycles);
+    }
+
+    if (userrobot)
+    {   pulse_robot(); // 1st time for the frame
+    }
+
+    if (fastpipbug)
+    {   // 2MHz = 2,000,000 clocks per second
+        // 2,000,000 / 50 = 40,000
         slice_2650 += 20000;
+    } else
+    {   // 1MHz = 1,000,000 clocks per second
+        // 1,000,000 / 50 = 20,000
+        slice_2650 += 10000;
     }
     // assert(slice_2650 >= 1);
 
@@ -448,6 +513,9 @@ EXPORT void pipbug_emulate(void)
     }
 
     update_wind();
+    if (userrobot)
+    {   pulse_robot(); // 2nd time for the frame
+    }
 
     if (drawmode)
     {   pipbug_drawhelpgrid();
@@ -601,6 +669,8 @@ EXPORT UBYTE pipbug_readport(int port)
     case 2:
         if (pipbug_periph == PERIPH_FURNACE)
         {   t = ioport[2].contents; // field current
+        } elif (pipbug_periph == PERIPH_ROBOT) // guess
+        {   t = ioport[2].contents; // sensors
         }
     acase 5:
         if (pipbug_periph == PERIPH_LINEARISATIE)
@@ -728,6 +798,38 @@ EXPORT void pipbug_writeport(int port, UBYTE data)
         {   ioport[0].contents = data;
 #ifdef VERBOSEINDUSTRIAL
             zprintf(TEXTPEN_VERBOSE, "Wrote $%02X to blade pitch motor speed.\n", data);
+#endif
+        } elif (pipbug_periph == PERIPH_ROBOT) // guess
+        {   if
+            (   (data & 0x80) != (ioport[0].contents & 0x80)
+             || (data & 0x40) != (ioport[0].contents & 0x80)
+            )
+            {   hornpitch = (data & 0x80) ? TRUE : FALSE;
+                horn      = (data & 0x40) ? TRUE : FALSE;
+                playsound(FALSE);
+            }
+            pendown   = (data & 0x20) ? TRUE : FALSE;
+            lampson   = (data & 0x10) ? TRUE : FALSE;
+            if (cycles_2650 >= lastpulse + 10000 && !(ioport[0].contents & 1) && (data & 1))
+            {   robotwheel[0] = (data & 2) ? 2 : 0;
+            } else
+            {   robotwheel[0] = 1;
+            }
+            if (cycles_2650 >= lastpulse + 10000 && !(ioport[0].contents & 4) && (data & 4))
+            {   robotwheel[1] = (data & 8) ? 0 : 2;
+            } else
+            {   robotwheel[1] = 1;
+            }
+            if (robotwheel[0] != 1 || robotwheel[1] != 1)
+            {   lastpulse = cycles_2650;
+            }
+            set_motion();
+            ioport[0].contents = data;
+            userrobot = FALSE;
+            pulse_robot();
+            // update_industrial(FALSE);
+#ifdef VERBOSEINDUSTRIAL
+            zprintf(TEXTPEN_VERBOSE, "Wrote $%02X to robot output port.\n", data);
 #endif
         }
     acase 1:
@@ -3003,20 +3105,18 @@ EXPORT void pipbug_serialize_cos(void)
     serialize_long(    &tt_scrntill);
     oldvdu = pipbug_vdu;
     serialize_byte_int(&pipbug_vdu);
-    if (cosversion < 42 && pipbug_vdu >= 3)
-    {   pipbug_vdu++; // 3..4 -> 4..5
-    }
     serialize_byte((UBYTE*) &paperreaderenabled);
     serialize_byte((UBYTE*) &paperpunchenabled);
-    if (cosversion >= 42)
-    {   serialize_byte_int(&belling[0]);
-    }
+    serialize_byte_int(&belling[0]);
     serialize_byte(&rotorspeed);
     serialize_byte(&pitchangle);
     serialize_byte(&yawsensordir);
     serialize_byte(&windspeed);
     serialize_byte(&winddirection);
     serialize_byte_int(&pipbug_periph);
+    if (cosversion < 43 && pipbug_periph >= 2)
+    {   pipbug_periph++;
+    }
     serialize_byte(&sensormode);
     serialize_word(&linearx);
     serialize_word(&lineary);
@@ -3524,6 +3624,8 @@ MODULE void update_wind(void)
                 rpm_target,
                 rotor_area;
 
+    // Wind Furnace Controller--------------------------------------------
+
     if (pitchangle > 90)
     {   pitchangle = 90;
     }
@@ -3590,6 +3692,124 @@ MODULE void update_wind(void)
         elecpower_kw = MAX_POWER;
 }   }
 
+MODULE void pulse_robot(void)
+{   FAST double c, c2, s, s2,
+                dtheta,
+                front, right;
+
+    // Tasman Turtle------------------------------------------------------
+
+    s = sin(robotangle_rad);
+    c = cos(robotangle_rad);
+    dtheta = (0.1 / (WHEELBASE / 2.0)); // radians
+
+    if (robotwheel[0] == 0) // left forwards
+    {   if (robotwheel[1] == 0) // both forwards
+        {   motion = 0; // go forwards
+            robotx += (s / 10);
+            roboty += (c / 10);
+            if (pendown) robotscreen[(int) roboty][(int) robotx] = TRUE;
+        } elif (robotwheel[1] == 2) // right backwards
+        {   motion = 5; // rotate right (clockwise)
+            robotangle_deg = robotangle_rad * 180.0 / PI;
+            robotangle_deg -= 0.5;
+            if (robotangle_deg < 0.0)
+            {   robotangle_deg += 360.0;
+            }
+            robotangle_rad = robotangle_deg * PI / 180.0;
+        } else // right neutral
+        {   motion = 2; // pivot clock about right
+            robotangle_rad -= dtheta;
+            s2 = sin(robotangle_rad);
+            c2 = cos(robotangle_rad);
+            robotx += (WHEELBASE / 2.0) * (c2 - c);
+            roboty += (WHEELBASE / 2.0) * (s - s2);
+            if (pendown) robotscreen[(int) roboty][(int) robotx] = TRUE;
+    }   }
+    elif (robotwheel[0] == 2) // left backwards
+    {   if (robotwheel[1] == 0) // right forwards
+        {   motion = 3; // rotate left (anticlockwise)
+            robotangle_deg = robotangle_rad * 180.0 / PI;
+            robotangle_deg += 0.5;
+            if (robotangle_deg >= 360.0)
+            {   robotangle_deg -= 360.0;
+            }
+            robotangle_rad = robotangle_deg * PI / 180.0;
+        } elif (robotwheel[1] == 2) // both backwards
+        {   motion = 8; // go backwards
+            robotx -= (s / 10);
+            roboty -= (c / 10);
+            if (pendown) robotscreen[(int) roboty][(int) robotx] = TRUE;
+        } else // right neutral
+        {   motion = 6; // pivot anti about right
+            robotangle_rad += dtheta;
+            s2 = sin(robotangle_rad);
+            c2 = cos(robotangle_rad);
+            robotx += (WHEELBASE / 2.0) * (c2 - c);
+            roboty += (WHEELBASE / 2.0) * (s - s2);
+            if (pendown) robotscreen[(int) roboty][(int) robotx] = TRUE;
+    }   }
+    else // left neutral
+    {   if (robotwheel[1] == 0) // right forwards
+        {   motion = 1; // pivot anti about left
+            robotangle_rad += dtheta;
+            s2 = sin(robotangle_rad);
+            c2 = cos(robotangle_rad);
+            robotx += (WHEELBASE / 2.0) * (c - c2);
+            roboty += (WHEELBASE / 2.0) * (s2 - s);
+            if (pendown) robotscreen[(int) roboty][(int) robotx] = TRUE;
+        } elif (robotwheel[1] == 2) // right backwards
+        {   motion = 7; // pivot clock about left
+            robotangle_rad -= dtheta;
+            s2 = sin(robotangle_rad);
+            c2 = cos(robotangle_rad);
+            robotx += (WHEELBASE / 2.0) * (c - c2);
+            roboty += (WHEELBASE / 2.0) * (s2 - s);
+            if (pendown) robotscreen[(int) roboty][(int) robotx] = TRUE;
+        } else // both neutral
+        {   motion = 4; // stopped
+    }   }
+
+    ioport[2].contents = 0;
+    if (robotx <= 19.25)
+    {   robotx = 19.25;
+        front = -sin(robotangle_rad);
+        right = -cos(robotangle_rad);
+        if (fabs(front) >= fabs(right))
+        {   ioport[2].contents |= (front >= 0) ? HIT_FRONT : HIT_BACK;
+        } else
+        {   ioport[2].contents |= (right >= 0) ? HIT_RIGHT : HIT_LEFT;
+    }   }
+    elif (robotx >= INDUSTRIALWIDTH - 1 - 19.25)
+    {   robotx = INDUSTRIALWIDTH - 1 - 19.25;
+        front = sin(robotangle_rad);
+        right = cos(robotangle_rad);
+        if (fabs(front) >= fabs(right))
+        {   ioport[2].contents |= (front >= 0) ? HIT_FRONT : HIT_BACK;
+        } else
+        {   ioport[2].contents |= (right >= 0) ? HIT_RIGHT : HIT_LEFT;
+    }   }
+    if (roboty <= 19.25)
+    {   roboty = 19.25;
+        front = -cos(robotangle_rad);
+        right =  sin(robotangle_rad);
+        if (fabs(front) >= fabs(right))
+        {   ioport[2].contents |= (front >= 0) ? HIT_FRONT : HIT_BACK;
+        } else
+        {   ioport[2].contents |= (right >= 0) ? HIT_RIGHT : HIT_LEFT;
+    }   }
+    elif (roboty >= INDUSTRIALHEIGHT - 1 - 19.25)
+    {   roboty = INDUSTRIALHEIGHT - 1 - 19.25;
+        front =  cos(robotangle_rad);
+        right = -sin(robotangle_rad);
+        if (fabs(front) >= fabs(right))
+        {   ioport[2].contents |= (front >= 0) ? HIT_FRONT : HIT_BACK;
+        } else
+        {   ioport[2].contents |= (right >= 0) ? HIT_RIGHT : HIT_LEFT;
+    }   }
+    ioport[2].contents = 255 - ioport[2].contents;
+}
+
 EXPORT void update_industrial(FLAG force)
 {   PERSIST UBYTE  oldfieldcurrent,
                    oldpitchspeed,
@@ -3609,6 +3829,11 @@ EXPORT void update_industrial(FLAG force)
                    oldlineary,
                    oldlinearu,
                    oldlinearv;
+    PERSIST int    oldhorn,
+                   oldhornpitch,
+                   oldlampson,
+                   oldmotion,
+                   oldpendown;
     PERSIST double oldmechpower,
                    oldelecpower;
     FAST    double inclination_rad,
@@ -3633,7 +3858,7 @@ EXPORT void update_industrial(FLAG force)
          || winddirection      != oldwinddirection
          || force
         )
-        {   redraw_furnace();
+        {   redraw_industrial();
         }
 
         if ((ioport[0].contents & 0x7F) != (oldpitchspeed & 0x7F) || force)
@@ -3737,7 +3962,7 @@ EXPORT void update_industrial(FLAG force)
          || linearv != oldlinearv
          || force
         )
-        {   redraw_furnace();
+        {   redraw_industrial();
         }
 
         if (linearx != oldlinearx || force)
@@ -3764,6 +3989,36 @@ EXPORT void update_industrial(FLAG force)
             st_set(SUBWINDOW_INDUSTRIAL, IDC_LINEARVTEXT);
             oldlinearv = linearv;
         }
+    acase PERIPH_ROBOT:
+        redraw_industrial();
+        if (motion != oldmotion || force)
+        {   sl_set(SUBWINDOW_INDUSTRIAL, IDC_ROBOT_LEFT , robotwheel[0]);
+            sl_set(SUBWINDOW_INDUSTRIAL, IDC_ROBOT_RIGHT, robotwheel[1]);
+            ra_set(SUBWINDOW_INDUSTRIAL, IDC_MOTION_FORWARDS, IDC_MOTION_BACKWARDS, motion);
+            oldmotion = motion;
+        }
+        if (lampson != oldlampson || force)
+        {   cb_set(SUBWINDOW_INDUSTRIAL, IDC_LAMPSON,     lampson);
+            oldlampson = lampson;
+        }
+        if (pendown != oldpendown || force)
+        {   cb_set(SUBWINDOW_INDUSTRIAL, IDC_PENDOWN,     pendown);
+            oldpendown = pendown;
+        }
+        if (hornpitch != oldhornpitch || force)
+        {   ch_set(SUBWINDOW_INDUSTRIAL, IDC_HORNPITCH, hornpitch);
+            oldhornpitch = hornpitch;
+        }
+        if (horn != oldhorn || force)
+        {
+#ifdef WIN32
+            InvalidateRect(GetDlgItem(subwin[SUBWINDOW_INDUSTRIAL].hwnd, IDC_HONK), NULL, TRUE);
+#endif
+#ifdef AMIGA
+            SetGadgetAttrs(gadgets[GID_TU_BU1], subwin[SUBWINDOW_INDUSTRIAL].hwnd, NULL, GA_Selected, horn ? TRUE : FALSE, TAG_DONE); // this autorefreshes
+#endif
+            oldhorn = horn;
+        }
     acase PERIPH_MAGNETOMETER:
         if
         (   magneticx     != oldmagnetx
@@ -3788,7 +4043,7 @@ EXPORT void update_industrial(FLAG force)
             planeyaw_rad    = atan2(earthy, earthx);
             planeyaw_deg    = planeyaw_rad * 180.0 / PI;
 #endif
-            redraw_furnace();
+            redraw_industrial();
 
             sprintf(gtempstring, "%f", earthx);
             st_set(SUBWINDOW_INDUSTRIAL, IDC_EARTHX);
@@ -3910,12 +4165,14 @@ EXPORT void pipbug_redrawleds(void)
 #define TOPCENTREY      (INDUSTRIALHEIGHT * 5 / 6)
 #define BACKCENTREX     (INDUSTRIALWIDTH  * 5 / 6)
 #define BACKCENTREY     (INDUSTRIALHEIGHT * 5 / 6)
-EXPORT void redraw_furnace(void)
+EXPORT void redraw_industrial(void)
 {   FAST double  a1_deg,    a1_rad,
                  angle_deg, angle_rad,
                  arrowlen,
-                 mag;
+                 mag,
+                 s, c;
     FAST int     i,
+                 side_x, side_y,
                  x1, x2, x3, x4,
                  y1, y2, y3, y4;
 #ifdef WIN32
@@ -4120,6 +4377,48 @@ PERSIST const TEXT captions[5][5][29 + 1] = { {
                 y2 = LINEARCENTREY + y1 - (int) ((linearv - 2048.0) / (4096 / (INDUSTRIALHEIGHT - 6)));
                 DRAWINDUSTRIAL(x2, y2, EMURGBPEN_BLUE);
         }   }
+    acase PERIPH_ROBOT:
+        for (y1 = 1; y1 < INDUSTRIALHEIGHT - 1; y1++)
+        {   for (x1 = 1; x1 < INDUSTRIALWIDTH - 1; x1++)
+            {   DRAWINDUSTRIAL(x1, y1, robotscreen[y1][x1] ? EMURGBPEN_BLACK : EMURGBPEN_WHITE);
+        }   }
+        for (x1 = 0; x1 < INDUSTRIALWIDTH; x1++)
+        {   DRAWINDUSTRIAL(x1,                    0, EMURGBPEN_GREY);
+            DRAWINDUSTRIAL(x1, INDUSTRIALHEIGHT - 1, EMURGBPEN_GREY);
+        }
+        for (y1 = 0; y1 < INDUSTRIALHEIGHT; y1++)
+        {   DRAWINDUSTRIAL(                   0, y1, EMURGBPEN_GREY);
+            DRAWINDUSTRIAL(INDUSTRIALWIDTH  - 1, y1, EMURGBPEN_GREY);
+        }
+        robotcircle((int) robotx, (int) roboty, 19); // 38.5 cm diameter, 19.25 cm radius
+        if (lampson)
+        {   circle((int) robotx, (int) roboty, 5, EMURGBPEN_DARKORANGE); // guess
+        }
+        s = sin(robotangle_rad);
+        c = cos(robotangle_rad);
+        side_x = (int) ( c * (WHEELBASE / 2.0));
+        side_y = (int) (-s * (WHEELBASE / 2.0));
+     /* draw_line
+        (   (int) robotx,
+            (int) roboty,
+            (int) (robotx + (s * 19.0)), // for 38 cm of...
+            (int) (roboty + (c * 19.0)), // ...robot diameter
+            EMURGBPEN_DARKBLUE
+        ); Maybe this line should also have an arrowhead at one end to show current direction of motion. */
+        draw_line
+        (   (int) (robotx + side_x - (s * (1.528 / 2.0))),
+            (int) (roboty + side_y - (c * (1.528 / 2.0))),
+            (int) (robotx + side_x + (s * (1.528 / 2.0))),
+            (int) (roboty + side_y + (c * (1.528 / 2.0))),
+            EMURGBPEN_DARKRED
+        );
+        draw_line
+        (   (int) (robotx - side_x - (s * (1.528 / 2.0))),
+            (int) (roboty - side_y - (c * (1.528 / 2.0))),
+            (int) (robotx - side_x + (s * (1.528 / 2.0))),
+            (int) (roboty - side_y + (c * (1.528 / 2.0))),
+            EMURGBPEN_DARKGREEN
+        ); // for 1.528 cm diameter wheels
     acase PERIPH_MAGNETOMETER:
         for (y1 = 0; y1 < INDUSTRIALHEIGHT * 2 / 3; y1++)
         {   for (x1 = 0; x1 < INDUSTRIALWIDTH; x1++)
@@ -4353,7 +4652,9 @@ MODULE void draw_line(int x1, int y1, int x2, int y2, ULONG colour)
 }   }
 
 EXPORT void industrial_reset(void)
-{   switch (pipbug_periph)
+{   int x, y;
+
+    switch (pipbug_periph)
     {
     case PERIPH_FURNACE:
         ioport[0].contents = // blade pitch motor speed of 0, direction of 0
@@ -4372,6 +4673,26 @@ EXPORT void industrial_reset(void)
     acase PERIPH_LINEARISATIE:
         linearx = lineary = linearu = linearv = 2048;
         update_industrial(FALSE);
+    acase PERIPH_ROBOT:
+        robotx             = INDUSTRIALWIDTH  / 2;
+        roboty             = INDUSTRIALHEIGHT / 2;
+        robotangle_rad     = PI;
+        robotwheel[0]      =
+        robotwheel[1]      = 1; // neutral
+        motion             = 4; // stopped
+        for (y = 0; y < INDUSTRIALHEIGHT; y++)
+        {   for (x = 0; x < INDUSTRIALWIDTH; x++)
+            {   robotscreen[y][x] = 0;
+        }   }
+        lampson            = FALSE;
+        pendown            = TRUE;
+        horn               = FALSE;
+        hornpitch          = 0; // low
+        ioport[0].contents = 0x20;
+        ioport[2].contents = 0xFF;
+        lastpulse          = 0;
+        userrobot          = FALSE;
+        update_industrial(TRUE);
     acase PERIPH_MAGNETOMETER:
         magneticx = magneticy = magneticz = planepitch = planeroll = 2048;
         update_industrial(TRUE);
@@ -4405,4 +4726,148 @@ EXPORT void pipbug_one_instruction(void)
     pipbin_io();
     one_instruction();
     slice_2650 -= (cycles_2650 - oldcycles);
+}
+
+MODULE void circle(int cx, int cy, int r, ULONG whichpen)
+{   int x = 0,
+        y = r,
+        d = 3 - 2 * r;
+
+    while (x <= y)
+    {   DRAWINDUSTRIAL(cx - x, cy - y, whichpen);
+        DRAWINDUSTRIAL(cx + x, cy - y, whichpen);
+        DRAWINDUSTRIAL(cx - x, cy + y, whichpen);
+        DRAWINDUSTRIAL(cx + x, cy + y, whichpen);
+        DRAWINDUSTRIAL(cx + y, cy + x, whichpen);
+        DRAWINDUSTRIAL(cx - y, cy + x, whichpen);
+        DRAWINDUSTRIAL(cx + y, cy - x, whichpen);
+        DRAWINDUSTRIAL(cx - y, cy - x, whichpen);
+
+        if (d < 0)
+        {   d += (4 *  x     ) +  6;
+        } else
+        {   d += (4 * (x - y)) + 10;
+            y--;
+        }
+        x++;
+}   }
+
+MODULE void robotcircle(int cx, int cy, int r)
+{   int x = 0,
+        y = r,
+        d = 3 - 2 * r;
+
+    while (x <= y)
+    {   DRAWINDUSTRIAL(cx - x, cy - y, robotcirclepen(cx - x, cy - y, cx, cy));
+        DRAWINDUSTRIAL(cx + x, cy - y, robotcirclepen(cx + x, cy - y, cx, cy));
+        DRAWINDUSTRIAL(cx - x, cy + y, robotcirclepen(cx - x, cy + y, cx, cy));
+        DRAWINDUSTRIAL(cx + x, cy + y, robotcirclepen(cx + x, cy + y, cx, cy));
+        DRAWINDUSTRIAL(cx + y, cy + x, robotcirclepen(cx + y, cy + x, cx, cy));
+        DRAWINDUSTRIAL(cx - y, cy + x, robotcirclepen(cx - y, cy + x, cx, cy));
+        DRAWINDUSTRIAL(cx + y, cy - x, robotcirclepen(cx + y, cy - x, cx, cy));
+        DRAWINDUSTRIAL(cx - y, cy - x, robotcirclepen(cx - y, cy - x, cx, cy));
+
+        if (d < 0)
+            d += (4 * x) + 6;
+        else
+        {
+            d += (4 * (x - y)) + 10;
+            y--;
+        }
+
+        x++;
+}   }
+
+MODULE ULONG robotcirclepen(int px, int py, int cx, int cy)
+{   FAST int    dx,      dy;
+    FAST UBYTE  hit;
+    FAST double forward, right;
+
+    dx      = px - cx,
+    dy      = py - cy;
+    forward = dx * sin(robotangle_rad) + dy * cos(robotangle_rad),
+    right   = dx * cos(robotangle_rad) - dy * sin(robotangle_rad);
+
+    hit = 255 - ioport[2].contents;
+    if (fabs(forward) >= fabs(right))
+    {   if (forward >= 0)
+        {   return (hit & HIT_FRONT) ? (ULONG) EMURGBPEN_PURPLE : (ULONG) EMURGBPEN_DARKBLUE;
+        } else
+        {   return (hit & HIT_BACK ) ? (ULONG) EMURGBPEN_PURPLE : (ULONG) EMURGBPEN_DARKYELLOW;
+    }   }
+    else
+    {   if (right >= 0)
+        {   return (hit & HIT_RIGHT) ? (ULONG) EMURGBPEN_PURPLE : (ULONG) EMURGBPEN_DARKRED;
+        } else
+        {   return (hit & HIT_LEFT ) ? (ULONG) EMURGBPEN_PURPLE : (ULONG) EMURGBPEN_DARKGREEN;
+}   }   }
+
+EXPORT void set_motion(void)
+{   if (robotwheel[0] == 0) // left forwards
+    {   if (robotwheel[1] == 0) // both forwards
+        {   motion = 0; // go forwards
+        } elif (robotwheel[1] == 2) // right backwards
+        {   motion = 5; // rotate right (clockwise)
+        } else // right neutral
+        {   motion = 2; // pivot clock about right
+    }   }
+    elif (robotwheel[0] == 2) // left backwards
+    {   if (robotwheel[1] == 0) // right forwards
+        {   motion = 3; // rotate left (anticlockwise)
+        } elif (robotwheel[1] == 2) // both backwards
+        {   motion = 8; // go backwards
+        } else // right neutral
+        {   motion = 6; // pivot anti about right
+    }   }
+    else // left neutral
+    {   if (robotwheel[1] == 0) // right forwards
+        {   motion = 1; // pivot anti about left
+        } elif (robotwheel[1] == 2) // right backwards
+        {   motion = 7; // pivot clock about left
+        } else // both neutral
+        {   motion = 4; // stopped
+}   }   }
+
+EXPORT void set_wheels(void)
+{   switch (motion)
+    {
+    case  0:
+        robotwheel[0] = 0; robotwheel[1] = 0;
+        ioport[0].contents &= 0xF0;
+        ioport[0].contents |= 0x0D; // %1101
+    acase 1:
+        robotwheel[0] = 1; robotwheel[1] = 0;
+        ioport[0].contents &= 0xF2;
+        ioport[0].contents |= 0x0C; // %11x0 (x are unchanged)
+    acase 2:
+        robotwheel[0] = 0; robotwheel[1] = 1;
+        ioport[0].contents &= 0xF8;
+        ioport[0].contents |= 0x01; // %x001 (x are unchanged)
+    acase 3:
+        robotwheel[0] = 2; robotwheel[1] = 0;
+        ioport[0].contents &= 0xF0;
+        ioport[0].contents |= 0x0F; // %1111
+    acase 4:
+        robotwheel[0] = 1; robotwheel[1] = 1;
+        ioport[0].contents &= 0xFA; // %xxxx,x0x0 (x are unchanged)
+    acase 5:
+        robotwheel[0] = 0; robotwheel[1] = 2;
+        ioport[0].contents &= 0xF0;
+        ioport[0].contents |= 0x05; // %0101
+    acase 6:
+        robotwheel[0] = 2; robotwheel[1] = 1;
+        ioport[0].contents &= 0xF8;
+        ioport[0].contents |= 0x03; // %x011 (x are unchanged)
+    acase 7:
+        robotwheel[0] = 1; robotwheel[1] = 2;
+        ioport[0].contents &= 0xF2;
+        ioport[0].contents |= 0x04; // %01x0 (x are unchanged). Don't pulse left, pulse right clockwise
+    acase 8:
+        robotwheel[0] = 2; robotwheel[1] = 2;
+        ioport[0].contents &= 0xF0;
+        ioport[0].contents |= 0x07; // %0111
+    }
+
+    userrobot = TRUE;
+    update_industrial(FALSE);
 }

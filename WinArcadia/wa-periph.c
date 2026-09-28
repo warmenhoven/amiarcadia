@@ -29,7 +29,8 @@ EXPORT       HICON                 diskicon = NULL;
 
 IMPORT       FLAG                  allglyphs,
                                    oldspinning,
-                                   opening;
+                                   opening,
+                                   userrobot;
 IMPORT       TEXT                  asciiname_short[259][3 + 1],
                                    fn_tape[4][MAX_PATH + 1],
                                    gtempstring[256 + 1];
@@ -84,14 +85,19 @@ IMPORT       int                   angles,
                                    diskblocksize,
                                    drive_mode,
                                    headerlength,
+                                   horn,
+                                   hornpitch,
+                                   lampson,
                                    lockhoriz,
                                    machine,
                                    mdcrblocks,
                                    mdcrfwdstate,
                                    mdcrstate,
                                    memmap,
+                                   motion,
                                    otl,
                                    papertapemode[2],
+                                   pendown,
                                    pipbug_biosver,
                                    pipbug_periph,
                                    playerid,
@@ -102,6 +108,7 @@ IMPORT       int                   angles,
                                    prtunit,
                                    recmode,
                                    robotspeed[2],
+                                   robotwheel[2],
                                    serving,
                                    si50_id,
                                    si50_is,
@@ -288,6 +295,7 @@ EXPORT void open_industrial(void)
     {
     case  PERIPH_FURNACE:      open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_FURNACE     ), IndustrialDlgProc);
     acase PERIPH_LINEARISATIE: open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_LINEARISATIE), IndustrialDlgProc);
+    acase PERIPH_ROBOT:        open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_ROBOT       ), IndustrialDlgProc);
     acase PERIPH_MAGNETOMETER: open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_MAGNETOMETER), IndustrialDlgProc);
     acase PERIPH_PRINTER:      open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_EAPRINTER   ), IndustrialDlgProc);
     }
@@ -1433,11 +1441,15 @@ MODULE BOOL CALLBACK PapertapeDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LP
 
 MODULE BOOL CALLBACK IndustrialDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {   TRANSIENT PAINTSTRUCT localps;
+    PERSIST   HBRUSH      LowHornBrush,
+                          HighHornBrush,
+                          SilentBrush;
     FAST      int         gid,
                           i, j,
                           mousex, mousey,
                           temp;
     FAST      POINT       thepoint;
+    FAST      RECT        therect;
 
     switch (Message)
     {
@@ -1452,8 +1464,9 @@ MODULE BOOL CALLBACK IndustrialDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
         switch (pipbug_periph)
         {
         case  PERIPH_PRINTER:      strcat(gtempstring, LLL(MSG_EAPRINTER    , "EA printer"             ));
-        acase PERIPH_FURNACE:      strcat(gtempstring, LLL(MSG_WFC          , "Wind Furnace Controller"));
         acase PERIPH_LINEARISATIE: strcat(gtempstring, LLL(MSG_LINEARIZATION, "Linearization"          ));
+        acase PERIPH_ROBOT:        strcat(gtempstring,                        "Tasman Turtle"           );
+        acase PERIPH_FURNACE:      strcat(gtempstring, LLL(MSG_WFC          , "Wind Furnace Controller"));
         acase PERIPH_MAGNETOMETER: strcat(gtempstring, LLL(MSG_VM           , "Vector Magnetometer"    ));
         }
         SetWindowText(hwnd, gtempstring);
@@ -1461,6 +1474,7 @@ MODULE BOOL CALLBACK IndustrialDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
         setdlgtext(    hwnd, IDL_PERIPHERAL        , MSG_PERIPHERAL        , "Peripheral:");
         SendMessage(GetDlgItem(hwnd, IDC_PERIPHERAL), CB_ADDSTRING, (WPARAM) 0, (LPARAM) LLL(MSG_EAPRINTER    , "EA printer"             ));
         SendMessage(GetDlgItem(hwnd, IDC_PERIPHERAL), CB_ADDSTRING, (WPARAM) 0, (LPARAM) LLL(MSG_LINEARIZATION, "Linearization"          ));
+        SendMessage(GetDlgItem(hwnd, IDC_PERIPHERAL), CB_ADDSTRING, (WPARAM) 0, (LPARAM)                        "Tasman Turtle"           );
         SendMessage(GetDlgItem(hwnd, IDC_PERIPHERAL), CB_ADDSTRING, (WPARAM) 0, (LPARAM) LLL(MSG_VM,            "Vector Magnetometer"    ));           
         SendMessage(GetDlgItem(hwnd, IDC_PERIPHERAL), CB_ADDSTRING, (WPARAM) 0, (LPARAM) LLL(MSG_WFC          , "Wind Furnace Controller"));
 
@@ -1523,6 +1537,46 @@ MODULE BOOL CALLBACK IndustrialDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
             SendMessage(GetDlgItem(hwnd, IDC_LINEARU          ), TBM_SETTICFREQ,   256,                 0);
             SendMessage(GetDlgItem(hwnd, IDC_LINEARV          ), TBM_SETRANGE  , FALSE, MAKELONG(0, 4095));
             SendMessage(GetDlgItem(hwnd, IDC_LINEARV          ), TBM_SETTICFREQ,   256,                 0);
+        acase PERIPH_ROBOT:
+            setdlgtext(hwnd, IDL_WHEELMOTORS     , MSG_WHEELMOTORS, "Wheel Motors");
+            setdlgtext(hwnd, IDL_MOTION          , MSG_ROBOTMOTION, "Robot Motion");
+            setdlgtext(hwnd, IDC_LAMPSON         , MSG_LAMPSLIT   , "Lamps lit?");
+            setdlgtext(hwnd, IDC_PENDOWN         , MSG_PENDOWN    , "Pen down?");
+            setdlgtext(hwnd, IDL_HORNPITCH       , MSG_HORNPITCH  , "Horn pitch:");
+            setdlgtext(hwnd, IDC_HONK            , MSG_HONK       , "Honk");
+
+            setdlgtext(hwnd, IDC_MOTION_FORWARDS , MSG_MOTION_0, "Forwards");
+            setdlgtext(hwnd, IDC_MOTION_PIVOTLTLT, MSG_MOTION_1, "Pivot anticlockwise (left) about left wheel");
+            setdlgtext(hwnd, IDC_MOTION_PIVOTRTRT, MSG_MOTION_2, "Pivot clockwise (right) about right wheel");
+            setdlgtext(hwnd, IDC_MOTION_ROTATELT , MSG_MOTION_3, "Rotate anticlockwise (left) about centre");
+            setdlgtext(hwnd, IDC_MOTION_STOPPED  , MSG_MOTION_4, "Stopped");
+            setdlgtext(hwnd, IDC_MOTION_ROTATERT , MSG_MOTION_5, "Rotate clockwise (right) about centre");
+            setdlgtext(hwnd, IDC_MOTION_PIVOTLTRT, MSG_MOTION_6, "Pivot anticlockwise (left) about right wheel");
+            setdlgtext(hwnd, IDC_MOTION_PIVOTRTLT, MSG_MOTION_7, "Pivot clockwise (right) about left wheel");
+            setdlgtext(hwnd, IDC_MOTION_BACKWARDS, MSG_MOTION_8, "Backwards");
+
+            SendMessage(GetDlgItem(hwnd, IDC_ROBOT_LEFT       ), TBM_SETRANGE, FALSE, MAKELONG(0, 2));
+            SendMessage(GetDlgItem(hwnd, IDC_ROBOT_LEFT       ), TBM_SETPOS,   TRUE,  robotwheel[0]);
+            SendMessage(GetDlgItem(hwnd, IDC_ROBOT_RIGHT      ), TBM_SETRANGE, FALSE, MAKELONG(0, 2));
+            SendMessage(GetDlgItem(hwnd, IDC_ROBOT_RIGHT      ), TBM_SETPOS,   TRUE,  robotwheel[1]);
+
+            DISCARD CheckRadioButton
+            (   subwin[SUBWINDOW_PRINTER].hwnd,
+                IDC_MOTION_FORWARDS,
+                IDC_MOTION_BACKWARDS,
+                IDC_MOTION_FORWARDS + motion // motion is 0..8
+            );
+
+            SendMessage(GetDlgItem(hwnd, IDC_LAMPSON          ), BM_SETCHECK   , lampson   ? BST_CHECKED : BST_UNCHECKED, 0);
+            SendMessage(GetDlgItem(hwnd, IDC_PENDOWN          ), BM_SETCHECK   , pendown   ? BST_CHECKED : BST_UNCHECKED, 0);
+
+            SendMessage(GetDlgItem(hwnd, IDC_HORNPITCH), CB_ADDSTRING, (WPARAM) 0, (LPARAM) LLL(MSG_LOW , "Low" ));
+            SendMessage(GetDlgItem(hwnd, IDC_HORNPITCH), CB_ADDSTRING, (WPARAM) 0, (LPARAM) LLL(MSG_HIGH, "High"));
+            SendMessage(GetDlgItem(hwnd, IDC_HORNPITCH), CB_SETCURSEL, (WPARAM) hornpitch, (LPARAM) 0);
+
+            LowHornBrush  = CreateSolidBrush(EMUPEN_RED);
+            HighHornBrush = CreateSolidBrush(EMUPEN_YELLOW);
+            SilentBrush   = CreateSolidBrush(EMUPEN_GREEN);
         acase PERIPH_MAGNETOMETER:
             setdlgtext(            hwnd, IDL_MAGNETICX , MSG_MAGNETICX , "Plane Hx:");
             setdlgtext(            hwnd, IDL_MAGNETICY , MSG_MAGNETICY , "Plane Hy:");
@@ -1645,10 +1699,34 @@ MODULE BOOL CALLBACK IndustrialDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
         {   planeroll = (UWORD) SendMessage(GetDlgItem(hwnd, IDC_PLANEROLL), TBM_GETPOS, 0, 0); // because LOWORD(lParam) is not always correct
             update_industrial(FALSE);
         }
-    acase WM_COMMAND:
+    return TRUE;
+    case WM_VSCROLL:
+        if (lParam == (long) GetDlgItem(hwnd, IDC_ROBOT_LEFT))
+        {   robotwheel[0] = SendMessage(GetDlgItem(hwnd, IDC_ROBOT_LEFT), TBM_GETPOS, 0, 0);
+            set_motion();
+            ioport[0].contents &= ~2;
+            if (robotwheel[0] == 0) // forward
+            {   ioport[0].contents |= 2; // clockwise
+            }
+            userrobot = TRUE;
+            update_industrial(FALSE);
+        } elif (lParam == (long) GetDlgItem(hwnd, IDC_ROBOT_RIGHT))
+        {   robotwheel[1] = SendMessage(GetDlgItem(hwnd, IDC_ROBOT_RIGHT), TBM_GETPOS, 0, 0);
+            set_motion();
+            ioport[0].contents &= ~8;
+            if (robotwheel[1] == 2) // backward
+            {   ioport[0].contents |= 2; // clockwise
+            }
+            userrobot = TRUE;
+            update_industrial(FALSE);
+        }
+    return TRUE;
+    case WM_COMMAND:
         gid = (int) LOWORD(wParam);
         switch (gid)
         {
+        // Multiple-------------------------------------------------------
+
         case IDC_PERIPHERAL:
             temp = SendMessage(GetDlgItem(hwnd, IDC_PERIPHERAL), CB_GETCURSEL, 0, 0);
             if (temp != pipbug_periph)
@@ -1656,12 +1734,20 @@ MODULE BOOL CALLBACK IndustrialDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
                 close_subwindow(SUBWINDOW_INDUSTRIAL);
                 open_industrial();
             }
+        acase IDC_INDUSTRIAL_RESET:
+            industrial_reset();
+
+        // Printer--------------------------------------------------------
+
         acase IDC_TOGGLESUBWINDOW:
             if (subwin[SUBWINDOW_PRINTER].hwnd)
             {   close_subwindow(SUBWINDOW_PRINTER);
             } else
             {   tools_printer();
             }
+
+        // Vector Magnetometer--------------------------------------------
+
         acase IDC_PITCHDIRECTION:
             if (HIWORD(wParam) == CBN_SELCHANGE)
             {   if (SendMessage(GetDlgItem(hwnd, IDC_PITCHDIRECTION), CB_GETCURSEL, 0, 0) == 0)
@@ -1689,11 +1775,54 @@ MODULE BOOL CALLBACK IndustrialDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
                 }
                 // update_industrial(FALSE); is not needed
             }
-        acase IDC_INDUSTRIAL_RESET:
-            industrial_reset();
         acase IDC_DECLINATE:
             declinate = (SendMessage(GetDlgItem(hwnd, IDC_DECLINATE), BM_GETCHECK, 0, 0) == BST_CHECKED) ? TRUE : FALSE;
             update_industrial(TRUE);
+
+        // Robot----------------------------------------------------------
+
+        acase IDC_LAMPSON:
+            lampson = (SendMessage(GetDlgItem(hwnd, IDC_LAMPSON), BM_GETCHECK, 0, 0) == BST_CHECKED) ? TRUE : FALSE;
+            if (lampson) ioport[0].contents |= 0x10; else ioport[0].contents &= ~0x10;
+            userrobot = TRUE;
+            update_industrial(FALSE);
+        acase IDC_PENDOWN:
+            pendown = (SendMessage(GetDlgItem(hwnd, IDC_PENDOWN), BM_GETCHECK, 0, 0) == BST_CHECKED) ? TRUE : FALSE;
+            if (pendown) ioport[0].contents |= 0x20; else ioport[0].contents &= ~0x20;
+            userrobot = TRUE;
+            // update_industrial(); is not needed
+        acase IDC_HORNPITCH:
+            hornpitch = SendMessage(GetDlgItem(hwnd, IDC_HORNPITCH), CB_GETCURSEL, 0, 0);
+            if (hornpitch) ioport[0].contents |= 0x80; else ioport[0].contents &= ~0x80;
+            userrobot = TRUE;
+            playsound(FALSE);
+        acase IDC_MOTION_FORWARDS:
+            motion = 0;
+            set_wheels();
+        acase IDC_MOTION_PIVOTLTLT:
+            motion = 1;
+            set_wheels();
+        acase IDC_MOTION_PIVOTRTRT:
+            motion = 2;
+            set_wheels();
+        acase IDC_MOTION_ROTATELT:
+            motion = 3;
+            set_wheels();
+        acase IDC_MOTION_STOPPED:
+            motion = 4;
+            set_wheels();
+        acase IDC_MOTION_ROTATERT:
+            motion = 5;
+            set_wheels();
+        acase IDC_MOTION_PIVOTLTRT:
+            motion = 6;
+            set_wheels();
+        acase IDC_MOTION_PIVOTRTLT:
+            motion = 7;
+            set_wheels();
+        acase IDC_MOTION_BACKWARDS:
+            motion = 8;
+            set_wheels();
         }
     acase WM_CLOSE:
         clearkybd();
@@ -1703,6 +1832,11 @@ MODULE BOOL CALLBACK IndustrialDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
     return TRUE;
     case WM_DESTROY:
         subwin[SUBWINDOW_INDUSTRIAL].hwnd = NULL;
+        if (pipbug_periph == PERIPH_ROBOT)
+        {   DeleteObject(LowHornBrush);
+            DeleteObject(HighHornBrush);
+            DeleteObject(SilentBrush);
+        }
     return FALSE;
     case WM_MOVE:
         reset_fps();
@@ -1712,7 +1846,48 @@ MODULE BOOL CALLBACK IndustrialDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
         update_industrial(TRUE);
         DISCARD EndPaint(hwnd, &localps);
     return FALSE; // important!
-    default:
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONDBLCLK:
+        thepoint.x = LOWORD(lParam);
+        thepoint.y = HIWORD(lParam);
+        GetWindowRect(GetDlgItem(hwnd, IDC_HONK), &therect);
+        ScreenToClient(hwnd, (POINT*) &therect.left);
+        ScreenToClient(hwnd, (POINT*) &therect.right);
+        if (PtInRect(&therect, thepoint))
+        {   horn = TRUE;
+            ioport[0].contents |= 0x40;
+            userrobot = TRUE;
+            SetCapture(hwnd);
+            InvalidateRect(GetDlgItem(hwnd, IDC_HONK), NULL, TRUE);
+            playsound(FALSE);
+        }
+    return TRUE;
+    case WM_LBUTTONUP:
+        if (horn)
+        {   horn = FALSE;
+            ioport[0].contents &= ~0x40;
+            userrobot = TRUE;
+            ReleaseCapture();
+            InvalidateRect(GetDlgItem(hwnd, IDC_HONK), NULL, TRUE);
+            playsound(FALSE);
+        }
+    return TRUE;
+    case WM_CTLCOLORSTATIC:
+        if ((HWND) lParam == GetDlgItem(hwnd, IDC_HONK))
+        {   if (horn)
+            {   if (hornpitch == 1)
+                {   SetBkColor((HDC) wParam, EMUPEN_YELLOW);
+                    return (INT_PTR) HighHornBrush;
+                } else
+                {   // assert(hornpitch == 0);
+                    SetBkColor((HDC) wParam, EMUPEN_RED);
+                    return (INT_PTR) LowHornBrush;
+            }   }
+            else
+            {   SetBkColor((HDC) wParam, EMUPEN_GREEN);
+                return (INT_PTR) SilentBrush;
+        }   }
+    adefault:
     return FALSE;
     }
     return TRUE;

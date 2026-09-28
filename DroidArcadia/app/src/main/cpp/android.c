@@ -3159,6 +3159,12 @@ EXPORT void patchrom(void)
             memory[ 0x64A] = trainer_time          ? 0x00 : 0xFF; // ADDI,r0 $FF           -> ADDI,r0 0 // energy
         acase UFOSHOOTINGPOS:
             memory[ 0x9E6] = trainer_time          ? 0x00 : 0x01; // LODI,r1 1             -> LODI,r1 0 // ammo
+        acase WINDWORLDPOS:
+            memory[ 0x87D] = trainer_invincibility ? 0x04 : 0x07; // ANDI,r0 %00000111     -> ANDI,r0 %00000100
+// or maybe memory[ 0x87D] = trainer_invincibility ? 0x00 : 0x07; // ANDI,r0 %00000111     -> ANDI,r0 %00000000
+
+            memory[ 0x8CC] = trainer_lives         ? 0x1B : 0x98; // BCFR,eq $8D1          -> BCTR,un $8D1
+            memory[ 0x8D2] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
 }   }   }
 
 MODULE void make_stars(void)
@@ -4712,54 +4718,57 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     acase THEENDPOS1:
     case  THEENDPOS2:        rc = 55;
     acase TURTLESPOS:        rc = 56;
-
+    acase JOURNEYPOS:        rc = 57;
+    acase KOTONOHAPOS:       rc = 58;
+    acase WINDWORLDPOS:      rc = 59;
+    
     // Interton
-    acase CARRACESPOS:       rc = 56 +  1;
-    acase I_BLACKJACKPOS:    rc = 56 +  2;
-    acase PADDLEGAMESPOS:    rc = 56 +  3;
-    acase I_COMBATBPOS:      rc = 56 +  4;
+    acase CARRACESPOS:       rc = 59 +  1;
+    acase I_BLACKJACKPOS:    rc = 59 +  2;
+    acase PADDLEGAMESPOS:    rc = 59 +  3;
+    acase I_COMBATBPOS:      rc = 59 +  4;
     acase I_MATH1POS:
-    case  231:               rc = 56 +  5;
-    acase I_MATH2POS:        rc = 56 +  6;
+    case  231:               rc = 59 +  5;
+    acase I_MATH2POS:        rc = 59 +  6;
     acase AIRSEABATTLEPOS:
-    case  225:               rc = 56 +  7;
-    acase MEMORY1POS:        rc = 56 +  8;
+    case  225:               rc = 59 +  7;
+    acase MEMORY1POS:        rc = 59 +  8;
     acase INTELLIGENCE1POS:
-    case  230:               rc = 56 +  9;
-    acase WINTERSPORTSPOS:   rc = 56 + 10;
+    case  230:               rc = 59 +  9;
+    acase WINTERSPORTSPOS:   rc = 59 + 10;
     acase HIPPODROMEPOS:
-    case  229:               rc = 56 + 11;
-    acase I_HUNTINGPOS:      rc = 56 + 12;
-    acase CHESS1POS:         rc = 56 + 13;
-    acase MOTOCROSSPOS:      rc = 56 + 14;
+    case  229:               rc = 59 + 11;
+    acase I_HUNTINGPOS:      rc = 59 + 12;
+    acase CHESS1POS:         rc = 59 + 13;
+    acase MOTOCROSSPOS:      rc = 59 + 14;
     acase _4INAROWPOS:
-    case  227:               rc = 56 + 15;
-    acase MASTERMINDPOS:     rc = 56 + 16;
-    acase I_CIRCUSPOS:       rc = 56 + 17;
+    case  227:               rc = 59 + 15;
+    acase MASTERMINDPOS:     rc = 59 + 16;
+    acase I_CIRCUSPOS:       rc = 59 + 17;
     acase I_BOXINGPOS:
-    case  226:               rc = 56 + 18;
-    acase SPACEWARPOS:       rc = 56 + 19;
-    acase MUSICALGAMESPOS:   rc = 56 + 20;
+    case  226:               rc = 59 + 18;
+    acase SPACEWARPOS:       rc = 59 + 19;
+    acase MUSICALGAMESPOS:   rc = 59 + 20;
     acase I_CAPTUREPOS:
-    case  233:               rc = 56 + 21;
-    acase CHESS2POS:         rc = 56 + 22;
-    acase PINBALLBPOS:       rc = 56 + 23;
-    acase SOCCERBPOS:        rc = 56 + 24;
-    acase I_BOWLINGPOS:      rc = 56 + 25;
-    acase DRAUGHTSPOS:       rc = 56 + 26;
+    case  233:               rc = 59 + 21;
+    acase CHESS2POS:         rc = 59 + 22;
+    acase PINBALLBPOS:       rc = 59 + 23;
+    acase SOCCERBPOS:        rc = 59 + 24;
+    acase I_BOWLINGPOS:      rc = 59 + 25;
+    acase DRAUGHTSPOS:       rc = 59 + 26;
     acase I_GOLFPOS:
-    case  228:               rc = 56 + 27;
-    acase COCKPITPOS:        rc = 56 + 28;
-    acase METROPOLISPOS:     rc = 56 + 29;
-    acase SOLITAIREPOS:      rc = 56 + 30;
-    acase CASINOPOS:         rc = 56 + 31;
-    acase INVADERBPOS:       rc = 56 + 32;
-    acase SUPERINVPOS:       rc = 56 + 33;
-    acase BACKGAMMONPOS:     rc = 56 + 34;
+    case  228:               rc = 59 + 27;
+    acase COCKPITPOS:        rc = 59 + 28;
+    acase METROPOLISPOS:     rc = 59 + 29;
+    acase SOLITAIREPOS:      rc = 59 + 30;
+    acase CASINOPOS:         rc = 59 + 31;
+    acase INVADERBPOS:       rc = 59 + 32;
+    acase SUPERINVPOS:       rc = 59 + 33;
+    acase BACKGAMMONPOS:     rc = 59 + 34;
     acase MONSTERMANPOS:
-    case  232:               rc = 56 + 35;
-    acase HYPERSPACEPOS:     rc = 56 + 36;
-    acase SUPERSPACEPOS:     rc = 56 + 37;
+    case  232:               rc = 59 + 35;
+    acase HYPERSPACEPOS:     rc = 59 + 36;
+    acase SUPERSPACEPOS:     rc = 59 + 37;
 
     // Elektor
     acase 255:   // Keyboard Painting aka Play with the PVI               ESS-003-1
@@ -4770,7 +4779,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     case  260:   // Steam Engine aka Locomotive aka Demonstration Program ESS-003-6
     case  262:   // PVI Programming                                       ESS-006-2
     case  263:   // Rocket Shooting                                       ESS-006-3
-                             rc = 56 + 37 + 1;
+                             rc = 59 + 37 + 1;
 
     acase 236:   // Mazes                         ESS-011-4
     case  237:   // Circledrive                   ESS-009-3
@@ -4845,7 +4854,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     case  385:   // Piano (song #4) (dump #2)    (ESS-007-B)
     case  450:   // Aggressor (dump #1)           ESS-009-1
     case  451:   // Aggressor (dump #2)           ESS-009-1
-                             rc = 56 + 37 + 2;
+                             rc = 59 + 37 + 2;
 
     acase 313:   // Figure 26                     Pages 88-89
     case  314:   // Figure 27                     Pages 88-90
@@ -4882,7 +4891,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     case  346:   // Table 29                      Pages 127-128
     case  347:   // Table 30                      Page 128
     case  348:   // Wedding March                 Pages 183-184
-                             rc = 56 + 37 + 3;
+                             rc = 59 + 37 + 3;
 
     acase 349:   // Reverse                       Hocosoft #27. File $2
     case  350:   // Solitaire (A)                 Hocosoft #22. File $1
@@ -4895,7 +4904,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     case  376:   // Towers of Hanoi               Hocosoft #28. File $8
     case  377:   // Hunting (Jagen)               Hocosoft #9.  File $9
     case  446:   // Solitaire (B)                 Hocosoft #22. File $2
-                             rc = 56 + 37 + 4;
+                             rc = 59 + 37 + 4;
 
     acase 404:   // Example 2 (Joystick Control, etc. aka Hamish 1)    Radofin
     case  439:   // Example 1 (Setting Up Objects and Background)      Radofin
@@ -4903,7 +4912,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     case  441:   // Example 4 (Survival)                               Radofin
     case  442:   // Example 5 (PVI Art)                                Radofin
     case  443:   // Decimal Adjust Example                             Radofin
-                             rc = 56 + 37 + 5;
+                             rc = 59 + 37 + 5;
 
     // all
     adefault:                rc = -1;

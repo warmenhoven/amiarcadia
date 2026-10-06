@@ -3595,7 +3595,9 @@ MODULE void help_commands(int which)
             }                    
             zprintf(TEXTPEN_CLIOUTPUT, "%s", gtempstring);
             zprintf(TEXTPEN_VERBOSE,   "%s\n", menuinfo2[i].desc_str);
-}   }   }
+    }   }
+    zprintf(TEXTPEN_CLIOUTPUT, "\n");
+}
 
 EXPORT void loadsym(TEXT* bufptr)
 {   int   address   = 0,

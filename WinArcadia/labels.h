@@ -326,105 +326,105 @@ EXPORT struct EquivalentStruct equivalents[EQUIVALENTS] = {
 {         E_CASOUT         , "CASOUT"       , DATA   }, //     $1DFF (same as CASW and LINEOUT7)
 {         E_CASOUT         , "CASW"         , DATA   }, //     $1DFF (same as CASOUT and LINEOUT7)
 {         E_LINEOUT7       , "LINEOUT7"     , DATA   }, // 324 $1DFF (same as CASOUT and CASW)
-{         PVI_P1PADDLE     , "P1PADDLE"     , DATA   }, // 325 1st PVI (FIRSTPVIEQUIV..FIRSTPVIEQUIV+32)
-{         PVI_P2PADDLE     , "P2PADDLE"     , DATA   },
-{         PVI_SPRITECOLLIDE, "SPRITECOLLIDE", DATA   },
-{         PVI_BGCOLLIDE    , "BGCOLLIDE"    , DATA   },
-{         PVI_SPR01COLOURS , "SPR01COLOURS" , DATA   },
-{         PVI_SPR23COLOURS , "SPR23COLOURS" , DATA   },
-{         PVI_BGCOLOUR     , "BGCOLOUR"     , DATA   },
-{         PVI_PITCH        , "PITCH"        , DATA   },
-{         PVI_SPRITE3AX    , "SPRITE3AX"    , DATA   },
-{         PVI_SPRITE3AY    , "SPRITE3AY"    , DATA   },
-{         PVI_SPRITE2AX    , "SPRITE2AX"    , DATA   },
-{         PVI_SPRITE2AY    , "SPRITE2AY"    , DATA   },
-{         PVI_SPRITE1AX    , "SPRITE1AX"    , DATA   },
-{         PVI_SPRITE1AY    , "SPRITE1AY"    , DATA   },
-{         PVI_SPRITE0AX    , "SPRITE0AX"    , DATA   },
-{         PVI_SPRITE0AY    , "SPRITE0AY"    , DATA   },
-{         PVI_SPRITE3BX    , "SPRITE3BX"    , DATA   },
-{         PVI_SPRITE3BY    , "SPRITE3BY"    , DATA   },
-{         PVI_SPRITE2BX    , "SPRITE2BX"    , DATA   },
-{         PVI_SPRITE2BY    , "SPRITE2BY"    , DATA   },
-{         PVI_SPRITE1BX    , "SPRITE1BX"    , DATA   },
-{         PVI_SPRITE1BY    , "SPRITE1BY"    , DATA   },
-{         PVI_SPRITE0BX    , "SPRITE0BX"    , DATA   },
-{         PVI_SPRITE0BY    , "SPRITE0BY"    , DATA   },
-{         PVI_SCORECTRL    , "SCORECTRL"    , DATA   },
-{         PVI_SCORELT      , "SCORELT"      , DATA   },
-{         PVI_SCORERT      , "SCORERT"      , DATA   },
-{         PVI_HORIZ1       , "HORIZ1"       , DATA   },
-{         PVI_HORIZ2       , "HORIZ2"       , DATA   },
-{         PVI_HORIZ3       , "HORIZ3"       , DATA   },
-{         PVI_HORIZ4       , "HORIZ4"       , DATA   },
-{         PVI_HORIZ5       , "HORIZ5"       , DATA   },
-{         PVI_SIZES        , "SIZES"        , DATA   },
-{ 0x100 + PVI_P1PADDLE     , "P3PADDLE"     , DATA   }, // 2nd PVI (FIRSTPVIEQUIV+33..FIRSTPVIEQUIV+65)
-{ 0x100 + PVI_P2PADDLE     , "P4PADDLE"     , DATA   },
-{ 0x100 + PVI_SPRITECOLLIDE, "SPRITECOLLIDE2",DATA   },
-{ 0x100 + PVI_BGCOLLIDE    , "BGCOLLIDE2"   , DATA   },
-{ 0x100 + PVI_SPR01COLOURS , "SPR45COLOURS" , DATA   },
-{ 0x100 + PVI_SPR23COLOURS , "SPR67COLOURS" , DATA   },
-{ 0x100 + PVI_BGCOLOUR     , "BGCOLOUR2"    , DATA   },
-{ 0x100 + PVI_PITCH        , "PITCH2"       , DATA   },
-{ 0x100 + PVI_SPRITE3AX    , "SPRITE7AX"    , DATA   },
-{ 0x100 + PVI_SPRITE3AY    , "SPRITE7AY"    , DATA   },
-{ 0x100 + PVI_SPRITE2AX    , "SPRITE6AX"    , DATA   },
-{ 0x100 + PVI_SPRITE2AY    , "SPRITE6AY"    , DATA   },
-{ 0x100 + PVI_SPRITE1AX    , "SPRITE5AX"    , DATA   },
-{ 0x100 + PVI_SPRITE1AY    , "SPRITE5AY"    , DATA   },
-{ 0x100 + PVI_SPRITE0AX    , "SPRITE4AX"    , DATA   },
-{ 0x100 + PVI_SPRITE0AY    , "SPRITE4AY"    , DATA   },
-{ 0x100 + PVI_SPRITE3BX    , "SPRITE7BX"    , DATA   },
-{ 0x100 + PVI_SPRITE3BY    , "SPRITE7BY"    , DATA   },
-{ 0x100 + PVI_SPRITE2BX    , "SPRITE6BX"    , DATA   },
-{ 0x100 + PVI_SPRITE2BY    , "SPRITE6BY"    , DATA   },
-{ 0x100 + PVI_SPRITE1BX    , "SPRITE5BX"    , DATA   },
-{ 0x100 + PVI_SPRITE1BY    , "SPRITE5BY"    , DATA   },
-{ 0x100 + PVI_SPRITE0BX    , "SPRITE4BX"    , DATA   },
-{ 0x100 + PVI_SPRITE0BY    , "SPRITE4BY"    , DATA   },
-{ 0x100 + PVI_SCORECTRL    , "SCORECTRL2"   , DATA   },
-{ 0x100 + PVI_SCORELT      , "SCORELT2"     , DATA   },
-{ 0x100 + PVI_SCORERT      , "SCORERT2"     , DATA   },
-{ 0x100 + PVI_HORIZ1       , "HORIZ6"       , DATA   },
-{ 0x100 + PVI_HORIZ2       , "HORIZ7"       , DATA   },
-{ 0x100 + PVI_HORIZ3       , "HORIZ8"       , DATA   },
-{ 0x100 + PVI_HORIZ4       , "HORIZ9"       , DATA   },
-{ 0x100 + PVI_HORIZ5       , "HORIZ10"      , DATA   },
-{ 0x100 + PVI_SIZES        , "SIZES2"       , DATA   },
-{ 0x200 + PVI_P1PADDLE     , "P5PADDLE"     , DATA   }, // 3rd PVI (FIRSTPVIEQUIV+66..FIRSTPVIEQUIV+98)
-{ 0x200 + PVI_P2PADDLE     , "P6PADDLE"     , DATA   },
-{ 0x200 + PVI_SPRITECOLLIDE, "SPRITECOLLIDE3",DATA   },
-{ 0x200 + PVI_BGCOLLIDE    , "BGCOLLIDE3"   , DATA   },
-{ 0x200 + PVI_SPR01COLOURS , "SPR89COLOURS" , DATA   },
-{ 0x200 + PVI_SPR23COLOURS , "SPR1011COLOURS",DATA   },
-{ 0x200 + PVI_BGCOLOUR     , "BGCOLOUR3"    , DATA   },
-{ 0x200 + PVI_PITCH        , "PITCH3"       , DATA   },
-{ 0x200 + PVI_SPRITE3AX    , "SPRITE11AX"   , DATA   },
-{ 0x200 + PVI_SPRITE3AY    , "SPRITE11AY"   , DATA   },
-{ 0x200 + PVI_SPRITE2AX    , "SPRITE10AX"   , DATA   },
-{ 0x200 + PVI_SPRITE2AY    , "SPRITE10AY"   , DATA   },
-{ 0x200 + PVI_SPRITE1AX    , "SPRITE9AX"    , DATA   },
-{ 0x200 + PVI_SPRITE1AY    , "SPRITE9AY"    , DATA   },
-{ 0x200 + PVI_SPRITE0AX    , "SPRITE8AX"    , DATA   },
-{ 0x200 + PVI_SPRITE0AY    , "SPRITE8AY"    , DATA   },
-{ 0x200 + PVI_SPRITE3BX    , "SPRITE11BX"   , DATA   },
-{ 0x200 + PVI_SPRITE3BY    , "SPRITE11BY"   , DATA   },
-{ 0x200 + PVI_SPRITE2BX    , "SPRITE10BX"   , DATA   },
-{ 0x200 + PVI_SPRITE2BY    , "SPRITE10BY"   , DATA   },
-{ 0x200 + PVI_SPRITE1BX    , "SPRITE9BX"    , DATA   },
-{ 0x200 + PVI_SPRITE1BY    , "SPRITE9BY"    , DATA   },
-{ 0x200 + PVI_SPRITE0BX    , "SPRITE8BX"    , DATA   },
-{ 0x200 + PVI_SPRITE0BY    , "SPRITE8BY"    , DATA   },
-{ 0x200 + PVI_SCORECTRL    , "SCORECTRL3"   , DATA   },
-{ 0x200 + PVI_SCORELT      , "SCORELT3"     , DATA   },
-{ 0x200 + PVI_SCORERT      , "SCORERT3"     , DATA   },
-{ 0x200 + PVI_HORIZ1       , "HORIZ11"      , DATA   },
-{ 0x200 + PVI_HORIZ2       , "HORIZ12"      , DATA   },
-{ 0x200 + PVI_HORIZ3       , "HORIZ13"      , DATA   },
-{ 0x200 + PVI_HORIZ4       , "HORIZ14"      , DATA   },
-{ 0x200 + PVI_HORIZ5       , "HORIZ15"      , DATA   },
-{ 0x200 + PVI_SIZES        , "SIZES3"       , DATA   },
+{         PVI_SPRITE0AX    , "SPRITE0AX"    , DATA   }, // 325 $1F0A 1st PVI (FIRSTPVIEQUIV..FIRSTPVIEQUIV+32)
+{         PVI_SPRITE0BX    , "SPRITE0BX"    , DATA   }, //     $1F0B
+{         PVI_SPRITE0AY    , "SPRITE0AY"    , DATA   }, //     $1F0C
+{         PVI_SPRITE0BY    , "SPRITE0BY"    , DATA   }, //     $1F0D
+{         PVI_SPRITE1AX    , "SPRITE1AX"    , DATA   }, //     $1F1A
+{         PVI_SPRITE1BX    , "SPRITE1BX"    , DATA   }, //     $1F1B
+{         PVI_SPRITE1AY    , "SPRITE1AY"    , DATA   }, //     $1F1C
+{         PVI_SPRITE1BY    , "SPRITE1BY"    , DATA   }, //     $1F1D
+{         PVI_SPRITE2AX    , "SPRITE2AX"    , DATA   }, //     $1F2A
+{         PVI_SPRITE2BX    , "SPRITE2BX"    , DATA   }, //     $1F2B
+{         PVI_SPRITE2AY    , "SPRITE2AY"    , DATA   }, //     $1F2C
+{         PVI_SPRITE2BY    , "SPRITE2BY"    , DATA   }, //     $1F2D
+{         PVI_SPRITE3AX    , "SPRITE3AX"    , DATA   }, //     $1F4A
+{         PVI_SPRITE3BX    , "SPRITE3BX"    , DATA   }, //     $1F4B
+{         PVI_SPRITE3AY    , "SPRITE3AY"    , DATA   }, //     $1F4C
+{         PVI_SPRITE3BY    , "SPRITE3BY"    , DATA   }, //     $1F4D
+{         PVI_HORIZ1       , "HORIZ1"       , DATA   }, //     $1FA8
+{         PVI_HORIZ2       , "HORIZ2"       , DATA   }, //     $1FA9
+{         PVI_HORIZ3       , "HORIZ3"       , DATA   }, //     $1FAA
+{         PVI_HORIZ4       , "HORIZ4"       , DATA   }, //     $1FAB
+{         PVI_HORIZ5       , "HORIZ5"       , DATA   }, //     $1FAC
+{         PVI_BGCOLLIDE    , "BGCOLLIDE"    , DATA   }, //     $1FCA
+{         PVI_SPRITECOLLIDE, "SPRITECOLLIDE", DATA   }, //     $1FCB
+{         PVI_P1PADDLE     , "P1PADDLE"     , DATA   }, //     $1FCC
+{         PVI_P2PADDLE     , "P2PADDLE"     , DATA   }, //     $1FCD
+{         PVI_SIZES        , "SIZES"        , DATA   }, //     $1FC0
+{         PVI_SPR01COLOURS , "SPR01COLOURS" , DATA   }, //     $1FC1
+{         PVI_SPR23COLOURS , "SPR23COLOURS" , DATA   }, //     $1FC2
+{         PVI_SCORECTRL    , "SCORECTRL"    , DATA   }, //     $1FC3
+{         PVI_BGCOLOUR     , "BGCOLOUR"     , DATA   }, //     $1FC6
+{         PVI_PITCH        , "PITCH"        , DATA   }, //     $1FC7
+{         PVI_SCORELT      , "SCORELT"      , DATA   }, //     $1FC8
+{         PVI_SCORERT      , "SCORERT"      , DATA   }, //     $1FC9
+{ 0x100 + PVI_SPRITE0AX    , "SPRITE4AX"    , DATA   }, // 358 $1F0A  2nd PVI (FIRSTPVIEQUIV+33..FIRSTPVIEQUIV+65)
+{ 0x100 + PVI_SPRITE0BX    , "SPRITE4BX"    , DATA   }, //     $1F0B
+{ 0x100 + PVI_SPRITE0AY    , "SPRITE4AY"    , DATA   }, //     $1F0C
+{ 0x100 + PVI_SPRITE0BY    , "SPRITE4BY"    , DATA   }, //     $1F0D
+{ 0x100 + PVI_SPRITE1AX    , "SPRITE5AX"    , DATA   }, //     $1F1A
+{ 0x100 + PVI_SPRITE1BX    , "SPRITE5BX"    , DATA   }, //     $1F1B
+{ 0x100 + PVI_SPRITE1AY    , "SPRITE5AY"    , DATA   }, //     $1F1C
+{ 0x100 + PVI_SPRITE1BY    , "SPRITE5BY"    , DATA   }, //     $1F1D
+{ 0x100 + PVI_SPRITE2AX    , "SPRITE6AX"    , DATA   }, //     $1F2A
+{ 0x100 + PVI_SPRITE2BX    , "SPRITE6BX"    , DATA   }, //     $1F2B
+{ 0x100 + PVI_SPRITE2AY    , "SPRITE6AY"    , DATA   }, //     $1F2C
+{ 0x100 + PVI_SPRITE2BY    , "SPRITE6BY"    , DATA   }, //     $1F2D
+{ 0x100 + PVI_SPRITE3AX    , "SPRITE7AX"    , DATA   }, //     $1F4A
+{ 0x100 + PVI_SPRITE3BX    , "SPRITE7BX"    , DATA   }, //     $1F4B
+{ 0x100 + PVI_SPRITE3AY    , "SPRITE7AY"    , DATA   }, //     $1F4C
+{ 0x100 + PVI_SPRITE3BY    , "SPRITE7BY"    , DATA   }, //     $1F4D
+{ 0x100 + PVI_HORIZ1       , "HORIZ6"       , DATA   }, //     $1FA8
+{ 0x100 + PVI_HORIZ2       , "HORIZ7"       , DATA   }, //     $1FA9
+{ 0x100 + PVI_HORIZ3       , "HORIZ8"       , DATA   }, //     $1FAA
+{ 0x100 + PVI_HORIZ4       , "HORIZ9"       , DATA   }, //     $1FAB
+{ 0x100 + PVI_HORIZ5       , "HORIZ10"      , DATA   }, //     $1FAC
+{ 0x100 + PVI_BGCOLLIDE    , "BGCOLLIDE2"   , DATA   }, //     $1FCA
+{ 0x100 + PVI_SPRITECOLLIDE, "SPRITECOLLIDE2",DATA   }, //     $1FCB
+{ 0x100 + PVI_P1PADDLE     , "P3PADDLE"     , DATA   }, //     $1FCC
+{ 0x100 + PVI_P2PADDLE     , "P4PADDLE"     , DATA   }, //     $1FCD
+{ 0x100 + PVI_SIZES        , "SIZES2"       , DATA   }, //     $1FC0
+{ 0x100 + PVI_SPR01COLOURS , "SPR45COLOURS" , DATA   }, //     $1FC1
+{ 0x100 + PVI_SPR23COLOURS , "SPR67COLOURS" , DATA   }, //     $1FC2
+{ 0x100 + PVI_SCORECTRL    , "SCORECTRL2"   , DATA   }, //     $1FC3
+{ 0x100 + PVI_BGCOLOUR     , "BGCOLOUR2"    , DATA   }, //     $1FC6
+{ 0x100 + PVI_PITCH        , "PITCH2"       , DATA   }, //     $1FC7
+{ 0x100 + PVI_SCORELT      , "SCORELT2"     , DATA   }, //     $1FC8
+{ 0x100 + PVI_SCORERT      , "SCORERT2"     , DATA   }, //     $1FC9
+{ 0x200 + PVI_SPRITE0AX    , "SPRITE8AX"    , DATA   }, // 391 $1F0A 3rd PVI (FIRSTPVIEQUIV+66..FIRSTPVIEQUIV+98)
+{ 0x200 + PVI_SPRITE0BX    , "SPRITE8BX"    , DATA   }, //     $1F0B
+{ 0x200 + PVI_SPRITE0AY    , "SPRITE8AY"    , DATA   }, //     $1F0C
+{ 0x200 + PVI_SPRITE0BY    , "SPRITE8BY"    , DATA   }, //     $1F0D
+{ 0x200 + PVI_SPRITE1AX    , "SPRITE9AX"    , DATA   }, //     $1F1A
+{ 0x200 + PVI_SPRITE1BX    , "SPRITE9BX"    , DATA   }, //     $1F1B
+{ 0x200 + PVI_SPRITE1AY    , "SPRITE9AY"    , DATA   }, //     $1F1C
+{ 0x200 + PVI_SPRITE1BY    , "SPRITE9BY"    , DATA   }, //     $1F1D
+{ 0x200 + PVI_SPRITE2AX    , "SPRITE10AX"   , DATA   }, //     $1F2A
+{ 0x200 + PVI_SPRITE2BX    , "SPRITE10BX"   , DATA   }, //     $1F2B
+{ 0x200 + PVI_SPRITE2AY    , "SPRITE10AY"   , DATA   }, //     $1F2C
+{ 0x200 + PVI_SPRITE2BY    , "SPRITE10BY"   , DATA   }, //     $1F2D
+{ 0x200 + PVI_SPRITE3AX    , "SPRITE11AX"   , DATA   }, //     $1F4A
+{ 0x200 + PVI_SPRITE3BX    , "SPRITE11BX"   , DATA   }, //     $1F4B
+{ 0x200 + PVI_SPRITE3AY    , "SPRITE11AY"   , DATA   }, //     $1F4C
+{ 0x200 + PVI_SPRITE3BY    , "SPRITE11BY"   , DATA   }, //     $1F4D
+{ 0x200 + PVI_HORIZ1       , "HORIZ11"      , DATA   }, //     $1FA8
+{ 0x200 + PVI_HORIZ2       , "HORIZ12"      , DATA   }, //     $1FA9
+{ 0x200 + PVI_HORIZ3       , "HORIZ13"      , DATA   }, //     $1FAA
+{ 0x200 + PVI_HORIZ4       , "HORIZ14"      , DATA   }, //     $1FAB
+{ 0x200 + PVI_HORIZ5       , "HORIZ15"      , DATA   }, //     $1FAC
+{ 0x200 + PVI_BGCOLLIDE    , "BGCOLLIDE3"   , DATA   }, //     $1FCA
+{ 0x200 + PVI_SPRITECOLLIDE, "SPRITECOLLIDE3",DATA   }, //     $1FCB
+{ 0x200 + PVI_P1PADDLE     , "P5PADDLE"     , DATA   }, //     $1FCC
+{ 0x200 + PVI_P2PADDLE     , "P6PADDLE"     , DATA   }, //     $1FCD
+{ 0x200 + PVI_SIZES        , "SIZES3"       , DATA   }, //     $1FC0
+{ 0x200 + PVI_SPR01COLOURS , "SPR89COLOURS" , DATA   }, //     $1FC1
+{ 0x200 + PVI_SPR23COLOURS , "SPR1011COLOURS",DATA   }, //     $1FC2
+{ 0x200 + PVI_SCORECTRL    , "SCORECTRL3"   , DATA   }, //     $1FC3
+{ 0x200 + PVI_BGCOLOUR     , "BGCOLOUR3"    , DATA   }, //     $1FC6
+{ 0x200 + PVI_PITCH        , "PITCH3"       , DATA   }, //     $1FC7
+{ 0x200 + PVI_SCORELT      , "SCORELT3"     , DATA   }, //     $1FC8
+{ 0x200 + PVI_SCORERT      , "SCORERT3"     , DATA   }, //     $1FC9
 {    0x0, "INIT"           , CODE   }, // PIPBUG 1 (424..529)
 {    0x3, "AINI"           , CODE   },
 {   0x19, "VEC"            , POINTER},

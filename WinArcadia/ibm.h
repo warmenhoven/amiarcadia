@@ -187,6 +187,7 @@ typedef void*               APTR;
                         "Bitmaps (BMP)\0*.BMP\0" \
                         "All files (*.*)\0*.*\0"
 
+#define TEXTPEN_BLACK        0
 #define TEXTPEN_RED          1
 #define TEXTPEN_GREEN        2
 #define TEXTPEN_YELLOW       3
@@ -194,7 +195,7 @@ typedef void*               APTR;
 #define TEXTPEN_PURPLE       5
 #define TEXTPEN_ORANGE       8
 
-                          // 0    IBM: black (invisible)
+#define TEXTPEN_COLOURLESS   TEXTPEN_BLACK
 #define TEXTPEN_TAPE         TEXTPEN_RED
 #define TEXTPEN_DISK         TEXTPEN_RED
 #define TEXTPEN_LABEL        TEXTPEN_RED
@@ -391,8 +392,8 @@ struct LangStruct
 #define IN_DEBUG_GRAPHICS 11
 
 // Peripherals menu
-#define IN_LEFT        0
-#define IN_RIGHT       1
+#define IN_LEFT        3
+#define IN_RIGHT       4
 
 // Options menu
 #define IN_BIOS        0

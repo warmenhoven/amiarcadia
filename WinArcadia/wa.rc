@@ -18126,7 +18126,7 @@ BEGIN
     CONTROL         608,IDC_CONTROLS2,"Static",SS_BITMAP,7,89,673,199
 END
 
-IDD_FURNACE DIALOG DISCARDABLE  0, 0, 471, 284
+IDD_INDUSTRIAL_FURNACE DIALOG DISCARDABLE  0, 0, 471, 284
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Industrial/Scientific Peripherals: Wind Furnace Controller"
@@ -18211,13 +18211,13 @@ BEGIN
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,28,471,2
     COMBOBOX        IDC_PERIPHERAL,99,9,143,62,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
-    LTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
+    RTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
     PUSHBUTTON      "Reset",IDC_INDUSTRIAL_RESET,329,8,133,14,WS_GROUP
     CONTROL         ".",IDC_WFC,"Button",BS_OWNERDRAW | BS_FLAT | 
                     WS_DISABLED,330,120,132,116
 END
 
-IDD_LINEARISATIE DIALOG DISCARDABLE  0, 0, 396, 162
+IDD_INDUSTRIAL_LINEARIZATION DIALOG DISCARDABLE  0, 0, 396, 162
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Industrial/Scientific Peripherals: Linearization"
@@ -18253,7 +18253,7 @@ BEGIN
                     ES_READONLY | WS_DISABLED
     COMBOBOX        IDC_PERIPHERAL,98,9,143,62,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
-    LTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
+    RTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,28,396,2
     LTEXT           "mV",IDL_LINEARXUNITS,229,43,14,10
     LTEXT           "mV",IDL_LINEARYUNITS,229,70,14,10
@@ -18264,7 +18264,7 @@ BEGIN
                     WS_DISABLED,260,36,128,118
 END
 
-IDD_EAPRINTER DIALOG DISCARDABLE  0, 0, 250, 65
+IDD_INDUSTRIAL_EAPRINTER DIALOG DISCARDABLE  0, 0, 250, 65
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Industrial/Scientific Peripherals: EA Printer"
@@ -18276,10 +18276,10 @@ BEGIN
                     14,WS_GROUP
     COMBOBOX        IDC_PERIPHERAL,98,9,143,62,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
-    LTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
+    RTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
 END
 
-IDD_MAGNETOMETER DIALOG DISCARDABLE  0, 0, 470, 265
+IDD_INDUSTRIAL_MAGNETOMETER DIALOG DISCARDABLE  0, 0, 470, 265
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Industrial/Scientific Peripherals: Vector Magnetometer"
@@ -18326,7 +18326,7 @@ BEGIN
     LTEXT           "mG",IDL_MAGNETICZUNITS,277,94,39,10
     LTEXT           "degrees",IDL_PLANEPITCHUNITS,277,121,39,10
     LTEXT           "degrees",IDL_PLANEROLLUNITS,278,147,39,10
-    LTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
+    RTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
     COMBOBOX        IDC_PERIPHERAL,98,9,143,62,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
     CONTROL         ".",IDC_WFC,"Button",BS_OWNERDRAW | BS_FLAT | 
@@ -19115,7 +19115,7 @@ BEGIN
     ICON            IDI_ARCADIA,IDL_GLYPH,8,36,20,20
 END
 
-IDD_ROBOT DIALOG DISCARDABLE  0, 0, 470, 164
+IDD_INDUSTRIAL_ROBOT DIALOG DISCARDABLE  0, 0, 470, 164
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Industrial/Scientific Peripherals: Tasman Turtle"
@@ -19124,7 +19124,7 @@ BEGIN
     CONTROL         ".",IDC_WFC,"Button",BS_OWNERDRAW | BS_FLAT | 
                     WS_DISABLED,11,37,132,116
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,0,28,469,2
-    LTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
+    RTEXT           "Peripheral:",IDL_PERIPHERAL,13,12,78,10
     COMBOBOX        IDC_PERIPHERAL,98,9,143,62,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
     PUSHBUTTON      "Reset",IDC_INDUSTRIAL_RESET,326,9,132,14,WS_GROUP
@@ -19391,8 +19391,8 @@ IDI_KEDAMAKI            ICON    DISCARDABLE     "kedamaki.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 36,7,0,1
- PRODUCTVERSION 36,7,0,1
+ FILEVERSION 36,7,1,1
+ PRODUCTVERSION 36,7,1,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -19410,14 +19410,14 @@ BEGIN
             VALUE "Comments", "Think Signetics. Sig 'em! We want you to have the best.\0"
             VALUE "CompanyName", "Amigan Software\0"
             VALUE "FileDescription", "WinArcadia multi-emulator\0"
-            VALUE "FileVersion", "36.7\0"
+            VALUE "FileVersion", "36.71\0"
             VALUE "InternalName", "WinArcadia\0"
             VALUE "LegalCopyright", "Copyright © 2006-2026 James Jacobs\0"
             VALUE "LegalTrademarks", "WinArcadia\0"
             VALUE "OriginalFilename", "WinArcadia.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "WinArcadia\0"
-            VALUE "ProductVersion", "36.7\0"
+            VALUE "ProductVersion", "36.71\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -19481,12 +19481,12 @@ BEGIN
         BOTTOMMARGIN, 303
     END
 
-    IDD_FURNACE, DIALOG
+    IDD_INDUSTRIAL_FURNACE, DIALOG
     BEGIN
         BOTTOMMARGIN, 267
     END
 
-    IDD_LINEARISATIE, DIALOG
+    IDD_INDUSTRIAL_LINEARIZATION, DIALOG
     BEGIN
         BOTTOMMARGIN, 161
     END

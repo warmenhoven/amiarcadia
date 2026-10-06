@@ -3515,7 +3515,7 @@ EXPORT void tracecpu_2650(FLAG full, FLAG quiet)
         case  STYLE_OLDCALM:
         case  STYLE_NEWCALM:  sprintf(mn, "CALL,NE  %s", addressstring);
         acase STYLE_IEEE:     sprintf(mn, "CALLNE %s"  , addressstring);
-        adefault:             sprintf(mn, "BSFR,EQ %s" , addressstring);
+        adefault:             sprintf(mn, "BSFR,eq %s" , addressstring);
         }                                                                                 sprintf(an, "%sgosub %s;", ccfalse[style][BRANCHCODE], pseudostring);
     acase 0xB9:
         REL_EA_TRACE();
@@ -3524,7 +3524,7 @@ EXPORT void tracecpu_2650(FLAG full, FLAG quiet)
         case  STYLE_OLDCALM:
         case  STYLE_NEWCALM:  sprintf(mn, "CALL,LE  %s", addressstring);
         acase STYLE_IEEE:     sprintf(mn, "CALLLE %s"  , addressstring);
-        adefault:             sprintf(mn, "BSFR,GT %s" , addressstring);
+        adefault:             sprintf(mn, "BSFR,gt %s" , addressstring);
         }                                                                                 sprintf(an, "%sgosub %s;", ccfalse[style][BRANCHCODE], pseudostring);
     acase 0xBA:
         REL_EA_TRACE();
@@ -3533,7 +3533,7 @@ EXPORT void tracecpu_2650(FLAG full, FLAG quiet)
         case  STYLE_OLDCALM:
         case  STYLE_NEWCALM:  sprintf(mn, "CALL,GE  %s", addressstring);
         acase STYLE_IEEE:     sprintf(mn, "CALLGE %s"  , addressstring);
-        adefault:             sprintf(mn, "BSFR,LT %s" , addressstring);
+        adefault:             sprintf(mn, "BSFR,lt %s" , addressstring);
         }                                                                                 sprintf(an, "%sgosub %s;", ccfalse[style][BRANCHCODE], pseudostring);
     acase 0xBB:
         ZERO_EA_TRACE(TRUE);
@@ -3551,7 +3551,7 @@ EXPORT void tracecpu_2650(FLAG full, FLAG quiet)
         case  STYLE_OLDCALM:
         case  STYLE_NEWCALM:  sprintf(mn, "CALL,NE  %s", addressstring);
         acase STYLE_IEEE:     sprintf(mn, "CALLNE %s"  , addressstring);
-        adefault:             sprintf(mn, "BSFA,EQ %s" , addressstring);
+        adefault:             sprintf(mn, "BSFA,eq %s" , addressstring);
         }                                                                                 sprintf(an, "%sgosub %s;", ccfalse[style][BRANCHCODE], pseudostring);
     acase 0xBD:
         BRA_EA_TRACE(TRUE);
@@ -3560,7 +3560,7 @@ EXPORT void tracecpu_2650(FLAG full, FLAG quiet)
         case  STYLE_OLDCALM:
         case  STYLE_NEWCALM:  sprintf(mn, "CALL,LE  %s", addressstring);
         acase STYLE_IEEE:     sprintf(mn, "CALLLE %s"  , addressstring);
-        adefault:             sprintf(mn, "BSFA,GT %s" , addressstring);
+        adefault:             sprintf(mn, "BSFA,gt %s" , addressstring);
         }                                                                                 sprintf(an, "%sgosub %s;", ccfalse[style][BRANCHCODE], pseudostring);
     acase 0xBE:
         BRA_EA_TRACE(TRUE);
@@ -3569,7 +3569,7 @@ EXPORT void tracecpu_2650(FLAG full, FLAG quiet)
         case  STYLE_OLDCALM:
         case  STYLE_NEWCALM:  sprintf(mn, "CALL,GE  %s", addressstring);
         acase STYLE_IEEE:     sprintf(mn, "CALLGE %s"  , addressstring);
-        adefault:             sprintf(mn, "BSFA,LT %s" , addressstring);
+        adefault:             sprintf(mn, "BSFA,lt %s" , addressstring);
         }                                                                                 sprintf(an, "%sgosub %s;", ccfalse[style][BRANCHCODE], pseudostring);
     acase 0xBF:
         BRA_EA_TRACE(FALSE);
@@ -4433,22 +4433,24 @@ EXPORT void disgame(int address1, int address2, STRPTR filename)
                 case  0xF8: case 0xF9: case 0xFA: case 0xFB: // BDRR,rn
                     REL_EA_TRACE();
                     if (OPERAND & 0x80)
-                    {   disflag[iar] |= DISFLAG_INDIRECT;
-                        if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
+                    {   if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
                         {   disflag[tea] |= DISFLAG_CODELABEL;
                             threadlist[threads++] = (UWORD) tea;
+                        } else
+                        {   disflag[iar] |= DISFLAG_INDIRECT;
                     }   }
-                     else
+                    else
                     {   disflag[tea] |= DISFLAG_CODELABEL;
                         threadlist[threads++] = (UWORD) tea;
                     }
                 acase 0x1B:                                  // BCTR,un
                     REL_EA_TRACE();
                     if (OPERAND & 0x80)
-                    {   disflag[iar] |= DISFLAG_INDIRECT;
-                        if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
+                    {   if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
                         {   disflag[tea] |= DISFLAG_CODELABEL;
                             threadlist[threads++] = (UWORD) tea;
+                        } else
+                        {   disflag[iar] |= DISFLAG_INDIRECT;
                     }   }
                     else
                     {   disflag[tea] |= DISFLAG_CODELABEL;
@@ -4466,10 +4468,11 @@ EXPORT void disgame(int address1, int address2, STRPTR filename)
                 case  0xFC: case 0xFD: case 0xFE: case 0xFF: // BDRA,rn
                     BRA_EA_TRACE(TRUE);
                     if (OPERAND & 0x80)
-                    {   disflag[iar] |= DISFLAG_INDIRECT;
-                        if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
+                    {   if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
                         {   disflag[tea] |= DISFLAG_CODELABEL;
                             threadlist[threads++] = (UWORD) tea;
+                        } else
+                        {   disflag[iar] |= DISFLAG_INDIRECT;
                     }   }
                     else
                     {   disflag[tea] |= DISFLAG_CODELABEL;
@@ -4478,10 +4481,11 @@ EXPORT void disgame(int address1, int address2, STRPTR filename)
                 acase 0x1F:                                  // BCTA,un
                     BRA_EA_TRACE(TRUE);
                     if (OPERAND & 0x80)
-                    {   disflag[iar] |= DISFLAG_INDIRECT;
-                        if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
+                    {   if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
                         {   disflag[tea] |= DISFLAG_CODELABEL;
                             threadlist[threads++] = (UWORD) tea;
+                        } else
+                        {   disflag[iar] |= DISFLAG_INDIRECT;
                     }   }
                     else
                     {   disflag[tea] |= DISFLAG_CODELABEL;
@@ -4496,10 +4500,11 @@ EXPORT void disgame(int address1, int address2, STRPTR filename)
                 acase 0x9B:                                  // ZBRR
                     ZERO_EA_TRACE(TRUE);
                     if (OPERAND & 0x80)
-                    {   disflag[iar] |= DISFLAG_INDIRECT;
-                        if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
+                    {   if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
                         {   disflag[tea] |= DISFLAG_CODELABEL;
                             threadlist[threads++] = (UWORD) tea;
+                        } else
+                        {   disflag[iar] |= DISFLAG_INDIRECT;
                     }   }
                     else
                     {   disflag[tea] |= DISFLAG_CODELABEL;
@@ -4517,10 +4522,11 @@ EXPORT void disgame(int address1, int address2, STRPTR filename)
                 acase 0xBB:                                  // ZBSR
                     ZERO_EA_TRACE(TRUE);
                     if (OPERAND & 0x80)
-                    {   disflag[iar] |= DISFLAG_INDIRECT;
-                        if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
+                    {   if ((memflags[tea] & NOWRITE) && (memflags[tea + 1] & NOWRITE))
                         {   disflag[tea] |= DISFLAG_CODELABEL;
                             threadlist[threads++] = (UWORD) tea;
+                        } else
+                        {   disflag[iar] |= DISFLAG_INDIRECT;
                     }   }
                     else
                     {   disflag[tea] |= DISFLAG_CODELABEL;

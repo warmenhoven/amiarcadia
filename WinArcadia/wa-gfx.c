@@ -87,7 +87,8 @@ IMPORT       ULONG     animframe,
                        region,
                        si50_bigctrls,
                        turbo;
-IMPORT       int       anims,
+IMPORT       int       absxmin, absymin,
+                       anims,
                        apnganims,
                        bezel,
                        bezelwidth,
@@ -3059,9 +3060,12 @@ EXPORT void hosttoguestmouse(int* hostx, int* hosty, int* guestx, int* guesty, i
         dx /= (realsize * realwide);
         dy /=  realsize;
     }
-    *guestx = (int) dx;
-    *guesty = (int) dy;
-}
+    if (guestx)
+    {   *guestx = (int) dx; // caller has to add absxmin themselves
+    }
+    if (guesty)
+    {   *guesty = (int) dy; // caller has to add absymin themselves
+}   }
 
 EXPORT void update_menuheight(void)
 {   HMENU TestMenuPtr;

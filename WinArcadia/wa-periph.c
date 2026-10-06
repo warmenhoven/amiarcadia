@@ -293,11 +293,11 @@ EXPORT void open_industrial(void)
 
     switch (pipbug_periph)
     {
-    case  PERIPH_FURNACE:      open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_FURNACE     ), IndustrialDlgProc);
-    acase PERIPH_LINEARISATIE: open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_LINEARISATIE), IndustrialDlgProc);
-    acase PERIPH_ROBOT:        open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_ROBOT       ), IndustrialDlgProc);
-    acase PERIPH_MAGNETOMETER: open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_MAGNETOMETER), IndustrialDlgProc);
-    acase PERIPH_PRINTER:      open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_EAPRINTER   ), IndustrialDlgProc);
+    case  PERIPH_FURNACE:      open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_INDUSTRIAL_FURNACE      ), IndustrialDlgProc);
+    acase PERIPH_LINEARISATIE: open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_INDUSTRIAL_LINEARIZATION), IndustrialDlgProc);
+    acase PERIPH_ROBOT:        open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_INDUSTRIAL_ROBOT        ), IndustrialDlgProc);
+    acase PERIPH_MAGNETOMETER: open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_INDUSTRIAL_MAGNETOMETER ), IndustrialDlgProc);
+    acase PERIPH_PRINTER:      open_subwindow(SUBWINDOW_INDUSTRIAL, MAKEINTRESOURCE(IDD_INDUSTRIAL_EAPRINTER    ), IndustrialDlgProc);
     }
 
     update_industrial(TRUE);

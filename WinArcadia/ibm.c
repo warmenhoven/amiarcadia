@@ -1224,7 +1224,8 @@ IMPORT       ULONG                       analog,
                                          swapped,
                                          turbo,
                                          viewkybdas2;
-IMPORT       int                         ambient,
+IMPORT       int                         absymin,
+                                         ambient,
                                          apnganims,
                                          ax[2],
                                          ay[4],
@@ -1857,6 +1858,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         }   }   }
         elif (shift() && hasrastlines())
         {   hosttoguestmouse(NULL, NULL, NULL, &rastn, NULL, NULL);
+            rastn += absymin;
             emu_unpause();
         }
         ignorelmb = FALSE;

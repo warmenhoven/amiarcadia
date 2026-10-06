@@ -400,7 +400,7 @@ MODULE FILE*       LogfileHandle = NULL;
 MODULE const int textpen_to_rgb[] =
 {
 // on black background
-  RGB( 64,  64,  64), // 0          black (not used)
+  RGB( 64,  64,  64), // 0          TEXTPEN_BLACK
   RGB(255,   0,   0), // 1          TEXTPEN_RED
   RGB(  0, 255,   0), // 2          TEXTPEN_GREEN
   RGB(255, 255,   0), // 3          TEXTPEN_YELLOW
@@ -411,7 +411,7 @@ MODULE const int textpen_to_rgb[] =
   RGB(255, 128,   0), // 8          orange
   RGB(128, 128, 128), // 9          grey
 // on white background
-  RGB(  0,   0,   0), // 0+TEXTPENS black (not used)
+  RGB(  0,   0,   0), // 0+TEXTPENS TEXTPEN_BLACK
   RGB(192,   0,   0), // 1+TEXTPENS TEXTPEN_RED
   RGB(  0, 128,   0), // 2+TEXTPENS TEXTPEN_GREEN
   RGB( 96,  96,   0), // 3+TEXTPENS TEXTPEN_YELLOW
@@ -1799,9 +1799,7 @@ EXPORT void zprintf(UNUSED int whichcolour, const char* format, ...)
     )
     {   open_output(TRUE);
     }
-    if (colourlog)
-    {   textcolour = whichcolour;
-    }
+    textcolour = colourlog ? whichcolour : TEXTPEN_COLOURLESS;
 #endif
 
     length = strlen(string);

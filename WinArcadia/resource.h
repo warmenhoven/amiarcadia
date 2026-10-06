@@ -1043,10 +1043,10 @@
 #define IDD_CONTROLS_MPT03_SML          1526
 #define IDD_OPCODES_THOLIN              1527
 #define IDD_CONTROLS_VT100              1528
-#define IDD_FURNACE                     1529
-#define IDD_LINEARISATIE                1530
-#define IDD_EAPRINTER                   1531
-#define IDD_MAGNETOMETER                1532
+#define IDD_INDUSTRIAL_FURNACE          1529
+#define IDD_INDUSTRIAL_LINEARIZATION    1530
+#define IDD_INDUSTRIAL_EAPRINTER        1531
+#define IDD_INDUSTRIAL_MAGNETOMETER     1532
 #define IDD_GAMEINFO_OVERLAYS           1533
 #define IDD_CONTROLS_RADIOBULLETIN      1534
 #define IDD_HOSTPAD                     1535
@@ -1056,7 +1056,7 @@
 #define IDD_HOSTPADS_LT_GW              1538
 #define IDD_HOSTPADS_LT_LT              1539
 #define IDD_GAMEINFO_QWERTY             1540
-#define IDD_ROBOT                       1541
+#define IDD_INDUSTRIAL_ROBOT            1541
 #define IDL_GAMEINFO_4TH                1607
 #define IDL_LEGEND7                     1608
 #define IDL_GAMEINFO_4THTEXT            1609

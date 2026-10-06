@@ -803,6 +803,7 @@ EXPORT void newpvi_anypixel(void)
                             newsprite[whichsprite].active = FALSE;
                             newsprite[whichsprite].starty = newsprite[whichsprite].newstarty;
                             newsprite[whichsprite].dup    = TRUE;
+
                             if (prevsprite[multiframe][whichsprite][prevsprnum[whichsprite]].inuse)
                             {   prevsprnum[whichsprite]++;
         }   }   }   }   }   }

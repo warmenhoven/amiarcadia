@@ -3327,6 +3327,7 @@ JNIEXPORT jboolean JNICALL Java_com_amigan_droidarcadia_OptionsActivity_skipleve
     acase SPIDERSPOS:       case SPIDERSODPOS:                           iar            =  0x796;
     acase SUPERBUG1POS:     case SUPERBUG2POS:                           iar            =  0xA6A; // or iar = 0xA53, if you want to play end-of-level song first
     acase TURTLESPOS:                                                    iar            =  0x273;
+    acase WINDWORLDPOS:                                                  iar            =  0x93D;
     adefault:
         return (jboolean) FALSE;
     }
@@ -3865,9 +3866,9 @@ MODULE STRPTR update_variant(void)
         } else
         {   strcpy(thestring, "?");
         }
-    acase CASINOPOS: // game is $1F6A
-        if (memory[0x1F6A] >= 1 && memory[0x1F6A] <= 3)
-        {   strcpy(thestring, casino[memory[0x1F6A] - 1]);
+    acase CASINOPOS: // game is $1F6B
+        if (memory[0x1F6B] >= 1 && memory[0x1F6B] <= 3)
+        {   strcpy(thestring, casino[memory[0x1F6B] - 1]);
         } else
         {   strcpy(thestring, "?");
         }

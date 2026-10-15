@@ -2374,7 +2374,7 @@ EXPORT void measure_position(void)
                 show_position(x, y, FALSE);
                 SendMessage(hStatusBar, SB_SETTEXT, 1, (LPARAM) coords);
             }
-            if (lshift())
+            if (lshift() || rshift())
             {   if (MagnifierWindowPtr)
                 {   update_magnifier();
                 } else

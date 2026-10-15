@@ -5157,7 +5157,7 @@ EXPORT void update_memory(FLAG force)
                     }   }
                     elif (coverage[whichaddr] & COVERAGE_READ)
                     {   colour = EMURGBPEN_BLUE;
-                    } elif (coverage[whichaddr] & (COVERAGE_OPCODE | COVERAGE_OPERAND))
+                    } elif (coverage[whichaddr] & (COVERAGE_OPCODEINT | COVERAGE_OPCODE | COVERAGE_OPERAND))
                     {   colour = EMURGBPEN_CYAN;
                     } elif (coverage[whichaddr] & COVERAGE_ADDRESS)
                     {   colour = EMURGBPEN_PURPLE;
@@ -6310,13 +6310,13 @@ EXPORT void update_variant(FLAG force)
         } else
         {   strcpy(thestring, "?");
         }
-    acase CASINOPOS: // game is $1F6A
-        if (!force && t1 == memory[0x1F6A])
+    acase CASINOPOS: // game is $1F6B
+        if (!force && t1 == memory[0x1F6B])
         {   return;
         }
-        t1 = memory[0x1F6A];
-        if (memory[0x1F6A] >= 1 && memory[0x1F6A] <= 3)
-        {   strcpy(thestring, casino[memory[0x1F6A] - 1]);
+        t1 = memory[0x1F6B];
+        if (memory[0x1F6B] >= 1 && memory[0x1F6B] <= 3)
+        {   strcpy(thestring, casino[memory[0x1F6B] - 1]);
         } else
         {   strcpy(thestring, "?");
         }

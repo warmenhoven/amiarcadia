@@ -212,10 +212,10 @@ typedef void*               APTR;
 #define TEXTPEN_COMMENT      TEXTPEN_PURPLE
 #define TEXTPEN_CLIOUTPUT    6 // IBM: cyan
 #define TEXTPEN_TRACE2       6 // IBM: cyan
-#define TEXTPEN_CLIINPUT     7 // IBM: white
+#define TEXTPEN_CLIINPUT     7 // IBM: light grey
 #define TEXTPEN_REXX         8 // IBM: orange
 #define TEXTPEN_LOG          8 // IBM: orange
-#define TEXTPEN_DEFAULT      9 // IBM: grey
+#define TEXTPEN_DEFAULT      9 // IBM: dark grey
 #define TEXTPENS            10
 
                               // BBGGRR

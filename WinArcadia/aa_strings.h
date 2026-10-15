@@ -2790,7 +2790,7 @@
 #define MSG_LATITUDE1_STR "Latitude (based on inclination):"
 #define MSG_LATITUDE2_STR "Latitude (based on intensity):"
 #define MSG_DECLINATE_STR "Declinate?"
-#define MSG_TOD12_STR "Holding the Ctrl and Left Shift keys down shows a magnified view of what is under the mouse pointer."
+#define MSG_TOD12_STR "Holding the Ctrl and Shift keys down shows a magnified view of what is under the mouse pointer."
 #define MSG_GRAPHICS_FULLSCREEN_STR "Full screen?"
 #define MSG_ALL_STR "All"
 #define MSG_INVERT_STR "Invert"

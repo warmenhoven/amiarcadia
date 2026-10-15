@@ -3528,11 +3528,11 @@ MODULE int expr(void) // this can be called recursively!
         case  '+':            evalstring++;    val += factor();
         acase '-':            evalstring++;    val -= factor();
         acase '*': case 0xD7: evalstring++;    val *= factor();
-        acase '/': case 0xF7: evalstring++;    val /= factor();
+        acase '/': case 0xF7: if (val) { evalstring++; val /= factor(); } else { asmerror("divide by zero"); val = 0; }
         acase '^':            evalstring++;    val ^= factor();
         acase '|':            evalstring++;    val |= factor();
         acase '&':            evalstring++;    val &= factor();
-        acase '%':            if (val) { evalstring++; val %= factor(); } else { asmerror("divide by zero"); val = 0; }
+     // acase '%':            if (val) { evalstring++; val %= factor(); } else { asmerror("divide by zero"); val = 0; } (This conflicts with % binary prefix)
         acase '<':            if ((*evalstring + 1) == '<') { evalstring += 2; val <<= factor(); } else return val;
         acase '>':            if ((*evalstring + 1) == '>') { evalstring += 2; val >>= factor(); } else return val;
         acase '~':            evalstring++;    val = factor() ^ 0xFF;
@@ -3589,7 +3589,7 @@ MODULE int factor(void) // this can be called recursively!
          && *evalend != '^'
          && *evalend != '|'
          && *evalend != '&'
-         && *evalend != '%'
+      // && *evalend != '%' (This conflicts with % binary prefix)
          && *evalend != '<'
          && *evalend != '>'
          && *evalend != '~'

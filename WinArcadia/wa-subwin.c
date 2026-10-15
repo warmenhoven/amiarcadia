@@ -602,7 +602,6 @@ MODULE void draw_note(int whichnote, int colour);
 MODULE void make_moretips(int kind, int elements, int firstgad, int howmany);
 
 MODULE BOOL CALLBACK   CPUMonitorDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
-MODULE BOOL CALLBACK    MagnifierDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 MODULE BOOL CALLBACK       MemoryDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 MODULE BOOL CALLBACK        MusicDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 MODULE BOOL CALLBACK       OutputDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
@@ -3207,7 +3206,8 @@ EXPORT void ghost_bar(int whichbar)
 
 MODULE BOOL CALLBACK OutputDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {   int         gid,
-                length;
+                length,
+                value;
     ULONG       scancode;
     PAINTSTRUCT localps;
     TEXT        tempstring[80 + 1];
@@ -3309,18 +3309,12 @@ MODULE BOOL CALLBACK OutputDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARA
                 );
                 DISCARD SetWindowText(hwnd, tempstring);
         }   }
-    acase WM_SHOWWINDOW:
-        if (wParam == TRUE)
-        {   SendMessage(RichTextGadget, EM_SETSEL, 0, 0);
-        }
     acase WM_NOTIFY:
         if (((NMHDR*) lParam)->hwndFrom == RichTextGadget && ((NMHDR*) lParam)->code == EN_SELCHANGE && !ignoreghosting)
         {   EnableWindow(GetDlgItem(subwin[SUBWINDOW_OUTPUT].hwnd, IDC_COPYSELECTION), (((SELCHANGE*) lParam)->chrg.cpMin != ((SELCHANGE*) lParam)->chrg.cpMax) ? TRUE : FALSE);
 
             return 0;
         }
-    acase WM_SETFOCUS:
-        SendMessage(RichTextGadget, EM_SETSEL, (WPARAM) -1, (LPARAM) -1);
     acase WM_CLOSE:
         logfile_close();
         DestroyWindow(hwnd);
@@ -3354,20 +3348,24 @@ MODULE BOOL CALLBACK OutputDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARA
                 free(clipstring);
             }
         acase IDC_CONSOLEBG:
-            consolebg = SendMessage(GetDlgItem(hwnd, IDC_CONSOLEBG), CB_GETCURSEL, 0, 0);
-            switch (consolebg)
-            {
-            case 0: // black
-                DISCARD SendMessage(RichTextGadget, EM_SETBKGNDCOLOR, 0, RGB(  0,   0,   0));
-                fgformat.crTextColor = RGB(255, 255, 255);
-                fgformat.crBackColor = RGB(  0,   0,   0);
-            acase 1: // white
-                DISCARD SendMessage(RichTextGadget, EM_SETBKGNDCOLOR, 0, RGB(255, 255, 255));
-                fgformat.crTextColor = RGB(  0,   0,   0);
-                fgformat.crBackColor = RGB(255, 255, 255);
-            }
-            DISCARD SendMessage(RichTextGadget, EM_SETCHARFORMAT, SCF_ALL, (LPARAM) &fgformat);
-            zprintf(TEXTPEN_DEFAULT, ""); // to refresh text colours
+            if (HIWORD(wParam) == CBN_SELCHANGE)
+            {   value = SendMessage(GetDlgItem(hwnd, IDC_CONSOLEBG), CB_GETCURSEL, 0, 0);
+                if (consolebg != value)
+                {   consolebg = value;
+                    switch (consolebg)
+                    {
+                    case 0: // black
+                        SendMessage(RichTextGadget, EM_SETBKGNDCOLOR, 0, RGB(  0,   0,   0));
+                        fgformat.crTextColor = RGB(255, 255, 255);
+                        fgformat.crBackColor = RGB(  0,   0,   0);
+                    acase 1: // white
+                        SendMessage(RichTextGadget, EM_SETBKGNDCOLOR, 0, RGB(255, 255, 255));
+                        fgformat.crTextColor = RGB(  0,   0,   0);
+                        fgformat.crBackColor = RGB(255, 255, 255);
+                    }
+                    SendMessage(RichTextGadget, EM_SETCHARFORMAT, SCF_ALL, (LPARAM) &fgformat);
+                    zprintf(TEXTPEN_DEFAULT, ""); // to refresh text colours
+            }   }
         acase IDC_CLS:
             cls();
         }

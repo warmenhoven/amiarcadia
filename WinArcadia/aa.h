@@ -1,10 +1,10 @@
-#define DECIMALVERSION       "36.71"
-#define INTEGERVERSION       "36.71"
+#define DECIMALVERSION       "36.72"
+#define INTEGERVERSION       "36.72"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x71
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (7.10.2026)" // d.m.yyyy format
-#define RELEASEDATE          "07-10-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "7 October 2026" // full month and year
+#define MINORVERSION         0x72
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (15.10.2026)" // d.m.yyyy format
+#define RELEASEDATE          "15-10-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "15 October 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
 #define NEWCONFIGVERSION     "36.7"  // V36.7       +
@@ -828,15 +828,16 @@ C306C:
 #define COVERAGE_READ             0x2
 #define COVERAGE_OPERAND          0x4
 #define COVERAGE_OPCODE           0x8
-#define COVERAGE_ADDRESS         0x10
-// view_coverage() depends on coverage bits being bits 0..4 and in this order!
-#define COVERAGE_BITS        (COVERAGE_ADDRESS | COVERAGE_OPERAND | COVERAGE_OPCODE | COVERAGE_READ | COVERAGE_WRITE)
+#define COVERAGE_OPCODEINT       0x10
+#define COVERAGE_ADDRESS         0x20
+// view_coverage() depends on coverage bits being bits 0..5 and in this order!
+#define COVERAGE_BITS      (COVERAGE_ADDRESS | COVERAGE_OPCODEINT | COVERAGE_OPCODE | COVERAGE_OPERAND | COVERAGE_READ | COVERAGE_WRITE)
 
 #define COVERAGE_JUMPSINT       0x100
 #define COVERAGE_CALLSINT       0x200
 #define COVERAGE_JUMPS      0x1000000
 #define COVERAGE_CALLS      0x2000000
-#define ROUTINE_BITS       (COVERAGE_JUMPS     | COVERAGE_CALLS | COVERAGE_JUMPSINT | COVERAGE_CALLSINT)
+#define ROUTINE_BITS       (COVERAGE_JUMPS | COVERAGE_CALLS | COVERAGE_JUMPSINT | COVERAGE_CALLSINT)
 
 #define COVERAGE_DEPTH     0x1C000000
 #define COVERAGE_BITSHIFT          26 // %...###.......................... ->

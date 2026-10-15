@@ -4500,6 +4500,7 @@ EXPORT void docommand(int which)
             acase SPIDERSPOS:       case SPIDERSODPOS:                           iar            =  0x796;
             acase SUPERBUG1POS:     case SUPERBUG2POS:                           iar            =  0xA6A; // or iar = 0xA53, if you want to play end-of-level song first
             acase TURTLESPOS:                                                    iar            =  0x273;
+            acase WINDWORLDPOS:                                                  iar            =  0x93D;
         }   }
     // "Settings|VDU »" submenu
 #ifdef WIN32

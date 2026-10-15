@@ -400,16 +400,16 @@ MODULE FILE*       LogfileHandle = NULL;
 MODULE const int textpen_to_rgb[] =
 {
 // on black background
-  RGB( 64,  64,  64), // 0          TEXTPEN_BLACK
+  RGB(255, 255, 255), // 0          TEXTPEN_BLACK
   RGB(255,   0,   0), // 1          TEXTPEN_RED
   RGB(  0, 255,   0), // 2          TEXTPEN_GREEN
   RGB(255, 255,   0), // 3          TEXTPEN_YELLOW
   RGB(128, 128, 255), // 4          TEXTPEN_BLUE
   RGB(255,   0, 255), // 5          purple
   RGB(  0, 255, 255), // 6          cyan
-  RGB(255, 255, 255), // 7          white   
+  RGB(192, 192, 192), // 7          light grey
   RGB(255, 128,   0), // 8          orange
-  RGB(128, 128, 128), // 9          grey
+  RGB(128, 128, 128), // 9          dark grey
 // on white background
   RGB(  0,   0,   0), // 0+TEXTPENS TEXTPEN_BLACK
   RGB(192,   0,   0), // 1+TEXTPENS TEXTPEN_RED
@@ -418,8 +418,8 @@ MODULE const int textpen_to_rgb[] =
   RGB(  0,   0, 255), // 4+TEXTPENS TEXTPEN_BLUE
   RGB(128,   0, 128), // 5+TEXTPENS purple
   RGB(  0, 128, 128), // 6+TEXTPENS cyan
-  RGB(128, 128, 128), // 7+TEXTPENS grey
-  RGB(255, 160,   0), // 8+TEXTPENS orange
+  RGB(128, 128, 128), // 7+TEXTPENS light grey
+  RGB(160,  80,   0), // 8+TEXTPENS orange
   RGB( 64,  64,  64), // 9+TEXTPENS dark grey
 };
 #endif
@@ -1835,8 +1835,8 @@ EXPORT void zprintf(UNUSED int whichcolour, const char* format, ...)
     SendMessage(RichTextGadget, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) &fgformat);
 
     SendMessage(RichTextGadget, EM_SETSEL,       end,            end);
-    SendMessage(RichTextGadget, EM_SCROLLCARET,  0,              0);
     SendMessage(RichTextGadget, EM_EXSETSEL,     0,              (LPARAM) &usersel);
+    SendMessage(RichTextGadget, WM_VSCROLL,      SB_BOTTOM,      0);
 
     ignoreghosting = FALSE;
 

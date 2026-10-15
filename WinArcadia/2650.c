@@ -664,7 +664,8 @@ EXPORT void one_instruction(void)
     opcode = memory[iar];
 
 #ifndef GAMER
-    coverage[iar] |= COVERAGE_OPCODE;
+    coverage[iar] |= (psu & PSU_II) ? COVERAGE_OPCODEINT : COVERAGE_OPCODE;
+
     if (log_illegal)
     {   if (coverage[iar] & COVERAGE_OPERAND)
         {   DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
@@ -677,7 +678,7 @@ EXPORT void one_instruction(void)
         }
         if (table_size_2650[opcode] >= 2)
         {   coverage[WRAPMEM(1)] |= COVERAGE_OPERAND;
-            if (coverage[WRAPMEM(1)] & COVERAGE_OPCODE)
+            if (coverage[WRAPMEM(1)] & (COVERAGE_OPCODEINT | COVERAGE_OPCODE))
             {   DISCARD number_to_friendly(WRAPMEM(1), (STRPTR) friendly, TRUE, 0, 15, TRUE);
                 zprintf(TEXTPEN_LOG, LLL(MSG_1STOPERANDOPCODE, "The byte at %s, now the 1st byte of an operand, has previously been an opcode!\n\n"), friendly);
                 set_pause(TYPE_LOG);
@@ -688,7 +689,7 @@ EXPORT void one_instruction(void)
             }
             if (table_size_2650[opcode] == 3)
             {   coverage[WRAPMEM(2)] |= COVERAGE_OPERAND;
-                if (coverage[WRAPMEM(2)] & COVERAGE_OPCODE)
+                if (coverage[WRAPMEM(2)] & (COVERAGE_OPCODEINT | COVERAGE_OPCODE))
                 {   DISCARD number_to_friendly(WRAPMEM(2), (STRPTR) friendly, TRUE, 0, 15, TRUE);
                     zprintf(TEXTPEN_LOG, LLL(MSG_2NDOPERANDOPCODE, "The byte at %s, now the 2nd byte of an operand, has previously been an opcode!\n\n"), friendly);
                     set_pause(TYPE_LOG);

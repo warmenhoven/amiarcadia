@@ -4522,7 +4522,7 @@ MODULE void view_imagery(int address1, int address2, FILE* filehandle)
 
         sprintf
         (   (char*) outputstring,
-            "        db      $%02X ;%s $%04X\n",
+            "        DB      $%02X ;%s $%04X\n",
           // 01234567890123456  789015901234 5
             memory[i],           // 26
             bits,                // 37

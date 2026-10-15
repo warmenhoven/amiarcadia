@@ -525,7 +525,7 @@ EXPORT const struct TODStruct tods[TIPSOFDAYS] = {
               " the previous twenty commands entered."                                        },
 { MSG_TOD11,  "Holding the Ctrl key down shows various information on the status bar"         \
               " about what is under the mouse pointer."                                       },
-{ MSG_TOD12,  "Holding the Ctrl and Left Shift keys down shows a magnified view of"           \
+{ MSG_TOD12,  "Holding the Ctrl and Shift keys down shows a magnified view of"                \
               " what is under the mouse pointer."                                             },
 { MSG_TOD14,  "You can set a masked watchpoint in the debugger by specifying"                 \
               " WP <address>:<mask> , eg. WP $1234:56 ."                                      },

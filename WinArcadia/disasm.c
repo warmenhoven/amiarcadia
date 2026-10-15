@@ -1714,11 +1714,12 @@ IMPORT const struct KnownStruct       known[KNOWNGAMES];
 
 // 5. MODULE VARIABLES----------------------------------------------------
 
-MODULE UWORD disflag[32768],    // seems to cause a crash on WinArcadia...
-             threadlist[32768]; // ...if these are PERSISTent to disassemble_2650()
+MODULE FLAG  indexed;
+MODULE UWORD disflag[32768],           // seems to cause a crash on WinArcadia...
+             threadlist[32768];        // ...if these are PERSISTent to disassemble_2650()
 MODULE ULONG tea         = OUTOFRANGE; // trace effective address
-MODULE char  addressstring[80 + 1], // "*SPRITECOLLIDE,r3+ [SPRITECOLLIDE]" is no longer the largest possible
-             an[128 + 1], // [80 + 1] is probably still enough
+MODULE char  addressstring[80 + 1],    // "*SPRITECOLLIDE,r3+ [SPRITECOLLIDE]" is no longer the largest possible
+             an[128 + 1],              // [80 + 1] is probably still enough
              byte1[2 + 1],
              byte2[2 + 1],
              byte3[2 + 1],
@@ -3920,9 +3921,10 @@ MODULE void ABS_EA_TRACE(void)
     number_to_friendly(tea, ENDOF(pseudostring), FALSE, 0, 15, TRUE);
     switch (OPERAND & 0x60)
     {
-    case  0x20: sprintf(ENDOF(pseudostring), " + ++%s", reg);
-    acase 0x40: sprintf(ENDOF(pseudostring), " + --%s", reg);
-    acase 0x60: sprintf(ENDOF(pseudostring), " + %s"  , reg);
+    case  0x20: indexed = TRUE; sprintf(ENDOF(pseudostring), " + ++%s", reg);
+    acase 0x40: indexed = TRUE; sprintf(ENDOF(pseudostring), " + --%s", reg);
+    acase 0x60: indexed = TRUE; sprintf(ENDOF(pseudostring), " + %s"  , reg);
+    adefault:   indexed = FALSE;
     }
 
     switch (style)
@@ -4015,6 +4017,7 @@ MODULE void ABS_EA_TRACE(void)
 
 MODULE void REL_EA_TRACE(void)
 {   tea = (iar & PAGE) + ((iar + 2 + relative_2650[OPERAND]) & NONPAGE); // what about mirroring?
+    indexed = FALSE;
 
     if (OPERAND & 0x80)
     {   switch (style)
@@ -4037,7 +4040,7 @@ MODULE void REL_EA_TRACE(void)
         addr = (int) tea;
         tea = memory[addr] << 8;
         if ((++addr & NONPAGE) == 0)
-        {   addr -= PLEN; /* page wrap */
+        {   addr -= PLEN; // page wrap
         }
         tea = (tea + memory[addr]) & AMSK;
 
@@ -4064,6 +4067,7 @@ MODULE void REL_EA_TRACE(void)
 
 MODULE void BRA_EA_TRACE(FLAG full)
 {   tea = ((OPERAND << 8) + memory[WRAPMEM(2)]) & AMSK; // what about mirroring?
+    indexed = FALSE;
 
     if (OPERAND & 0x80)
     {   switch (style)
@@ -4113,8 +4117,7 @@ MODULE void BRA_EA_TRACE(FLAG full)
 
 MODULE void ZERO_EA_TRACE(FLAG full)
 {   tea = (relative_2650[OPERAND] & NONPAGE);
-
-    // what about mirroring?
+    indexed = FALSE;
 
     if (OPERAND & 0x80)
     {   switch (style)
@@ -4135,7 +4138,7 @@ MODULE void ZERO_EA_TRACE(FLAG full)
         addr = (int) tea;
         tea = memory[addr] << 8;
         if ((++addr & NONPAGE) == 0)
-        {   addr -= PLEN; /* page wrap */
+        {   addr -= PLEN; // page wrap
         }
         tea = (tea + memory[addr]) & AMSK;
 
@@ -4194,13 +4197,25 @@ EXPORT void saytrace(void)
         } else
         {   zprintf(TEXTPEN_TRACE2, "        %s\n;", mn);
         }
-        if (tea == OUTOFRANGE)
+        if
+        (   tea == OUTOFRANGE
+         || (disassembling == 2 && indexed)
+        )
         {   zprintf(TEXTPEN_PSEUDOCODE, "%s\n", an);
         } else
         {   if (tea != mirror_r[tea] || tea != mirror_w[tea])
             {   zprintf(TEXTPEN_PSEUDOCODE, "%s // $%X is mirror\n", an, tea);
             } elif (memflags[tea] & ASIC)
-            {   zprintf(TEXTPEN_PSEUDOCODE, "%s // $%X is hardware register\n", an, tea);
+            {   zprintf(TEXTPEN_PSEUDOCODE, "%s // $%X is hardware register", an, tea);
+                if (memflags[tea] & NOWRITE)
+                {   zprintf(TEXTPEN_PSEUDOCODE, " (read-only)");
+                } elif (memflags[tea] & NOREAD)
+                {   zprintf(TEXTPEN_PSEUDOCODE, " (write-only)");
+                }
+                if (memflags[tea] & READONCE)
+                {   zprintf(TEXTPEN_PSEUDOCODE, " (read-once!)");
+                }
+                zprintf(TEXTPEN_PSEUDOCODE, "\n");
             } elif (memflags[tea] & (NOREAD & NOWRITE))
             {   zprintf(TEXTPEN_PSEUDOCODE, "%s // $%X is unmapped\n", an, tea);
             } elif (memflags[tea] & NOWRITE)

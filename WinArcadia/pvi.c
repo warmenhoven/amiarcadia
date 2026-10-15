@@ -1762,7 +1762,9 @@ MODULE void newspritedone(int whichsprite)
     pviwrite(PVI_BGCOLLIDE_M4, (UBYTE) (pviread(PVI_BGCOLLIDE_M4) | (8 >> whichsprite)), TRUE);
 
     if (!interrupt_2650)
-    {   interrupt_2650 = TRUE;
+    {   if (whichgame != CASINOPOS || !(psu & PSU_II))
+        {   interrupt_2650 = TRUE;
+        }
         /* Don't call checkinterrupt() because only one interrupt
         should be generated even if multiple sprites finish
         simultaneously (important for Interton Capture). */

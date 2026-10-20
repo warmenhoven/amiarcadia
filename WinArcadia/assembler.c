@@ -94,7 +94,8 @@ MODULE       TEXT                     equstring[LABELLIMIT + 1],
                                       entirestring[256 + 1],
                                       fn_inc[MAX_PATH + 1],
                                       GraphBuffer[16 * KILOBYTE], // arbitrary size
-                                      LineBuffer[256 + 1];
+                                      LineBuffer[256 + 1],
+                                      path_include[MAX_PATH + 1];
 MODULE       STRPTR                   AsmBuffer      = NULL,
                                       evalstring;
 MODULE       int                      asmsize2,
@@ -156,6 +157,7 @@ MODULE int fiximmediate(int value);
 MODULE int expr(void);
 MODULE int factor(void);
 MODULE FLAG isterminator(TEXT thechar);
+MODULE void cd_include(void);
 
 // CODE-------------------------------------------------------------------
 
@@ -181,7 +183,8 @@ EXPORT void assemble(void)
         if (!Exists(fn_asm))
         {   fixextension(".2650", (STRPTR) fn_asm, TRUE, "");
             if (!Exists(fn_asm))
-            {   fixextension(filekind[KIND_ASM].extension, (STRPTR) fn_asm, TRUE, "");
+            {   zprintf(TEXTPEN_CLIOUTPUT, "File doesn't exist!\n");
+                goto ASMDONE;
     }   }   }
 
     asmsize1 = (int) getsize((STRPTR) fn_asm);
@@ -222,6 +225,8 @@ EXPORT void assemble(void)
         {   zprintf(TEXTPEN_CLIOUTPUT, "Can't open %s for output!\n", fn_lstbin);
             goto ASMDONE;
     }   }
+
+    cd_include(); // so that it uses a path that is relative to the main source code file when using INCLUDE/INCBIN directives
 
     switch (style)
     {
@@ -604,8 +609,9 @@ START:
             graphnesting--;
     }   }
     elif
-    (   compareit("INCLUDE", TRUE) // Japanese homebrews, et al.
-     || compareit("INCL"   , TRUE) // AS2650
+    (   compareit("INCLUDE" , TRUE) // Japanese homebrews, et al.
+     || compareit("INCLUDE*", TRUE) // Eelco's assembler
+     || compareit("INCL"    , TRUE) // AS2650
     )
     {   if (pass == 2 && GraphBuffer[0] == EOS)
         {   sprintf(GraphBuffer, "$0000 %s\n", fn_asm);
@@ -4115,7 +4121,7 @@ DONE:
 
     incsize = (int) getsize((STRPTR) fn_inc);
     if (!(IncBuffer = malloc(incsize)))
-    {   asmerror("out of memory");
+    {   asmerror("out of memory (error 1)");
         return FALSE;
     }
     if (!(IncHandle = fopen((const char*) fn_inc, "rb")))
@@ -4192,7 +4198,7 @@ DONE:
 
     incsize1 = (int) getsize((STRPTR) fn_inc);
     if (!(IncBuffer = malloc(incsize1 + 2 + strlen(ENDMARKER) + strlen(fn_inc) + 1)))
-    {   asmerror("out of memory");
+    {   asmerror("out of memory (error 2)");
         including = FALSE;
         return FALSE;
     }
@@ -4229,7 +4235,7 @@ DONE:
     // don't add a null terminator!
 
     if (!(TotalAsmBuffer = malloc(asmsize2 + incsize2)))
-    {   asmerror("out of memory");
+    {   asmerror("out of memory (error 3)");
         free(IncBuffer);
         including = FALSE;
         return FALSE;
@@ -5276,4 +5282,35 @@ MODULE FLAG isterminator(TEXT thechar)
     {   return TRUE;
     } // implied else
     return FALSE;
+}
+
+MODULE void cd_include(void)
+{   int  i    =  0,
+         last = -1;
+#ifdef AMIGA
+    BPTR IncludeLock;
+#endif
+
+    strcpy(path_include, fn_asm);
+
+    while (path_include[i] != EOS)
+    {   if (path_include[i] == '/' || path_include[i] == ':' || path_include[i] == '\\')
+        {   last = i;
+        }
+        i++;
+    }
+
+    if (last >= 0)
+    {   path_include[last + 1] = EOS;
+    } else
+    {   path_include[       0] = EOS;
+    }
+
+#ifdef AMIGA
+    IncludeLock = Lock((const char*) path_include, ACCESS_READ);
+    DISCARD CurrentDir(IncludeLock);
+#endif
+#ifdef WIN32
+    DISCARD SetCurrentDirectory(path_include);
+#endif
 }

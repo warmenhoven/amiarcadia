@@ -3901,4 +3901,13 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "At game over:\n" \
 "START (F1): return to title screen"
 },
+{ // 286. Manual Test Cartridge
+        "2"    ,                "2"    ,
+"-----","-----","-----","-----","-----","-----",
+"1"    ,"-----","3"    ,"1"    ,"-----","3"    ,
+"4"    ,"5"    ,"6"    ,"4"    ,"5"    ,"6"    ,
+"7"    ,"8"    ,"9"    ,"7"    ,"8"    ,"9"    ,
+"Cl"   ,"0"    ,"En"   ,"Cl"   ,"0"    ,"En"   ,
+"START (F1): advance to next stage or substage"
+},
 };

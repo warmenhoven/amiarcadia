@@ -1,15 +1,15 @@
-#define DECIMALVERSION       "36.72"
-#define INTEGERVERSION       "36.72"
+#define DECIMALVERSION       "36.73 beta"
+#define INTEGERVERSION       "36.73"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x72
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (15.10.2026)" // d.m.yyyy format
-#define RELEASEDATE          "15-10-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "15 October 2026" // full month and year
+#define MINORVERSION         0x73
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (20.10.2026)" // d.m.yyyy format
+#define RELEASEDATE          "20-10-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "20 October 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
-#define NEWCONFIGVERSION     "36.7"  // V36.7       +
-#define OLDCONFIGVERSION     "36.54" // V36.54 final-36.65
-#define VERYOLDCONFIGVERSION "36.5"  // V36.5       -36.54 beta
+#define NEWCONFIGVERSION     "36.73" // V36.73 beta +
+#define OLDCONFIGVERSION     "36.7"  // V36.7       -36.72
+#define VERYOLDCONFIGVERSION "36.54" // V36.54 final-36.65
 #define RELEASING
 // comment this out during development
 
@@ -795,9 +795,10 @@ C306C:
 #define PIPBUG_PIPBUG1BIOS      2
 #define PIPBUG_PIPBUG2BIOS      3
 
-#define CD2650_IPL              0
-#define CD2650_POPMON           1
-#define CD2650_SUPERVISOR       2
+#define CD2650_IPL10            0
+#define CD2650_IPL11            1
+#define CD2650_POPMON           2
+#define CD2650_SUPERVISOR       3
 
 #define PHUNSY_MINIMONITOR      0
 #define PHUNSY_PHUNSY           1
@@ -1874,7 +1875,7 @@ typedef UWORD MEMFLAG;
 #define MENUOPT_GBUG               64
 #define MENUOPT_MIKEBUG            65
 #define MENUOPT_MYBUG              66
-#define MENUOPT_BIOS_IPL           67
+#define MENUOPT_BIOS_IPL11         67
 #define MENUOPT_BIOS_POPMON        68
 #define MENUOPT_BIOS_SUPERVISOR    69
 #define MENUOPT_BIOS_MINIMONITOR   70
@@ -1904,8 +1905,9 @@ typedef UWORD MEMFLAG;
 #define MENUOPT_CDDOS              92
 #define MENUOPT_P1DOS              93
 #define MENUOPT_NOCD2650DOS        94
+// "Settings|BIOS »" submenu (again)
+#define MENUOPT_BIOS_IPL10         95
 // "Settings|Emulator »" submenu
-// spare                           95
 // spare                           96
 #define MENUOPT_APPEND             97
 #define MENUOPT_IGNORE             98
@@ -2126,7 +2128,7 @@ typedef UWORD MEMFLAG;
 #define FRAMESKIP_MAX         10
 #define FRAMESKIP_INFINITE    11
 
-#define OVERLAYS            (285 + 1)
+#define OVERLAYS            (286 + 1)
 #define ARCADIA_OVERLAY        0
 #define ELEKTOR_OVERLAY        1
 #define SI50_OVERLAY           2
@@ -2148,7 +2150,7 @@ typedef UWORD MEMFLAG;
 #define GALAXIA_OVERLAY      231
 #define TYPERIGHT_OVERLAY    236
 
-#define KNOWNGAMES          (866 + 1)
+#define KNOWNGAMES          (867 + 1)
 #define LARGESTKNOWN       59796 // size of largest known game in bytes (AOF version of Pattern)
 
 // Arcadia                           0..  29
@@ -2472,6 +2474,7 @@ typedef UWORD MEMFLAG;
 #define I_TETRISPOS2          207
 #define I_TETRISPOS3          208
 #define MUNCHANDCRUNCH2POS    224
+#define TESTCARTPOS           867
 // Elektor
 #define MAZESPOS              236
 #define CIRCLEDRIVEPOS1       237

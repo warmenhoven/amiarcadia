@@ -3540,7 +3540,7 @@ EXPORT void printer_savepartial(int whichprinter)
     )   )
     {
 #ifdef VERBOSE
-        zprintf(TEXTPEN_VERBOSE, "Page %d of printer %d needs saving.\n", printer[whichprinter.page, whichprinter);
+        zprintf(TEXTPEN_VERBOSE, "Page %d of printer %d needs saving.\n", printer[whichprinter].page, whichprinter);
 #endif
 #ifdef WIN32
         printer_copygfx(FALSE, KIND_BMP, FALSE, whichprinter);

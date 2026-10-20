@@ -234,8 +234,24 @@ EXPORT void cd2650_setmemmap(void)
 
     switch (cd2650_biosver)
     {
-    case CD2650_IPL:
-        for (i =     0; i <=  0x179; i++) memory[i] = ipl[i];
+    case CD2650_IPL10:
+        for (i =     0; i <=  0x17C; i++) memory[i] = ipl10[i];
+        biosend = 0x17C;
+        for (i = 0x17D; i <=  0xFFF; i++) memory[i] = 0;
+        if (cd2650_dosver == DOS_P1DOS)
+        {   machines[CD2650].firstequiv   = FIRSTP1DOSEQUIV;
+            machines[CD2650].lastequiv    = LASTP1DOSEQUIV;
+        } else
+        {   machines[CD2650].firstequiv   =
+            machines[CD2650].lastequiv    = -1;
+        }
+        machines[CD2650].firstcodecomment =
+        machines[CD2650].lastcodecomment  =
+        machines[CD2650].firstdatacomment =
+        machines[CD2650].lastdatacomment  = -1;
+        cd2650_vdu = VDU_ASCII;
+    acase CD2650_IPL11:
+        for (i =     0; i <=  0x179; i++) memory[i] = ipl11[i];
         biosend = 0x179;
         for (i = 0x17A; i <=  0xFFF; i++) memory[i] = 0;
         if (cd2650_dosver == DOS_P1DOS)
@@ -273,7 +289,7 @@ EXPORT void cd2650_setmemmap(void)
     }
     for (i = 0x1000; i <= 0x14FF; i++) memory[i] = 0x20;
     for (i = 0x1500; i <= 0x5FFF; i++) memory[i] = 0;
-    if (!post && cd2650_biosver == CD2650_IPL && cd2650_dosver != DOS_NOCD2650DOS)
+    if (!post && (cd2650_biosver == CD2650_IPL10 || cd2650_biosver == CD2650_IPL11) && cd2650_dosver != DOS_NOCD2650DOS)
     {   switch (cd2650_dosver)
         {
         case DOS_CDDOS:
@@ -344,7 +360,7 @@ EXPORT void cd2650_setmemmap(void)
 
     diskblocksize = CD2650_BLOCKSIZE;
 
-    if (cd2650_biosver == CD2650_IPL)
+    if (cd2650_biosver == CD2650_IPL10 || cd2650_biosver == CD2650_IPL11)
     {   cd2650_create_disk(0); // because it won't even boot without DOS available on disk
 }   }
 
@@ -1147,7 +1163,7 @@ EXPORT FLAG cd2650_edit_screen(UWORD code)
                                  settitle();
                               // dogamename();
     adefault:
-        if (lowercase && !capslock && !shift() && cd2650_biosver == CD2650_IPL)
+        if (lowercase && !capslock && !shift() && (cd2650_biosver == CD2650_IPL10 || cd2650_biosver == CD2650_IPL11))
         {   capitalize = FALSE;
         } else
         {   capitalize = TRUE;
@@ -1749,7 +1765,7 @@ EXPORT void cd2650_updatecharset(void)
 }   }   }   }   }
 
 EXPORT void cd2650_changebios(void)
-{   if (cd2650_biosver == CD2650_IPL && cd2650_dosver != DOS_NOCD2650DOS) // if using DOS
+{   if ((cd2650_biosver == CD2650_IPL10 || cd2650_biosver == CD2650_IPL11) && cd2650_dosver != DOS_NOCD2650DOS) // if using DOS
     {   cd2650_vdu = VDU_ASCII;
     } else
     {   if (cd2650_vdu == VDU_ASCII)
@@ -2156,20 +2172,18 @@ EXPORT void cd2650_serialize_cos(void)
 {   int i,
         whichdrive;
 
-    if (cosversion >= 44)
-    {   for (i =     0; i <= 0x7FFF; i++)
-        {   serialize_byte(&memory[i]);
-    }   }
-    else
-    {   for (i = 0x3FF; i <= 0x7FFF; i++)
-        {   serialize_byte(&memory[i]);
-    }   }
+    for (i =     0; i <= 0x7FFF; i++)
+    {   serialize_byte(&memory[i]);
+    }
     if (serializemode == SERIALIZE_READ)
     {   for (whichdrive = 0; whichdrive < machines[machine].drives; whichdrive++)
         {   for (i = 0; i < CD2650_DISKSIZE / 8; i++)
             {   drive[whichdrive].flags[i] = 0;
     }   }   }
     serialize_byte_int(&cd2650_biosver);
+    if (cosversion < 45)
+    {   cd2650_biosver++;
+    }
     serialize_byte_int(&cd2650_vdu);
     for (whichdrive = 0; whichdrive < 4; whichdrive++)
     {   serialize_byte((UBYTE*) &drive[whichdrive].inserted);
@@ -2204,11 +2218,7 @@ EXPORT void cd2650_serialize_cos(void)
     }
     serialize_byte((UBYTE*) &sectordone);
     serialize_long((ULONG*) &timeoutat);
-    if (cosversion >= 43)
-    {   serialize_byte_int(&belling[0]);
-    } else
-    {   belling[0] = 0;
-    }
+    serialize_byte_int(&belling[0]);
 
     if (serializemode == SERIALIZE_READ)
     {   for (whichdrive = 0; whichdrive < machines[machine].drives; whichdrive++)

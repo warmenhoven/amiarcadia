@@ -725,7 +725,7 @@ EXPORT const int menucode[MENUITEMS] = {
     ID_BIOS_GBUG,
     ID_BIOS_MIKEBUG,
     ID_BIOS_MYBUG,
-    ID_BIOS_IPL,
+    ID_BIOS_IPL11,
     ID_BIOS_POPMON,
     ID_BIOS_SUPERVISOR,
     ID_BIOS_MINIMONITOR,         //  70
@@ -753,7 +753,7 @@ EXPORT const int menucode[MENUITEMS] = {
     ID_DOS_CDDOS,
     ID_DOS_P1DOS,
     ID_DOS_NOCD2650DOS,
-    -1, // spare
+    ID_BIOS_IPL10,
     -1, // spare
     ID_LOG_APPEND,               //  97 "Settings|Emulator »" submenu
     ID_LOG_IGNORE,
@@ -859,7 +859,7 @@ MODULE HMENU                   SystemMenuPtr       = NULL,
                                TrayMenuPtr         = NULL;
 MODULE WNDPROC                 wpOldEditProc; // Stores the old original window procedure for the edit control
 
-#define MIBS 106 // counting from 1 (ie. items go from 0..MIBS-1)
+#define MIBS 107 // counting from 1 (ie. items go from 0..MIBS-1)
 MODULE struct
 {   const DWORD   menuitem,
                   resource;
@@ -904,7 +904,7 @@ MODULE struct
   { ID_DOS_SDOS42           , IDB_M_TWIN          , TRUE , -1      },
   { ID_DOS_TOS              , IDB_M_TWIN          , TRUE , -1      },
   { ID_DOS_UDOS             , IDB_M_TWIN          , TRUE , -1      },
-  { ID_BIOS_IPL             , IDB_M_CD2650        , TRUE , -1      },
+  { ID_BIOS_IPL11           , IDB_M_CD2650        , TRUE , -1      },
   { ID_BIOS_POPMON          , IDB_M_CD2650        , TRUE , -1      },
   { ID_BIOS_SUPERVISOR      , IDB_M_CD2650        , TRUE , -1      },
   { ID_BIOS_MINIMONITOR     , IDB_M_PHUNSY        , TRUE , -1      },
@@ -975,6 +975,7 @@ MODULE struct
   { ID_VDU_VT100            , IDB_M_PIPBUG        , TRUE , -1      }, // 103
   { ID_BIOS_ARTEMIS         , IDB_M_PIPBUG        , TRUE , -1      }, // 104
   { ID_TOOLS_MUSIC          , IDB_M_MUSIC         , FALSE, -1      }, // 105
+  { ID_BIOS_IPL10           , IDB_M_CD2650        , TRUE , -1      }, // 106
 };
 
 MODULE const int gadgetcode[] =
@@ -2304,6 +2305,102 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         FF_SWISS,               // BYTE nPitchAndFamily
         "Courier"               // LPCTSTR lpszFacename (doesn't work with "MS Sans Serif")
     );
+    hFont = CreateFont
+    (   14,                     // int nHeight
+        0,                      // int nWidth
+        0,                      // int nEscapement
+        0,                      // int nOrientation
+        FW_MEDIUM,              // int nWeight
+        FALSE,                  // BYTE bItalic
+        FALSE,                  // BYTE bUnderline
+        0,                      // BYTE cStrikeOut
+        ANSI_CHARSET,           // BYTE nCharSet
+        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
+        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
+        DEFAULT_QUALITY,        // BYTE nQuality
+        FF_SWISS,               // BYTE nPitchAndFamily
+        "MS Sans Serif"         // LPCTSTR lpszFacename
+    );
+    hSmallFont = CreateFont
+    (   8,                      // int nHeight
+        0,                      // int nWidth
+        0,                      // int nEscapement
+        0,                      // int nOrientation
+        FW_MEDIUM,              // int nWeight
+        FALSE,                  // BYTE bItalic
+        FALSE,                  // BYTE bUnderline
+        0,                      // BYTE cStrikeOut
+        ANSI_CHARSET,           // BYTE nCharSet
+        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
+        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
+        DEFAULT_QUALITY,        // BYTE nQuality
+        FF_SWISS,               // BYTE nPitchAndFamily
+        "Arial"                 // LPCTSTR lpszFacename (doesn't work with "MS Sans Serif")
+    );
+    hBoldFont = CreateFont
+    (   14,                     // int nHeight
+        0,                      // int nWidth
+        0,                      // int nEscapement
+        0,                      // int nOrientation
+        FW_EXTRABOLD,           // int nWeight
+        FALSE,                  // BYTE bItalic
+        FALSE,                  // BYTE bUnderline
+        0,                      // BYTE cStrikeOut
+        ANSI_CHARSET,           // BYTE nCharSet
+        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
+        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
+        DEFAULT_QUALITY,        // BYTE nQuality
+        FF_SWISS,               // BYTE nPitchAndFamily
+        "MS Sans Serif"         // LPCTSTR lpszFacename
+    );
+    hGreekFont = CreateFont
+    (   14,                     // int nHeight
+        0,                      // int nWidth
+        0,                      // int nEscapement
+        0,                      // int nOrientation
+        FW_MEDIUM,              // int nWeight
+        FALSE,                  // BYTE bItalic
+        FALSE,                  // BYTE bUnderline
+        0,                      // BYTE cStrikeOut
+        GREEK_CHARSET,          // BYTE nCharSet
+        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
+        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
+        DEFAULT_QUALITY,        // BYTE nQuality
+        FF_SWISS,               // BYTE nPitchAndFamily
+        "MS Sans Serif"         // LPCTSTR lpszFacename
+    );
+    hPolishFont = CreateFont
+    (   14,                     // int nHeight
+        0,                      // int nWidth
+        0,                      // int nEscapement
+        0,                      // int nOrientation
+        FW_MEDIUM,              // int nWeight
+        FALSE,                  // BYTE bItalic
+        FALSE,                  // BYTE bUnderline
+        0,                      // BYTE cStrikeOut
+        EASTEUROPE_CHARSET,     // BYTE nCharSet
+        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
+        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
+        DEFAULT_QUALITY,        // BYTE nQuality
+        FF_SWISS,               // BYTE nPitchAndFamily
+        "MS Sans Serif"         // LPCTSTR lpszFacename
+    );
+    hRussianFont = CreateFont
+    (   14,                     // int nHeight
+        0,                      // int nWidth
+        0,                      // int nEscapement
+        0,                      // int nOrientation
+        FW_MEDIUM,              // int nWeight
+        FALSE,                  // BYTE bItalic
+        FALSE,                  // BYTE bUnderline
+        0,                      // BYTE cStrikeOut
+        RUSSIAN_CHARSET,        // BYTE nCharSet
+        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
+        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
+        DEFAULT_QUALITY,        // BYTE nQuality
+        FF_SWISS,               // BYTE nPitchAndFamily
+        "MS Sans Serif"         // LPCTSTR lpszFacename
+    );
 
     DisplayWidth  = GetSystemMetrics(SM_CXSCREEN); // these 2 lines must be done before loadconfig()
     DisplayHeight = GetSystemMetrics(SM_CYSCREEN);
@@ -2543,103 +2640,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
        SM_CXSIZEFRAME, SM_CYSIZEFRAME are normally 4.
        SM_CXBORDER,    SM_CXBORDER    are normally 1. */
-
-    hFont = CreateFont
-    (   14,                     // int nHeight
-        0,                      // int nWidth
-        0,                      // int nEscapement
-        0,                      // int nOrientation
-        FW_MEDIUM,              // int nWeight
-        FALSE,                  // BYTE bItalic
-        FALSE,                  // BYTE bUnderline
-        0,                      // BYTE cStrikeOut
-        ANSI_CHARSET,           // BYTE nCharSet
-        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
-        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
-        DEFAULT_QUALITY,        // BYTE nQuality
-        FF_SWISS,               // BYTE nPitchAndFamily
-        "MS Sans Serif"         // LPCTSTR lpszFacename
-    );
-    hSmallFont = CreateFont
-    (   8,                      // int nHeight
-        0,                      // int nWidth
-        0,                      // int nEscapement
-        0,                      // int nOrientation
-        FW_MEDIUM,              // int nWeight
-        FALSE,                  // BYTE bItalic
-        FALSE,                  // BYTE bUnderline
-        0,                      // BYTE cStrikeOut
-        ANSI_CHARSET,           // BYTE nCharSet
-        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
-        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
-        DEFAULT_QUALITY,        // BYTE nQuality
-        FF_SWISS,               // BYTE nPitchAndFamily
-        "Arial"                 // LPCTSTR lpszFacename (doesn't work with "MS Sans Serif")
-    );
-    hBoldFont = CreateFont
-    (   14,                     // int nHeight
-        0,                      // int nWidth
-        0,                      // int nEscapement
-        0,                      // int nOrientation
-        FW_EXTRABOLD,           // int nWeight
-        FALSE,                  // BYTE bItalic
-        FALSE,                  // BYTE bUnderline
-        0,                      // BYTE cStrikeOut
-        ANSI_CHARSET,           // BYTE nCharSet
-        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
-        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
-        DEFAULT_QUALITY,        // BYTE nQuality
-        FF_SWISS,               // BYTE nPitchAndFamily
-        "MS Sans Serif"         // LPCTSTR lpszFacename
-    );
-    hGreekFont = CreateFont
-    (   14,                     // int nHeight
-        0,                      // int nWidth
-        0,                      // int nEscapement
-        0,                      // int nOrientation
-        FW_MEDIUM,              // int nWeight
-        FALSE,                  // BYTE bItalic
-        FALSE,                  // BYTE bUnderline
-        0,                      // BYTE cStrikeOut
-        GREEK_CHARSET,          // BYTE nCharSet
-        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
-        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
-        DEFAULT_QUALITY,        // BYTE nQuality
-        FF_SWISS,               // BYTE nPitchAndFamily
-        "MS Sans Serif"         // LPCTSTR lpszFacename
-    );
-    hPolishFont = CreateFont
-    (   14,                     // int nHeight
-        0,                      // int nWidth
-        0,                      // int nEscapement
-        0,                      // int nOrientation
-        FW_MEDIUM,              // int nWeight
-        FALSE,                  // BYTE bItalic
-        FALSE,                  // BYTE bUnderline
-        0,                      // BYTE cStrikeOut
-        EASTEUROPE_CHARSET,     // BYTE nCharSet
-        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
-        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
-        DEFAULT_QUALITY,        // BYTE nQuality
-        FF_SWISS,               // BYTE nPitchAndFamily
-        "MS Sans Serif"         // LPCTSTR lpszFacename
-    );
-    hRussianFont = CreateFont
-    (   14,                     // int nHeight
-        0,                      // int nWidth
-        0,                      // int nEscapement
-        0,                      // int nOrientation
-        FW_MEDIUM,              // int nWeight
-        FALSE,                  // BYTE bItalic
-        FALSE,                  // BYTE bUnderline
-        0,                      // BYTE cStrikeOut
-        RUSSIAN_CHARSET,        // BYTE nCharSet
-        OUT_DEFAULT_PRECIS,     // BYTE nOutPrecision
-        CLIP_CHARACTER_PRECIS,  // BYTE nClipPrecision
-        DEFAULT_QUALITY,        // BYTE nQuality
-        FF_SWISS,               // BYTE nPitchAndFamily
-        "MS Sans Serif"         // LPCTSTR lpszFacename
-    );
 
     // we could DestroyIcon() these at exit but Windows does that automatically for us anyway
     bigicon    = LoadImage(InstancePtr, MAKEINTRESOURCE(memmap_to[memmap].icon), IMAGE_ICON, 32, 32, 0);

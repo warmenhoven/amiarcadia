@@ -2743,7 +2743,7 @@ MODULE __inline void branch(int indirect)
 
     if
     (   machine != INSTRUCTOR
-     && (machine != CD2650 || cd2650_dosver != DOS_P1DOS || cd2650_biosver != CD2650_IPL)
+     && (machine != CD2650 || cd2650_dosver != DOS_P1DOS || (cd2650_biosver != CD2650_IPL10 && cd2650_biosver != CD2650_IPL11))
      && logbios
      && !trace
      && (memflags[ea] & BIOS)
@@ -4271,7 +4271,7 @@ MODULE void logindirectbios(void)
 #ifndef GAMER
     if
     (   (    machine == INSTRUCTOR
-         || (machine == CD2650 && cd2650_dosver == DOS_P1DOS && cd2650_biosver == CD2650_IPL)
+         || (machine == CD2650 && cd2650_dosver == DOS_P1DOS && (cd2650_biosver == CD2650_IPL10 || cd2650_biosver == CD2650_IPL11))
         )
      && logbios
      && !(memflags[iar] & BIOS) // we don't log the monitor calling itself

@@ -420,7 +420,7 @@ EXPORT const struct MenuStruct menuinfo1[MENUITEMS] = {
 { "SETTINGS.BIOS.GBUG"             , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
 { "SETTINGS.BIOS.MIKEBUG"          , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
 { "SETTINGS.BIOS.MYBUG"            , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
-{ "SETTINGS.BIOS.IPL"              , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
+{ "SETTINGS.BIOS.IPL11"            , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
 { "SETTINGS.BIOS.POPMON"           , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
 { "SETTINGS.BIOS.SUPERVISOR"       , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
 { "SETTINGS.BIOS.MINIMONITOR"      , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
@@ -448,7 +448,7 @@ EXPORT const struct MenuStruct menuinfo1[MENUITEMS] = {
 { "SETTINGS.DOS.CDDOS"             , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
 { "SETTINGS.DOS.P1DOS"             , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //  93 MENUOPT_P1DOS
 { "SETTINGS.DOS.NOCD2650DOS"       , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //  94
-{ ""                               , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //  95 spare
+{ "SETTINGS.BIOS.IPL10"            , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //  95 MENUOPT_BIOS_IPL10
 { ""                               , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //  96 spare
 { "SETTINGS.EMULATOR.APPENDLOG"    , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
 { "SETTINGS.EMULATOR.IGNORELOG"    , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 },
@@ -1833,23 +1833,32 @@ EXPORT void updatemenu(int which)
               checkmx(MENUOPT_MYBUG,        MENUOPT_BINBUG35BIOS, MENUOPT_MYBUG);
         }
     acase MENUFAKE_CD2650BIOS:
-        enable2(MENUOPT_BIOS_IPL,        (machine == CD2650 && recmode == RECMODE_NORMAL));
+        enable2(MENUOPT_BIOS_IPL10,      (machine == CD2650 && recmode == RECMODE_NORMAL));
+        enable2(MENUOPT_BIOS_IPL11,      (machine == CD2650 && recmode == RECMODE_NORMAL));
         enable2(MENUOPT_BIOS_POPMON,     (machine == CD2650 && recmode == RECMODE_NORMAL));
         enable2(MENUOPT_BIOS_SUPERVISOR, (machine == CD2650 && recmode == RECMODE_NORMAL));
         switch (cd2650_biosver)
         {
-        case CD2650_IPL:
-              checkmx(MENUOPT_BIOS_IPL,        MENUOPT_BIOS_IPL, MENUOPT_BIOS_SUPERVISOR);
+        case CD2650_IPL10:
+              checkmx(MENUOPT_BIOS_IPL10,      MENUOPT_BIOS_IPL10, MENUOPT_BIOS_SUPERVISOR);
+            uncheckmx(MENUOPT_BIOS_IPL11);
+            uncheckmx(MENUOPT_BIOS_POPMON);
+            uncheckmx(MENUOPT_BIOS_SUPERVISOR);
+        acase CD2650_IPL11:
+            uncheckmx(MENUOPT_BIOS_IPL10);
+              checkmx(MENUOPT_BIOS_IPL11,      MENUOPT_BIOS_IPL10, MENUOPT_BIOS_SUPERVISOR);
             uncheckmx(MENUOPT_BIOS_POPMON);
             uncheckmx(MENUOPT_BIOS_SUPERVISOR);
         acase CD2650_POPMON:
-            uncheckmx(MENUOPT_BIOS_IPL);
-              checkmx(MENUOPT_BIOS_POPMON    , MENUOPT_BIOS_IPL, MENUOPT_BIOS_SUPERVISOR);
+            uncheckmx(MENUOPT_BIOS_IPL10);
+            uncheckmx(MENUOPT_BIOS_IPL11);
+              checkmx(MENUOPT_BIOS_POPMON    , MENUOPT_BIOS_IPL10, MENUOPT_BIOS_SUPERVISOR);
             uncheckmx(MENUOPT_BIOS_SUPERVISOR);
         acase CD2650_SUPERVISOR:
-            uncheckmx(MENUOPT_BIOS_IPL);
+            uncheckmx(MENUOPT_BIOS_IPL10);
+            uncheckmx(MENUOPT_BIOS_IPL11);
             uncheckmx(MENUOPT_BIOS_POPMON);
-              checkmx(MENUOPT_BIOS_SUPERVISOR, MENUOPT_BIOS_IPL, MENUOPT_BIOS_SUPERVISOR);
+              checkmx(MENUOPT_BIOS_SUPERVISOR, MENUOPT_BIOS_IPL10, MENUOPT_BIOS_SUPERVISOR);
         }
     acase MENUFAKE_PHUNSYBIOS:
         enable2(MENUOPT_BIOS_MINIMONITOR, (machine == PHUNSY && recmode == RECMODE_NORMAL));
@@ -2335,7 +2344,7 @@ EXPORT void updatemenu(int which)
         ghost(which,
              machine != PIPBUG
          &&  machine != BINBUG
-         && (machine != CD2650 || cd2650_biosver != CD2650_IPL)
+         && (machine != CD2650 || (cd2650_biosver != CD2650_IPL10 && cd2650_biosver != CD2650_IPL11))
          &&  machine != PHUNSY
          &&  machine != SELBST
         );
@@ -3733,8 +3742,11 @@ EXPORT void handle_menu2(int command)
         binbug_biosver = BINBUG_MYBUG;
         binbug_changebios(TRUE);
         updatemenus();
-    acase MENUOPT_BIOS_IPL:
-        cd2650_biosver = CD2650_IPL;
+    acase MENUOPT_BIOS_IPL10:
+        cd2650_biosver = CD2650_IPL10;
+        cd2650_changebios(); // calls updatemenus() for us
+    acase MENUOPT_BIOS_IPL11:
+        cd2650_biosver = CD2650_IPL11;
         cd2650_changebios(); // calls updatemenus() for us
     acase MENUOPT_BIOS_POPMON:
         cd2650_biosver = CD2650_POPMON;
@@ -3795,15 +3807,15 @@ EXPORT void handle_menu2(int command)
         updatemenus();
     acase MENUOPT_CDDOS:
         cd2650_dosver = DOS_CDDOS;
-        cd2650_biosver = CD2650_IPL;
+        cd2650_biosver = CD2650_IPL11;
         cd2650_changebios(); // calls updatemenus() for us
     acase MENUOPT_P1DOS:
         cd2650_dosver = DOS_P1DOS;
-        cd2650_biosver = CD2650_IPL;
+        cd2650_biosver = CD2650_IPL11;
         cd2650_changebios(); // calls updatemenus() for us
     acase MENUOPT_NOCD2650DOS:
         cd2650_dosver = DOS_NOCD2650DOS;
-        if (cd2650_biosver == CD2650_IPL)
+        if (cd2650_biosver == CD2650_IPL10 || cd2650_biosver == CD2650_IPL11)
         {   cd2650_biosver = CD2650_SUPERVISOR;
         }
         cd2650_changebios(); // calls updatemenus() for us

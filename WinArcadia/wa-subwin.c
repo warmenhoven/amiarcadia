@@ -3221,14 +3221,12 @@ MODULE BOOL CALLBACK OutputDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARA
     case WM_INITDIALOG:
         subwin[SUBWINDOW_OUTPUT].hwnd = hwnd;
 
-        DISCARD SetWindowText(hwnd, LLL(      MSG_WA_CONSOLE   , "WinArcadia Output"));
+        SetWindowText(hwnd, LLL(              MSG_WA_CONSOLE   , "WinArcadia Output"));
         setdlgtext(hwnd, IDC_COPYSELECTION  , MSG_COPYSELECTEDTEXT, "Copy selected text");
         setdlgtext(hwnd, IDC_COLOURFUL      , MSG_COLOURFUL    , "Colourful?"       );
-
         setdlgtext(hwnd, IDL_CONSOLEBG      , MSG_BGCOLOUR     , "Background:"      );
         SendMessage(GetDlgItem(hwnd, IDC_CONSOLEBG), CB_ADDSTRING, (WPARAM) 0, (LPARAM) LLL(MSG_COLOUR2_BLACK, "Black"));
         SendMessage(GetDlgItem(hwnd, IDC_CONSOLEBG), CB_ADDSTRING, (WPARAM) 0, (LPARAM) LLL(MSG_COLOUR2_WHITE, "White"));
-
         setdlgtext(hwnd, IDC_CLS            , MSG_CLEARWINDOW  , "Clear window"     );
 
         SendMessage(GetDlgItem(hwnd, IDC_COLOURFUL), BM_SETCHECK , colourlog ? BST_CHECKED : BST_UNCHECKED, 0);

@@ -759,6 +759,22 @@ MODULE const STRPTR hypergates[4] =
   "random",
   "forwards",
   "backwards"
+}, testcart[15] =
+{ "Left controller and console keys",             // "01"
+  "Right controller and console keys",            // "02"
+  "Analog paddles",                               // "03"
+  "Background",                                   // "04"
+  "Normal checkerboard",                          // "05"
+  "Inverted checkerboard",                        // "06"
+  "Border",                                       // "07"
+  "Score display (top, 2 groups of 2 digits)",    // "08"
+  "Score display (bottom, 2 groups of 2 digits)", // "09"
+  "Score display (top, 1 groups of 4 digits)",    // "10"
+  "Score display (bottom, 1 groups of 4 digits)", // "11"
+  "4 sprites",                                    // "12"
+  "1 sprite in various sizes",                    // "13"
+  "Tones",                                        // "14"
+  "Explosions"                                    // "15"
 };
 
 // MODULE FUNCTIONS-------------------------------------------------------
@@ -1369,8 +1385,8 @@ EXPORT int engine_load(FLAG silent)
         IOBuffer = (UBYTE*) ZIPBufferPtr;
     } else
     {   filesize = (int) getsize((STRPTR) fn_game);
-        alloc_iobuffer((ULONG) filesize);
-
+        alloc_iobuffer((ULONG) filesize); // should check return code
+        // assert(IOBuffer);
         if (!(TheLocalHandle = fopen((char*) fn_game, "rb"))) // just cast for lint
         {   sprintf
             (   (char*) tempstring,
@@ -4580,7 +4596,7 @@ EXPORT void handle_keydown(UWORD code)
                 return;
             } // implied else
             thekey =  specialshift(keyname[code].shifted[keymap]);
-        } elif (capslock || machine == TWIN || !lowercase || (machine == CD2650 && cd2650_biosver != CD2650_IPL))
+        } elif (capslock || machine == TWIN || !lowercase || (machine == CD2650 && cd2650_biosver != CD2650_IPL10 && cd2650_biosver != CD2650_IPL11))
         {   thekey =  keyname[code].capslock[keymap];
         } elif (machine == CD2650)
         {   thekey =  keyname[code].capslock[keymap] & 0x3F;
@@ -6609,6 +6625,16 @@ EXPORT void update_variant(FLAG force)
                 (val & 2) ? 56          : 30,
                 (val & 1) ? "2 players" : "1 player"
             );
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase TESTCARTPOS: // stage-1 is $1F50
+        if (!force && t1 == memory[0x1F50])
+        {   return;
+        }
+        t1 = memory[0x1F50];
+        if (memory[0x1F50] <= 14)
+        {   strcpy(thestring, testcart[memory[0x1F50]]);
         } else
         {   strcpy(thestring, "?");
         }

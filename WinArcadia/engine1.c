@@ -416,7 +416,7 @@ EXPORT struct MachineStruct machines[MACHINES] =                                
   { "BINBUG"    ,                   0,                    0, MEMMAP_BINBUG,      REGION_PAL , {  0.0            , 50.0             }, 1,  -1,   -1, 16,    0, 44, 20000.0, 0,  0, 0, { 0, 128, 255 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   },                     -1,                  0, TRUE , FALSE, BINBUG_DISKSIZE, 2, { { "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----"}, { "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----" } } }, // BINBUG
   { "INSTRUCTOR", INSTRUCTOR_BOXWIDTH, INSTRUCTOR_BOXHEIGHT, MEMMAP_O,           REGION_PAL , {  0.0            , 50.0             }, 1,FIRSTSI50EQUIV,LASTSI50EQUIV,32,0,36,17900.0,0,0,8,{0,0, 0 },      0, FALSE,1922, 2692, 305, 354, { "SENS"  , "INT"   , "MON"   , "RST"      }, { IMAGE_START, IMAGE_INT , IMAGE_MON  , IMAGE_RESET   },                     -1,                  0, FALSE, FALSE, 0,               0, { { "-----", "WCAS" , "BKPT" , "C"    , "RCAS" , "REG"  , "8"    , "STEP" , "MEM"  , "4"    , "RUN"  , "NXT"  , "0"    , "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----"}, { "-----", "D"    , "E"    , "F"    , "9"    , "A"    , "B"    , "5"    , "6"    , "7"    , "1"    , "2"    , "3"    , "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----" } } }, // INSTRUCTOR
   { "TWIN"      ,                   0,                    0, MEMMAP_TWIN,        REGION_NTSC, { 60.0            ,  0.0             }, 1,  -1,   -1, 55,    0, 41, 20800.0, 0,  0, 0, { 0,   0,   0 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   },                     -1,                  0, FALSE, FALSE, TWIN_DISKSIZE,   4,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // TWIN
-  { "CD2650"    ,                   0,                    0, MEMMAP_CD2650,      REGION_NTSC, { 59.4690265486726,  0.0             }, 1,  -1,   -1,  0,    0, 44, 19888.0, 0, 12, 0, { 0,   0,   0 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   },                     -1,                  0, FALSE, FALSE, CD2650_DISKSIZE, 4,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // CD2650
+  { "CD2650"    ,                   0,                    0, MEMMAP_CD2650,      REGION_NTSC, { 59.4690265486726,  0.0             }, 1,  -1,   -1,  0,    0, 45, 19888.0, 0, 12, 0, { 0,   0,   0 },      0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   },                     -1,                  0, FALSE, FALSE, CD2650_DISKSIZE, 4,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // CD2650
   { "ZACCARIA"  ,     COINOP_BOXWIDTH,     COINOP_BOXHEIGHT, MEMMAP_ASTROWARS,   REGION_PAL , { 60.0            , 50.0             }, 1,  -1,   -1,  0,    0, 34, 23608.0, 0,  0, 0, { 0, 128, 255 }, 0x1500, TRUE ,  -1,   -1,  -1,  -1, { "1UP"   , "2UP"   , "Coin A", "Coin B"   }, { IMAGE_1UP  , IMAGE_2UP , IMAGE_COINA, IMAGE_COINB   },    COINOP_FIRSTHISCORE,    COINOP_HISCORES, TRUE,  FALSE, 0,               0,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // ZACCARIA
   { "MALZAK"    ,     COINOP_BOXWIDTH,     COINOP_BOXHEIGHT, MEMMAP_MALZAK1,     REGION_PAL , { 60.0            , 50.0             }, 1,  -1,   -1, 11,    0, 34,     0.0, 2,  0, 0, { 0, 128, 255 }, 0x1400, TRUE ,  -1,   -1,FIRSTMALZAKDATACOMMENT,LASTMALZAKDATACOMMENT,{"1UP","2UP","Coin","Switch"},{IMAGE_1UP,IMAGE_2UP,IMAGE_COINA,IMAGE_DIPS},COINOP_FIRSTHISCORE, COINOP_HISCORES, TRUE,  FALSE, 0,               0,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // MALZAK
   { "PHUNSY"    ,                   0,                    0, MEMMAP_PHUNSY,      REGION_PAL,  {  0.0            , 50.0             }, 1,FIRSTPHUNSYEQUIV,LASTPHUNSYEQUIV,24,0,36,20032.0,0,0,0,{0,0,0},    0, FALSE,  -1,   -1,  -1,  -1, { "-"     , "-"     , "-"     , "-"        }, { IMAGE_START, IMAGE_A   , IMAGE_B    , IMAGE_RESET   },                     -1,                  0, FALSE, FALSE, 0,               0, { { "-----", "0"    , "4"    , "8"    , "1"    , "5"    , "9"    , "2"   , "6"     , "A"    , "3"    , "7"    , "B"    , "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----"}, { "-----", "C"    , "D->M" , "RESET", "D"    , "M->D" , "HALT" , "E"    , "GO TO", "DUMPC", "F"    , "CLEAR", "LOADC", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----", "-----" } } }, // PHUNSY
@@ -4564,15 +4564,12 @@ EXPORT void loadconfig(void)
 #ifdef VERBOSE
         zprintf(TEXTPEN_VERBOSE, "Attempting to read config file \"%s\" of size %d...\n", fn_config, thesize);
 #endif
-        alloc_iobuffer(thesize);
+        alloc_iobuffer(thesize); // should check return code
+        // assert(IOBuffer);
         if ((TheLocalHandle = fopen((const char*) fn_config, "rb")))
         {   if (fread(IOBuffer, thesize, 1, TheLocalHandle) == 1)
             {   serializemode = SERIALIZE_READ;
-                if (IOBuffer[0] == 0xC6 && IOBuffer[1] == 0x02)
-                {   ; // say("CFG files are unsupported (obsolete)!");
-                } else
-                {   serializeconfig();
-                }
+                serializeconfig();
 #ifdef AMIGA
                 amiga_loadedconfig();
 #endif
@@ -4600,7 +4597,8 @@ EXPORT void saveconfig(void)
     configmachine = CONFIGMACHINE_IBM;
 #endif
     serializemode = SERIALIZE_WRITE;
-    alloc_iobuffer(16 * KILOBYTE);
+    alloc_iobuffer(16 * KILOBYTE); // should check return code
+    // assert(IOBuffer);
     serializeconfig();
     if ((TheLocalHandle = fopen((const char*) fn_config, "wb")))
     {   DISCARD fwrite(IOBuffer, offset, 1, TheLocalHandle);
@@ -4610,7 +4608,6 @@ EXPORT void saveconfig(void)
         zprintf(TEXTPEN_VERBOSE, "Wrote config file \"%s\".\n", fn_config);
 #endif
     }
-
     free_iobuffer();
 }
 
@@ -4620,8 +4617,7 @@ MODULE void serializeconfig(void)
           green,
           blue;
     int   configversion = NEWER,
-          i, j,
-          temp;
+          i, j;
 
     offset = 0;
 
@@ -4720,9 +4716,6 @@ MODULE void serializeconfig(void)
 #endif
     aserialize_bool("erasedeleted"        , &erasedel          );
     aserialize_bool("exactspeed"          , &exactspeed        );
-    if (configversion == OLDEST)
-    {   aserialize_bool("framebased"      , &temp              );
-    }
     aserialize_bool("identifyemulator"    , &emuid             );
     aserialize_bool("fastbinbug"          , &fastbinbug        );
     aserialize_bool("fastcd2650"          , &fastcd2650        );
@@ -4888,7 +4881,12 @@ MODULE void serializeconfig(void)
 #ifdef WIN32
     aserialize_int(  "bitrate"            , &bitrate                ,             8, 16); // 8, 16
 #endif
-    aserialize_int(  "cd2650_biosversion" , &cd2650_biosver         ,             0, 2); // IPL, POPMON, Supervisor
+    if (configversion == NEWER)
+    {   aserialize_int("cd2650_biosversion",&cd2650_biosver         ,             0, 3); // IPL 1.0, IPL 1.1, POPMON, Supervisor
+    } else
+    {   aserialize_int("cd2650_biosversion",&cd2650_biosver         ,             0, 2); // IPL 1.1, POPMON, Supervisor
+        cd2650_biosver++;
+    }
     aserialize_int(  "cd2650_dosversion"  , &cd2650_dosver          ,             0, 2); // Central Data DOS, P1 DOS, None
     aserialize_int(  "cd2650_userdrives"  , (int*) &cd2650_userdrives,            1, 4);
     aserialize_int(  "cd2650_vdu"         , &cd2650_vdu             ,             0, 2); // ASCII, chessmen, lowercase
@@ -4943,7 +4941,7 @@ MODULE void serializeconfig(void)
     aserialize_int("phunsy_biosversion"   , &phunsy_biosver         ,             0, 1); // mini-monitor, phunsy
     aserialize_int("pipbug_baudrate"      , &pipbug_baudrate        ,             0, 2); // 110, 300, 4800
     aserialize_int("pipbug_biosversion"   , &pipbug_biosver         ,             0, 3); // Artemis, HYBUG, PIPBUG 1, PIPBUG 2
-    if (configversion == NEWER)
+    if (configversion != OLDEST)
     {   aserialize_int("pipbug_peripheral", &pipbug_periph          ,             0, 4); // EA printer, Linearization, Tasman Turtle, VM, WFC
     } else
     {   aserialize_int("pipbug_peripheral", &pipbug_periph          ,             0, 3); // EA printer, Linearization, VM, WFC

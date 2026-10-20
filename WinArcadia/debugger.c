@@ -1329,7 +1329,13 @@ EXPORT FLAG debug_command(void)
             #endif
         }
     acase MENUITEM_ERROR:
-        if (!((machine == CD2650 && cd2650_biosver == CD2650_IPL && cd2650_dosver == DOS_P1DOS) || machine == TWIN))
+        if
+        (   !(  (   machine == CD2650
+                 && (cd2650_biosver == CD2650_IPL10 || cd2650_biosver == CD2650_IPL11)
+                 && cd2650_dosver == DOS_P1DOS
+                )
+             || machine == TWIN
+        )   )
         {   zprintf(TEXTPEN_CLIOUTPUT, "%s\n\n", LLL(MSG_WRONGGUEST, "Wrong guest machine!"));
         } else
         {   DISCARD stcd_l((const char*) thearg[1], (void*) &temp); // string -> decimal number

@@ -1171,7 +1171,7 @@ DONE:
 }
 
 EXPORT void alloc_iobuffer(ULONG thesize)
-{   // If, for example, we were playing an EAR and then a BIN was dragged
+{   // If, for example, we were playing a COR and then a BIN was dragged
     // over, we will need to free the old IOBuffer
 
     if (!thesize)
@@ -1181,7 +1181,7 @@ EXPORT void alloc_iobuffer(ULONG thesize)
     free_iobuffer();
     IOBuffer = (UBYTE*) malloc(thesize);
 #ifdef VERBOSE
-    zprintf(TEXTPEN_VERBOSE, "Allocated I/O buffer.\n");
+    zprintf(TEXTPEN_VERBOSE, "Allocated I/O buffer of %d bytes.\n", thesize);
 #endif
 }
 
@@ -1817,27 +1817,27 @@ EXPORT void zprintf(UNUSED int whichcolour, const char* format, ...)
     }
 
     ignoreghosting = TRUE;
-
-    SendMessage(RichTextGadget, EM_EXGETSEL,     0,              (LPARAM) &usersel);
-    SendMessage(RichTextGadget, EM_SETSEL,       -1,             -1);
-    SendMessage(RichTextGadget, EM_EXGETSEL,     0,              (LPARAM) &cr);
+    SendMessage(RichTextGadget, WM_SETREDRAW,     FALSE,         0); // turn redrawing off
+    SendMessage(RichTextGadget, EM_EXGETSEL,      0,             (LPARAM) &usersel); // save old highlight position
+    SendMessage(RichTextGadget, EM_SETSEL,        -1,            -1); // move cursor to old end
+    SendMessage(RichTextGadget, EM_EXGETSEL,      0,             (LPARAM) &cr); // save end position
     start = cr.cpMin;
-    SendMessage(RichTextGadget, EM_REPLACESEL,   FALSE,          (LPARAM) string);
-    SendMessage(RichTextGadget, EM_EXGETSEL,     0,              (LPARAM) &cr);
+    SendMessage(RichTextGadget, EM_REPLACESEL,    FALSE,         (LPARAM) string); // append new text
+    SendMessage(RichTextGadget, EM_EXGETSEL,      0,             (LPARAM) &cr); // move cursor to new end
     end = cr.cpMin;
-    SendMessage(RichTextGadget, EM_SETSEL,       start,          end);
+    SendMessage(RichTextGadget, EM_SETSEL,        start,         end); // select new text
 
     memset(&fgformat, 0, sizeof(fgformat));
     fgformat.cbSize      = sizeof(fgformat);
     fgformat.dwMask      = CFM_COLOR | CFM_BACKCOLOR;
     fgformat.crTextColor = textpen_to_rgb[textcolour + ((consolebg == 1) ? TEXTPENS : 0)];
     fgformat.crBackColor = (consolebg == 0) ? RGB(0,0,0) : RGB(255,255,255);
-    SendMessage(RichTextGadget, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) &fgformat);
+    SendMessage(RichTextGadget, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) &fgformat); // apply formatting to new text
 
-    SendMessage(RichTextGadget, EM_SETSEL,       end,            end);
-    SendMessage(RichTextGadget, EM_EXSETSEL,     0,              (LPARAM) &usersel);
-    SendMessage(RichTextGadget, WM_VSCROLL,      SB_BOTTOM,      0);
-
+    SendMessage(RichTextGadget, EM_EXSETSEL,      0,             (LPARAM) &usersel); // restore old highlight position
+    SendMessage(RichTextGadget, WM_VSCROLL,       SB_BOTTOM,     0); // scroll to end
+    SendMessage(RichTextGadget, WM_SETREDRAW,     TRUE,          0); // turn redrawing on
+    InvalidateRect(RichTextGadget, NULL, TRUE); // redraw
     ignoreghosting = FALSE;
 
     if (!already && !quitting && storedmenu1 == -1 && storedmenu2 == -1 && storedcode == 0 && storedaltcode == 0)
@@ -4198,7 +4198,7 @@ EXPORT int parse_bytes(void)
              || (newmachine == PIPBUG  && cosversion >= 42)
              || (newmachine == BINBUG  && cosversion >= 42)
              || (newmachine == TWIN    && cosversion >= 39)
-             || (newmachine == CD2650  && cosversion >= 42)
+             || (newmachine == CD2650  && cosversion >= 44)
             )
             {   ; // OK
             } else

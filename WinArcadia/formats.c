@@ -5178,7 +5178,8 @@ EXPORT void engine_save(int kind, FLAG updatetitle)
     {   macro_stop(); // in case we are eg. playing back a recording and do a state save
     }
 
-    alloc_iobuffer((ULONG) MAX_STATESIZE);
+    alloc_iobuffer((ULONG) MAX_STATESIZE); // should check return code
+    // assert(IOBuffer);
     offset = 0;
     serializemode = SERIALIZE_WRITE;
 

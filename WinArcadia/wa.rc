@@ -401,7 +401,8 @@ BEGIN
             MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
             MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
             MENUITEM SEPARATOR
-            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+            MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
             MENUITEM "POPMO&N",                     ID_BIOS_POPMON
             MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
             MENUITEM SEPARATOR
@@ -409,7 +410,7 @@ BEGIN
             MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
             MENUITEM SEPARATOR
             MENUITEM "&Nic",                        ID_BIOS_SELBST00
-            MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+            MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
             MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
             MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
         END
@@ -1043,7 +1044,8 @@ BEGIN
                 MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
                 MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
                 MENUITEM SEPARATOR
-                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+                MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
                 MENUITEM "POPMO&N",                     ID_BIOS_POPMON
                 MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
                 MENUITEM SEPARATOR
@@ -1051,7 +1053,7 @@ BEGIN
                 MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
                 MENUITEM SEPARATOR
                 MENUITEM "&Nic",                        ID_BIOS_SELBST00
-                MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+                MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
                 MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
                 MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
             END
@@ -1715,7 +1717,8 @@ BEGIN
             MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
             MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
             MENUITEM SEPARATOR
-            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+            MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
             MENUITEM "POPMO&N",                     ID_BIOS_POPMON
             MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
             MENUITEM SEPARATOR
@@ -1723,7 +1726,7 @@ BEGIN
             MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
             MENUITEM SEPARATOR
             MENUITEM "Νες (&N)",                    ID_BIOS_SELBST00
-            MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+            MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
             MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
             MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
         END
@@ -2367,7 +2370,8 @@ BEGIN
                 MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
                 MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
                 MENUITEM SEPARATOR
-                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+                MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
                 MENUITEM "POPMO&N",                     ID_BIOS_POPMON
                 MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
                 MENUITEM SEPARATOR
@@ -2375,7 +2379,7 @@ BEGIN
                 MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
                 MENUITEM SEPARATOR
                 MENUITEM "Νες (&N)",                    ID_BIOS_SELBST00
-                MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+                MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
                 MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
                 MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
             END
@@ -3053,7 +3057,8 @@ BEGIN
             MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
             MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
             MENUITEM SEPARATOR
-            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+            MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
             MENUITEM "POPMO&N",                     ID_BIOS_POPMON
             MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
             MENUITEM SEPARATOR
@@ -3061,7 +3066,7 @@ BEGIN
             MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
             MENUITEM SEPARATOR
             MENUITEM "Kei&n",                       ID_BIOS_SELBST00
-            MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+            MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
             MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
             MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
         END
@@ -3691,7 +3696,8 @@ BEGIN
                 MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
                 MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
                 MENUITEM SEPARATOR
-                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+                MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
                 MENUITEM "POPMO&N",                     ID_BIOS_POPMON
                 MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
                 MENUITEM SEPARATOR
@@ -3699,7 +3705,7 @@ BEGIN
                 MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
                 MENUITEM SEPARATOR
                 MENUITEM "Kei&n",                       ID_BIOS_SELBST00
-                MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+                MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
                 MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
                 MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
             END
@@ -4513,7 +4519,8 @@ BEGIN
             MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
             MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
             MENUITEM SEPARATOR
-            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+            MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
             MENUITEM "POPMO&N",                     ID_BIOS_POPMON
             MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
             MENUITEM SEPARATOR
@@ -4521,7 +4528,7 @@ BEGIN
             MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
             MENUITEM SEPARATOR
             MENUITEM "Aucu&n",                      ID_BIOS_SELBST00
-            MENUITEM "Moniteur Selbstbaucomputer &0.9", ID_BIOS_SELBST09
+            MENUITEM "Moniteur Selbstbaucomputer 0.&9", ID_BIOS_SELBST09
             MENUITEM "Moniteur Selbstbaucomputer &1.0", ID_BIOS_SELBST10
             MENUITEM "Moniteur Selbstbaucomputer &2.0", ID_BIOS_SELBST20
         END
@@ -5162,7 +5169,8 @@ BEGIN
                 MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
                 MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
                 MENUITEM SEPARATOR
-                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+                MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
                 MENUITEM "POPMO&N",                     ID_BIOS_POPMON
                 MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
                 MENUITEM SEPARATOR
@@ -5170,7 +5178,7 @@ BEGIN
                 MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
                 MENUITEM SEPARATOR
                 MENUITEM "Aucu&n",                      ID_BIOS_SELBST00
-                MENUITEM "Moniteur Selbstbaucomputer &0.9", ID_BIOS_SELBST09
+                MENUITEM "Moniteur Selbstbaucomputer 0.&9", ID_BIOS_SELBST09
                 MENUITEM "Moniteur Selbstbaucomputer &1.0", ID_BIOS_SELBST10
                 MENUITEM "Moniteur Selbstbaucomputer &2.0", ID_BIOS_SELBST20
             END
@@ -5849,7 +5857,8 @@ BEGIN
             MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
             MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
             MENUITEM SEPARATOR
-            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+            MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
             MENUITEM "POPMO&N",                     ID_BIOS_POPMON
             MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
             MENUITEM SEPARATOR
@@ -5857,7 +5866,7 @@ BEGIN
             MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
             MENUITEM SEPARATOR
             MENUITEM "&Nulla",                      ID_BIOS_SELBST00
-            MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+            MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
             MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
             MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
         END
@@ -6493,7 +6502,8 @@ BEGIN
                 MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
                 MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
                 MENUITEM SEPARATOR
-                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+                MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
                 MENUITEM "POPMO&N",                     ID_BIOS_POPMON
                 MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
                 MENUITEM SEPARATOR
@@ -6501,7 +6511,7 @@ BEGIN
                 MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
                 MENUITEM SEPARATOR
                 MENUITEM "&Nulla",                      ID_BIOS_SELBST00
-                MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+                MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
                 MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
                 MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
             END
@@ -7177,7 +7187,8 @@ BEGIN
             MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
             MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
             MENUITEM SEPARATOR
-            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+            MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
             MENUITEM "POPMO&N",                     ID_BIOS_POPMON
             MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
             MENUITEM SEPARATOR
@@ -7185,7 +7196,7 @@ BEGIN
             MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
             MENUITEM SEPARATOR
             MENUITEM "Gee&n",                       ID_BIOS_SELBST00
-            MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+            MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
             MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
             MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
         END
@@ -7819,7 +7830,8 @@ BEGIN
                 MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
                 MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
                 MENUITEM SEPARATOR
-                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+                MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
                 MENUITEM "POPMO&N",                     ID_BIOS_POPMON
                 MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
                 MENUITEM SEPARATOR
@@ -7827,7 +7839,7 @@ BEGIN
                 MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
                 MENUITEM SEPARATOR
                 MENUITEM "Gee&n",                       ID_BIOS_SELBST00
-                MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+                MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
                 MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
                 MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
             END
@@ -8496,7 +8508,8 @@ BEGIN
                 MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
                 MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
                 MENUITEM SEPARATOR
-                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+                MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
                 MENUITEM "P&OPMON",                     ID_BIOS_POPMON
                 MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
                 MENUITEM SEPARATOR
@@ -8504,7 +8517,7 @@ BEGIN
                 MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
                 MENUITEM SEPARATOR
                 MENUITEM "&None",                       ID_BIOS_SELBST00
-                MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+                MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
                 MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
                 MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
             END
@@ -9140,7 +9153,8 @@ BEGIN
             MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
             MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
             MENUITEM SEPARATOR
-            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+            MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
             MENUITEM "P&OPMON",                     ID_BIOS_POPMON
             MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
             MENUITEM SEPARATOR
@@ -9148,7 +9162,7 @@ BEGIN
             MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
             MENUITEM SEPARATOR
             MENUITEM "&None",                       ID_BIOS_SELBST00
-            MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+            MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
             MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
             MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
         END
@@ -15529,22 +15543,22 @@ BEGIN
                     WS_TABSTOP,17,111,181,23
 END
 
-IDD_OUTPUT DIALOG DISCARDABLE  0, 0, 448, 234
+IDD_OUTPUT DIALOG DISCARDABLE  0, 0, 448, 233
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "WinArcadia Output"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "Colourful?",IDC_COLOURFUL,"Button",BS_AUTOCHECKBOX | 
-                    BS_BOTTOM | WS_TABSTOP,170,216,57,11
-    RTEXT           "Background:",IDL_CONSOLEBG,239,216,49,12,SS_CENTERIMAGE
     CONTROL         "Copy all text",IDC_COPYTEXT,"Button",BS_OWNERDRAW | 
                     WS_GROUP | WS_TABSTOP,7,215,78,14
     PUSHBUTTON      "Copy selected text",IDC_COPYSELECTION,86,215,78,14,
                     WS_GROUP
-    COMBOBOX        IDC_CONSOLEBG,296,216,62,50,CBS_DROPDOWNLIST | 
+    CONTROL         "Colourful?",IDC_COLOURFUL,"Button",BS_AUTOCHECKBOX | 
+                    BS_VCENTER | WS_TABSTOP,170,215,57,12
+    RTEXT           "Background:",IDL_CONSOLEBG,239,215,49,13,SS_CENTERIMAGE
+    COMBOBOX        IDC_CONSOLEBG,296,215,62,50,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Clear window",IDC_CLS,364,214,78,14,WS_GROUP
+    PUSHBUTTON      "Clear window",IDC_CLS,364,215,78,12,WS_GROUP
 END
 
 IDD_PATHS DIALOG DISCARDABLE  0, 0, 316, 173
@@ -19391,8 +19405,8 @@ IDI_KEDAMAKI            ICON    DISCARDABLE     "kedamaki.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 36,7,2,1
- PRODUCTVERSION 36,7,2,1
+ FILEVERSION 36,7,3,0
+ PRODUCTVERSION 36,7,3,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -19410,14 +19424,14 @@ BEGIN
             VALUE "Comments", "Think Signetics. Sig 'em! We want you to have the best.\0"
             VALUE "CompanyName", "Amigan Software\0"
             VALUE "FileDescription", "WinArcadia multi-emulator\0"
-            VALUE "FileVersion", "36.72\0"
+            VALUE "FileVersion", "36.73\0"
             VALUE "InternalName", "WinArcadia\0"
             VALUE "LegalCopyright", "Copyright © 2006-2026 James Jacobs\0"
             VALUE "LegalTrademarks", "WinArcadia\0"
             VALUE "OriginalFilename", "WinArcadia.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "WinArcadia\0"
-            VALUE "ProductVersion", "36.72\0"
+            VALUE "ProductVersion", "36.73\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -19894,7 +19908,8 @@ BEGIN
             MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
             MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
             MENUITEM SEPARATOR
-            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+            MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
             MENUITEM "POPMO&N",                     ID_BIOS_POPMON
             MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
             MENUITEM SEPARATOR
@@ -19902,7 +19917,7 @@ BEGIN
             MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
             MENUITEM SEPARATOR
             MENUITEM "&Ninguno",                    ID_BIOS_SELBST00
-            MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+            MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
             MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
             MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
         END
@@ -20546,7 +20561,8 @@ BEGIN
                 MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
                 MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
                 MENUITEM SEPARATOR
-                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+                MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
                 MENUITEM "POPMO&N",                     ID_BIOS_POPMON
                 MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
                 MENUITEM SEPARATOR
@@ -20554,7 +20570,7 @@ BEGIN
                 MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
                 MENUITEM SEPARATOR
                 MENUITEM "&Ninguno",                    ID_BIOS_SELBST00
-                MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+                MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
                 MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
                 MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
             END
@@ -21242,7 +21258,8 @@ BEGIN
             MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
             MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
             MENUITEM SEPARATOR
-            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+            MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+            MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
             MENUITEM "POPMO&N",                     ID_BIOS_POPMON
             MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
             MENUITEM SEPARATOR
@@ -21250,7 +21267,7 @@ BEGIN
             MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
             MENUITEM SEPARATOR
             MENUITEM "Κανένα (&N)",                 ID_BIOS_SELBST00
-            MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+            MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
             MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
             MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
         END
@@ -21916,7 +21933,8 @@ BEGIN
                 MENUITEM "MI&KEBUG 3",                  ID_BIOS_MIKEBUG
                 MENUITEM "&MYBUG",                      ID_BIOS_MYBUG
                 MENUITEM SEPARATOR
-                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL
+                MENUITEM "IPL 1.&0",                    ID_BIOS_IPL10
+                MENUITEM "&IPL 1.1",                    ID_BIOS_IPL11
                 MENUITEM "POPMO&N",                     ID_BIOS_POPMON
                 MENUITEM "Super&visor",                 ID_BIOS_SUPERVISOR
                 MENUITEM SEPARATOR
@@ -21924,7 +21942,7 @@ BEGIN
                 MENUITEM "PHUNS&Y",                     ID_BIOS_PHUNSY
                 MENUITEM SEPARATOR
                 MENUITEM "Κανένα (&N)",                 ID_BIOS_SELBST00
-                MENUITEM "Selbstbaucomputer monitor &0.9", ID_BIOS_SELBST09
+                MENUITEM "Selbstbaucomputer monitor 0.&9", ID_BIOS_SELBST09
                 MENUITEM "Selbstbaucomputer monitor &1.0", ID_BIOS_SELBST10
                 MENUITEM "Selbstbaucomputer monitor &2.0", ID_BIOS_SELBST20
             END

@@ -1,8 +1,8 @@
 // INCLUDES---------------------------------------------------------------
 
 #define MAJORVERSION   0x04
-#define MINORVERSION   0x74
-#define INTEGERVERSION "4.74" // for RetroAchievements
+#define MINORVERSION   0x75
+#define INTEGERVERSION "4.75" // for RetroAchievements
 
 #include <jni.h>
 
@@ -210,6 +210,8 @@ typedef unsigned char  ASCREEN;
 #define I_TETRISPOS2          207
 #define I_TETRISPOS3          208
 #define MUNCHANDCRUNCH2POS    224
+#define TESTCARTPOS           468
+#define MOLEPOS               469
 // Elektor
 #define MAZESPOS              236
 #define CIRCLEDRIVEPOS1       237
@@ -251,9 +253,9 @@ typedef unsigned char  ASCREEN;
 #define AGGRESSORPOS1         450
 #define AGGRESSORPOS2         451
 // all
-#define KNOWNGAMES           (467 + 1)
+#define KNOWNGAMES           (469 + 1)
 
-#define OVERLAYS             (285 + 1)
+#define OVERLAYS             (287 + 1)
 #define     ARCADIA_OVERLAY     0
 #define     ELEKTOR_OVERLAY     1
 #define    INTERTON_OVERLAY    15
@@ -848,7 +850,8 @@ typedef unsigned char  ASCREEN;
 #define GL_I_SUPERS (ARCADIAGLYPHS + 38)
 #define GL_I_TREASU (ARCADIAGLYPHS + 39)
 #define GL_I_WINTER (ARCADIAGLYPHS + 40)
-#define INTERTONGLYPHS 40
+#define GL_I_MOLE   (ARCADIAGLYPHS + 41)
+#define INTERTONGLYPHS 41
 // ELEKTOR games
 #define GL_E_AGGRES (ARCADIAGLYPHS + INTERTONGLYPHS +  1)
 #define GL_E_AMAZON (ARCADIAGLYPHS + INTERTONGLYPHS +  2)

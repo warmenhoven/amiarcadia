@@ -690,6 +690,22 @@ MODULE const STRPTR hypergates[4] =
   "random",
   "forwards",
   "backwards"
+}, testcart[15] =
+{ "Left controller and console keys",             // "01"
+  "Right controller and console keys",            // "02"
+  "Analog paddles",                               // "03"
+  "Background",                                   // "04"
+  "Normal checkerboard",                          // "05"
+  "Inverted checkerboard",                        // "06"
+  "Border",                                       // "07"
+  "Score display (top, 2 groups of 2 digits)",    // "08"
+  "Score display (bottom, 2 groups of 2 digits)", // "09"
+  "Score display (top, 1 groups of 4 digits)",    // "10"
+  "Score display (bottom, 1 groups of 4 digits)", // "11"
+  "4 sprites",                                    // "12"
+  "1 sprite in various sizes",                    // "13"
+  "Tones",                                        // "14"
+  "Explosions"                                    // "15"
 };
 
 // MODULE FUNCTIONS-------------------------------------------------------
@@ -2923,6 +2939,10 @@ EXPORT void patchrom(void)
         acase MISSILEWARPOS:
             memory[ 0xE8B] = trainer_time          ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
             memory[ 0xE8F] = trainer_time          ? 0x17 : 0x04; // LODI,r0 $50           -> RETC,un
+        acase MOLEPOS:
+            memory[ 0x3A1] = trainer_time          ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
+
+            memory[ 0x7E2] = trainer_invincibility ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
         acase MONACOPOS:
             memory[ 0x72F] = trainer_time          ? 0x00 : 0xFF; // ADDI,r0 $FF           -> ADDI,r0 0
             memory[ 0x730] = trainer_time          ? 0xC0 : 0x94; // DAR,r0                -> NOP
@@ -4102,6 +4122,12 @@ MODULE STRPTR update_variant(void)
     acase WINTERSPORTSPOS: // game-1 is $1F6B
         if (memory[0x1F6B] <= 7)
         {   strcpy(thestring, wintersports[memory[0x1F6B]]);
+        } else
+        {   strcpy(thestring, "?");
+        }
+    acase TESTCARTPOS: // stage-1 is $1F50
+        if (memory[0x1F50] <= 14)
+        {   strcpy(thestring, testcart[memory[0x1F50]]);
         } else
         {   strcpy(thestring, "?");
         }

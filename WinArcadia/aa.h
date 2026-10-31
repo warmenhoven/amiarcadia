@@ -1,10 +1,10 @@
-#define DECIMALVERSION       "36.73 beta"
-#define INTEGERVERSION       "36.73"
+#define DECIMALVERSION       "36.74"
+#define INTEGERVERSION       "36.74"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x73
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (20.10.2026)" // d.m.yyyy format
-#define RELEASEDATE          "20-10-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "20 October 2026" // full month and year
+#define MINORVERSION         0x74
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (30.10.2026)" // d.m.yyyy format
+#define RELEASEDATE          "30-10-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "30 October 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
 #define NEWCONFIGVERSION     "36.73" // V36.73 beta +
@@ -330,65 +330,66 @@ aa:
 #define GL_I_SUPERS 100
 #define GL_I_TREASU 101
 #define GL_I_WINTER 102
-#define INTERTONGLYPHS 40
+#define GL_I_MOLE   103
+#define INTERTONGLYPHS 41
 // ELEKTOR games
-#define GL_E_AGGRES 103
-#define GL_E_AMAZON 104
-#define GL_E_ANIMAT 105
-#define GL_E_ASTERO 106
-#define GL_E_ATTACK 107
-#define GL_E_BASKET 108
-#define GL_E_BURSTI 109
-#define GL_E_CARDTR 110
-#define GL_E_CARGOS 111
-#define GL_E_CARRAC 112
-#define GL_E_CATAPU 113
-#define GL_E_CHICKE 114
-#define GL_E_CHRIST 115
-#define GL_E_CIRCLE 116
-#define GL_E_COSMIC 117
-#define GL_E_DESTRO 118
-#define GL_E_ENTERP 119
-#define GL_E_ENTER2 120
-#define GL_E_ENTER3 121
-#define GL_E_EXPLOD 122
-#define GL_E_FLYING 123
-#define GL_E_HAMISH 124
-#define GL_E_HELICO 125
-#define GL_E_HORSER 126
-#define GL_E_HUNTIN 127
-#define GL_E_INVADE 128
-#define GL_E_JACKPO 129
-#define GL_E_LABYRI 130
-#define GL_E_LAUNCH 131
-#define GL_E_MAZES  132
-#define GL_E_MEMORY 133
-#define GL_E_MOLEBA 134
-#define GL_E_MOONLA 135
-#define GL_E_MULTIP 136
-#define GL_E_NEWTON 137
-#define GL_E_NIM    138
-#define GL_E_OFFSHO 139
-#define GL_E_OMEGAL 140
-#define GL_E_PAINTI 141
-#define GL_E_PENALT 142
-#define GL_E_PIANO  143
-#define GL_E_PILOT  144
-#define GL_E_PINBAL 145
-#define GL_E_PVIART 146
-#define GL_E_QUEEN  147
-#define GL_E_RASTER 148
-#define GL_E_ROCKET 149
-#define GL_E_SEAWAR 150
-#define GL_E_SNAKES 151
-#define GL_E_SNAP   152
-#define GL_E_SPACEB 153
-#define GL_E_SPACES 154
-#define GL_E_STEAME 155
-#define GL_E_SUBMAR 156
-#define GL_E_SURVIV 157
-#define GL_E_TINYTI 158
-#define GL_E_UFOSHO 159
+#define GL_E_AGGRES 104
+#define GL_E_AMAZON 105
+#define GL_E_ANIMAT 106
+#define GL_E_ASTERO 107
+#define GL_E_ATTACK 108
+#define GL_E_BASKET 109
+#define GL_E_BURSTI 110
+#define GL_E_CARDTR 111
+#define GL_E_CARGOS 112
+#define GL_E_CARRAC 113
+#define GL_E_CATAPU 114
+#define GL_E_CHICKE 115
+#define GL_E_CHRIST 116
+#define GL_E_CIRCLE 117
+#define GL_E_COSMIC 118
+#define GL_E_DESTRO 119
+#define GL_E_ENTERP 120
+#define GL_E_ENTER2 121
+#define GL_E_ENTER3 122
+#define GL_E_EXPLOD 123
+#define GL_E_FLYING 124
+#define GL_E_HAMISH 125
+#define GL_E_HELICO 126
+#define GL_E_HORSER 127
+#define GL_E_HUNTIN 128
+#define GL_E_INVADE 129
+#define GL_E_JACKPO 130
+#define GL_E_LABYRI 131
+#define GL_E_LAUNCH 132
+#define GL_E_MAZES  133
+#define GL_E_MEMORY 134
+#define GL_E_MOLEBA 135
+#define GL_E_MOONLA 136
+#define GL_E_MULTIP 137
+#define GL_E_NEWTON 138
+#define GL_E_NIM    139
+#define GL_E_OFFSHO 140
+#define GL_E_OMEGAL 141
+#define GL_E_PAINTI 142
+#define GL_E_PENALT 143
+#define GL_E_PIANO  144
+#define GL_E_PILOT  145
+#define GL_E_PINBAL 146
+#define GL_E_PVIART 147
+#define GL_E_QUEEN  148
+#define GL_E_RASTER 149
+#define GL_E_ROCKET 150
+#define GL_E_SEAWAR 151
+#define GL_E_SNAKES 152
+#define GL_E_SNAP   153
+#define GL_E_SPACEB 154
+#define GL_E_SPACES 155
+#define GL_E_STEAME 156
+#define GL_E_SUBMAR 157
+#define GL_E_SURVIV 158
+#define GL_E_TINYTI 159
+#define GL_E_UFOSHO 160
 #define ELEKTORGLYPHS        57
 #define GAMEGLYPHS        (ARCADIAGLYPHS + INTERTONGLYPHS + ELEKTORGLYPHS)
 
@@ -601,19 +602,13 @@ C306C:
 #define SI50_MINIHEIGHT_SML   9
 #define SI50_MINIWIDTH_BIG  144
 #define SI50_MINIHEIGHT_BIG  18
-#define MIKIT_MINIWIDTH     108 // 9*12
-#define MIKIT_MINIHEIGHT     18
-#define SELBST_MINIWIDTH    108 // 9*12
-#define SELBST_MINIHEIGHT    18
 #define TYPERIGHT_MINIWIDTH  64
 #define TYPERIGHT_MINIHEIGHT 14
 #define PHUNSY_MINIWIDTH    112
 #define PHUNSY_MINIHEIGHT    18
-#define SPLITDISTANCE        18
-#define MAGNIFIERSCALE        4
 
 #define MINIWIDTH           144 // SI50_MINIWIDTH_BIG. Must be a multiple of 4
-#define MINIHEIGHT           18 // SI50_MINIHEIGHT, MIKIT_MINIHEIGHT
+#define MINIHEIGHT           18 // SI50_MINIHEIGHT_BIG, PHUNSY_MINIHEIGHT
 #define AXESWIDTH            96
 #define AXESHEIGHT           96
 #define INDUSTRIALWIDTH     192
@@ -663,6 +658,9 @@ C306C:
     #define ROLLWIDTH       208
 #endif
 #define ROLLHEIGHT          180
+
+#define SPLITDISTANCE        18
+#define MAGNIFIERSCALE        4
 
 #define PLANEPITCH_MAXDEG    20 // ie. range is -20..+20 degrees
 #define PLANEPITCH_MAX       56 // each unit represents 0.35156 degrees
@@ -2128,7 +2126,7 @@ typedef UWORD MEMFLAG;
 #define FRAMESKIP_MAX         10
 #define FRAMESKIP_INFINITE    11
 
-#define OVERLAYS            (286 + 1)
+#define OVERLAYS            (288 + 1)
 #define ARCADIA_OVERLAY        0
 #define ELEKTOR_OVERLAY        1
 #define SI50_OVERLAY           2
@@ -2150,7 +2148,7 @@ typedef UWORD MEMFLAG;
 #define GALAXIA_OVERLAY      231
 #define TYPERIGHT_OVERLAY    236
 
-#define KNOWNGAMES          (867 + 1)
+#define KNOWNGAMES          (870 + 1)
 #define LARGESTKNOWN       59796 // size of largest known game in bytes (AOF version of Pattern)
 
 // Arcadia                           0..  29
@@ -2408,7 +2406,6 @@ typedef UWORD MEMFLAG;
 #define HOMERUNPOS            855
 #define KOTONOHAPOS           857
 #define WINDWORLDPOS          865
-
 // Interton
 #define SHOOTOUTPOS           130
 #define SUPERINVPOS           131
@@ -2475,6 +2472,8 @@ typedef UWORD MEMFLAG;
 #define I_TETRISPOS3          208
 #define MUNCHANDCRUNCH2POS    224
 #define TESTCARTPOS           867
+#define MOLEPOS               868
+#define INTERTONMULTIPOS      869
 // Elektor
 #define MAZESPOS              236
 #define CIRCLEDRIVEPOS1       237
@@ -4603,6 +4602,7 @@ EXPORT void drawsegment(int position, int segment, int colour);
 EXPORT void drawsegments(int position);
 EXPORT FLAG edit_screen(UWORD code);
 EXPORT void edit_screen_sanitize(void);
+EXPORT void fill_canvas(int whichcanvas, int whichcolour);
 EXPORT void fixupcolours(void);
 EXPORT void gfx_setup(void);
 EXPORT ULONG setkybdcolour(int gid);
@@ -4946,6 +4946,7 @@ EXPORT void resetcolour(int thecolourset, int whichcolour, FLAG update);
 EXPORT void setred(int colourset, int whichpen, UBYTE value);
 EXPORT void setgreen(int colourset, int whichpen, UBYTE value);
 EXPORT void setblue(int colourset, int whichpen, UBYTE value);
+EXPORT void set_byteptrs(int whichcanvas);
 #ifdef AMIGA
     EXPORT void make_viewaslist(void);
     EXPORT void setup_bm(int whichcanvas, UBYTE whichpen);

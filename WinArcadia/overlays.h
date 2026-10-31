@@ -3910,4 +3910,29 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Cl"   ,"0"    ,"En"   ,"Cl"   ,"0"    ,"En"   ,
 "START (F1): advance to next stage or substage"
 },
+{ // 287. Mole
+        "Start",                "-----",
+"-----","-----","-----","-----","-----","-----",
+"I"    ,"-----","II"   ,"-----","-----","-----",
+"1"    ,"2"    ,"3"    ,"1"    ,"2"    ,"3"    ,
+"4"    ,"5"    ,"6"    ,"4"    ,"5"    ,"6"    ,
+"7"    ,"8"    ,"9"    ,"7"    ,"8"    ,"9"    ,
+"On title screen:\n" \
+"Start: press this first (after song finishes)\n" \
+"I/II: 1/2 player game\n" \
+"In 2-player game, I/II for 50/99 rounds.\n" \
+"During play:\n" \
+"1..9: bash corresponding hole"
+},
+{ // 288. Multicart Menu
+        "Start",                "-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"A (F2): next game\n" \
+"Paddle up/down: previous/next game\n" \
+"START (F1) or Start: start game"
+},
 };

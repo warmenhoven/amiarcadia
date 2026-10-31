@@ -4902,10 +4902,14 @@ EXPORT UBYTE iof_makebcc(int start, int end, UBYTE* BufferPtr)
 EXPORT void cd_configs(void)
 {
 #ifdef AMIGA
-    BPTR LocalLock;
+    BPTR ConfigsLock,
+         OldLock;
 
-    LocalLock = Lock((const char*) "PROGDIR:Configs", ACCESS_READ);
-    DISCARD CurrentDir(LocalLock);
+    ConfigsLock = Lock((const char*) "PROGDIR:Configs", ACCESS_READ);
+    OldLock = CurrentDir(ConfigsLock);
+    if (OldLock != ProgLock)
+    {   UnLock(OldLock);
+    }
 #endif
 #ifdef WIN32
     DISCARD SetCurrentDirectory("Configs");
@@ -4915,10 +4919,14 @@ EXPORT void cd_configs(void)
 EXPORT void cd_projects(void)
 {
 #ifdef AMIGA
-    BPTR ProjectsLock;
+    BPTR ProjectsLock,
+         OldLock;
 
     ProjectsLock = Lock((const char*) path_projects, ACCESS_READ);
-    DISCARD CurrentDir(ProjectsLock);
+    OldLock = CurrentDir(ProjectsLock);
+    if (OldLock != ProgLock)
+    {   UnLock(OldLock);
+    }
 #endif
 #ifdef WIN32
     DISCARD SetCurrentDirectory(path_projects);
@@ -4928,10 +4936,14 @@ EXPORT void cd_projects(void)
 EXPORT void cd_screenshots(void)
 {
 #ifdef AMIGA
-    BPTR LocalLock;
+    BPTR ScreenshotsLock,
+         OldLock;
 
-    LocalLock = Lock((const char*) path_screenshots, ACCESS_READ);
-    DISCARD CurrentDir(LocalLock);
+    ScreenshotsLock = Lock((const char*) path_screenshots, ACCESS_READ);
+    OldLock = CurrentDir(ScreenshotsLock);
+    if (OldLock != ProgLock)
+    {   UnLock(OldLock);
+    }
 #endif
 #ifdef WIN32
     DISCARD SetCurrentDirectory(path_screenshots);
@@ -4944,7 +4956,12 @@ EXPORT void cd_progdir(void)
     DISCARD SetCurrentDirectory(ProgDir);
 #endif
 #ifdef AMIGA
-    DISCARD CurrentDir(ProgLock);
+    BPTR OldLock;
+
+    OldLock = CurrentDir(ProgLock);
+    if (OldLock != ProgLock)
+    {   UnLock(OldLock);
+    }
 #endif
 }
 

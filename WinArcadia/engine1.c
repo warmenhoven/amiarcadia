@@ -515,10 +515,10 @@ EXPORT struct ChannelStruct channel[TOTALCHANNELS] =
   { FALSE }, // coin
   { FALSE }, // printer
   { FALSE }, // click
-  { TRUE  },  // spin
+  { TRUE  }, // spin
   { FALSE }, // step
-  { TRUE  },  // grind
-  { TRUE  },  // punch
+  { TRUE  }, // grind
+  { TRUE  }, // punch
 };
 
 EXPORT struct SubWindowStruct subwin[SUBWINDOWS] = {
@@ -1035,6 +1035,7 @@ EXPORT void emu_unpause(void)
         updatepointer(FALSE, TRUE);
         draw_guide_ray(TRUE);
         redrawscreen(); // for guide ray
+        clearkybd(); // so that we don't have keys stuck down if they released them while paused
 #ifdef WIN32
         if (cheevos)
         {

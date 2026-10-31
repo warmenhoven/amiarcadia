@@ -571,6 +571,7 @@
 #define IDI_I_SPACEZAP                  659
 #define IDB_BOX_WINDWORLD               659
 #define IDI_E_HELICOPTER                660
+#define IDB_BOX_50                      660
 #define IDI_E_COSMICADVENTURE           661
 #define IDI_E_INVADERS                  662
 #define IDI_E_DESTROYER                 663
@@ -630,6 +631,7 @@
 #define IDI_WINDWORLD                   717
 #define IDI_PSYMANSION                  718
 #define IDI_KEDAMAKI                    719
+#define IDI_I_MOLE                      720
 #define IDC_CHANGE_FROM                 1000
 #define IDC_CHANGE_TO                   1001
 #define IDC_CHANGE_ADDRESS              1002
@@ -2436,7 +2438,6 @@
 #define IDL_OTHER_GROUP                 3351
 #define IDL_HOVER4                      3352
 #define IDL_HOVER5                      3353
-#define IDL_HOVER6                      3354
 #define IDC_SPEECHENABLED               3355
 #define IDL_RATE                        3356
 #define IDC_RATE                        3357
@@ -3779,7 +3780,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        660
+#define _APS_NEXT_RESOURCE_VALUE        661
 #define _APS_NEXT_COMMAND_VALUE         40512
 #define _APS_NEXT_CONTROL_VALUE         4405
 #define _APS_NEXT_SYMED_VALUE           101

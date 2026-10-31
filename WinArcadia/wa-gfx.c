@@ -3166,3 +3166,5 @@ MODULE HBITMAP rotate_bezel(HBITMAP hOldBitmap)
 
     return hNewBitmap;
 }
+
+EXPORT void set_byteptrs(int whichcanvas) { ; }

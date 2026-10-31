@@ -216,7 +216,7 @@ IMPORT       ULONG                     analog,
                                        winwidth,
                                        winleftx,
                                        wintopy;
-IMPORT const ULONG                     EmuBrush[EMUBRUSHES];
+IMPORT const ULONG                     emupens[EMUBRUSHES];
 IMPORT       STRPTR                    colournames[GUESTCOLOURS + 1],
                                        timeunitstr1;
 IMPORT       HWND                      hToolbar,
@@ -1470,7 +1470,7 @@ MODULE BOOL CALLBACK MemoryDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARA
                 } else
                 {   memcolour = EMUBRUSH_DARKGREEN;
                 }
-                SetBkColor((HDC) wParam, EmuBrush[memcolour]);
+                SetBkColor((HDC) wParam, emupens[memcolour]);
                 return (LRESULT) hBrush[memcolour];
         }   }
     acase WM_ACTIVATE:
@@ -1578,7 +1578,6 @@ MODULE BOOL CALLBACK CPUMonitorDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
             {   SetWindowText(hwnd, LLL(                 MSG_HAIL_MONITOR     , "Real-Time CPU Monitor"));
                 setdlgtext(   hwnd, IDL_CPU_MASTERGROUP, MSG_CPU_GAD          , "2650 CPU Status");
             }
-            setdlgtext(       hwnd, IDL_HOVER6         , MSG_HOVER            , "Hover over a button for more information.");
             setfont(          hwnd, IDL_CLOCK2650);
             SetDlgItemText(   hwnd, IDL_CLOCK2650                             , timeunitstr1);
         }

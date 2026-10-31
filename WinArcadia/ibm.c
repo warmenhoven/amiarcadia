@@ -258,7 +258,7 @@ EXPORT       struct HostMachineStruct hostmachines[MACHINES] =
 #endif
 };
 
-EXPORT const ULONG EmuBrush[EMUBRUSHES] =
+EXPORT const ULONG emupens[EMUBRUSHES] =
 {   EMUPEN_RED,
     EMUPEN_BLUE,
     EMUPEN_GREEN,
@@ -1098,8 +1098,10 @@ IDI_I_SUPERINVADERS,
 IDI_I_SUPERSPACE,
 IDI_I_TREASUREHUNT,
 IDI_I_WINTERSPORTS,
+// new ones
+IDI_I_MOLE,
 // ELEKTOR games
-IDI_E_AGGRESSOR,        // 100
+IDI_E_AGGRESSOR,        // 101
 IDI_E_AMAZONE,
 IDI_E_ANIMATEDS,
 IDI_E_ASTEROIDS,
@@ -1111,7 +1113,7 @@ IDI_E_CARGOSHIP,
 IDI_E_CARRACE,
 IDI_E_CATAPULT,
 IDI_E_CHICKEN,
-IDI_E_CHRISTMASTREE,    // 112
+IDI_E_CHRISTMASTREE,    // 113
 IDI_E_CIRCLEDRIVE,
 IDI_E_COSMICADVENTURE,
 IDI_E_DESTROYER,
@@ -1121,7 +1123,7 @@ IDI_E_ENTERPRISE3,
 IDI_E_EXPLODINGMAN,
 IDI_E_FLYINGPC,
 IDI_E_HAMISH,
-IDI_E_HELICOPTER,       // 122
+IDI_E_HELICOPTER,       // 123
 IDI_E_HORSERACES,
 IDI_E_HUNTING,
 IDI_E_INVADERS,
@@ -1133,7 +1135,7 @@ IDI_E_MEMORY,
 IDI_E_MOLEBASHER,
 IDI_E_MOONLANDING,
 IDI_E_MULTIPLEOBJECTS,
-IDI_E_NEWTON,           // 134
+IDI_E_NEWTON,           // 135
 IDI_E_NIM,
 IDI_E_OFFSHOREFISHING,
 IDI_E_OMEGALANDING,
@@ -1143,7 +1145,7 @@ IDI_E_PIANO,
 IDI_E_PILOT,
 IDI_E_PINBALL,
 IDI_E_PVIART,
-IDI_E_QUEEN,            // 144
+IDI_E_QUEEN,            // 145
 IDI_E_RASTER,
 IDI_E_ROCKETHUNTING,
 IDI_E_SEAWAR,
@@ -1153,9 +1155,9 @@ IDI_E_SPACEBATTLE,
 IDI_E_SPACESCENE,
 IDI_E_STEAMENGINE,
 IDI_E_SUBMARINES,
-IDI_E_SURVIVAL,         // 154
+IDI_E_SURVIVAL,         // 155
 IDI_E_TINYTIM,
-IDI_E_UFOSHOOTING,      // 156
+IDI_E_UFOSHOOTING,      // 157
 };
 
 // IMPORTED VARIABLES ----------------------------------------------------
@@ -2832,7 +2834,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     setpri();
 
     for (i = 0; i < EMUBRUSHES; i++)
-    {   hBrush[i] = CreateSolidBrush(EmuBrush[i]);
+    {   hBrush[i] = CreateSolidBrush(emupens[i]);
     }
 
     SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &b, 0);
@@ -2976,6 +2978,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {   if (paused)
         {   wa_checkinput();
             process_code();
+            update_controlstip(FALSE);
         } else
         {   wait_first();
             emulate();
@@ -5460,7 +5463,11 @@ EXPORT void process_code(void)
                 )   );
         }   }
     acase SCAN_TAB:
-        if (!ctrl())
+        if (ctrl())
+        {   if (!shift() && subwin[SUBWINDOW_OUTPUT].hwnd)
+            {   SetActiveWindow(subwin[SUBWINDOW_OUTPUT].hwnd);
+        }   }
+        else
         {   if (GetActiveWindow() == subwin[SUBWINDOW_PALETTE].hwnd)
             {   SetFocus
                 (   GetNextDlgTabItem
@@ -6850,11 +6857,17 @@ LRESULT CALLBACK CustomEditProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
         switch (wParam)
         {
         case VK_TAB:
-            DISCARD GetWindowText(hDebugger, userinput, sizeof(userinput));
-            handletab();
-            DISCARD SendMessage(hDebugger, WM_SETTEXT,  0, (LPARAM) userinput);
-            DISCARD SendMessage(hDebugger, EM_SETSEL ,  0, -1); // these move the cursor
-            DISCARD SendMessage(hDebugger, EM_SETSEL , -1, -1); // to the end of the line
+            if (GetKeyState(VK_CONTROL) & 0x8000)
+            {   if (subwin[SUBWINDOW_OUTPUT].hwnd)
+                {   SetActiveWindow(subwin[SUBWINDOW_OUTPUT].hwnd);
+            }   }
+            else
+            {   DISCARD GetWindowText(hDebugger, userinput, sizeof(userinput));
+                handletab();
+                DISCARD SendMessage(hDebugger, WM_SETTEXT,  0, (LPARAM) userinput);
+                DISCARD SendMessage(hDebugger, EM_SETSEL ,  0, -1); // these move the cursor
+                DISCARD SendMessage(hDebugger, EM_SETSEL , -1, -1); // to the end of the line
+            }
         acase VK_ESCAPE:
             userinput[0] = EOS;
             DISCARD SendMessage(hDebugger, WM_SETTEXT, 0, (LPARAM) userinput);

@@ -1649,9 +1649,8 @@ EXPORT int readnum_hex(STRPTR input, int length)
 }
 
 EXPORT int readnum_decimal(STRPTR input, int length)
-{   int  i,
-         value;
-    TEXT tempstring[80 + 1];
+{   int i,
+        value;
 
     lastparse = BASE_DECIMAL;
 
@@ -1660,9 +1659,8 @@ EXPORT int readnum_decimal(STRPTR input, int length)
         {   return OUTOFRANGE;
     }   }
 
-    strcpy(tempstring, input);
-    tempstring[length] = EOS;
-    DISCARD stcd_l(tempstring, (void*) &value); // decstring -> number
+    zstrncpy(gtempstring, input, length);
+    DISCARD stcd_l(gtempstring, (void*) &value); // decstring -> number
 
     return value;
 }
@@ -3422,6 +3420,10 @@ EXPORT void patchrom(void)
         acase MISSILEWARPOS:
             memory[ 0xE8B] = trainer_time          ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
             memory[ 0xE8F] = trainer_time          ? 0x17 : 0x04; // LODI,r0 $50           -> RETC,un
+        acase MOLEPOS:
+            memory[ 0x3A1] = trainer_time          ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
+
+            memory[ 0x7E2] = trainer_invincibility ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
         acase MONACOPOS:
             memory[ 0x72F] = trainer_time          ? 0x00 : 0xFF; // ADDI,r0 $FF           -> ADDI,r0 0
             memory[ 0x730] = trainer_time          ? 0xC0 : 0x94; // DAR,r0                -> NOP
@@ -3666,6 +3668,8 @@ EXPORT void patchrom(void)
 
             memory[ 0x8CC] = trainer_lives         ? 0x1B : 0x98; // BCFR,eq $8D1          -> BCTR,un $8D1
             memory[ 0x8D2] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
+        acase INTERTONMULTIPOS:
+            memory[ 0x937] = 0x39; // DB $38 -> DB $39
 #ifdef ADVENTURETRAINER
         adefault:
             if (machine == BINBUG && whichgame == -1)

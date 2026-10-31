@@ -810,11 +810,20 @@ EXPORT void help_hostpads(void)
             ti.hwnd     = subwin[SUBWINDOW_HOSTPADS].hwnd;
             ti.uId      = next++;
             ti.hinst    = InstancePtr;
-            ti.lpszText = LLL
+            if (joys == 0)
+            {   ti.lpszText = LLL
+                          (   MSG_UNASSIGNEDPADTIP2,
+                              "Plug in a host gamepad, then use the\n" \
+                              "\"Peripherals|Left/right controller »\" submenu(s)\n" \
+                              "to assign this host gamepad to a guest player."
+                          ); // this gets copied
+            } else
+            {   ti.lpszText = LLL
                           (   MSG_UNASSIGNEDPADTIP,
                               "Use the \"Peripherals|Left/right controller »\" submenu(s)\n" \
                               "to assign this host gamepad to a guest player."
                           ); // this gets copied
+            }
             GetWindowRect(GetDlgItem(subwin[SUBWINDOW_HOSTPADS].hwnd, (i == 0) ? IDC_LTHOSTPAD : IDC_RTHOSTPAD), &therect1); // gadgets relative to screen
             GetWindowRect(subwin[SUBWINDOW_HOSTPADS].hwnd, &therect2); // window relative to screen
             ti.rect.top    = therect1.top    - therect2.top  - titleheight - 2;
@@ -2328,6 +2337,7 @@ MODULE BOOL CALLBACK GameInfoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
         case  232:               localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_37));
         acase HYPERSPACEPOS:     localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_38));
         acase SUPERSPACEPOS:     localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_40));
+        acase MOLEPOS:           localhicon2 = (HICON) LoadBitmap(InstancePtr, MAKEINTRESOURCE(IDB_BOX_50));
 
         // Elektor
         acase 255:                 // Keyboard Painting aka Play with the PVI               ESS-003-1

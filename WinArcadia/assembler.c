@@ -72,6 +72,7 @@ IMPORT       struct MachineStruct     machines[MACHINES];
 IMPORT       struct OpcodeStruct      opcodes[3][256];
 
 #ifdef AMIGA
+    IMPORT   BPTR                     ProgLock;
     IMPORT   struct Catalog*          CatalogPtr;
 #endif
 #ifdef WIN32
@@ -293,7 +294,7 @@ EXPORT void assemble(void)
             {   icursor++;
             }
             AsmBuffer[asmsize2] = LF;
-        } else   
+        } else
         {   AsmBuffer[asmsize2] = AsmBuffer[icursor];
         }
         asmsize2++;
@@ -2025,7 +2026,7 @@ MODULE FLAG asm_newcalm(void)
                t;
     FAST int   i,
                value1;
- 
+
     equstring[0] = EOS;
 
 START:
@@ -4024,7 +4025,7 @@ MODULE int findlabel(STRPTR passedstring, int length, FLAG allowall)
     if (machines[machine].firstequiv != -1)
     {   for (i = machines[machine].firstequiv; i <= machines[machine].lastequiv; i++)
         {   if (length == (int) strlen((const char*) equivalents[i].name) && !strnicmp((const char*) equivalents[i].name, passedstring, length))
-            {   
+            {
 #ifdef VERBOSE
                 zprintf(TEXTPEN_CLIOUTPUT, "Found built-in guest label %s ($%X).\n", passedstring, (int) equivalents[i].address);
 #endif
@@ -4070,6 +4071,7 @@ MODULE int findlabel(STRPTR passedstring, int length, FLAG allowall)
     if (i != OUTOFRANGE)
     {   return i;
     }
+
     i = parse_literal(passedstring, length);
     return i;
 }
@@ -4093,7 +4095,7 @@ MODULE FLAG includebin(void)
         }
         fn_inc[i] = EOS;
         goto DONE;
-    }    
+    }
     quotechar[1] = EOS;
     done = FALSE;
     do
@@ -4155,7 +4157,7 @@ MODULE FLAG includefile(void)
           *TotalAsmBuffer;
     FILE*  IncHandle;
 
-    including = TRUE;
+    including = TRUE; // since we do our work on pass 1
     skipblanks(TRUE);
     if (compareit("\"", FALSE))
     {   quotechar[0] = QUOTES;
@@ -4167,7 +4169,7 @@ MODULE FLAG includefile(void)
         }
         fn_inc[i] = EOS;
         goto DONE;
-    }    
+    }
     quotechar[1] = EOS;
     done = FALSE;
     do
@@ -4264,7 +4266,7 @@ DONE:
 }
 
 MODULE FLAG ishexdigit(TEXT which)
-{   if 
+{   if
     (   (which >= '0' && which <= '9')
      || (which >= 'A' && which <= 'F')
      || (which >= 'a' && which <= 'f')
@@ -5288,7 +5290,8 @@ MODULE void cd_include(void)
 {   int  i    =  0,
          last = -1;
 #ifdef AMIGA
-    BPTR IncludeLock;
+    BPTR IncludeLock,
+         OldLock;
 #endif
 
     strcpy(path_include, fn_asm);
@@ -5308,7 +5311,10 @@ MODULE void cd_include(void)
 
 #ifdef AMIGA
     IncludeLock = Lock((const char*) path_include, ACCESS_READ);
-    DISCARD CurrentDir(IncludeLock);
+    OldLock = CurrentDir(IncludeLock);
+    if (OldLock != ProgLock)
+    {   UnLock(OldLock);
+    }
 #endif
 #ifdef WIN32
     DISCARD SetCurrentDirectory(path_include);

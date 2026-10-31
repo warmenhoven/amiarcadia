@@ -388,6 +388,10 @@ SOURCE=".\box-5.bmp"
 # End Source File
 # Begin Source File
 
+SOURCE=".\box-50.bmp"
+# End Source File
+# Begin Source File
+
 SOURCE=".\box-6.bmp"
 # End Source File
 # Begin Source File
@@ -1633,6 +1637,10 @@ SOURCE=".\i-wintersports.ico"
 # Begin Source File
 
 SOURCE=.\i3000.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\i_mole.ico
 # End Source File
 # Begin Source File
 

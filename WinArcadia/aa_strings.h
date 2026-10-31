@@ -1429,6 +1429,7 @@
 #define MSG_HONK 1394
 #define MSG_WHEELMOTORS 1395
 #define MSG_ROBOTMOTION 1396
+#define MSG_UNASSIGNEDPADTIP2 1397
 
 #endif /* CATCOMP_NUMBERS */
 
@@ -2835,6 +2836,7 @@
 #define MSG_HONK_STR "Honk"
 #define MSG_WHEELMOTORS_STR "Wheel Motors"
 #define MSG_ROBOTMOTION_STR "Robot Motion"
+#define MSG_UNASSIGNEDPADTIP2_STR "Plug in a host gamepad, then use the\n\"Peripherals|Left/right controller »\" submenu(s)\nto assign this host gamepad to a guest player."
 
 #endif /* CATCOMP_STRINGS */
 
@@ -4249,6 +4251,7 @@ static const struct CatCompArrayType CatCompArray[] =
     {MSG_HONK,(STRPTR)MSG_HONK_STR},
     {MSG_WHEELMOTORS,(STRPTR)MSG_WHEELMOTORS_STR},
     {MSG_ROBOTMOTION,(STRPTR)MSG_ROBOTMOTION_STR},
+    {MSG_UNASSIGNEDPADTIP2,(STRPTR)MSG_UNASSIGNEDPADTIP2_STR},
 };
 
 #endif /* CATCOMP_ARRAY */

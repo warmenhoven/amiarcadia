@@ -335,11 +335,13 @@ IMPORT const int                  gridline[220];
     IMPORT   UBYTE*               byteptr[MAXBOXHEIGHT];
     IMPORT   UWORD*               wordptr[MAXBOXHEIGHT];
     IMPORT   ULONG*               longptr[MAXBOXHEIGHT];
+    IMPORT   LONG                 emupens[EMUBRUSHES];
     IMPORT   struct Catalog*      CatalogPtr;
 #endif
 #ifdef WIN32
     IMPORT   int                  CatalogPtr; // APTR doesn't work
     IMPORT   UBYTE                fgtable[BOXHEIGHT][BOXWIDTH];
+    IMPORT const ULONG            emupens[EMUBRUSHES];
     IMPORT   ULONG                pencolours[COLOURSETS][PENS];
     IMPORT   ULONG*               pixelulong;
 #endif
@@ -3196,12 +3198,7 @@ EXPORT void drawctrlglow(int leftx, int topy, FLAG lit) // Note that there are a
 }
 
 EXPORT void view_controls_engine(void)
-{   int i,
-        y;
-#ifdef WIN32
-    int fillcolour,
-        x;
-#endif
+{   int i;
 
     for (i = 0; i < KEYS; i++)
     {   oldkeys[i] =
@@ -3237,38 +3234,27 @@ EXPORT void view_controls_engine(void)
         canvas[CANVAS_MINI].nowheight = PHUNSY_MINIHEIGHT;
         minidestx  =  81;
         minidesty  =  17;
-    acase SELBST:
-        canvas[CANVAS_MINI].nowwidth  = SELBST_MINIWIDTH;
-        canvas[CANVAS_MINI].nowheight = SELBST_MINIHEIGHT;
-        // minidestx and minidesty will change for every digit
-    acase MIKIT:
-        canvas[CANVAS_MINI].nowwidth  = MIKIT_MINIWIDTH;
-        canvas[CANVAS_MINI].nowheight = MIKIT_MINIHEIGHT;
-        // minidestx and minidesty will change for every digit
     acase TYPERIGHT:
         canvas[CANVAS_MINI].nowwidth  = TYPERIGHT_MINIWIDTH;
         canvas[CANVAS_MINI].nowheight = TYPERIGHT_MINIHEIGHT;
         minidestx  = 230;
         minidesty  =  41;
-    adefault:
+    adefault: // ARCADIA, INTERTON, ELEKTOR, BINBUG, TWIN, CD2650, coin-ops, SELBST, MIKIT, PONG
         canvas[CANVAS_MINI].nowwidth  =
         canvas[CANVAS_MINI].nowheight = 0;
         minidestx  =
         minidesty  = 0;
     }
 
-#ifdef WIN32 // AmiArcadia does this in view_controls()
-    fillcolour = (machine == TYPERIGHT) ? GREY1 : BLACK;
-    for (y = 0; y < canvas[CANVAS_MINI].nowheight; y++)
-    {   for (x = 0; x < canvas[CANVAS_MINI].nowwidth; x++)
-        {   DRAWMINI(x, y, fillcolour);
+    if (machine == SELBST || machine == MIKIT)
+    {   for (i = 0; i < 6; i++)
+        {   set_byteptrs(CANVAS_SPLIT1 + i);
+            fill_canvas(CANVAS_SPLIT1 + i, EMUBRUSH_BLACK);
     }   }
-#endif
-#ifdef AMIGA
-    for (y = 0; y < canvas[CANVAS_MINI].nowheight; y++)
-    {   canvas[CANVAS_MINI].byteptr[y] = &(canvas[CANVAS_MINI].display[GFXACCESS(0, y, canvas[CANVAS_MINI].nowwidth)]);
+    elif (canvas[CANVAS_MINI].nowwidth && canvas[CANVAS_MINI].nowheight)
+    {   set_byteptrs(CANVAS_MINI);
+        fill_canvas(CANVAS_MINI, (machine == TYPERIGHT) ? EMUBRUSH_GREY : EMUBRUSH_BLACK);
     }
-#endif
 
     wheremouse = -1;
     fix_keyrects(); // probably not needed anymore
@@ -3280,3 +3266,11 @@ EXPORT void changethisfgpixel(int colour)
 EXPORT void changethisbgpixel(int colour)
 {   changebgpixel(cpux - absxmin, cpuy - absymin, colour);
 }
+
+EXPORT void fill_canvas(int whichcanvas, int whichcolour)
+{   int x, y;
+
+    for (y = 0; y < canvas[whichcanvas].nowheight; y++)
+    {   for (x = 0; x < canvas[whichcanvas].nowwidth; x++)
+        {   DRAWCANVAS(whichcanvas, x, y, emupens[whichcolour]);
+}   }   }

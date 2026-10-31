@@ -43,7 +43,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "C1",   "C2",   "C3",   "Cnfrm","Cnfrm","Cnfrm",
 "N1",   "N2",   "N3",   "Next", "Next", "Next",
 "SELECT (F2): choose game variant (1..15)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Normally (ie. variants 1..14):\n" \
 "Cancl = Cancel move\n" \
 "Finis = Finished move\n" \
@@ -73,7 +73,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "1,3,5,7 have 1 computer car. 2,4,6,8 have 2. 9 has 0.\n" \
 "1-2,5-6: dodge car(s). 3-4,7-8: hit car(s). 9: chase car of same colour as score.\n" \
 "Left player is black or red. Right player is green or (game 9) blue. Computer is purple, yellow or (games 7..8) blue.\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Up/Down/Left/Right: change lanes\n" \
 "Paddle left/right: decrease/increase car speed while held"
 },
@@ -85,7 +85,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "1",    "2",    "3",    "1",    "2",    "3",
 "Clear","0",    "Enter","Clear","0",    "Enter",
 "SELECT (F2): 1-player mode\n" \
-"START (F1): 2-player mode\n" \
+"START: 2-player mode\n" \
 "Clear = cycle through difficulty levels\n" \
 "0 = cycle through game options\n" \
 "Enter = start game\n" \
@@ -101,7 +101,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Eb",   "E",    "F",    "Eb",   "E",    "F",
 "C",    "C#",   "D",    "C",    "C#",   "D",
 "SELECT (F2): cycle through game variants (1..8)\n" \
-"START (F1): start game\n " \
+"START: start game\n " \
 "During playback, holding a note will transpose the pitch to the key one semitone higher than marked (eg. holding C will transpose to C#)\n" \
 "During playback, holding the right player's left column buttons will adjust tempo as follows:\n" \
 "C = slowest, Eb = slow, F#/Cy = fast, A/Red = fastest\n" \
@@ -117,7 +117,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "UC (F2): don't press this key!\n" \
 "LC (F3): choose game speed (1..9)\n" \
-"START (F1) or Start: start game\n" \
+"START or Start: start game\n" \
 "Accel = Accelerate\n" \
 "Paddle directions: change lanes\n" \
 "Red squares: +2 points. Square turns blue.\n" \
@@ -133,8 +133,8 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "HokLt","Durat","HokRt","HokLt","Durat","HokRt",
 "BwlLt","-----","BwlRt","BwlLt","-----","BwlRt",
-"A (F2): toggle between 1 and 2 players\n" \
-"START (F1): start game\n" \
+"A: toggle between 1 and 2 players\n" \
+"START: start game\n" \
 "HokLt = Hook Left\n" \
 "HokRt = Hook Right\n" \
 "Revie = Review score\n" \
@@ -152,7 +152,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Bkspc = Backspace\n" \
 "Phrse = Phrase\n" \
 "Searc = Search\n" \
-"START (F1): translate"
+"START: translate"
 },
 { // 11. American Football
         "-----",                "-----",
@@ -161,7 +161,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "Pass", "-----","-----","Pass", "-----","-----",
 "Scrum","-----","Goal", "Scrum","-----","Goal",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Goal = kick for Goal\n" \
 "Kick = Kick off\n" \
 "Pass = Pass ball\n" \
@@ -175,8 +175,8 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Fire", "Fire", "Fire", "Pause","-----","Unpau",
 "Fire", "Fire", "Fire", "Pause","-----","Unpau",
 "Fire", "Fire", "Fire", "Pause","-----","Unpau",
-"START (F1): start game\n" \
-"A (F2): start demo\n" \
+"START: start game\n" \
+"A: start demo\n" \
 "Unpau = Unpause\n" \
 "Paddle left/right: move left/right"
 },
@@ -187,7 +187,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Sh/Bl","P1",   "-----","Sh/Bl","P1",   "-----",
 "Pass", "P2",   "-----","Pass", "P2",   "-----",
 "-----","P3",   "-----","-----","P3",   "-----",
-"A (F2) then START (F1): start game\n" \
+"A then START: start game\n" \
 "Ru/Dr = Run/Dribble\n" \
 "Sh/Bl = Shoot/Block\n" \
 "Pass = Pass ball\n" \
@@ -201,8 +201,8 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Fire","Fire","Fire","-----","-----","-----",
 "Fire","Fire","Fire","-----","-----","-----",
 "Fire","Fire","Fire","-----","-----","-----",
-"A (F2): choose difficulty (1=50 secs, 2=40 secs, 3=30 secs)\n" \
-"START (F1): start game\n" \
+"A: choose difficulty (1=50 secs, 2=40 secs, 3=30 secs)\n" \
+"START: start game\n" \
 "Paddle directions: move bug"
 },
 { // 15. default (Interton)
@@ -221,9 +221,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "Activ","-----","-----","Activ","-----","-----",
-"A (F2): toggle between 1st and 2nd levels\n" \
-"B (F3): toggle \"birds\" on/off?\n" \
-"START (F1): start game\n"
+"A: toggle between 1st and 2nd levels\n" \
+"B: toggle \"birds\" on/off?\n" \
+"START: start game\n"
 "Activ = Activate (enter tank)\n" \
 "Deact = Deactivate (exit tank)\n" \
 "Paddle directions: move man/tank"
@@ -250,9 +250,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Fast", "Fast", "Fast", "-----","-----","-----",
 "Fast", "Fast", "Fast", "-----","-----","-----",
 "Fast", "Fast", "Fast", "-----","-----","-----",
-"A (F2): choose \"game\" (1..16)\n" \
-"B (F3): toggle flag line on/off (ie. invert colours)\n" \
-"START (F1): start game\n" \
+"A: choose \"game\" (1..16)\n" \
+"B: toggle flag line on/off (ie. invert colours)\n" \
+"START: start game\n" \
 "Hold = Hold ball (eg. in game variant 3)\n" \
 "Fast = Faster paddle movement while held down\n" \
 "Paddle left/right: move paddle left/right or up/down\n\n" \
@@ -265,10 +265,10 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Up",   "-----","-----","Up",   "-----",
 "Left", "-----","Right","Left", "-----","Right",
 "-----","Down", "-----","-----","Down", "-----",
-"START (F1): start game\n" \
-"A (F2); choose difficulty (1..6)\n" \
+"START: start game\n" \
+"A; choose difficulty (1..6)\n" \
 "1..5 are 1-player games, 6 is 2-player game\n" \
-"B (F3): set time limits\n" \
+"B: set time limits\n" \
 "While setting time limits:\n" \
 "Left/Right = decrease/increase minutes\n" \
 "Up/Down = decrease/increase seconds\n" \
@@ -283,9 +283,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Close","Hyper","Open", "Pause","-----","Unpau",
 "Close","Hyper","Open", "Pause","-----","Unpau",
 "Close","Hyper","Open", "Pause","-----","Unpau",
-"A (F2): select \"game\" (1..4)\n" \
-"B (F3): select \"option\" (1..8)\n" \
-"START (F1): start game\n" \
+"A: select \"game\" (1..4)\n" \
+"B: select \"option\" (1..8)\n" \
+"START: start game\n" \
 "Close = Close gates\n" \
 "Hyper = Hyperspace (teleport)\n" \
 "Open = Open gates\n" \
@@ -299,8 +299,8 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Fire", "Fire", "Fire", "Fire", "Fire", "Fire",
 "Fire", "Fire", "Fire", "Fire", "Fire", "Fire",
 "Pause","Fire", "Unpau","Fire", "Fire", "Fire",
-"A (F2): toggle between 1 and 2 players\n" \
-"START (F1): start game\n" \
+"A: toggle between 1 and 2 players\n" \
+"START: start game\n" \
 "Unpau = Unpause\n" \
 "Player 1 is right controller (when unswapped) and right status area.\n" \
 "Player 2 is left controller (when unswapped) and left status area."
@@ -312,9 +312,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Drive","3Wood","5Wood","Drive","3Wood","5Wood",
 "3Iron","5Iron","7Iron","3Iron","5Iron","7Iron",
 "9Iron","Wedge","Putte","9Iron","Wedge","Putte",
-"A (F2): 1-player mode\n" \
-"B (F3): 2-player mode\n" \
-"START (F1): start game\n" \
+"A: 1-player mode\n" \
+"B: 2-player mode\n" \
+"START: start game\n" \
 "Hit = Hit ball\n" \
 "Score = cumulative Score\n" \
 "Drive = Driver\n" \
@@ -331,9 +331,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","2"    ,"Gentl","-----","2"    ,"Gentl",
 "Color","1"    ,"-----","Color","1"    ,"-----",
 "Color = player colour, supposedly (has no apparent effect).\n" \
-"A (F2): cycle through 2 players, 2 pro, 1 pro, L pro, 1 hit, R pro, 1 player modes\n" \
-"B (F3): cycle through \"slow\", \"fast\" and \"easy\" modes\n" \
-"START (F1): start game\n" \
+"A: cycle through 2 players, 2 pro, 1 pro, L pro, 1 hit, R pro, 1 player modes\n" \
+"B: cycle through \"slow\", \"fast\" and \"easy\" modes\n" \
+"START: start game\n" \
 "When the game is waiting for you to serve:\n" \
 "Any button: serve\n" \
 "During play:\n" \
@@ -349,7 +349,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "Subma","-----","Destr","Subma","-----","Destr",
 "Lt/Su","Cruis","Rt/De","Lt/Su","Cruis","Rt/De",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Cruis = Cruiser\n" \
 "Destr = Destroyer\n" \
 "Subma = Submarine\n" \
@@ -365,7 +365,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "4/Grn","5/Mag","6/Red","4/Grn","5/Mag","6/Red",
 "7/Blu","8/Blk","9",    "7/Blu","8/Blk","9",
 "Repor","0",    "Enter","Repor","0",    "Enter",
-"START (F1): skip title screen\n" \
+"START: skip title screen\n" \
 "1/Wht = 1/White/Win/Whip\n" \
 "2/Yel = 2/Yellow\n" \
 "3/Cyn = 3/Cyan/Exacta/Whip\n" \
@@ -394,9 +394,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Close","Fire", "-----","Pause","-----","Unpau",
 "Open", "Fire", "-----","Pause","-----","Unpau",
 "Open", "Fire", "-----","Pause","-----","Unpau",
-"A (F2): cycle through \"games\" (1..9). Game 9 is demo mode.\n" \
-"B (F3): cycle through \"options\" (1..8)\n" \
-"START (F1): start game\n" \
+"A: cycle through \"games\" (1..9). Game 9 is demo mode.\n" \
+"B: cycle through \"options\" (1..8)\n" \
+"START: start game\n" \
 "Open = Open gates\n" \
 "Close = Close gates\n" \
 "Paddle directions: turn snake\n" \
@@ -410,7 +410,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Accel","-----","-----","Accel","-----",
 "Left", "-----","Right","Left", "-----","Right",
 "-----","Brake","-----","-----","Brake","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Accel = Accelerate\n" \
 "Left/Right = turn Left/Right"
 },
@@ -421,7 +421,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start/restart game\n" \
+"START: start/restart game\n" \
 "Paddle left/right: move left/right"
 },
 { // 29. Pleiades
@@ -431,8 +431,8 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Pause","Fire", "Unpau","-----","-----","-----",
 "Pause","Fire", "Unpau","-----","-----","-----",
 "Pause","Fire", "Unpau","-----","-----","-----",
-"START (F1)/B (F3): start game\n" \
-"A (F2): start demo\n" \
+"START/B: start game\n" \
+"A: start demo\n" \
 "Unpau = Unpause\n" \
 "Paddle left/right: move left/right\n" \
 "For each life except the first, you are invincible until you have fired."
@@ -444,9 +444,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Fire", "Fire", "Fire", "Fire", "Fire", "Fire",
 "-----","-----","-----","Fire", "Fire", "Fire",
 "Pause","-----","Unpau","Fire", "Fire", "Fire",
-"A (F2): select \"game\" (1 = 1 player, 2 = 2 players, 3 = demo)\n" \
-"B (F3): select \"option\" (ie. playfield) (1..3)\n" \
-"START (F1): start game\n" \
+"A: select \"game\" (1 = 1 player, 2 = 2 players, 3 = demo)\n" \
+"B: select \"option\" (ie. playfield) (1..3)\n" \
+"START: start game\n" \
 "Unpau = Unpause"
 },
 { // 31. Arcadia 2D Soccer
@@ -456,7 +456,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "1L+3L","Centr","1R+3R","1L+3L","Centr","1R+3R",
 "2L",   "4L+4R","2R",   "2L",   "4L+4R","2R",
 "-----","Goalk","-----","-----","Goalk","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Centr = Centre\n" \
 "Goalk = Goalkeeper\n" \
 "Paddle up/down/left/right: move player(s) right/left/up/down (!)"
@@ -468,9 +468,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Pause","-----","Unpau","-----","Fire", "-----",
 "Pause","-----","Unpau","-----","Fire", "-----",
 "Pause","-----","Unpau","-----","Fire", "-----",
-"A (F2): toggle between game and demo\n" \
-"START (F1): start game/demo\n" \
-"B (F3): start demo\n" \
+"A: toggle between game and demo\n" \
+"START: start game/demo\n" \
+"B: start demo\n" \
 "Unpau = Unpause"
 "Paddle left/right: move ship left/right\n\n" \
 "Note that your ship starts to the right of the visible screen; " \
@@ -483,7 +483,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "Bridg","Load", "Unloa","-----","-----","-----",
 "Scan", "Launc","Steer","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Bridg = Bridge\n" \
 "Unloa = Unload\n" \
 "Launc = Launch droneship\n" \
@@ -497,7 +497,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Fire", "Bomb", "Pause","-----","Unpau",
 "-----","Fire", "Bomb", "Pause","-----","Unpau",
 "-----","Fire", "Bomb", "Pause","-----","Unpau",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Bomb = drop Bomb (these can only destroy ground-based targets)\n" \
 "Unpau = Unpause\n" \
 "Paddle directions: move"
@@ -509,9 +509,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Shiel","Fire", "-----","Pause","-----","Unpau",
 "Shiel","Fire", "-----","Pause","-----","Unpau",
 "Shiel","Fire", "-----","Pause","-----","Unpau",
-"START (F1) (while not playing): start at small hawks (with 26 small hawks)\n" \
-"START (F1) (while playing small hawks): start at mother hawks\n" \
-"START (F1) (while playing mother hawks): start at small hawks (with 0..6 small hawks)\n" \
+"START (while not playing): start at small hawks (with 26 small hawks)\n" \
+"START (while playing small hawks): start at mother hawks\n" \
+"START (while playing mother hawks): start at small hawks (with 0..6 small hawks)\n" \
 "Shiel = Shield\n" \
 "Unpau = Unpause\n" \
 "Paddle directions: move\n" \
@@ -530,8 +530,8 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Pause","-----","Unpau", "-----","Fire", "-----",
 "Pause","-----","Unpau", "-----","Fire", "-----",
 "Pause","-----","Unpau", "-----","Fire", "-----",
-"START (F1): start game\n" \
-"A (F2): start demo\n" \
+"START: start game\n" \
+"A: start demo\n" \
 "Unpau = Unpause\n" \
 "Paddle up/left/right: move up/left/right"
 },
@@ -542,7 +542,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Move", "Up",   "Repor","Move", "Up",   "Repor",
 "Left", "Clear","Right","Left", "Clear","Right",
 "Fire", "Down", "Warp", "Fire", "Down", "Warp",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Activ = Activate\n" \
 "Repor = Report\n" \
 "Up/Down/Left/Right = move cursor\n\n" \
@@ -563,9 +563,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Close","Fire", "Man", "Pause", "-----","Unpau",
 "Open", "Fire", "Base","Pause", "-----","Unpau",
 "Open", "Fire", "Base","Pause", "-----","Unpau",
-"A (F2): cycle through \"games\" (1..4)\n" \
-"B (F3): cycle through \"options\" (1..4)\n" \
-"START (F1): start game\n" \
+"A: cycle through \"games\" (1..4)\n" \
+"B: cycle through \"options\" (1..4)\n" \
+"START: start game\n" \
 "Open = Open gate\n" \
 "Close = Close gate\n" \
 "Man = warp Man\n" \
@@ -580,8 +580,8 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Spin", "-----","-----","Spin", "-----",
 "Left", "Spin", "Right","Left", "Spin", "Right",
 "-----","Down", "-----","-----","Down", "-----",
-"A (F2): toggle between 1 and 2 players\n" \
-"B (F3): cycle through KEYPAD/KEYPAD, JOYSTICK/KEYPAD, KEYPAD/JOYSTICK, JOYSTICK/JOYSTICK modes\n" \
+"A: toggle between 1 and 2 players\n" \
+"B: cycle through KEYPAD/KEYPAD, JOYSTICK/KEYPAD, KEYPAD/JOYSTICK, JOYSTICK/JOYSTICK modes\n" \
 "Spin = Spin (turn, rotate) clockwise\n" \
 "Paddle directions: manipulate piece (in JOYSTICK mode)"
 },
@@ -592,7 +592,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Up",   "-----","-----","-----","-----",
 "Left", "Down", "Right","-----","-----","-----",
 "-----","Down", "-----","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Up/Down/Left/Right: turn (JTron)/move (Frogger)"
 },
 { // 41. Laser Attack
@@ -608,7 +608,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "3: hard\n" \
 "4: very hard\n" \
 "5: very easy\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move\n" \
 "Scoring is:\n" \
 "1st..2nd enemies: 1\n" \
@@ -625,7 +625,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Up",   "-----","-----","-----","-----",
 "Left", "Down", "Right","-----","-----","-----",
 "-----","Down", "-----","-----","-----","-----",
-"START (F1) or Start: Start game\n" \
+"START or Start: Start game\n" \
 "Up/Down/Left/Right: turn"
 },
 { // 43. 10-1-Invaders (aka "Aliens")
@@ -649,7 +649,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Down", "-----","-----","Down", "-----",
 "UC (F2): select play variant\n" \
 "LC (F3): change time limit\n" \
-"START (F1): start\n" \
+"START: start\n" \
 "Finis = Finished\n" \
 "Up/Down/Left/Right = move\n" \
 "Each 'amazone' has the capabilities of both queen and knight in chess: it attacks squares along horizontal, vertical and diagonal lines, and also any square that can be reached by two horizontal moves followed by one vertical, and vice versa. The players alternately place their amazone on a square which is not under attack, and which has not been used earlier on in the game. A player loses when there is no legal square left to move, or when he runs out of time.\n" \
@@ -663,7 +663,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","Test", "Stop", "Resum",
 "UC (F2): select word length (1 = any length, 4..8 = 4..8 letters)\n" \
-"START (F1): start\n" \
+"START: start\n" \
 "Fast = cycle Faster\n" \
 "Stop = Stop letter cycling\n" \
 "Resum = Resume letter cycling\n" \
@@ -687,7 +687,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "1",    "2",    "3",    "1",    "2",    "3",
 "Clear","Selec","Enter","Clear","Selec","Enter",
 "SELECT (F2): choose game variant\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Selec = Select position (ie. move cursor)"
 },
 { // 48. 07-1-Mastermind
@@ -711,7 +711,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start\n" \
+"START: start\n" \
 "Left/right on paddle: slow/fast\n\n" \
 "Land your spacecraft in a hostile environment!"
 },
@@ -738,7 +738,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "2nd: can dragons flee?\n" \
 "3rd: can dragons be resurrected?\n" \
 "4th: do question marks teleport you to random location?\n" \
-"START (F1): start/menu\n" \
+"START: start/menu\n" \
 "UC (F2): restart\n" \
 "Drop = Drop object (hold down while moving away from object)\n" \
 "Down = Down/yes"
@@ -770,7 +770,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start"
+"START: start"
 },
 { // 55. 09-D-Raster
         "-----",                "-----",
@@ -789,7 +789,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Swtch","-----","-----","Swtch","-----",
 "Row",  "-----","Remov","Row",  "-----","Remov",
 "UC (F2): toggle one/two players\n" \
-"START (F1): select number of rows\n" \
+"START: select number of rows\n" \
 "Row = change which Row\n" \
 "Remov = Remove a match\n" \
 "Swtch = Switch to opponent"
@@ -853,7 +853,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "7",    "8",    "9",    "7",    "8",    "9",
 "4",    "5",    "6",    "4",    "5",    "6",
 "1",    "2",    "3",    "1",    "2",    "3",
-"START (F1): start/help\n" \
+"START: start/help\n" \
 "UC (F2): restart"
 },
 { // 63. 11-F-Cosmic Adventure
@@ -885,7 +885,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "UC (F2): choose which game (must be held down)\n" \
-"START (F1): start (must be held down)\n" \
+"START: start (must be held down)\n" \
 "Fire = Fire (submarine game only)\n" \
 "Paddle left/right: move\n\n" \
 "2 different games: in the first, the submarine tries to sink as many ships as possible; in the second, a racing car must avoid other cars on the track for as long as possible."
@@ -898,7 +898,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "F#",   "G",    "G#",   "A",    "Bb",   "B",
 "C",    "C#",   "D",    "Eb",   "E",    "F",
 "UC (F2): rest\n" \
-"START (F1): start/stop playing song\n" \
+"START: start/stop playing song\n" \
 "Any desired melody can be keyed in, provided it fits in a two-octave range. When played back, the corresponding notes are displayed in step with the tune."
 },
 { // 67. 03-5-Surround, 07-9-Surround
@@ -910,7 +910,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "Wait for at least 24 seconds at the title screen.\n" \
 "UC (F2): reset\n" \
-"START (F1): start\n" \
+"START: start\n" \
 "Up/Down/Left/Right: turn\n" \
 "The object of this game is to 'box in' the opponent. A point is lost when a player collides with the background, his opponent or even himself. Since the objects move at quite a speed, fast reactions are required to win!"
 },
@@ -924,7 +924,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Turn = Turn drums (or can use paddle for this)\n" \
 "R1/R2/R3 = Release 1st/2nd/3rd drum\n" \
 "H1/H2/H3 = Hold 1st/2nd/3rd drum\n" \
-"START (F1): take win\n" \
+"START: take win\n" \
 "This is the well-known 'one-armed bandit'. The rotating drums, 'hold' and 'brake' options and prize display are all included. There are also two novel features. A car on the centre line always means 'no prize' - cars cost money! Furthermore, the 'score' at the top of the screen shows the total gain or loss (nearly always the latter...)."
 },
 { // 69. 07-3-Reversi
@@ -934,7 +934,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Selec","-----","-----","Selec","-----",
 "-----","-----","-----","-----","-----","-----",
 "Horiz","Swtch","Verti","Horiz","Swtch","Verti",
-"START (F1): start\n" \
+"START: start\n" \
 "Turn = Turn counter\n" \
 "Selec = Select counter\n" \
 "Swtch = Switch to opponent\n" \
@@ -975,7 +975,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","1",    "2",    "3",
 "1..7 = number of crates\n" \
 "8 = unlimited play\n" \
-"START (F1): start\n" \
+"START: start\n" \
 "Paddle directions: fly helicopter\n" \
 "Drop = Drop (release) crate\n\n" \
 "Transport crates across a mountain, by helicopter, and lower them carefully onto a truck. The number of crates can be selected in advance; the fuel supply is restricted accordingly."
@@ -1003,7 +1003,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "2,5,9,12: easy; 3,6,10,13: medium; 4,7,11,14: hard\n" \
 "1-7: small field; 8-14: large field\n" \
 "1-4,8-11: red starts; 5-7,12-14: green starts\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Move = Move cursor right\n" \
 "Drop = Drop token"
 },
@@ -1030,7 +1030,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start\n" \
+"START: start\n" \
 "Go = Go back during horizontal movement\n" \
 "Left/Right = affect Left/Right throw release angle\n" \
 "Paddle directions: move\n\n" \
@@ -1055,7 +1055,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start\n" \
+"START: start\n" \
 "Paddle left/right: move left/right\n\n" \
 "Catch as many apples as possible."
 },
@@ -1066,7 +1066,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Forwa","Hyper","Score","-----","-----","-----",
 "Left", "Fire", "Right","-----","-----","-----",
 "Left", "Fire", "Right","-----","-----","-----",
-"START (F1): start\n" \
+"START: start\n" \
 "Forwa = Forwards (ie. thrust)\n" \
 "Left/Right = turn Left/Right\n" \
 "Hyper = Hyperspace (teleport)\n" \
@@ -1110,7 +1110,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----", "1",   "2",    "3",
-"START (F1): start\n" \
+"START: start\n" \
 "1/2/3 = desired grid coordinate\n" \
 "Choose a + to change to a O.\n" \
 "Hold desired X-location (column) until it appears.\n" \
@@ -1153,7 +1153,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "LC (F3): adjust tens digit of game variant\n" \
 "UC (F2): adjust ones digit of game variant\n" \
-"START (F1): start\n" \
+"START: start\n" \
 "Ball = new Ball\n" \
 "Paddle left/right: move\n\n" \
 "24 variations on 'Bursting Balloons' (ESS-010-B)."
@@ -1165,7 +1165,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start\n\n" \
+"START: start\n\n" \
 "Add a touch of 'culture' to the computer era."
 },
 { // 88. Interton HORSERAC/HIPPODRO, Elektor 11-C-Horse Races
@@ -1176,7 +1176,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (Interton)/UC (Elektor) (F2): select game variant\n" \
-"START (F1): start\n"
+"START: start\n"
 "Paddle up/down: regulate speed\n\n" \
 "8 variations of show jumping."
 },
@@ -1191,7 +1191,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "LC (F3): play jackpot\n" \
 "Horse racing:\n" \
 "1..8 = bet on horse\n" \
-"START (F1): go\n" \
+"START: go\n" \
 "Jackpot:\n" \
 "Rotat (or left paddle right) = Rotate reels\n" \
 "1st..4th = stop nth reel\n" \
@@ -1220,7 +1220,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "Diffi = choose Difficulty\n" \
 "Start = Start\n" \
-"START (F1): pause/unpause\n" \
+"START: pause/unpause\n" \
 "Left/Right = move Left/Right\n\n" \
 "Catch as many moles as you can."
 },
@@ -1232,7 +1232,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Snap", "-----","-----","Snap", "-----",
 "-----","-----","-----","-----","-----","-----",
 "UC (F2): adjust speed\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "LC (F3): restart game\n\n" \
 "Try to beat your opponent in deciding whether two pictures on the screen are identical."
 },
@@ -1244,7 +1244,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "UC (F2): choose game variant\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move\n\n" \
 "Escape from the maze before your time is up."\
 },
@@ -1256,7 +1256,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (Interton)/UC (Elektor) (F2): choose game variant\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Accel = Accelerate\n" \
 "Paddle up+left = 1st gear\n" \
 "Paddle down+left = 2nd gear\n" \
@@ -1272,7 +1272,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle up: accelerate\n" \
 "Paddle left/right: steer left/right"
 },
@@ -1284,7 +1284,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant\n" \
-"Paddle up + START (F1): start game\n" \
+"Paddle up + START: start game\n" \
 "Paddle up: accelerate\n" \
 "Paddle left/right: steer left/right"
 },
@@ -1296,7 +1296,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Deal", "Tens", "Ones", "Deal", "Tens", "Ones",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): start 1-player game\n" \
-"START (F1): start 2-player game\n" \
+"START: start 2-player game\n" \
 "Tens/Ones = adjust Tens/Ones digit of bet\n" \
 "Deal = Deal cards\n" \
 "Hit = Hit (ie. take another card)\n" \
@@ -1312,7 +1312,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Incrs = Increase ball speed (in some variants)\n" \
 "Angle = change flying Angle (in some variants)\n" \
 "Paddle directions: move"
@@ -1325,7 +1325,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle left/right: move"
 },
 { // 100. TREASURE
@@ -1336,7 +1336,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Show = Show contents of square at cursor\n" \
 "Paddle directions: move cursor"
 },
@@ -1348,7 +1348,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..24)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move"
 },
 { // 102. WINTERSP
@@ -1359,7 +1359,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..7)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Start = Start\n" \
 "On ramp:\n" \
 "Paddle down = go faster\n" \
@@ -1376,7 +1376,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle left/right: turn/guide/move (depending on variant)"
 },
 { // 104. Interton CHESS1/CHESS2
@@ -1387,7 +1387,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Clear","C/3",  "G/7",  "Clear","C/3",  "G/7",
 "COMP", "D/4",  "H/8",  "COMP", "D/4",  "H/8",
 "SELECT (F2): choose computer intelligence\n" \
-"START (F1): choose game variant (1..4)\n" \
+"START: choose game variant (1..4)\n" \
 "EXCO = EXecute COmmand\n" \
 "EXEC = EXECUTE (record or play back)\n" \
 "COMP = COMPuter (suggest move)"
@@ -1400,7 +1400,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..8)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Launc = Launch ball\n" \
 "FlpLt/FlpRt = move Left/Right Flipper\n" \
 "ObsLt/ObsRt = move Obstacle Left/Right (while gate is open)\n" \
@@ -1413,7 +1413,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..16)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Start = Start (jump)\n" \
 "Paddle left/right: move clown"
 },
@@ -1424,7 +1424,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Punch = hard Punch/block\n" \
 "Paddle up: soft punch with right hand\n" \
 "Paddle down: soft punch with left hand\n" \
@@ -1441,7 +1441,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..8)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Fire = Fire bullets/rockets\n" \
 "Paddle directions: move enemies"
 },
@@ -1453,7 +1453,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..93)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Finis = Finish move\n" \
 "Paddle directions: move cursor"
 },
@@ -1476,7 +1476,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..16)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move player"
 },
 { // 112. Interton GOLF
@@ -1487,7 +1487,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "130",  "150",  "165",  "130",  "150",  "165",
 "175",  "200",  "250",  "175",  "200",  "250",
 "SELECT (F2): toggle 1/2 players\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "30..250 = use club with this range\n" \
 "Paddle directions: move player\n" \
 "On putting green:\n" \
@@ -1521,7 +1521,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "Confi","Stop", "Resta","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Stop = Stop letter cycling\n" \
 "Confi = Confirm\n" \
 "Resta = Restart letter cycling\n" \
@@ -1535,7 +1535,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Left", "-----","Right","-----","-----","-----",
 "-----","Down", "-----","-----","-----","-----",
 "SELECT (F2): choose difficulty (1..3)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move cursor\n" \
 "Up/Down/Left/Right = jump Up/Down/Left/Right"
 },
@@ -1547,7 +1547,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","Score","-----","-----","Score",
 "Bet", "10",  "1", "Be", "10",  "1",
 "SELECT (F2): choose game variant (1..3)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "For Roulette:\n" \
 "Start = Start ball rolling\n" \
 "Bet = Bet on this slot\n" \
@@ -1567,7 +1567,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..16)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle left/right: move player/bullet"
 },
 { // 118. SUPERINV
@@ -1578,7 +1578,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..15)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move player/bullet"
 },
 { // 119. BACKGAMM
@@ -1589,7 +1589,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
  "1",   "2",    "3",    "1",    "2",    "3",
 "Clear","Roll", "Set",  "Clear","Roll", "Set",
 "SELECT (F2): choose game variant (1..4)\n" \
-"START (F1): start/continue/restart game\n" \
+"START: start/continue/restart game\n" \
 "Yes/No = offer Double, or accept/refuse double\n" \
 "Execu = Execute (confirm move)\n" \
 "Clear = Clear (cancel)\n" \
@@ -1605,7 +1605,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","Color","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..12)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Color = toggle background Colour\n" \
 "Paddle directions: move"
 },
@@ -1617,7 +1617,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "4",    "5",    "6",    "4",    "5",    "6",
 "7",    "8",    "9",    "7",    "8",    "9",
 "SELECT (F2): choose game variant (1..12)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Stats = Status\n" \
 "1..9 = Hyperspace to quadrant 1..9\n" \
 "Paddle directions: steer ship"
@@ -1630,7 +1630,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..12)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: steer ship/lower enemy\n" \
 "Paddle up+down: drop enemy bomb (for right player)"
 },
@@ -1655,7 +1655,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "1-2,5-6,9-10,13-14: dumb cruise missiles (dots) (otherwise smart)\n" \
 "Enemy firing rate (line/dot scoring):\n" \
 "1-4: slowest (10/25), 5-8: slow (20/50), 9-12: fast (30/75), 13-16: fastest (30/75)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move cursor\n" \
 "35 player missiles available per round.\n"
 "Cities are purple squares. Missile base is purple rectangle.\n" \
@@ -1676,7 +1676,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "1-4,9-12,17-20: player is immobile after firing (otherwise mobile)\n" \
 "1-16: 2 players (1-8: unlimited bullets. 9-16: 6 bullets each)\n"
 "17-24: 1 player (99 bullets. 1 point per hit. Left=score, right=fired)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move"
 },
 { // 126. Mobile Soldier Gundam, Super Dimension Fortress Macross
@@ -1686,8 +1686,8 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"A (F2): toggle game/demo mode\n" \
-"START (F1): start game\n" \
+"A: toggle game/demo mode\n" \
+"START: start game\n" \
 "Paddle directions: move"
 },
 { // 127. Space Squadron
@@ -1697,13 +1697,13 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Fire", "Fire", "Fire", "-----","-----","-----",
 "Fire", "Fire", "Fire", "-----","-----","-----",
 "Fire", "Fire", "Fire", "-----","-----","-----",
-"A (F2): toggle game variant (1..2)\n" \
-"START (F1): start game\n" \
+"A: toggle game variant (1..2)\n" \
+"START: start game\n" \
 "Paddle directions: move\n\n" \
 "Mutant (white): 5 points\n" \
 "Alien (yellow): 10 points\n\n" \
 "Only mutants are shown on radar.\n" \
-"Pressing START (F1) will zero your score but will not reset your lives (you should press RESET (F5) first)."
+"Pressing START will zero your score but will not reset your lives (you should press RESET (F5) first)."
 },
 { // 128. 3D Soccer A
         "Long",                 "Long",
@@ -1712,9 +1712,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Med.", "-----","-----","Med.", "-----",
 "-----","Short","-----","-----","Short","-----",
 "Pause","-----","Unpau","Pause","-----","Unpau",
-"B (F3): start 1-player game\n" \
-"START (F1): start 2-player game\n" \
-"A (F2): start demo\n" \
+"B: start 1-player game\n" \
+"START: start 2-player game\n" \
+"A: start demo\n" \
 "Long/Med./Short = Long/Medium/Short kick\n" \
 "Unpau = Unpause\n" \
 "Paddle up/down/left/right: move NE/SW/NW/SE"
@@ -1726,9 +1726,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","Kick2","-----","-----","Kick2","-----",
 "-----","Kick3","-----","-----","Kick3","-----",
 "Pause","-----","Unpau","Pause","-----","Unpau",
-"B (F3): start 1-player game\n" \
-"START (F1): start 2-player game\n" \
-"A (F2): start demo\n" \
+"B: start 1-player game\n" \
+"START: start 2-player game\n" \
+"A: start demo\n" \
 "Kick1/2/3 = long/medium/short Kick\n" \
 "Unpau = Unpause\n" \
 "Paddle up/down/left/right: move NW/SE/SW/NE"
@@ -1740,9 +1740,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"A (F2): change value\n" \
-"B (F3): switch to next menu item\n" \
-"START (F1): start game\n" \
+"A: change value\n" \
+"B: switch to next menu item\n" \
+"START: start game\n" \
 "Paddle left/right: steer"
 },
 { // 131. Baseball
@@ -1752,7 +1752,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","T3",   "M1",   "-----","T3",   "M1",
 "-----","T2",   "M2",   "-----","T2",   "M2",
 "Bat",  "T1",   "M3",   "Bat",  "T1",   "M3",
-"START (F1): start game\n" \
+"START: start game\n" \
 "For batting team:\n" \
 "T1 = batter Ready\n" \
 "Bat = Bat\n" \
@@ -1769,9 +1769,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
  "4",   "5",    "6",    "4",    "5",    "6",
  "7",   "8",    "9",    "7",    "8",    "9",
 "Clear","0",    "Enter","Clear","0",    "Enter",
-"A (F2): toggle 1/2 players\n" \
-"B (F3): choose game\n" \
-"START (F1): start game\n" \
+"A: toggle 1/2 players\n" \
+"B: choose game\n" \
+"START: start game\n" \
 "For Blackjack:\n" \
 "7 = hit\n" \
 "8 = double\n" \
@@ -1792,9 +1792,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "4",    "5",    "6",    "4",    "5",    "6",
 "7",    "8",    "9",    "7",    "8",    "9",
 "Clear","0",    "Enter","Clear","0",    "Enter",
-"A (F2): choose game\n" \
-"B (F3): choose game variant\n" \
-"START (F1): start game\n" \
+"A: choose game\n" \
+"B: choose game variant\n" \
+"START: start game\n" \
 "For Mind Breaker:\n" \
 "0..9 = number\n" \
 "Clear = backspace\n" \
@@ -1815,9 +1815,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Ju/Fl","Ju/Fl","Ju/Fl","Ju/Fl","Ju/Fl","Ju/Fl",
 "Ju/Fl","Ju/Fl","Ju/Fl","Ju/Fl","Ju/Fl","Ju/Fl",
 "Ju/Fl","Ju/Fl","Ju/Fl","Ju/Fl","Ju/Fl","Ju/Fl",
-"A (F2): switch to 1-player mode, or cycle through 1-player variants\n" \
-"B (F3): switch to 2-player mode, or cycle through 2-player variants\n" \
-"START (F1): start game\n" \
+"A: switch to 1-player mode, or cycle through 1-player variants\n" \
+"B: switch to 2-player mode, or cycle through 2-player variants\n" \
+"START: start game\n" \
 "Ju/Fl = Jump/Flip (start/switch seesaw)\n" \
 "Paddle left/right: move left/right"
 },
@@ -1830,7 +1830,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Cl/Mo","0/Fi" ,"En/Mo","Cl/Mo","0/Fi" ,"En/Mo",
 "0..9 = choose game variant (1..88)\n" \
 "Then press En to actually change to that game variant.\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Cl = Clear"
 "En = Enter"
 "Fi = Fire\n" \
@@ -1844,9 +1844,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): skip title screen\n" \
-"A (F2): choose game variant (1..4)\n" \
-"START (F1): start game\n" \
+"START: skip title screen\n" \
+"A: choose game variant (1..4)\n" \
+"START: start game\n" \
 "Paddle directions: move\n\n" \
 "Curtains are green when being lowered, yellow when being raised."
 },
@@ -1857,7 +1857,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move"
 },
 { // 138. Doraemon
@@ -1867,8 +1867,8 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"A (F2): choose game variant (Game 1/Game 2/Game 3/Demo)\n" \
-"START (F1): start game\n" \
+"A: choose game variant (Game 1/Game 2/Game 3/Demo)\n" \
+"START: start game\n" \
 "Fly = Fly (use cross/helmet)\n" \
 "Paddle directions: move"
 },
@@ -1879,9 +1879,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"A (F2): toggle game/demo mode\n" \
-"B (F3): toggle level 1/2\n" \
-"START (F1): start game\n" \
+"A: toggle game/demo mode\n" \
+"B: toggle level 1/2\n" \
+"START: start game\n" \
 "Paddle directions + Yell = Yell (attack)\n" \
 "Paddle directions: move"
 },
@@ -1892,9 +1892,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Fire", "Fire", "Fire", "-----","-----","-----",
 "Fire", "Fire", "Fire", "-----","-----","-----",
 "Fire", "Fire", "Fire", "-----","-----","-----",
-"A (F2): choose \"game\" (1..4)\n" \
-"B (F3): choose \"option\" (1..4)\n" \
-"START (F1): start game\n" \
+"A: choose \"game\" (1..4)\n" \
+"B: choose \"option\" (1..4)\n" \
+"START: start game\n" \
 "Paddle directions: move/aim"
 },
 { // 141. Hobo
@@ -1904,8 +1904,8 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","Jump", "-----",
 "-----","-----","-----","-----","Jump", "-----",
 "-----","-----","-----","-----","Jump", "-----",
-"START/B (F3): start game\n" \
-"A (F2): start demo\n" \
+"START/B: start game\n" \
+"A: start demo\n" \
 "On level 1:\n" \
 "Paddle up/down/left/right = move NE/SW/NW/SE\n" \
 "On level 2:\n" \
@@ -1921,9 +1921,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Pause","-----","Unpau","-----","-----","-----",
 "Pause","Start","Unpau","-----","-----","-----",
 "Pause","Level","Unpau","-----","-----","-----",
-"START (F1): start game from level 1\n" \
-"A (F2) = start demon\n" \
-"B (F3) = start game in practice mode\n" \
+"START: start game from level 1\n" \
+"A = start demon\n" \
+"B = start game in practice mode\n" \
 "Level = change to next level\n" \
 "Start = start game from chosen level\n" \
 "Paddle up/down/left/right: move\n" \
@@ -1936,7 +1936,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Pause","-----","Unpau","-----","-----","-----",
 "Pause","-----","Unpau","-----","-----","-----",
 "Pause","-----","Unpau","-----","-----","-----",
-"A/B/START (F1): start game\n" \
+"A/B/START: start game\n" \
 "Unpau = Unpause\n" \
 "Paddle up/down/left/right: move"
 },
@@ -1947,7 +1947,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Left", "-----","Right","-----","-----","-----",
 "Left", "-----","Right","-----","-----","-----",
 "Left", "-----","Right","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Left/Right = fire missile from Left/Right silo\n" \
 "Paddle directions: move cursor"
 },
@@ -1958,8 +1958,8 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "Pause","-----","Unpau","-----","Fire", "-----",
 "Pause","-----","Unpau","-----","Fire", "-----",
 "Pause","-----","Unpau","-----","Fire", "-----",
-"START (F1): start game\n" \
-"A (F2): start demo\n" \
+"START: start game\n" \
+"A: start demo\n" \
 "Unpau = Unpause\n" \
 "Paddle directions: move"
 },
@@ -1970,10 +1970,10 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","Pause","Lives","Unpau",
 "-----","-----","-----","Pause","-----","Unpau",
-"A (F2): cycle through difficulties (1..4)\n" \
-"B (F3): cycle through Play/Trainer/Demo\n" \
+"A: cycle through difficulties (1..4)\n" \
+"B: cycle through Play/Trainer/Demo\n" \
 "Lives: change number of Lives (2..5)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Unpau = Unpause\n" \
 "Paddle directions: move\n" \
 "Top row of screen is (left to right): score, high score, lives, fuel."
@@ -2110,7 +2110,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "UC (F2): stop\n" \
-"START (F1): restart\n" \
+"START: restart\n" \
 "The object here is quite simple: to make the decoding of an existing program much less laborious! The program to be examined is split up into one-, two- or three-byte instructions, and displayed accordingly.\n" \
 "If should be noted that this program is stored from $8C0 to $8F6 and from $1F80 to $1FAD."
 },
@@ -2180,7 +2180,7 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "O",    "P",     "Q",  "R",     "S",     "T",
 "U",    "V",     "W",  "X",     "Y",     "Z",
 "UC (F2): A\n" \
-"START (F1): H\n" \
+"START: H\n" \
 "A..Z = enter relevant letter\n" \
 "LC+B = Ä\n" \
 "LC+C = Ö\n" \
@@ -2305,9 +2305,9 @@ EXPORT const STRPTR overlays[OVERLAYS][33] = {
 "$0F",  "$0E",  "$0D",  "$0B",  "$0A",  "$09",
 "$17",  "$16",  "$15",  "$13",  "$12",  "$11",
 "$1F",  "$1E",  "$1D",  "$1B",  "$1A",  "$19",
-"START (F1): change volume\n"\
-"A (F2): change octave\n"\
-"B (F3): cycle through Tone/Noise/Both/Quiet\n"\
+"START: change volume\n"\
+"A: change octave\n"\
+"B: cycle through Tone/Noise/Both/Quiet\n"\
 "$xx = play note $xx+octave"
 },
 { // 166. Tester 1 and 2 (Arcadia)
@@ -2374,7 +2374,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle left/right: move left/right"
 },
 { // 173. Malzak 2
@@ -2404,7 +2404,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "2: 2 players (red vs. cyan), slow?\n" \
 "3: 1 player (red vs. computer), fast?\n" \
 "4: 2 players (red vs. cyan), fast?\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Red player is left. Cyan player is right.\n" \
 "Left number is number of balls kicked.\n" \
 "Right number is number of goals scored.\n" \
@@ -2438,7 +2438,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","2nd",  "9th",  "16th",
 "-----","-----","-----","3rd",  "10th", "17th",
 "-----","-----","-----","4th",  "11th", "18th",
-"START (F1): start game\n" \
+"START: start game\n" \
 "For level 1 (launchpad):\n" \
 "Thrus = Thrust (launch rocket) (immediately when countdown reaches 0)\n" \
 "For levels 2 and 4 (space):\n" \
@@ -2460,7 +2460,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "The paddle must be approximately centred at the time you press START (otherwise you will instantly die).\n" \
 "Paddle left/right: steer car left/right\n" \
 "Paddle backwards: accelerate\n" \
@@ -2478,7 +2478,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","Go",   "0",    "1",    "2",    "3",
 "Type starting address and press Go.\n" \
 "UC (F2): pause\n" \
-"START (F1): unpause"
+"START: unpause"
 },
 { // 179. Ticker
         "Pause",                "-----",
@@ -2497,7 +2497,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Blue", "Purpl","-----","Blue", "Purpl","-----",
 "Black","Red",  "-----","Black","Red",  "-----",
 "UC (F2): select number of players (1..6)\n" \
-"START (F1): go\n" \
+"START: go\n" \
 "Yello = Yellow\n" \
 "Purpl = Purple"
 },
@@ -2509,7 +2509,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "PC",   "MEM",  "4",    "5",    "6",    "7",
 "-",    "+"    ,"0",    "1",    "2",    "3",
 "Type starting address and press +.\n" \
-"START (F1): skip to next instruction\n" \
+"START: skip to next instruction\n" \
 "UC (F2): edit this instruction\n" \
 "Now, choose the instruction family:\n" \
 "RCAS: \"Arithm.\" (Arithmetic and transfer) (red+yellow)\n" \
@@ -2545,7 +2545,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Now, type the data bytes or address.\n" \
 "Not all instructions require all these fields.\n" \
 "At any time:\n" \
-"START (F1): skip to next instruction\n" \
+"START: skip to next instruction\n" \
 "UC (F2): restart editing of this instruction\n" \
 "LC (F3): backspace\n" \
 "For HALT, use ANDZ,r0.\n" \
@@ -2562,8 +2562,8 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","8",    "9",    "A",    "B",
 "-----","Inter","4",    "5",    "6",    "7",
 "Left", "Right","0",    "1",    "2",    "3",
-"Pressing START (F1): run program while watching CPU\n" \
-"Holding START (F1): run program while watching PVI (ie. output)\n" \
+"Pressing START: run program while watching CPU\n" \
+"Holding START: run program while watching PVI (ie. output)\n" \
 "UC (F2): step (execute) this instruction\n" \
 "Inter: run Interrupt\n" \
 "While paused (eg. after pressing UC):\n" \
@@ -2752,7 +2752,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Otherwise, demo will commence.\n" \
 "On player selection screen:\n" \
 "SELECT (F2): toggle 1/2 players\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Otherwise, game will reset to title screen.\n" \
 "During game:\n" \
 "Left paddle: move (for either player)"
@@ -2786,7 +2786,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..64)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Duck: duck (only when enemy bullet is present)\n" \
 "Paddle directions: move man\n" \
 "Paddle up/down: guide bullet (not in all variants)\n" \
@@ -2800,7 +2800,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","Serve","Catch","-----","Serve","Catch",
 "-----","Serve","Catch","-----","Serve","Catch",
 "SELECT (F2): choose game variant (1..128)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Catch: Catch ball (while held down) (not in all variants)\n" \
 "Paddle directions: move bat (and ball, in certain variants)"
 },
@@ -2900,7 +2900,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "1: green (left human) vs. red (right human) with green starting.\n" \
 "2: red (right human) vs. green (computer) with red starting.\n" \
 "3: red (right human) vs. green (computer) with green starting.\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Move = Move cursor right\n" \
 "Drop = Drop token\n" \
 "This is a fairly well-known game. The object is to get four of your squares in a row (horizontal, vertical or diagonal).\n" \
@@ -2972,8 +2972,8 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): change game variant (1..8) (hold down until display changes)\n" \
 "Default variant is 0 (same as 2).\n" \
-"Until pressing START (F1), or after game over, you are in practice mode (movement and sound but no collisions).\n" \
-"START (F1): start game\n" \
+"Until pressing START, or after game over, you are in practice mode (movement and sound but no collisions).\n" \
+"START: start game\n" \
 "Paddle directions: move\n" \
 "Fast = Faster movement while held down\n" \
 "(only in variants 3,4,7,8, and only while there is a blue ghost)\n" \
@@ -3028,7 +3028,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Monit = return to monitor\n" \
 "Resta = restart game (from monitor)\n" \
 "1..3: choose starting stack\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Each move is:\n" \
 "1..3: choose source stack (number will flash), then\n" \
 "1..3: choose destination stack"
@@ -3041,7 +3041,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "Don't","-----","-----","-----","-----","-----",
 "Don't = don't press this key!\n" \
-"START (F1): fall down/left"
+"START: fall down/left"
 },
 { // 222. Basar
         "-----",                "-----",
@@ -3076,7 +3076,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "UC (F2): don't press this key!\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Left player is blue, right player is green.\n" \
 "Paddle directions: move ship\n" \
 "Left/Right = shoot left/right"
@@ -3172,7 +3172,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move\n" \
 "Left controller is green muncher. Right controller is yellow/blue monster."
 },
@@ -3219,8 +3219,8 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): change game variant (1..12) (hold down until display changes)\n" \
 "Default variant is 0 (same as 2).\n" \
-"Until pressing START (F1), or after game over, you are in practice mode (movement and sound but no collisions).\n" \
-"START (F1): start game\n" \
+"Until pressing START, or after game over, you are in practice mode (movement and sound but no collisions).\n" \
+"START: start game\n" \
 "Paddle directions: move\n" \
 "Fast = Faster movement while held down\n" \
 "(only in variants 3,4,7,8,11,12, and only while there is a blue ghost)\n" \
@@ -3235,7 +3235,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..16)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move"
 },
 { // 234. Munch & Crunch
@@ -3246,7 +3246,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose game variant (1..8)\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "For Crunch's player:\n" \
 "Paddle directions: move Crunch\n" \
 "In games 2 & 6, for Munch's player:\n" \
@@ -3262,7 +3262,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): end\n" \
+"START: end\n" \
 "Colours are:\n" \
 "Blue: ready (before starting)\n" \
 "White: error (memory block not clear)\n" \
@@ -3311,7 +3311,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "SELECT (F2): choose difficulty, which manifests in the upwards movement of the bird which cannot be stopped.\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Flap: Flap wings\n\n" \
 "The left joystick is used to seed the random number generator on initial startup."
 },
@@ -3322,7 +3322,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","Fire2","Start","-----","-----","-----",
 "-----","Hover","-----","-----","-----","-----",
 "Pause","Hover","Unpau","-----","-----","-----",
-"START (F1): start normal game\n" \
+"START: start normal game\n" \
 "A/SELECT (F2): start demo game\n" \
 "B/OPTION (F3): start practice game\n" \
 "Selec = Scene select (1..5)\n" \
@@ -3346,9 +3346,9 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Fire", "Fire", "Fire", "-----","-----","-----",
 "Fire", "Fire", "Fire", "-----","-----","-----",
 "Fire", "Fire", "Fire", "-----","-----","-----",
-"A (F2): choose \"game\" (1..4)\n" \
-"B (F3): choose \"option\" (1..4 in game 1, 1..8 in games 2..4)\n" \
-"START (F1): start game\n" \
+"A: choose \"game\" (1..4)\n" \
+"B: choose \"option\" (1..4 in game 1, 1..8 in games 2..4)\n" \
+"START: start game\n" \
 "Paddle directions: move/aim"
 },
 { // 242. Rainbow (Arcadia)
@@ -3358,8 +3358,8 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"A (F2): turn flag line on (ie. invert colours)\n" \
-"B (F3): turn flag line off"
+"A: turn flag line on (ie. invert colours)\n" \
+"B: turn flag line off"
 },
 { // 243. Canabalt (Interton)
         "Jump" ,                "-----",
@@ -3368,7 +3368,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start game"
+"START: start game"
 },
 { // 244. Circledrive (unpatched)
         "Brake",                "-----",
@@ -3380,7 +3380,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "RESET to game (F5): press this first\n" \
 "UC (F2): don't press this key!\n" \
 "LC (F3): choose game speed (1..9)\n" \
-"START (F1) or Start: start game\n" \
+"START or Start: start game\n" \
 "Accel = Accelerate\n" \
 "Paddle directions: change lanes\n" \
 "Red squares: +2 points. Square turns blue.\n" \
@@ -3408,7 +3408,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "1",    "2",    "3",    "1",    "2",    "3",
 "Clear","Selec","Enter","Clear","Selec","Enter",
 "UC (F2): choose game variant\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Selec = Select position (ie. move cursor)\n" \
 "This is the same principle as Mastermind, but the code consist of digits or shapes instead of colours. Furthermore, it is also possible for two players to play simultaneously (each with a different code!). Each player's score, and the total number of games played, are displayed at the top of the screen. In all, 24 different variations of the game can be played with the same program."
 },
@@ -3429,7 +3429,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "6: Big bucket, player 2 controls bomber, delta-X mode.\n" \
 "7: Small bucket, computer controls bomber, delta-X mode.\n" \
 "8: Small bucket, player 2 controls bomber, delta-X mode.\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle left/right: move left/right"
 },
 { // 248. Canabalt (Summer 2018 edition) (Interton)
@@ -3439,7 +3439,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "SELECT (F2): toggle background colour (dark cyan/grey)"
 },
 { // 249. Tetris (betas) (Interton)
@@ -3451,9 +3451,9 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Bkwrd","-----","Bkwrd","-----","-----","-----",
 "On title screen:\n" \
 "SELECT (F2): toggle mode (A/B)\n" \
-"START (F1): when done\n" \
+"START: when done\n" \
 "SELECT (F2): adjust difficulty (0..9)\n" \
-"START (F1): when done\n" \
+"START: when done\n" \
 "During play:\n" \
 "Down = move piece down (while held)\n" \
 "Clock = spin piece clockwise\n" \
@@ -3473,18 +3473,18 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Anti: music\n" \
 "Clock: sound effects\n" \
 "SELECT (F2): toggle mode (A/B)\n" \
-"START (F1): when done\n" \
+"START: when done\n" \
 "SELECT (F2): adjust difficulty (0..9)\n" \
-"START (F1): when done\n" \
+"START: when done\n" \
 "In mode B only:\n" \
 "SELECT (F2): adjust height (0..5)\n" \
-"START (F1): when done\n" \
+"START: when done\n" \
 "During play:\n" \
 "Down = move piece down (while held)\n" \
 "Clock = spin piece clockwise\n" \
 "Anti = spin piece anticlockwise\n" \
 "Paddle left/right/down: move piece left/right/down\n" \
-"START (F1): pause/unpause"
+"START: pause/unpause"
 },
 { // 251. Hocosoft Solitaire (Elektor)
         "-----",                "-----",
@@ -3622,7 +3622,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","Fire" ,"-----","-----","Fire" ,"-----",
 "-----","Fire" ,"-----","-----","Fire" ,"-----",
 "-----","Fire" ,"-----","-----","Fire" ,"-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move"
 },
 { // 264. Arcadia Paint
@@ -3632,8 +3632,8 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Colou","Up"   ,"Eyedr","Colou","Up"   ,"Eyedr",
 "Left" ,"Curso","Right","Left" ,"Curso","Right",
 "Erase","Down" ,"Thick","Erase","Down" ,"Erase",
-"START (F1): clear screen\n" \
-"A (F2): load next preset image\n" \
+"START: clear screen\n" \
+"A: load next preset image\n" \
 "Palet = toggle palettes\n" \
 "Canva = change canvases\n" \
 "Colou = change colours\n" \
@@ -3651,7 +3651,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Left" ,"Forwa","Right","-----","-----","-----",
 "Left" ,"Forwa","Right","-----","-----","-----",
 "Left" ,"Forwa","Right","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Forwa = move forwards\n" \
 "Left/Right = turn left/right"
 },
@@ -3676,7 +3676,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "4"    ,"-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "1..4 = choose option 1..4"
 },
 { // 268. ESS-07-7: 4 In a Row (8*7 board)
@@ -3690,7 +3690,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "1: green (left human) vs. red (right human) with green starting.\n" \
 "2: red (right human) vs. green (computer) with red starting.\n" \
 "3: red (right human) vs. green (computer) with green starting.\n" \
-"START (F1): start game\n" \
+"START: start game\n" \
 "Move = Move cursor right\n" \
 "Drop = Drop token\n" \
 "This is a fairly well-known game. The object is to get four of your squares in a row (horizontal, vertical or diagonal).\n" \
@@ -3703,7 +3703,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle directions: move\n" \
 "RESET (F5): at game over"
 },
@@ -3714,7 +3714,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Paddle left/right: move\n" \
 "RESET (F5): at game over"
 },
@@ -3745,7 +3745,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "UC (F2): pause\n" \
-"START (F1): unpause"
+"START: unpause"
 },
 { // 274. Page 91, Figure 26/27
         "-----",                "-----",
@@ -3764,7 +3764,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Left" ,"Up"   ,"Right","-----","-----","-----",
 "Left" ,"Down" ,"Right","-----","-----","-----",
 "Left" ,"Down" ,"Right","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Up/Down/Left/Right or paddle: move"
 },
 { // 276. Space Zap
@@ -3774,7 +3774,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","Fire" ,"-----","-----","-----","-----",
 "-----","Fire" ,"-----","-----","-----","-----",
 "-----","Fire" ,"-----","-----","-----","-----",
-"START (F1): start game\n" \
+"START: start game\n" \
 "Hold paddle in desired direction while firing (otherwise shoots upwards)."
 },
 { // 277. Akane's Hataagi
@@ -3808,7 +3808,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Choose mode Ak(ane)/Ao(i)/Fr(ee).\n" \
 "In free mode:\n" \
 "Choose level with paddle left/right.\n" \
-"Then START (F1) to confirm level.\n" \
+"Then START to confirm level.\n" \
 "Then choose character Ak(ane)/Ao(i).\n" \
 "During game:\n" \
 "Paddle left/right: move left/right\n" \
@@ -3856,7 +3856,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "START: go to edit mode\n" \
 "In edit mode:\n" \
 "START (hold down for 2 seconds): load next built-in song (1..5)\n" \
-"A (F2)/B (F3): decrease/increase tempo (65-360 bpm)\n" \
+"A/B: decrease/increase tempo (65-360 bpm)\n" \
 "A..G = set highlighted note\n" \
 "Paddle left/right: move to previous/next note (1-8)\n" \
 "Paddle up/down: move to previous/next bar (1-32)\n" \
@@ -3908,7 +3908,7 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "4"    ,"5"    ,"6"    ,"4"    ,"5"    ,"6"    ,
 "7"    ,"8"    ,"9"    ,"7"    ,"8"    ,"9"    ,
 "Cl"   ,"0"    ,"En"   ,"Cl"   ,"0"    ,"En"   ,
-"START (F1): advance to next stage or substage"
+"START: advance to next stage or substage"
 },
 { // 287. Mole
         "Start",                "-----",
@@ -3923,5 +3923,16 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "In 2-player game, I/II for 50/99 rounds.\n" \
 "During play:\n" \
 "1..9: bash corresponding hole"
+},
+{ // 288. Multicart Menu
+        "Start",                "-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"A: next game\n" \
+"Paddle up/down: previous/next game\n" \
+"START or Start: start game"
 },
 };

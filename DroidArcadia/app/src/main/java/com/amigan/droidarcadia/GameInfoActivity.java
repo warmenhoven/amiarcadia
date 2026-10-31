@@ -343,13 +343,14 @@ public class GameInfoActivity extends Activity
         case 59 + 35: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_37              , null); break;
         case 59 + 36: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_38              , null); break;
         case 59 + 37: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_40              , null); break;
+        case 59 + 38: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_50              , null); break;
 
         // Elektor
-        case 59 + 37 + 1: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_essrecord   , null); break;
-        case 59 + 37 + 2: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_esstape     , null); break;
-        case 59 + 37 + 3: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_book        , null); break;
-        case 59 + 37 + 4: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_hocosoft    , null); break;
-        case 59 + 37 + 5: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_hobbymodule , null); break;
+        case 59 + 38 + 1: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_essrecord   , null); break;
+        case 59 + 38 + 2: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_esstape     , null); break;
+        case 59 + 38 + 3: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_book        , null); break;
+        case 59 + 38 + 4: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_hocosoft    , null); break;
+        case 59 + 38 + 5: img = ResourcesCompat.getDrawable(getResources(), R.drawable.box_hobbymodule , null); break;
 
         // all
         default:          img = null;

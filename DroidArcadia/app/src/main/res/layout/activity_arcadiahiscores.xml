@@ -574,7 +574,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
                     android:textSize="15sp"
-                    android:text="Macross"
+                    android:text="Kotonoha Tower"
                     android:gravity="left"
                 />
                 <TextView
@@ -582,7 +582,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
                     android:textSize="15sp"
-                    android:text="Kotonoha Tower"
+                    android:text="Macross"
                     android:gravity="left"
                 />
                 <TextView

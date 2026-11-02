@@ -1459,7 +1459,7 @@ EXPORT void update_monitor(FLAG force)
 }
 
 EXPORT void update_monitor_cpu(FLAG force)
-{   FAST    UBYTE t;
+{   FAST    UBYTE t, t2;
     FAST    UWORD tt;
     FAST    int   i;
     PERSIST int   monitor_cpu,
@@ -1593,9 +1593,10 @@ EXPORT void update_monitor_cpu(FLAG force)
         return;
     }
 
+    t2 = ((whichcpu == 0) ? psl : other_psl) & PSL_RS;
     for (i = 0; i < 7; i++)
-    {   t = (whichcpu == 0) ? r[i] : other_r[i];
-        if (t != monitor[MONGAD_R0 + i].contents || force)
+    {   t  = (whichcpu == 0) ? r[i] : other_r[i];
+        if (t != monitor[MONGAD_R0 + i].contents || (i >= 1 && (t2 != monitor[MONGAD_RS].contents)) || force)
         {   monitor[MONGAD_R0 + i].contents = t;
             hex1((STRPTR) monitor[MONGAD_R0 + i].string, t);
             monitor[MONGAD_R0 + i].string[2] = EOS;
@@ -1672,6 +1673,7 @@ EXPORT void update_monitor_cpu(FLAG force)
         monitor[MONGAD_RS ].string[0] = t ? pswbit[style][4] : pswbit[style][4] + 32;
         monitor[MONGAD_RS ].string[1] = EOS;
         setmonitorbutton(SUBWINDOW_MONITOR_CPU, (STRPTR) monitor[MONGAD_RS      ].string, MONGAD_RS);
+
     }
     t = ((whichcpu == 0) ? psl : other_psl) & PSL_WC;
     if (t != monitor[MONGAD_WC ].contents || force)
@@ -1774,9 +1776,10 @@ EXPORT void update_monitor_cpu(FLAG force)
         monitor_cpu = whichcpu;
     }
 
+    t2 = ((whichcpu == 1) ? psl : other_psl) & PSL_RS;
     for (i = 0; i < 7; i++)
     {   t = (whichcpu == 1) ? r[i] : other_r[i];
-        if (t != monitor[MONGAD_SLAVE_R0 + i].contents || force)
+        if (t != monitor[MONGAD_SLAVE_R0 + i].contents || (i >= 1 && (t2 != monitor[MONGAD_SLAVE_RS].contents)) || force)
         {   monitor[MONGAD_SLAVE_R0 + i].contents = t;
             hex1((STRPTR) monitor[MONGAD_SLAVE_R0 + i].string, t);
             monitor[MONGAD_SLAVE_R0 + i].string[2] = EOS;
@@ -3443,22 +3446,74 @@ EXPORT FLAG getmoncolour(int whichmongad, ULONG* whichemupen, int* whichemubrush
     switch (whichmongad)
     {
     case  MONGAD_R0:
-    case  MONGAD_R1:
+    case  MONGAD_SLAVE_R0:
+        if (memflags[addr] & WATCHPOINT)
+        {   *whichemupen   = EMUPEN_ORANGE;
+            *whichemubrush = EMUBRUSH_ORANGE;
+        } else
+        {   *whichemupen   = EMUPEN_GREEN;
+            *whichemubrush = EMUBRUSH_GREEN;
+        }
+    acase MONGAD_R1:
     case  MONGAD_R2:
     case  MONGAD_R3:
-    case  MONGAD_R4:
+        if (memflags[addr] & WATCHPOINT)
+        {   *whichemupen   = EMUPEN_ORANGE;
+            *whichemubrush = EMUBRUSH_ORANGE;
+        } elif
+        (   (whichcpu == 0 && (      psl & PSL_RS))
+         || (whichcpu == 1 && (other_psl & PSL_RS))
+        )
+        {   *whichemupen   = EMUPEN_GREY;
+            *whichemubrush = EMUBRUSH_GREY;
+        } else
+        {   *whichemupen   = EMUPEN_GREEN;
+            *whichemubrush = EMUBRUSH_GREEN;
+        }
+    acase MONGAD_R4:
     case  MONGAD_R5:
     case  MONGAD_R6:
-    case  MONGAD_SLAVE_R0:
-    case  MONGAD_SLAVE_R1:
+        if (memflags[addr] & WATCHPOINT)
+        {   *whichemupen   = EMUPEN_ORANGE;
+            *whichemubrush = EMUBRUSH_ORANGE;
+        } elif
+        (   (whichcpu == 0 && !(      psl & PSL_RS))
+         || (whichcpu == 1 && !(other_psl & PSL_RS))
+        )
+        {   *whichemupen   = EMUPEN_GREY;
+            *whichemubrush = EMUBRUSH_GREY;
+        } else
+        {   *whichemupen   = EMUPEN_GREEN;
+            *whichemubrush = EMUBRUSH_GREEN;
+        }
+    acase MONGAD_SLAVE_R1:
     case  MONGAD_SLAVE_R2:
     case  MONGAD_SLAVE_R3:
-    case  MONGAD_SLAVE_R4:
+        if (memflags[addr] & WATCHPOINT)
+        {   *whichemupen   = EMUPEN_ORANGE;
+            *whichemubrush = EMUBRUSH_ORANGE;
+        } elif
+        (   (whichcpu == 0 && (other_psl & PSL_RS))
+         || (whichcpu == 1 && (      psl & PSL_RS))
+        )
+        {   *whichemupen   = EMUPEN_GREY;
+            *whichemubrush = EMUBRUSH_GREY;
+        } else
+        {   *whichemupen   = EMUPEN_GREEN;
+            *whichemubrush = EMUBRUSH_GREEN;
+        }
+    acase MONGAD_SLAVE_R4:
     case  MONGAD_SLAVE_R5:
     case  MONGAD_SLAVE_R6:
         if (memflags[addr] & WATCHPOINT)
         {   *whichemupen   = EMUPEN_ORANGE;
             *whichemubrush = EMUBRUSH_ORANGE;
+        } elif
+        (   (whichcpu == 0 && !(other_psl & PSL_RS))
+         || (whichcpu == 1 && !(      psl & PSL_RS))
+        )
+        {   *whichemupen   = EMUPEN_GREY;
+            *whichemubrush = EMUBRUSH_GREY;
         } else
         {   *whichemupen   = EMUPEN_GREEN;
             *whichemubrush = EMUBRUSH_GREEN;
@@ -3481,7 +3536,7 @@ EXPORT FLAG getmoncolour(int whichmongad, ULONG* whichemupen, int* whichemubrush
         {   *whichemupen   = EMUPEN_GREY;   // grey so that the white one
             *whichemubrush = EMUBRUSH_GREY; // stands out in comparison
         }
-    acase  MONGAD_SLAVE_RAS0:
+    acase MONGAD_SLAVE_RAS0:
     case  MONGAD_SLAVE_RAS1:
     case  MONGAD_SLAVE_RAS2:
     case  MONGAD_SLAVE_RAS3:
@@ -3490,8 +3545,8 @@ EXPORT FLAG getmoncolour(int whichmongad, ULONG* whichemupen, int* whichemubrush
     case  MONGAD_SLAVE_RAS6:
     case  MONGAD_SLAVE_RAS7:
         if
-        (   (whichcpu == 0 && whichmongad - MONGAD_RAS0 == (other_psu & PSU_SP))
-         || (whichcpu == 1 && whichmongad - MONGAD_RAS0 == (      psu & PSU_SP))
+        (   (whichcpu == 0 && whichmongad - MONGAD_SLAVE_RAS0 == (other_psu & PSU_SP))
+         || (whichcpu == 1 && whichmongad - MONGAD_SLAVE_RAS0 == (      psu & PSU_SP))
         )
         {   *whichemupen   = EMUPEN_WHITE;
             *whichemubrush = EMUBRUSH_WHITE;
@@ -6884,3 +6939,20 @@ EXPORT void update_variant(FLAG force)
     // zprintf(TEXTPEN_VERBOSE, "Variant text length is %d.\n", strlen(thestring));
     st_set2(SUBWINDOW_GAMEINFO, IDC_AUTOSENSE9, thestring);
 }
+
+EXPORT void expect_cpu(int expected)
+{   FAST UBYTE t;
+    FAST UWORD tt;
+    FAST int   i;
+
+    if (whichcpu != expected)
+    {   for (i = 0; i <= 6; i++)
+        {   t = r[i]; r[i] = other_r[i]; other_r[i] = t;
+        }
+        t  = psu; psu = other_psu; other_psu = t;
+        t  = psl; psl = other_psl; other_psl = t;
+        for (i = 0; i <= 6; i++)
+        {   tt = ras[i]; ras[i] = other_ras[i]; other_ras[i] = tt;
+        }
+        tt = iar; iar = other_iar; other_iar = tt;
+}   }

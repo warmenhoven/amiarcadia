@@ -1652,7 +1652,6 @@ MODULE BOOL CALLBACK CPUMonitorDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
     case WM_LBUTTONDOWN:
         mousex = (int) LOWORD(lParam);
         mousey = (int) HIWORD(lParam);
-
         for (i = CPU_FIRSTMONGAD; i <= CPU_LASTMONGAD; i++)
         {   if
             (   mousex >= monitor[i].rect.left
@@ -1660,72 +1659,69 @@ MODULE BOOL CALLBACK CPUMonitorDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
              && mousey >= monitor[i].rect.top
              && mousey <= monitor[i].rect.bottom
             )
-            {   if (whichcpu == 0) // master
-                {   switch (i)
-                    {
-                    case  MONGAD_R0:         debug_edit("R0"  , TRUE, FALSE);
-                    acase MONGAD_R1:         debug_edit("R1"  , TRUE, FALSE);
-                    acase MONGAD_R2:         debug_edit("R2"  , TRUE, FALSE);
-                    acase MONGAD_R3:         debug_edit("R3"  , TRUE, FALSE);
-                    acase MONGAD_R4:         debug_edit("R4"  , TRUE, FALSE);
-                    acase MONGAD_R5:         debug_edit("R5"  , TRUE, FALSE);
-                    acase MONGAD_R6:         debug_edit("R6"  , TRUE, FALSE);
-                    acase MONGAD_RAS0:       debug_edit("RAS0", TRUE, FALSE);
-                    acase MONGAD_RAS1:       debug_edit("RAS1", TRUE, FALSE);
-                    acase MONGAD_RAS2:       debug_edit("RAS2", TRUE, FALSE);
-                    acase MONGAD_RAS3:       debug_edit("RAS3", TRUE, FALSE);
-                    acase MONGAD_RAS4:       debug_edit("RAS4", TRUE, FALSE);
-                    acase MONGAD_RAS5:       debug_edit("RAS5", TRUE, FALSE);
-                    acase MONGAD_RAS6:       debug_edit("RAS6", TRUE, FALSE);
-                    acase MONGAD_RAS7:       debug_edit("RAS7", TRUE, FALSE);
-                    acase MONGAD_S:          psu ^= 0x80; update_monitor(FALSE);
-                    acase MONGAD_F:          psu ^= 0x40; update_monitor(FALSE);
-                    acase MONGAD_II:         psu ^= 0x20; update_monitor(FALSE);
-                    acase MONGAD_UF1:        psu ^= 0x10; update_monitor(FALSE);
-                    acase MONGAD_UF2:        psu ^= 0x08; update_monitor(FALSE);
-                    acase MONGAD_SP:         debug_edit("SP"  , TRUE, FALSE);
-                    acase MONGAD_CC:         debug_edit("CC"  , TRUE, FALSE);
-                    acase MONGAD_IDC:        psl ^= 0x20; update_monitor(FALSE);
-                    acase MONGAD_RS:         psl ^= 0x10; update_monitor(FALSE);
-                    acase MONGAD_WC:         psl ^= 0x08; update_monitor(FALSE);
-                    acase MONGAD_OVF:        psl ^= 0x04; update_monitor(FALSE);
-                    acase MONGAD_COM:        psl ^= 0x02; update_monitor(FALSE);
-                    acase MONGAD_C:          psl ^= 0x01; update_monitor(FALSE);
-                    acase MONGAD_IAR:        debug_edit("IAR" , TRUE, FALSE);
-                }   }
-                else // slave
-                {   switch (i)
-                    {
-                    case  MONGAD_SLAVE_R0:   debug_edit("R0"  , TRUE, FALSE);
-                    acase MONGAD_SLAVE_R1:   debug_edit("R1"  , TRUE, FALSE);
-                    acase MONGAD_SLAVE_R2:   debug_edit("R2"  , TRUE, FALSE);
-                    acase MONGAD_SLAVE_R3:   debug_edit("R3"  , TRUE, FALSE);
-                    acase MONGAD_SLAVE_R4:   debug_edit("R4"  , TRUE, FALSE);
-                    acase MONGAD_SLAVE_R5:   debug_edit("R5"  , TRUE, FALSE);
-                    acase MONGAD_SLAVE_R6:   debug_edit("R6"  , TRUE, FALSE);
-                    acase MONGAD_SLAVE_RAS0: debug_edit("RAS0", TRUE, FALSE);
-                    acase MONGAD_SLAVE_RAS1: debug_edit("RAS1", TRUE, FALSE);
-                    acase MONGAD_SLAVE_RAS2: debug_edit("RAS2", TRUE, FALSE);
-                    acase MONGAD_SLAVE_RAS3: debug_edit("RAS3", TRUE, FALSE);
-                    acase MONGAD_SLAVE_RAS4: debug_edit("RAS4", TRUE, FALSE);
-                    acase MONGAD_SLAVE_RAS5: debug_edit("RAS5", TRUE, FALSE);
-                    acase MONGAD_SLAVE_RAS6: debug_edit("RAS6", TRUE, FALSE);
-                    acase MONGAD_SLAVE_RAS7: debug_edit("RAS7", TRUE, FALSE);
-                    acase MONGAD_SLAVE_S:    psu ^= 0x80; update_monitor(FALSE);
-                    acase MONGAD_SLAVE_F:    psu ^= 0x40; update_monitor(FALSE);
-                    acase MONGAD_SLAVE_II:   psu ^= 0x20; update_monitor(FALSE);
-                    acase MONGAD_SLAVE_UF1:  psu ^= 0x10; update_monitor(FALSE);
-                    acase MONGAD_SLAVE_UF2:  psu ^= 0x08; update_monitor(FALSE);
-                    acase MONGAD_SLAVE_SP:   debug_edit("SP"  , TRUE, FALSE);
-                    acase MONGAD_SLAVE_CC:   debug_edit("CC"  , TRUE, FALSE);
-                    acase MONGAD_SLAVE_IDC:  psl ^= 0x20; update_monitor(FALSE);
-                    acase MONGAD_SLAVE_RS:   psl ^= 0x10; update_monitor(FALSE);
-                    acase MONGAD_SLAVE_WC:   psl ^= 0x08; update_monitor(FALSE);
-                    acase MONGAD_SLAVE_OVF:  psl ^= 0x04; update_monitor(FALSE);
-                    acase MONGAD_SLAVE_COM:  psl ^= 0x02; update_monitor(FALSE);
-                    acase MONGAD_SLAVE_C:    psl ^= 0x01; update_monitor(FALSE);
-                    acase MONGAD_SLAVE_IAR:  debug_edit("IAR" , TRUE, FALSE);
-                }   }
+            {   switch (i)
+                {
+                // Master-------------------------------------------------
+                case  MONGAD_R0:         expect_cpu(0); debug_edit("R0"  , TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_R1:         expect_cpu(0); debug_edit("R1"  , TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_R2:         expect_cpu(0); debug_edit("R2"  , TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_R3:         expect_cpu(0); debug_edit("R3"  , TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_R4:         expect_cpu(0); debug_edit("R4"  , TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_R5:         expect_cpu(0); debug_edit("R5"  , TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_R6:         expect_cpu(0); debug_edit("R6"  , TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_RAS0:       expect_cpu(0); debug_edit("RAS0", TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_RAS1:       expect_cpu(0); debug_edit("RAS1", TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_RAS2:       expect_cpu(0); debug_edit("RAS2", TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_RAS3:       expect_cpu(0); debug_edit("RAS3", TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_RAS4:       expect_cpu(0); debug_edit("RAS4", TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_RAS5:       expect_cpu(0); debug_edit("RAS5", TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_RAS6:       expect_cpu(0); debug_edit("RAS6", TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_RAS7:       expect_cpu(0); debug_edit("RAS7", TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_S:          expect_cpu(0); psu ^= 0x80;                     expect_cpu(0); update_monitor(FALSE);
+                acase MONGAD_F:          expect_cpu(0); psu ^= 0x40;                     expect_cpu(0); update_monitor(FALSE);
+                acase MONGAD_II:         expect_cpu(0); psu ^= 0x20;                     expect_cpu(0); update_monitor(FALSE);
+                acase MONGAD_UF1:        expect_cpu(0); psu ^= 0x10;                     expect_cpu(0); update_monitor(FALSE);
+                acase MONGAD_UF2:        expect_cpu(0); psu ^= 0x08;                     expect_cpu(0); update_monitor(FALSE);
+                acase MONGAD_SP:         expect_cpu(0); debug_edit("SP"  , TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_CC:         expect_cpu(0); debug_edit("CC"  , TRUE, FALSE); expect_cpu(0);
+                acase MONGAD_IDC:        expect_cpu(0); psl ^= 0x20;                     expect_cpu(0); update_monitor(FALSE);
+                acase MONGAD_RS:         expect_cpu(0); psl ^= 0x10;                     expect_cpu(0); update_monitor(FALSE);
+                acase MONGAD_WC:         expect_cpu(0); psl ^= 0x08;                     expect_cpu(0); update_monitor(FALSE);
+                acase MONGAD_OVF:        expect_cpu(0); psl ^= 0x04;                     expect_cpu(0); update_monitor(FALSE);
+                acase MONGAD_COM:        expect_cpu(0); psl ^= 0x02;                     expect_cpu(0); update_monitor(FALSE);
+                acase MONGAD_C:          expect_cpu(0); psl ^= 0x01;                     expect_cpu(0); update_monitor(FALSE);
+                acase MONGAD_IAR:        expect_cpu(0); debug_edit("IAR" , TRUE, FALSE); expect_cpu(0);
+                // Slave--------------------------------------------------
+                acase MONGAD_SLAVE_R0:   expect_cpu(1); debug_edit("R0"  , TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_R1:   expect_cpu(1); debug_edit("R1"  , TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_R2:   expect_cpu(1); debug_edit("R2"  , TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_R3:   expect_cpu(1); debug_edit("R3"  , TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_R4:   expect_cpu(1); debug_edit("R4"  , TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_R5:   expect_cpu(1); debug_edit("R5"  , TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_R6:   expect_cpu(1); debug_edit("R6"  , TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_RAS0: expect_cpu(1); debug_edit("RAS0", TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_RAS1: expect_cpu(1); debug_edit("RAS1", TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_RAS2: expect_cpu(1); debug_edit("RAS2", TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_RAS3: expect_cpu(1); debug_edit("RAS3", TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_RAS4: expect_cpu(1); debug_edit("RAS4", TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_RAS5: expect_cpu(1); debug_edit("RAS5", TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_RAS6: expect_cpu(1); debug_edit("RAS6", TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_RAS7: expect_cpu(1); debug_edit("RAS7", TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_S:    expect_cpu(1); psu ^= 0x80;                     expect_cpu(1); update_monitor(FALSE);
+                acase MONGAD_SLAVE_F:    expect_cpu(1); psu ^= 0x40;                     expect_cpu(1); update_monitor(FALSE);
+                acase MONGAD_SLAVE_II:   expect_cpu(1); psu ^= 0x20;                     expect_cpu(1); update_monitor(FALSE);
+                acase MONGAD_SLAVE_UF1:  expect_cpu(1); psu ^= 0x10;                     expect_cpu(1); update_monitor(FALSE);
+                acase MONGAD_SLAVE_UF2:  expect_cpu(1); psu ^= 0x08;                     expect_cpu(1); update_monitor(FALSE);
+                acase MONGAD_SLAVE_SP:   expect_cpu(1); debug_edit("SP"  , TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_CC:   expect_cpu(1); debug_edit("CC"  , TRUE, FALSE); expect_cpu(1);
+                acase MONGAD_SLAVE_IDC:  expect_cpu(1); psl ^= 0x20;                     expect_cpu(1); update_monitor(FALSE);
+                acase MONGAD_SLAVE_RS:   expect_cpu(1); psl ^= 0x10;                     expect_cpu(1); update_monitor(FALSE);
+                acase MONGAD_SLAVE_WC:   expect_cpu(1); psl ^= 0x08;                     expect_cpu(1); update_monitor(FALSE);
+                acase MONGAD_SLAVE_OVF:  expect_cpu(1); psl ^= 0x04;                     expect_cpu(1); update_monitor(FALSE);
+                acase MONGAD_SLAVE_COM:  expect_cpu(1); psl ^= 0x02;                     expect_cpu(1); update_monitor(FALSE);
+                acase MONGAD_SLAVE_C:    expect_cpu(1); psl ^= 0x01;                     expect_cpu(1); update_monitor(FALSE);
+                acase MONGAD_SLAVE_IAR:  expect_cpu(1); debug_edit("IAR" , TRUE, FALSE); expect_cpu(1);
+                }
                 return FALSE; // for speed
         }   }
     return FALSE;

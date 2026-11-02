@@ -4107,12 +4107,12 @@ EXPORT int parse_bytes(void)
         if (file_bkgrnd[0])
         {   DISCARD load_bmp(fn_bkgrnd);
         }
-        DISCARD load_bmp(fn_bkgrnd);
+        make_stars();
         if (filter != FILTER_3D && filter != FILTER_HQX)
         {   fixupcolours();
             drawpixelroutine();
-            redrawscreen();
         }
+        redrawscreen();
     return 2;
 #endif
     case KIND_PAP: // no need for acase

@@ -1,10 +1,10 @@
-#define DECIMALVERSION       "36.74"
-#define INTEGERVERSION       "36.74"
+#define DECIMALVERSION       "36.75 beta"
+#define INTEGERVERSION       "36.75"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x74
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (30.10.2026)" // d.m.yyyy format
-#define RELEASEDATE          "30-10-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "30 October 2026" // full month and year
+#define MINORVERSION         0x75
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (2.11.2026)" // d.m.yyyy format
+#define RELEASEDATE          "02-11-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "2 November 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
 #define NEWCONFIGVERSION     "36.73" // V36.73 beta +
@@ -4462,10 +4462,11 @@ EXPORT int engine_load(FLAG silent);
 EXPORT void engine_reset(void);
 EXPORT int getsmallimage2(int thegame, int thememmap);
 EXPORT void longcomma(ULONG value, STRPTR out);
+EXPORT void set_filename(void);
 EXPORT FLAG wantellipse(int localkey);
 EXPORT void zstrncpy(char* to, const char* from, size_t n);
-EXPORT void set_filename(void);
 // cpu monitor
+EXPORT void expect_cpu(int expected);
 EXPORT FLAG getmoncolour(int whichmongad, ULONG* whichemupen, int* whichemubrush);
 EXPORT void update_monitor_cpu(FLAG force);
 // floppy disk

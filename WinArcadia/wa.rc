@@ -14474,7 +14474,7 @@ IDD_MONITOR_CPU_2650 DIALOGEX 0, 0, 248, 170
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Real-Time CPU Monitor"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     GROUPBOX        "2650 CPU Status",IDL_CPU_MASTERGROUP,8,6,232,104
     RTEXT           "R0:",IDL_R0,14,30,19,10,SS_CENTERIMAGE
@@ -16885,7 +16885,7 @@ IDD_MONITOR_CPUS_TWIN DIALOGEX 0, 0, 248, 266
 STYLE DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "CPUs Monitor (TWIN)"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     GROUPBOX        "Master CPU Status",IDL_CPU_MASTERGROUP,8,6,232,104
     RTEXT           "R0:",IDL_R0,14,30,19,10,SS_CENTERIMAGE
@@ -19403,8 +19403,8 @@ IDI_I_MOLE              ICON    DISCARDABLE     "i_mole.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 36,7,4,1
- PRODUCTVERSION 36,7,4,1
+ FILEVERSION 36,7,5,0
+ PRODUCTVERSION 36,7,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -19422,14 +19422,14 @@ BEGIN
             VALUE "Comments", "Think Signetics. Sig 'em! We want you to have the best.\0"
             VALUE "CompanyName", "Amigan Software\0"
             VALUE "FileDescription", "WinArcadia multi-emulator\0"
-            VALUE "FileVersion", "36.74\0"
+            VALUE "FileVersion", "36.75\0"
             VALUE "InternalName", "WinArcadia\0"
             VALUE "LegalCopyright", "Copyright © 2006-2026 James Jacobs\0"
             VALUE "LegalTrademarks", "WinArcadia\0"
             VALUE "OriginalFilename", "WinArcadia.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "WinArcadia\0"
-            VALUE "ProductVersion", "36.74\0"
+            VALUE "ProductVersion", "36.75\0"
             VALUE "SpecialBuild", "\0"
         END
     END

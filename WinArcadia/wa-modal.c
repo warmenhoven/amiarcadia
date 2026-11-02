@@ -2660,6 +2660,7 @@ MODULE BOOL CALLBACK PathsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM
             pixelubyte = NULL;
             pixelulong = NULL;
         }
+
         break_pathname(fn_bkgrnd, path_bkgrnd, file_bkgrnd);
         if (file_bkgrnd[0])
         {   DISCARD load_bmp(fn_bkgrnd);
@@ -2786,9 +2787,10 @@ MODULE BOOL CALLBACK PathsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM
                 pixelubyte = NULL;
                 pixelulong = NULL;
             }
-            if (fn_bkgrnd[0])
-            {   break_pathname(fn_bkgrnd, path_bkgrnd, file_bkgrnd);
-                DISCARD load_bmp(fn_bkgrnd);
+
+            break_pathname(fn_bkgrnd, path_bkgrnd, file_bkgrnd);
+            if (file_bkgrnd[0])
+            {   DISCARD load_bmp(fn_bkgrnd);
             }
             make_stars();
             redrawscreen();

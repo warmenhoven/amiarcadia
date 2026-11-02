@@ -2616,6 +2616,7 @@ EXPORT void changefgpixel(int x, int y, int colour)
     if
     (   screen[x][y] != (UBYTE) colour
 #ifdef WIN32
+  // || fgtable[y][x] != 1
      || demultiplex == 1 // needed for Space Squadron
 #endif
     )
@@ -2627,13 +2628,16 @@ EXPORT void changefgpixel(int x, int y, int colour)
 }   }
 
 EXPORT void changefgpixel_slow(int x, int y, int colour)
-{   if (x < 0 || y < 0 || x >= machines[machine].width || y >= machines[machine].height)
+{   x -= absxmin;
+    y -= absymin;
+    if (x < 0 || y < 0 || x >= machines[machine].width || y >= machines[machine].height)
     {   return;
     }
 
     if
     (   screen[x][y] != (UBYTE) colour
 #ifdef WIN32
+  // || fgtable[y][x] != 1
      || demultiplex == 1 // needed for Space Squadron
 #endif
     )
@@ -2643,6 +2647,34 @@ EXPORT void changefgpixel_slow(int x, int y, int colour)
         fgtable[y][x] = 1;
 #endif
 }   }
+
+EXPORT void changethisfgpixel(int colour)
+{   changefgpixel(cpux - absxmin, cpuy - absymin, colour);
+}
+
+EXPORT void changethisfgpixel_slow(int colour)
+{   FAST int x, y;
+
+    x = cpux - absxmin;
+    y = cpuy - absymin;
+    if (x < 0 || y < 0 || x >= machines[machine].width || y >= machines[machine].height) // important!
+    {   return;
+    }
+
+    if
+    (   screen[x][y] != (UBYTE) colour
+#ifdef WIN32
+  // || fgtable[y][x] != 1
+     || demultiplex == 1 // needed for Grand Slam Tennis
+#endif
+    )
+    {   screen[x][y] = (UBYTE) colour;
+        drawpixel(x, y, colour);
+#ifdef WIN32
+        fgtable[y][x] = 1;
+#endif
+}   }
+
 
 EXPORT void changebgpixel(int x, int y, int colour)
 {
@@ -2666,6 +2698,7 @@ EXPORT void changebgpixel(int x, int y, int colour)
     if
     (   screen[x][y] != (UBYTE) colour
 #ifdef WIN32
+  // || fgtable[y][x] != 0
      || demultiplex == 1 // needed for Grand Slam Tennis
 #endif
     )
@@ -2676,31 +2709,6 @@ EXPORT void changebgpixel(int x, int y, int colour)
 #ifdef WIN32
         drawbgpixel(x, y, colour);
         fgtable[y][x] = 0;
-#endif
-}   }
-
-EXPORT void changethisfgpixel_slow(int colour)
-{   FAST int x, y;
-
-    x = cpux - absxmin;
-    y = cpuy - absymin;
-    if (x < 0 || y < 0 || x >= machines[machine].width || y >= machines[machine].height) // important!
-    {   return;
-    }
-
-    if
-    (   screen[x][y] != (UBYTE) colour
-#ifdef WIN32
-     || demultiplex == 1 // needed for Grand Slam Tennis
-#endif
-    )
-    {   screen[x][y] = (UBYTE) colour;
-#ifdef AMIGA
-        drawpixel(x, y, colour);
-#endif
-#ifdef WIN32
-        drawbgpixel(x, y, colour);
-        fgtable[y][x] = 1;
 #endif
 }   }
 
@@ -2716,6 +2724,7 @@ EXPORT void changethisbgpixel_slow(int colour)
     if
     (   screen[x][y] != (UBYTE) colour
 #ifdef WIN32
+  // || fgtable[y][x] != 0
      || demultiplex == 1 // needed for Grand Slam Tennis
 #endif
     )
@@ -3260,9 +3269,6 @@ EXPORT void view_controls_engine(void)
     fix_keyrects(); // probably not needed anymore
 }
 
-EXPORT void changethisfgpixel(int colour)
-{   changefgpixel(cpux - absxmin, cpuy - absymin, colour);
-}
 EXPORT void changethisbgpixel(int colour)
 {   changebgpixel(cpux - absxmin, cpuy - absymin, colour);
 }

@@ -574,6 +574,7 @@
 #define IDB_BOX_50                      660
 #define IDI_E_COSMICADVENTURE           661
 #define IDI_E_INVADERS                  662
+#define IDB_BOX_49                      662
 #define IDI_E_DESTROYER                 663
 #define IDI_E_BURSTINGBALLOONS          664
 #define IDI_E_CIRCLEDRIVE               665
@@ -632,6 +633,7 @@
 #define IDI_PSYMANSION                  718
 #define IDI_KEDAMAKI                    719
 #define IDI_I_MOLE                      720
+#define IDI_I_GRID                      721
 #define IDC_CHANGE_FROM                 1000
 #define IDC_CHANGE_TO                   1001
 #define IDC_CHANGE_ADDRESS              1002
@@ -3774,14 +3776,15 @@
 #define ID_DEBUG_WARN                   40509
 #define ID_DEBUG_SWAPDISKS              40510
 #define ID_DEBUG_LIST                   40511
+#define ID_DEBUG_L_P                    40512
 #define ID_STATIC                       -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        661
-#define _APS_NEXT_COMMAND_VALUE         40512
+#define _APS_NEXT_RESOURCE_VALUE        663
+#define _APS_NEXT_COMMAND_VALUE         40513
 #define _APS_NEXT_CONTROL_VALUE         4405
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

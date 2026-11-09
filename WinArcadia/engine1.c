@@ -273,6 +273,7 @@ EXPORT int    aifffile                 = FALSE,
               log_illegal              = FALSE,
               log_interrupts           = FALSE,
               logreadwrites            = FALSE,
+              log_sprites              = FALSE,
               logsubroutines           = FALSE,
               logwrites                = FALSE,
               loop                     = TRUE,
@@ -4761,6 +4762,9 @@ MODULE void serializeconfig(void)
     aserialize_bool("logillegal"          , &log_illegal       );
     aserialize_bool("loginterrupts"       , &log_interrupts    );
     aserialize_bool("logreadwrites"       , &logreadwrites     );
+    if (configversion == NEWER)
+    {   aserialize_bool("logsprites"      , &log_sprites       );
+    }
     aserialize_bool("logsubroutines"      , &logsubroutines    );
     aserialize_bool("loop"                , &loop              );
     aserialize_bool("lowercase"           , &lowercase         );
@@ -4882,7 +4886,7 @@ MODULE void serializeconfig(void)
 #ifdef WIN32
     aserialize_int(  "bitrate"            , &bitrate                ,             8, 16); // 8, 16
 #endif
-    if (configversion == NEWER)
+    if (configversion != OLDEST)
     {   aserialize_int("cd2650_biosversion",&cd2650_biosver         ,             0, 3); // IPL 1.0, IPL 1.1, POPMON, Supervisor
     } else
     {   aserialize_int("cd2650_biosversion",&cd2650_biosver         ,             0, 2); // IPL 1.1, POPMON, Supervisor
@@ -4942,13 +4946,7 @@ MODULE void serializeconfig(void)
     aserialize_int("phunsy_biosversion"   , &phunsy_biosver         ,             0, 1); // mini-monitor, phunsy
     aserialize_int("pipbug_baudrate"      , &pipbug_baudrate        ,             0, 2); // 110, 300, 4800
     aserialize_int("pipbug_biosversion"   , &pipbug_biosver         ,             0, 3); // Artemis, HYBUG, PIPBUG 1, PIPBUG 2
-    if (configversion != OLDEST)
-    {   aserialize_int("pipbug_peripheral", &pipbug_periph          ,             0, 4); // EA printer, Linearization, Tasman Turtle, VM, WFC
-    } else
-    {   aserialize_int("pipbug_peripheral", &pipbug_periph          ,             0, 3); // EA printer, Linearization, VM, WFC
-        if (pipbug_periph >= 2)
-        {   pipbug_periph++;
-    }   }
+    aserialize_int("pipbug_peripheral"    , &pipbug_periph          ,             0, 4); // EA printer, Linearization, Tasman Turtle, VM, WFC
     aserialize_int("pipbug_vdu"           , &pipbug_vdu             ,             0, 5); // elekterminal, narrow lcvdu, wide lcvdu, rb, svt-100, vt100
     aserialize_int("pong_angles"          , &angles                 ,             0, 2); // 2, 4, random
     aserialize_int("pong_batsizes"        , &batvalue               ,             0, 3); // short+short, tall+tall, short+tall, tall+short

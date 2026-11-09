@@ -384,6 +384,10 @@ SOURCE=".\box-40.bmp"
 # End Source File
 # Begin Source File
 
+SOURCE=".\box-49.bmp"
+# End Source File
+# Begin Source File
+
 SOURCE=".\box-5.bmp"
 # End Source File
 # Begin Source File
@@ -1544,6 +1548,10 @@ SOURCE=".\i-grandprix.ico"
 # End Source File
 # Begin Source File
 
+SOURCE=".\i-grid.ico"
+# End Source File
+# Begin Source File
+
 SOURCE=".\i-hangman.ico"
 # End Source File
 # Begin Source File
@@ -1581,6 +1589,10 @@ SOURCE=".\i-laserattack.ico"
 # Begin Source File
 
 SOURCE=".\i-leapfrog.ico"
+# End Source File
+# Begin Source File
+
+SOURCE=".\i-mole.ico"
 # End Source File
 # Begin Source File
 

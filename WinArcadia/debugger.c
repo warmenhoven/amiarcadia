@@ -156,6 +156,7 @@ IMPORT       int                      base,
                                       log_illegal,
                                       log_interrupts,
                                       logreadwrites,
+                                      log_sprites,
                                       logsubroutines,
                                       machine,
                                       memmap,
@@ -2258,6 +2259,7 @@ EXPORT FLAG debug_command(void)
     case MENUITEM_L_C:
     case MENUITEM_L_I:
     case MENUITEM_L_N:
+    case MENUITEM_L_P:
     case MENUITEM_L_S:
         if (allowable(TRUE))
         {   if (!stricmp((const char*) thearg[1], "A"))
@@ -2313,6 +2315,14 @@ EXPORT FLAG debug_command(void)
                         "Log interrupts"
                 )   );
                 fliplog(&log_interrupts);
+            } elif (!stricmp((const char*) thearg[1], "P"))
+            {   zprintf
+                (   TEXTPEN_CLIOUTPUT,
+                    LLL(
+                        MSG_ENGINE_LOGSPRITES,
+                        "Log sprites"
+                )   );
+                fliplog(&log_sprites);
             } elif (!stricmp((const char*) thearg[1], "S"))
             {   zprintf
                 (   TEXTPEN_CLIOUTPUT,
@@ -7355,8 +7365,9 @@ MODULE void commandusage(int command)
     case MENUITEM_L_C:
     case MENUITEM_L_I:
     case MENUITEM_L_N:
+    case MENUITEM_L_P:
     case MENUITEM_L_S:
-        zprintf(TEXTPEN_CLIOUTPUT, "%s: L A|B|C|I|N|S\n\n", LLL(MSG_USAGE, "Usage"));
+        zprintf(TEXTPEN_CLIOUTPUT, "%s: L A|B|C|I|N|P|S\n\n", LLL(MSG_USAGE, "Usage"));
     acase MENUFAKE_N:
         zprintf(TEXTPEN_CLIOUTPUT, "N 0: %s\n" \
                                    "N 1: %s\n" \

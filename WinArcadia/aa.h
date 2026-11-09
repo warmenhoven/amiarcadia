@@ -1,15 +1,15 @@
-#define DECIMALVERSION       "36.75 beta"
-#define INTEGERVERSION       "36.75"
+#define DECIMALVERSION       "36.8"
+#define INTEGERVERSION       "36.80"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x75
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (2.11.2026)" // d.m.yyyy format
-#define RELEASEDATE          "02-11-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "2 November 2026" // full month and year
+#define MINORVERSION         0x80
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (7.11.2026)" // d.m.yyyy format
+#define RELEASEDATE          "07-11-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "7 November 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
-#define NEWCONFIGVERSION     "36.73" // V36.73 beta +
-#define OLDCONFIGVERSION     "36.7"  // V36.7       -36.72
-#define VERYOLDCONFIGVERSION "36.54" // V36.54 final-36.65
+#define NEWCONFIGVERSION     "36.8"  // V36.8       +
+#define OLDCONFIGVERSION     "36.73" // V36.73 beta -36.75 beta
+#define VERYOLDCONFIGVERSION "36.7"  // V36.7       -36.72
 #define RELEASING
 // comment this out during development
 
@@ -192,6 +192,8 @@ aa:
 #define WATCH_SOME 1 // only watch writes that change the contents
 #define WATCH_ALL  2 // watch all writes
 
+#define LOGSPRITEINTERRUPTS (log_interrupts || (log_sprites && (machine == INTERTON || machine == ELEKTOR)))
+
 #ifdef AMIGA
 #define MAXSAMPLERATE  11025
 #endif
@@ -290,106 +292,107 @@ aa:
 #define GL_WINDWORL 62
 #define ARCADIAGLYPHS 63
 // INTERTON games
-#define GL_I_37BYTE 63
-#define GL_I_AIRSEA 64
-#define GL_I_BOWLIN 65
-#define GL_I_BOXING 66
-#define GL_I_CANABA 67
-#define GL_I_CAPTUR 68
-#define GL_I_CASINO 69
-#define GL_I_CIRCUS 70
-#define GL_I_COCKPI 71
-#define GL_I_COMBAT 72
-#define GL_I_COMECO 73
-#define GL_I_COMEFR 74
-#define GL_I_COWBOY 75
-#define GL_I_CRAZYC 76
-#define GL_I_FLAPPY 77
-#define GL_I_GOLF   78
-#define GL_I_GRANDP 79
-#define GL_I_HANGMA 80
-#define GL_I_HEADON 81
-#define GL_I_HORSER 82
-#define GL_I_HUNTIN 83
-#define GL_I_HYPERS 84
-#define GL_I_INVADE 85
-#define GL_I_KABOOM 86
-#define GL_I_LABYRI 87
-#define GL_I_LASERA 88
-#define GL_I_LEAPFR 89
-#define GL_I_MONMAN 90
-#define GL_I_MONMUN 91
-#define GL_I_MUNCHA 92
-#define GL_I_MUSICA 93
-#define GL_I_PINBAL 94
-#define GL_I_SHOOTO 95
-#define GL_I_SOCCER 96
-#define GL_I_SPACEW 97
-#define GL_I_SPACEZ 98
-#define GL_I_SUPERI 99
-#define GL_I_SUPERS 100
-#define GL_I_TREASU 101
-#define GL_I_WINTER 102
-#define GL_I_MOLE   103
-#define INTERTONGLYPHS 41
+#define GL_I_37BYTE (ARCADIAGLYPHS     )
+#define GL_I_AIRSEA (ARCADIAGLYPHS +  1)
+#define GL_I_BOWLIN (ARCADIAGLYPHS +  2)
+#define GL_I_BOXING (ARCADIAGLYPHS +  3)
+#define GL_I_CANABA (ARCADIAGLYPHS +  4)
+#define GL_I_CAPTUR (ARCADIAGLYPHS +  5)
+#define GL_I_CASINO (ARCADIAGLYPHS +  6)
+#define GL_I_CIRCUS (ARCADIAGLYPHS +  7)
+#define GL_I_COCKPI (ARCADIAGLYPHS +  8)
+#define GL_I_COMBAT (ARCADIAGLYPHS +  9)
+#define GL_I_COMECO (ARCADIAGLYPHS + 10)
+#define GL_I_COMEFR (ARCADIAGLYPHS + 11)
+#define GL_I_COWBOY (ARCADIAGLYPHS + 12)
+#define GL_I_CRAZYC (ARCADIAGLYPHS + 13)
+#define GL_I_FLAPPY (ARCADIAGLYPHS + 14)
+#define GL_I_GOLF   (ARCADIAGLYPHS + 15)
+#define GL_I_GRANDP (ARCADIAGLYPHS + 16)
+#define GL_I_HANGMA (ARCADIAGLYPHS + 17)
+#define GL_I_HEADON (ARCADIAGLYPHS + 18)
+#define GL_I_HORSER (ARCADIAGLYPHS + 19)
+#define GL_I_HUNTIN (ARCADIAGLYPHS + 20)
+#define GL_I_HYPERS (ARCADIAGLYPHS + 21)
+#define GL_I_INVADE (ARCADIAGLYPHS + 22)
+#define GL_I_KABOOM (ARCADIAGLYPHS + 23)
+#define GL_I_LABYRI (ARCADIAGLYPHS + 24)
+#define GL_I_LASERA (ARCADIAGLYPHS + 25)
+#define GL_I_LEAPFR (ARCADIAGLYPHS + 26)
+#define GL_I_MONMAN (ARCADIAGLYPHS + 27)
+#define GL_I_MONMUN (ARCADIAGLYPHS + 28)
+#define GL_I_MUNCHA (ARCADIAGLYPHS + 29)
+#define GL_I_MUSICA (ARCADIAGLYPHS + 30)
+#define GL_I_PINBAL (ARCADIAGLYPHS + 31)
+#define GL_I_SHOOTO (ARCADIAGLYPHS + 32)
+#define GL_I_SOCCER (ARCADIAGLYPHS + 33)
+#define GL_I_SPACEW (ARCADIAGLYPHS + 34)
+#define GL_I_SPACEZ (ARCADIAGLYPHS + 35)
+#define GL_I_SUPERI (ARCADIAGLYPHS + 36)
+#define GL_I_SUPERS (ARCADIAGLYPHS + 37)
+#define GL_I_TREASU (ARCADIAGLYPHS + 38)
+#define GL_I_WINTER (ARCADIAGLYPHS + 39)
+#define GL_I_MOLE   (ARCADIAGLYPHS + 40)
+#define GL_I_GRID   (ARCADIAGLYPHS + 41)
+#define INTERTONGLYPHS 42
 // ELEKTOR games
-#define GL_E_AGGRES 104
-#define GL_E_AMAZON 105
-#define GL_E_ANIMAT 106
-#define GL_E_ASTERO 107
-#define GL_E_ATTACK 108
-#define GL_E_BASKET 109
-#define GL_E_BURSTI 110
-#define GL_E_CARDTR 111
-#define GL_E_CARGOS 112
-#define GL_E_CARRAC 113
-#define GL_E_CATAPU 114
-#define GL_E_CHICKE 115
-#define GL_E_CHRIST 116
-#define GL_E_CIRCLE 117
-#define GL_E_COSMIC 118
-#define GL_E_DESTRO 119
-#define GL_E_ENTERP 120
-#define GL_E_ENTER2 121
-#define GL_E_ENTER3 122
-#define GL_E_EXPLOD 123
-#define GL_E_FLYING 124
-#define GL_E_HAMISH 125
-#define GL_E_HELICO 126
-#define GL_E_HORSER 127
-#define GL_E_HUNTIN 128
-#define GL_E_INVADE 129
-#define GL_E_JACKPO 130
-#define GL_E_LABYRI 131
-#define GL_E_LAUNCH 132
-#define GL_E_MAZES  133
-#define GL_E_MEMORY 134
-#define GL_E_MOLEBA 135
-#define GL_E_MOONLA 136
-#define GL_E_MULTIP 137
-#define GL_E_NEWTON 138
-#define GL_E_NIM    139
-#define GL_E_OFFSHO 140
-#define GL_E_OMEGAL 141
-#define GL_E_PAINTI 142
-#define GL_E_PENALT 143
-#define GL_E_PIANO  144
-#define GL_E_PILOT  145
-#define GL_E_PINBAL 146
-#define GL_E_PVIART 147
-#define GL_E_QUEEN  148
-#define GL_E_RASTER 149
-#define GL_E_ROCKET 150
-#define GL_E_SEAWAR 151
-#define GL_E_SNAKES 152
-#define GL_E_SNAP   153
-#define GL_E_SPACEB 154
-#define GL_E_SPACES 155
-#define GL_E_STEAME 156
-#define GL_E_SUBMAR 157
-#define GL_E_SURVIV 158
-#define GL_E_TINYTI 159
-#define GL_E_UFOSHO 160
+#define GL_E_AGGRES (ARCADIAGLYPHS + INTERTONGLYPHS +  0)
+#define GL_E_AMAZON (ARCADIAGLYPHS + INTERTONGLYPHS +  1)
+#define GL_E_ANIMAT (ARCADIAGLYPHS + INTERTONGLYPHS +  2)
+#define GL_E_ASTERO (ARCADIAGLYPHS + INTERTONGLYPHS +  3)
+#define GL_E_ATTACK (ARCADIAGLYPHS + INTERTONGLYPHS +  4)
+#define GL_E_BASKET (ARCADIAGLYPHS + INTERTONGLYPHS +  5)
+#define GL_E_BURSTI (ARCADIAGLYPHS + INTERTONGLYPHS +  6)
+#define GL_E_CARDTR (ARCADIAGLYPHS + INTERTONGLYPHS +  7)
+#define GL_E_CARGOS (ARCADIAGLYPHS + INTERTONGLYPHS +  8)
+#define GL_E_CARRAC (ARCADIAGLYPHS + INTERTONGLYPHS +  9)
+#define GL_E_CATAPU (ARCADIAGLYPHS + INTERTONGLYPHS + 10)
+#define GL_E_CHICKE (ARCADIAGLYPHS + INTERTONGLYPHS + 11)
+#define GL_E_CHRIST (ARCADIAGLYPHS + INTERTONGLYPHS + 12)
+#define GL_E_CIRCLE (ARCADIAGLYPHS + INTERTONGLYPHS + 13)
+#define GL_E_COSMIC (ARCADIAGLYPHS + INTERTONGLYPHS + 14)
+#define GL_E_DESTRO (ARCADIAGLYPHS + INTERTONGLYPHS + 15)
+#define GL_E_ENTERP (ARCADIAGLYPHS + INTERTONGLYPHS + 16)
+#define GL_E_ENTER2 (ARCADIAGLYPHS + INTERTONGLYPHS + 17)
+#define GL_E_ENTER3 (ARCADIAGLYPHS + INTERTONGLYPHS + 18)
+#define GL_E_EXPLOD (ARCADIAGLYPHS + INTERTONGLYPHS + 19)
+#define GL_E_FLYING (ARCADIAGLYPHS + INTERTONGLYPHS + 20)
+#define GL_E_HAMISH (ARCADIAGLYPHS + INTERTONGLYPHS + 21)
+#define GL_E_HELICO (ARCADIAGLYPHS + INTERTONGLYPHS + 22)
+#define GL_E_HORSER (ARCADIAGLYPHS + INTERTONGLYPHS + 23)
+#define GL_E_HUNTIN (ARCADIAGLYPHS + INTERTONGLYPHS + 24)
+#define GL_E_INVADE (ARCADIAGLYPHS + INTERTONGLYPHS + 25)
+#define GL_E_JACKPO (ARCADIAGLYPHS + INTERTONGLYPHS + 26)
+#define GL_E_LABYRI (ARCADIAGLYPHS + INTERTONGLYPHS + 27)
+#define GL_E_LAUNCH (ARCADIAGLYPHS + INTERTONGLYPHS + 28)
+#define GL_E_MAZES  (ARCADIAGLYPHS + INTERTONGLYPHS + 29)
+#define GL_E_MEMORY (ARCADIAGLYPHS + INTERTONGLYPHS + 30)
+#define GL_E_MOLEBA (ARCADIAGLYPHS + INTERTONGLYPHS + 31)
+#define GL_E_MOONLA (ARCADIAGLYPHS + INTERTONGLYPHS + 32)
+#define GL_E_MULTIP (ARCADIAGLYPHS + INTERTONGLYPHS + 33)
+#define GL_E_NEWTON (ARCADIAGLYPHS + INTERTONGLYPHS + 34)
+#define GL_E_NIM    (ARCADIAGLYPHS + INTERTONGLYPHS + 35)
+#define GL_E_OFFSHO (ARCADIAGLYPHS + INTERTONGLYPHS + 36)
+#define GL_E_OMEGAL (ARCADIAGLYPHS + INTERTONGLYPHS + 37)
+#define GL_E_PAINTI (ARCADIAGLYPHS + INTERTONGLYPHS + 38)
+#define GL_E_PENALT (ARCADIAGLYPHS + INTERTONGLYPHS + 39)
+#define GL_E_PIANO  (ARCADIAGLYPHS + INTERTONGLYPHS + 40)
+#define GL_E_PILOT  (ARCADIAGLYPHS + INTERTONGLYPHS + 41)
+#define GL_E_PINBAL (ARCADIAGLYPHS + INTERTONGLYPHS + 42)
+#define GL_E_PVIART (ARCADIAGLYPHS + INTERTONGLYPHS + 43)
+#define GL_E_QUEEN  (ARCADIAGLYPHS + INTERTONGLYPHS + 44)
+#define GL_E_RASTER (ARCADIAGLYPHS + INTERTONGLYPHS + 45)
+#define GL_E_ROCKET (ARCADIAGLYPHS + INTERTONGLYPHS + 46)
+#define GL_E_SEAWAR (ARCADIAGLYPHS + INTERTONGLYPHS + 47)
+#define GL_E_SNAKES (ARCADIAGLYPHS + INTERTONGLYPHS + 48)
+#define GL_E_SNAP   (ARCADIAGLYPHS + INTERTONGLYPHS + 49)
+#define GL_E_SPACEB (ARCADIAGLYPHS + INTERTONGLYPHS + 50)
+#define GL_E_SPACES (ARCADIAGLYPHS + INTERTONGLYPHS + 51)
+#define GL_E_STEAME (ARCADIAGLYPHS + INTERTONGLYPHS + 52)
+#define GL_E_SUBMAR (ARCADIAGLYPHS + INTERTONGLYPHS + 53)
+#define GL_E_SURVIV (ARCADIAGLYPHS + INTERTONGLYPHS + 54)
+#define GL_E_TINYTI (ARCADIAGLYPHS + INTERTONGLYPHS + 55)
+#define GL_E_UFOSHO (ARCADIAGLYPHS + INTERTONGLYPHS + 56)
 #define ELEKTORGLYPHS        57
 #define GAMEGLYPHS        (ARCADIAGLYPHS + INTERTONGLYPHS + ELEKTORGLYPHS)
 
@@ -1666,7 +1669,7 @@ typedef UWORD MEMFLAG;
 #define MENUFAKE_BINBUGDOS        201
 #define MENUFAKE_TWINDOS          202
 #define MENUFAKE_CD2650DOS        203
-// "Settings|Emulator »" submenu
+// "Settings|Emulator »" submenu (mostly)
 #define MENUITEM_AUTOSAVE         204
 #define MENUITEM_STARTUPUPDATES   205
 #define MENUITEM_CONFIRM          206
@@ -1678,7 +1681,7 @@ typedef UWORD MEMFLAG;
 #define MENUITEM_SENSEGAME        212
 #define MENUITEM_SHOWTOD          213
 #define MENUITEM_USESTUBS         214
-// spare                          215
+#define MENUITEM_L_P              215
 #define MENUFAKE_LOGTOFILE        216
 #define MENUITEM_PATHS            217
 // "Settings|Filters »" submenu
@@ -2126,7 +2129,7 @@ typedef UWORD MEMFLAG;
 #define FRAMESKIP_MAX         10
 #define FRAMESKIP_INFINITE    11
 
-#define OVERLAYS            (288 + 1)
+#define OVERLAYS            (289 + 1)
 #define ARCADIA_OVERLAY        0
 #define ELEKTOR_OVERLAY        1
 #define SI50_OVERLAY           2
@@ -2148,7 +2151,7 @@ typedef UWORD MEMFLAG;
 #define GALAXIA_OVERLAY      231
 #define TYPERIGHT_OVERLAY    236
 
-#define KNOWNGAMES          (870 + 1)
+#define KNOWNGAMES          (871 + 1)
 #define LARGESTKNOWN       59796 // size of largest known game in bytes (AOF version of Pattern)
 
 // Arcadia                           0..  29
@@ -2474,6 +2477,7 @@ typedef UWORD MEMFLAG;
 #define TESTCARTPOS           867
 #define MOLEPOS               868
 #define INTERTONMULTIPOS      869
+#define GRIDPOS               871
 // Elektor
 #define MAZESPOS              236
 #define CIRCLEDRIVEPOS1       237
@@ -4437,6 +4441,8 @@ EXPORT void serialize_byte_ulong(ULONG* var);
 EXPORT void serialize_long(ULONG* var);
 EXPORT void serialize_word(UWORD* var);
 EXPORT void serialize_word_int(int* var);
+// sprite logging
+EXPORT void getimgbits(UBYTE data);
 // sound
 EXPORT void sound_reset(void);
 // timing

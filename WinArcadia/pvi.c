@@ -30,9 +30,6 @@ INCLUDES--------------------------------------------------------------- */
 #define WATCHPVIWRITES
 // whether writes by the PVI will trigger watchpoints
 
-// #define DEBUGSPRITES
-// to show more info about sprites
-
 #define ACTIVEX 178 // (PVI_XSIZE - USG_XMARGIN)
 #define ACTIVEY 269 // (PVI_YSIZE - USG_YMARGIN)
 
@@ -169,6 +166,7 @@ IMPORT       int                   absxmin, absxmax,
                                    key4,
                                    kx, ky,
                                    log_interrupts,
+                                   log_sprites,
                                    n1, n2, n3, n4,
                                    nextinst,
                                    p1bgcol[6],
@@ -228,7 +226,8 @@ IMPORT       struct IdealStruct    idealfreq_ntsc[256],
 IMPORT       struct MachineStruct  machines[MACHINES];
 IMPORT       struct NoteStruct     notes[NOTES + 1];
 IMPORT const UBYTE                 table_opcolours_2650[2][256];
-IMPORT const int                   from_astrowars_spr[8],
+IMPORT const int                   consolecolours[8],
+                                   from_astrowars_spr[8],
                                    from_galaxia_spr[8],
                                    from_malzak_spr[8],
                                    guest_to_ansi_colour[8];
@@ -736,9 +735,6 @@ MODULE FLAG overlaps(int leftx1, int leftx2, int topy1, int topy2, int xsize, in
 MODULE void readsprites(void);
 MODULE void newraster(void);
 MODULE UBYTE pviread(int address);
-#ifdef DEBUGSPRITES
-    MODULE void getimgbits(UBYTE data);
-#endif
 MODULE void newpvi_startofframe(void);
 MODULE void newpvi_endofframe(void);
 
@@ -949,54 +945,208 @@ SCORE:
     if
     (   newsprite[0].active
      && pvix >= newsprite[0].startx
-     && pvix <  newsprite[0].endx
-     && (newsprite[0].imagery & (128 >> ((pvix - newsprite[0].startx) >> sizeshift0)))
+     && pvix <= newsprite[0].endx
     )
-    {   colltable[pviy][pvix] |= 0x10 | newsprite[0].colour;
-        pixelcolour = colltable[pviy][pvix] & 7;
-    }
+    {
+#ifndef GAMER
+        if (log_sprites)
+        {   if (pvix == newsprite[0].startx && newsprite[0].majory == 0 && newsprite[0].minory == 0)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: First pixel of %s sprite #0.\n",
+                    cpux, cpuy,
+                    newsprite[0].dup ? "duplicate" : "original"
+                );
+                set_pause(TYPE_LOG);
+            } elif (pvix == newsprite[0].endx && newsprite[0].majory == 9 && newsprite[0].minory == newsprite[0].size - 1)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: Last pixel of %s sprite #0.\n",
+                    cpux, cpuy,
+                    newsprite[0].dup ? "duplicate" : "original"
+                );
+                set_pause(TYPE_LOG);
+        }   }
+#endif
+        if (newsprite[0].imagery & (128 >> ((pvix - newsprite[0].startx) >> sizeshift0)))
+        {   colltable[pviy][pvix] |= 0x10 | newsprite[0].colour;
+            pixelcolour = colltable[pviy][pvix] & 7;
+    }   }
+
     if
     (   newsprite[1].active
      && pvix >= newsprite[1].startx
-     && pvix <  newsprite[1].endx
-     && (newsprite[1].imagery & (128 >> ((pvix - newsprite[1].startx) >> sizeshift1)))
+     && pvix <= newsprite[1].endx
     )
-    {   colltable[pviy][pvix] |= 0x20 | newsprite[1].colour;
-        pixelcolour = colltable[pviy][pvix] & 7;
-    }
+    {
+#ifndef GAMER
+        if (log_sprites)
+        {   if (pvix == newsprite[1].startx && newsprite[1].majory == 0 && newsprite[1].minory == 0)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: First pixel of %s sprite #1.\n",
+                    cpux, cpuy,
+                    newsprite[1].dup ? "duplicate" : "original"
+                );
+                set_pause(TYPE_LOG);
+            } elif (pvix == newsprite[1].endx && newsprite[1].majory == 9 && newsprite[1].minory == newsprite[1].size - 1)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: Last pixel of %s sprite #1.\n",
+                    cpux, cpuy,
+                    newsprite[1].dup ? "duplicate" : "original"
+                );
+                set_pause(TYPE_LOG);
+        }   }
+#endif
+        if (newsprite[1].imagery & (128 >> ((pvix - newsprite[1].startx) >> sizeshift1)))
+        {   colltable[pviy][pvix] |= 0x20 | newsprite[1].colour;
+            pixelcolour = colltable[pviy][pvix] & 7;
+    }   }
+
     if
     (   newsprite[2].active
      && pvix >= newsprite[2].startx
-     && pvix <  newsprite[2].endx
-     && (newsprite[2].imagery & (128 >> ((pvix - newsprite[2].startx) >> sizeshift2)))
+     && pvix <= newsprite[2].endx
     )
-    {   colltable[pviy][pvix] |= 0x40 | newsprite[2].colour;
-        pixelcolour = colltable[pviy][pvix] & 7;
-    }
+    {
+#ifndef GAMER
+        if (log_sprites)
+        {   if (pvix == newsprite[2].startx && newsprite[2].majory == 0 && newsprite[2].minory == 0)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: First pixel of %s sprite #2.\n",
+                    cpux, cpuy,
+                    newsprite[2].dup ? "duplicate" : "original"
+                );
+                set_pause(TYPE_LOG);
+            } elif (pvix == newsprite[2].endx && newsprite[2].majory == 9 && newsprite[2].minory == newsprite[2].size - 1)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: Last pixel of %s sprite #2.\n",
+                    cpux, cpuy,
+                    newsprite[2].dup ? "duplicate" : "original"
+                );
+                set_pause(TYPE_LOG);
+        }   }
+#endif
+        if (newsprite[2].imagery & (128 >> ((pvix - newsprite[2].startx) >> sizeshift2)))
+        {   colltable[pviy][pvix] |= 0x40 | newsprite[2].colour;
+            pixelcolour = colltable[pviy][pvix] & 7;
+    }   }
+
     if
     (   newsprite[3].active
      && pvix >= newsprite[3].startx
-     && pvix <  newsprite[3].endx
-     && (newsprite[3].imagery & (128 >> ((pvix - newsprite[3].startx) >> sizeshift3)))
+     && pvix <= newsprite[3].endx
     )
-    {   colltable[pviy][pvix] |= 0x80 | newsprite[3].colour;\
-        if (whichgame == SUPERSPACEPOS && undither)
-        {   pixelcolour = multicolour_superspace[pviy - newsprite[3].starty][pvix - newsprite[3].startx];
-        } else
-        {   pixelcolour = colltable[pviy][pvix] & 7;
-    }   }
+    {
+#ifndef GAMER
+        if (log_sprites)
+        {   if (pvix == newsprite[3].startx && newsprite[3].majory == 0 && newsprite[3].minory == 0)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: First pixel of %s sprite #3.\n",
+                    cpux, cpuy,
+                    newsprite[3].dup ? "duplicate" : "original"
+                );
+                set_pause(TYPE_LOG);
+            } elif (pvix == newsprite[3].endx && newsprite[3].majory == 9 && newsprite[3].minory == newsprite[3].size - 1)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: Last pixel of %s sprite #3.\n",
+                    cpux, cpuy,
+                    newsprite[3].dup ? "duplicate" : "original"
+                );
+                set_pause(TYPE_LOG);
+        }   }
+#endif
+        if (newsprite[3].imagery & (128 >> ((pvix - newsprite[3].startx) >> sizeshift3)))
+        {   colltable[pviy][pvix] |= 0x80 | newsprite[3].colour;\
+            if (whichgame == SUPERSPACEPOS && undither)
+            {   pixelcolour = multicolour_superspace[pviy - newsprite[3].starty][pvix - newsprite[3].startx];
+            } else
+            {   pixelcolour = colltable[pviy][pvix] & 7;
+    }   }   }
 
     // Collisions-------------------------------------------------
 
     if ((colltable[pviy][pvix] & 0xF0) && collisions)
     {   t = 0;
         // colltable[][] is 3210xxxx
-        if ((colltable[pviy][pvix] & 0x30) == 0x30) { t |=  32; if (p1sprcol[0]   ) p1rumble = p1sprcol[0]; if (p2sprcol[0]   ) p2rumble = p2sprcol[0]; /* zprintf(TEXTPEN_VERBOSE, "#0 & #1!\n"); */ }
-        if ((colltable[pviy][pvix] & 0x50) == 0x50) { t |=  16; if (p1sprcol[1]   ) p1rumble = p1sprcol[1]; if (p2sprcol[1]   ) p2rumble = p2sprcol[1]; /* zprintf(TEXTPEN_VERBOSE, "#0 & #2!\n"); */ }
-        if ((colltable[pviy][pvix] & 0x90) == 0x90) { t |=   8; if (p1sprcol[2]   ) p1rumble = p1sprcol[2]; if (p2sprcol[2]   ) p2rumble = p2sprcol[2]; /* zprintf(TEXTPEN_VERBOSE, "#0 & #3!\n"); */ }
-        if ((colltable[pviy][pvix] & 0x60) == 0x60) { t |=   4; if (p1sprcol[3]   ) p1rumble = p1sprcol[3]; if (p2sprcol[3]   ) p2rumble = p2sprcol[3]; /* zprintf(TEXTPEN_VERBOSE, "#1 & #2!\n"); */ }
-        if ((colltable[pviy][pvix] & 0xA0) == 0xA0) { t |=   2; if (p1sprcol[4]   ) p1rumble = p1sprcol[4]; if (p2sprcol[4]   ) p2rumble = p2sprcol[4]; /* zprintf(TEXTPEN_VERBOSE, "#1 & #3!\n"); */ }
-        if ((colltable[pviy][pvix] & 0xC0) == 0xC0) { t |=   1; if (p1sprcol[5]   ) p1rumble = p1sprcol[5]; if (p2sprcol[5]   ) p2rumble = p2sprcol[5]; /* zprintf(TEXTPEN_VERBOSE, "#2 & #3!\n"); */ }
+ 
+        if ((colltable[pviy][pvix] & 0x30) == 0x30)
+        {   t |=  32;
+            if (p1sprcol[0]   ) p1rumble = p1sprcol[0];
+            if (p2sprcol[0]   ) p2rumble = p2sprcol[0];
+#ifndef GAMER
+            if (log_sprites)
+            {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #0 & #1 have collided!\n", cpux, cpuy);
+                set_pause(TYPE_LOG);
+            }
+#endif
+        }
+
+        if ((colltable[pviy][pvix] & 0x50) == 0x50)
+        {   t |=  16;
+            if (p1sprcol[1]   ) p1rumble = p1sprcol[1];
+            if (p2sprcol[1]   ) p2rumble = p2sprcol[1];
+#ifndef GAMER
+            if (log_sprites)
+            {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #0 & #2 have collided!\n", cpux, cpuy);
+                set_pause(TYPE_LOG);
+            }
+#endif
+        }
+
+        if ((colltable[pviy][pvix] & 0x90) == 0x90)
+        {   t |=   8;
+            if (p1sprcol[2]   ) p1rumble = p1sprcol[2];
+            if (p2sprcol[2]   ) p2rumble = p2sprcol[2];
+#ifndef GAMER
+            if (log_sprites)
+            {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #0 & #3 have collided!\n", cpux, cpuy);
+                set_pause(TYPE_LOG);
+            }
+#endif
+        }
+
+        if ((colltable[pviy][pvix] & 0x60) == 0x60)
+        {   t |=   4;
+            if (p1sprcol[3]   ) p1rumble = p1sprcol[3];
+            if (p2sprcol[3]   ) p2rumble = p2sprcol[3];
+#ifndef GAMER
+            if (log_sprites)
+            {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #1 & #2 have collided!\n", cpux, cpuy);
+                set_pause(TYPE_LOG);
+            }
+#endif
+        }
+
+        if ((colltable[pviy][pvix] & 0xA0) == 0xA0)
+        {   t |=   2;
+            if (p1sprcol[4]   ) p1rumble = p1sprcol[4];
+            if (p2sprcol[4]   ) p2rumble = p2sprcol[4];
+#ifndef GAMER
+            if (log_sprites)
+            {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #1 & #3 have collided!\n", cpux, cpuy);
+                set_pause(TYPE_LOG);
+            }
+#endif
+        }
+
+        if ((colltable[pviy][pvix] & 0xC0) == 0xC0)
+        {   t |=   1;
+            if (p1sprcol[5]   ) p1rumble = p1sprcol[5];
+            if (p2sprcol[5]   ) p2rumble = p2sprcol[5];
+#ifndef GAMER
+            if (log_sprites)
+            {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #2 & #3 have collided!\n", cpux, cpuy);
+                set_pause(TYPE_LOG);
+            }
+#endif
+        }
+
         if (t)
         {   pviwrite(PVI_SPRITECOLLIDE   , (UBYTE) (pviread(PVI_SPRITECOLLIDE   ) | t), TRUE);
             pviwrite(PVI_SPRITECOLLIDE_M2, (UBYTE) (pviread(PVI_SPRITECOLLIDE_M2) | t), TRUE);
@@ -1005,10 +1155,55 @@ SCORE:
         }
 
         t = 0;
-        if ((colltable[pviy][pvix] & 0x18) == 0x18) { t |= 128; if (p1bgcol[0] > 0) p1rumble = p1bgcol[ 0]; if (p2bgcol[0] > 0) p2rumble = p2bgcol[ 0]; /* zprintf(TEXTPEN_VERBOSE, "#0 & BG!\n"); */ }
-        if ((colltable[pviy][pvix] & 0x28) == 0x28) { t |=  64; if (p1bgcol[1] > 0) p1rumble = p1bgcol[ 1]; if (p2bgcol[1] > 0) p2rumble = p2bgcol[ 1]; /* zprintf(TEXTPEN_VERBOSE, "#1 & BG!\n"); */ }
-        if ((colltable[pviy][pvix] & 0x48) == 0x48) { t |=  32; if (p1bgcol[2] > 0) p1rumble = p1bgcol[ 2]; if (p2bgcol[2] > 0) p2rumble = p2bgcol[ 2]; /* zprintf(TEXTPEN_VERBOSE, "#2 & BG!\n"); */ }
-        if ((colltable[pviy][pvix] & 0x88) == 0x88) { t |=  16; if (p1bgcol[3] > 0) p1rumble = p1bgcol[ 3]; if (p2bgcol[3] > 0) p2rumble = p2bgcol[ 3]; /* zprintf(TEXTPEN_VERBOSE, "#3 & BG!\n"); */ }
+
+        if ((colltable[pviy][pvix] & 0x18) == 0x18)
+        {   t |= 128;
+            if (p1bgcol[0] > 0) p1rumble = p1bgcol[ 0];
+            if (p2bgcol[0] > 0) p2rumble = p2bgcol[ 0];
+#ifndef GAMER
+            if (log_sprites)
+            {   zprintf(TEXTPEN_LOG, "%d,%d: Sprite #0 has collided with background!\n", cpux, cpuy);
+                set_pause(TYPE_LOG);
+            }
+#endif
+        }
+
+        if ((colltable[pviy][pvix] & 0x28) == 0x28)
+        {   t |=  64;
+            if (p1bgcol[1] > 0) p1rumble = p1bgcol[ 1];
+            if (p2bgcol[1] > 0) p2rumble = p2bgcol[ 1];
+#ifndef GAMER
+            if (log_sprites)
+            {   zprintf(TEXTPEN_LOG, "%d,%d: Sprite #1 has collided with background!\n", cpux, cpuy);
+                set_pause(TYPE_LOG);
+            }
+#endif
+        }
+
+        if ((colltable[pviy][pvix] & 0x48) == 0x48)
+        {   t |=  32;
+            if (p1bgcol[2] > 0) p1rumble = p1bgcol[ 2];
+            if (p2bgcol[2] > 0) p2rumble = p2bgcol[ 2];
+#ifndef GAMER
+            if (log_sprites)
+            {   zprintf(TEXTPEN_LOG, "%d,%d: Sprite #2 has collided with background!\n", cpux, cpuy);
+                set_pause(TYPE_LOG);
+            }
+#endif
+        }
+
+        if ((colltable[pviy][pvix] & 0x88) == 0x88)
+        {   t |=  16;
+            if (p1bgcol[3] > 0) p1rumble = p1bgcol[ 3];
+            if (p2bgcol[3] > 0) p2rumble = p2bgcol[ 3];
+#ifndef GAMER
+            if (log_sprites)
+            {   zprintf(TEXTPEN_LOG, "%d,%d: Sprite #3 has collided with background!\n", cpux, cpuy);
+                set_pause(TYPE_LOG);
+            }
+#endif
+        }
+
         if (t)
         {   pviwrite(PVI_BGCOLLIDE   ,     (UBYTE) (pviread(PVI_BGCOLLIDE       ) | t), TRUE);
             pviwrite(PVI_BGCOLLIDE_M2,     (UBYTE) (pviread(PVI_BGCOLLIDE_M2    ) | t), TRUE);
@@ -1768,33 +1963,41 @@ MODULE void newspritedone(int whichsprite)
         /* Don't call checkinterrupt() because only one interrupt
         should be generated even if multiple sprites finish
         simultaneously (important for Interton Capture). */
-        if (log_interrupts)
+#ifndef GAMER
+        if (log_interrupts || log_sprites)
         {   if (psu & PSU_II)
             {   zprintf
                 (   TEXTPEN_LOG,
-                    "Pended %s sprite #%d display complete interrupt at rastline %d.\n",
+                    "%d,%d: Pended %s sprite #%d display complete interrupt.\n",
+                    cpux, cpuy,
                     newsprite[whichsprite].dup ? "duplicate" : "original",
-                    whichsprite,
-                    cpuy
+                    whichsprite
                 );
             } else
             {   zprintf
                 (   TEXTPEN_LOG,
-                    "Generated %s sprite #%d display complete interrupt at rastline %d.\n",
+                    "%d,%d: Generated %s sprite #%d display complete interrupt.\n",
+                    cpux, cpuy,
                     newsprite[whichsprite].dup ? "duplicate" : "original",
-                    whichsprite,
-                    cpuy
+                    whichsprite
                 );
-    }   }   }
-    elif (log_interrupts)
+            }
+            set_pause(TYPE_LOG);
+        }
+#endif
+    }
+#ifndef GAMER
+    elif (log_interrupts || log_sprites)
     {   zprintf
         (   TEXTPEN_LOG,
-            "%s sprite #%d display is complete at rastline %d. An interrupt is already pended.\n",
+            "%d,%d: %s sprite #%d display is complete. An interrupt is already pended.\n",
+            cpux, cpuy,
             newsprite[whichsprite].dup ? "Duplicate" : "Original",
-            whichsprite,
-            cpuy
+            whichsprite
         );
+        set_pause(TYPE_LOG);
     }
+#endif
 
     t = pviread(pvi_spritedata[whichsprite] + 13); // SPRITEnBY
     if (t == 255)
@@ -1805,7 +2008,7 @@ MODULE void newspritedone(int whichsprite)
     newsprite[whichsprite].ending = TRUE;
 }
 
-EXPORT void pvi_vblank(void) // used by pvi.c and coinops.c
+EXPORT void pvi_vblank(void) // used by pvi.c and coin-ops.c
 {   pviwrite(PVI_SPRITECOLLIDE   , (UBYTE) (memory[pvibase + PVI_SPRITECOLLIDE   ] | 0x40), TRUE); // set VRST bit
     pviwrite(PVI_SPRITECOLLIDE_M2, (UBYTE) (memory[pvibase + PVI_SPRITECOLLIDE_M2] | 0x40), TRUE); // set VRST bit
     pviwrite(PVI_SPRITECOLLIDE_M3, (UBYTE) (memory[pvibase + PVI_SPRITECOLLIDE_M3] | 0x40), TRUE); // set VRST bit
@@ -1838,12 +2041,16 @@ EXPORT void pvi_vblank(void) // used by pvi.c and coinops.c
     }   }
 
     interrupt_2650 = TRUE;
-    if (log_interrupts)
+#ifndef GAMER
+    if (LOGSPRITEINTERRUPTS)
     {   if (psu & PSU_II)
-        {   zprintf(TEXTPEN_VERBOSE, "Pended vblank interrupt at rastline %d.\n", cpuy);
+        {   zprintf(TEXTPEN_LOG, "%d,%d: Pended vertical blank interrupt.\n", cpux, cpuy);
         } else
-        {   zprintf(TEXTPEN_VERBOSE, "Generated vblank interrupt at rastline %d.\n", cpuy);
-    }   }
+        {   zprintf(TEXTPEN_LOG, "%d,%d: Generated vertical blank interrupt.\n", cpux, cpuy);
+        }
+        set_pause(TYPE_LOG);
+    }
+#endif
     checkinterrupt();
 }
 
@@ -2014,7 +2221,7 @@ EXPORT void newpvi_drawhelpgrid(void)
         else
         {   for (y = absymin; y <= absymax; y++)
             {   for (x = 60; x <= 223; x++)
-                {   changefgpixel(x, y, dmascreen[y][x]);
+                {   changefgpixel_slow(x, y, dmascreen[y][x]);
 }   }   }   }   }
 
 MODULE void unvblank(void)
@@ -2050,7 +2257,15 @@ MODULE void unvblank(void)
         pvibase = machines[machine].pvibase; // switch to 1st PVI
     }
     psu &= ~(PSU_S);
-    interrupt_2650 = FALSE; // "Interrupts are reset on the trailing edge of the vertical reset signal." - 2636 PVI datasheet, p. 3.
+    if (interrupt_2650)
+    {   interrupt_2650 = FALSE; // "Interrupts are reset on the trailing edge of the vertical reset signal." - 2636 PVI datasheet, p. 3.
+#ifndef GAMER
+        if (LOGSPRITEINTERRUPTS)
+        {   zprintf(TEXTPEN_LOG, "%d,%d: Cleared pending interrupt!\n", cpux, cpuy);
+            set_pause(TYPE_LOG);
+        }
+#endif
+    }
 
     if (machines[machine].coinop)
     {   return;
@@ -2072,6 +2287,13 @@ MODULE void unvblank(void)
     newsprite[1].ending =
     newsprite[2].ending =
     newsprite[3].ending = FALSE;
+
+#ifndef GAMER
+    if (log_sprites)
+    {   zprintf(TEXTPEN_LOG, "%d,%d: Vertical blank has ended.\n", cpux, cpuy);
+        set_pause(TYPE_LOG);
+    }
+#endif
 }
 
 MODULE void drawmultiplexedsprites(int whichframe)
@@ -2127,18 +2349,6 @@ MODULE FLAG overlaps(int leftx1, int leftx2, int topy1, int topy2, int xsize, in
 
 MODULE void readsprites(void)
 {   FAST int whichsprite;
-#ifdef DEBUGSPRITES
-PERSIST const int consolecolours[8] =
-{ 7, // 0 -> 7 white
-  3, // 1 -> 3 yellow
-  5, // 2 -> 5 purple
-  1, // 3 -> 1 red
-  6, // 4 -> 6 cyan
-  2, // 5 -> 2 green
-  4, // 6 -> 4 blue
-  8, // 7 -> 8 black (shown as grey)
-};
-#endif
 
     for (whichsprite = 0; whichsprite < 4; whichsprite++)
     {   if (pviy == newsprite[whichsprite].starty && (pviy <= 252 || whichgame == MOONLANDING1POS || whichgame == MOONLANDING2POS))
@@ -2146,7 +2356,6 @@ PERSIST const int consolecolours[8] =
             newsprite[whichsprite].minory = -1;
             newsprite[whichsprite].active = TRUE;
         }
-
         if (!newsprite[whichsprite].active)
         {   continue;
         }
@@ -2180,7 +2389,7 @@ PERSIST const int consolecolours[8] =
         {   t = pviread(pvi_spritedata[whichsprite] + 10); // SPRITEnAX
         }
         newsprite[whichsprite].startx = t + 1;
-        newsprite[whichsprite].endx   = newsprite[whichsprite].startx + (8 * newsprite[whichsprite].size);
+        newsprite[whichsprite].endx   = newsprite[whichsprite].startx + (8 * newsprite[whichsprite].size) - 1;
 
         switch (spritemode)
         {
@@ -2194,17 +2403,22 @@ PERSIST const int consolecolours[8] =
             }
         acase SPRITEMODE_VISIBLE:
             newsprite[whichsprite].imagery = pviread(pvi_spritedata[whichsprite] + newsprite[whichsprite].majory);
-            #ifdef DEBUGSPRITES
-                getimgbits(newsprite[whichsprite].imagery);
-                zprintf
-                (   consolecolours[newsprite[whichsprite].colour],
-                    "Sprite #%d. Raster %3d: #%s\n",
-                    whichsprite,
-                    cpuy,
-                    imgbits
-                );
-            #endif
         }
+#ifndef GAMER
+        if (log_sprites)
+        {   getimgbits(newsprite[whichsprite].imagery);
+            zprintf
+            (   consolecolours[newsprite[whichsprite].colour],
+                "%d,%d: Sprite #%d, major row #%d, minor row #%d: %%%s\n",
+                cpux, cpuy,
+                whichsprite,
+                newsprite[whichsprite].majory,
+                newsprite[whichsprite].minory,
+                imgbits
+            );
+            set_pause(TYPE_LOG);
+        }
+#endif
 
         if (demultiplex != 0 && prevsprnum[whichsprite] < PREVSPRITES)
         {   if (pviy == newsprite[whichsprite].starty)
@@ -2545,20 +2759,6 @@ EXPORT void ie_stringchar(UBYTE data, int address)
         {   // assert(machine == ELEKTOR);
                                       sprintf(stringchar, " ['%c']"                     , guestchar(data));
 }   }   }
-
-#ifdef DEBUGSPRITES
-MODULE void getimgbits(UBYTE data)
-{   int i;
-
-    for (i = 0; i < 8; i++)
-    {   if (data & (0x80 >> i))
-        {   imgbits[i] = '#';
-        } else
-        {   imgbits[i] = '.';
-    }   }
-    imgbits[8] = EOS;
-}
-#endif
 
 EXPORT FLAG interpret_pvis(int address)
 {   FAST          int    whichpvi;

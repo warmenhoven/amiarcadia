@@ -87,6 +87,7 @@ EXPORT       UBYTE                    chan_volume[GUESTCHANNELS],
 EXPORT       TEXT                     autotext[GAMEINFOLINES][80 + 1],
                                       bpnf_string[LABELLIMIT + 1] = "$0",
                                       datetimestring[40 + 1],
+                                      imgbits[8 + 1],
                                       pgmtext[6 * KILOBYTE];
 EXPORT       UWORD                    loadaddress              = 0x900;
 EXPORT       ULONG                    redrawtime               =  0,
@@ -109,6 +110,17 @@ EXPORT       int                      base                     = BASE_HEX,
                                       usecsperframe[2],
                                       whichoverlay;
 EXPORT       float                    chan_hertz[GUESTCHANNELS];
+
+EXPORT const int consolecolours[8] =
+{ 7, // 0 -> 7 white
+  3, // 1 -> 3 yellow
+  5, // 2 -> 5 purple
+  1, // 3 -> 1 red
+  6, // 4 -> 6 cyan
+  2, // 5 -> 2 green
+  4, // 6 -> 4 blue
+  8, // 7 -> 8 black (shown as grey)
+};
 
 // IMPORTED VARIABLES-----------------------------------------------------
 
@@ -4673,3 +4685,15 @@ MODULE void write_log_string(STRPTR string)
             LOGFILENAME
         );
 }   }
+
+EXPORT void getimgbits(UBYTE data)
+{   int i;
+
+    for (i = 0; i < 8; i++)
+    {   if (data & (0x80 >> i))
+        {   imgbits[i] = '#';
+        } else
+        {   imgbits[i] = '.';
+    }   }
+    imgbits[8] = EOS;
+}

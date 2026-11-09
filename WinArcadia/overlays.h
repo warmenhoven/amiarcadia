@@ -3935,4 +3935,22 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "Paddle up/down: previous/next game\n" \
 "START (F1) or Start: start game"
 },
+{ // 289. Grid
+        "Start",                "-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","-----","-----","-----","-----","-----",
+"-----","Up"   ,"-----","-----","-----","-----",
+"Left" ,"Down" ,"Right","-----","-----","-----",
+"On title screen:\n" \
+"Start: start game\n" \
+"Initial colour assignments are:\n" \
+"Up: yellow\n" \
+"Down: purple\n" \
+"Left: blue\n" \
+"Right: red\n" \
+"Paddle directions are equivalent to Up/Down/Left/Right keys.\n" \
+"At game over:\n" \
+"Start: go to title screen"
+},
 };

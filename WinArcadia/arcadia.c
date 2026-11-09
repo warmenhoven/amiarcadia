@@ -22,9 +22,6 @@
 
 // DEFINES----------------------------------------------------------------
 
-// #define LOGSPRITECOLLISIONS
-// whether to print a message for inter-sprite collisions (not sprite-bg)
-
 #define UDGFLIPS         7
 
 #define UVIXTOSCREENX(x) (USG_XMARGIN + (x) - absxmin)
@@ -56,6 +53,7 @@ IMPORT       TEXT                  file_game[MAX_PATH + 1],
                                    fn_game[MAX_PATH + 1],    // the entire pathname (path and file)
                                    fn_project[MAX_PATH + 1], // the entire pathname (path and file)
                                    friendly[FRIENDLYLENGTH + 1],
+                                   imgbits[8 + 1],
                                    interpretstr[1024 + 1],
                                    netmsg_out[80 + 1],
                                    path_projects[MAX_PATH + 1],
@@ -86,6 +84,7 @@ IMPORT       int                   absxmin, absxmax,
                                    key3,
                                    key4,
                                    lastrow,
+                                   log_sprites,
                                    machine,
                                    memmap,
                                    n1, n2, n3, n4,
@@ -128,7 +127,8 @@ IMPORT       UWORD                 console[4],
                                    screen_iar[BOXWIDTH][BOXHEIGHT];
 IMPORT       MEMFLAG               memflags[ALLTOKENS];
 IMPORT const UBYTE                 table_opcolours_2650[2][256];
-IMPORT const int                   guest_to_ansi_colour[8];
+IMPORT const int                   consolecolours[8],
+                                   guest_to_ansi_colour[8];
 IMPORT       struct ConditionalStruct wp[ALLTOKENS];
 IMPORT       struct IdealStruct       idealfreq_ntsc[256],
                                       idealfreq_pal[256];
@@ -1342,35 +1342,35 @@ EXPORT void arcadia_drawhelpgrid(void)
         }   }   }
     acase 2:
         for (x = 0; x < n4; x++)
-        {   changefgpixel(    x, 0 , colltable[0 ][x] % GUESTCOLOURS);
+        {   changefgpixel_slow(    x, 0 , colltable[0 ][x] % GUESTCOLOURS);
         }
         for (x = 49; x < 227; x++)
-        {   changefgpixel(    x, n1, colltable[n1][x] % GUESTCOLOURS);
+        {   changefgpixel_slow(    x, n1, colltable[n1][x] % GUESTCOLOURS);
         }
         for (y = n1 + 1; y < n3; y++)
         {   for (x = 0; x < n4; x++)
-            {   changefgpixel(x, y , colltable[y ][x] % GUESTCOLOURS);
+            {   changefgpixel_slow(x, y , colltable[y ][x] % GUESTCOLOURS);
             }
             for (x = 49; x < 227; x++)
-            {   changefgpixel(x, y , colltable[y ][x] % GUESTCOLOURS);
+            {   changefgpixel_slow(x, y , colltable[y ][x] % GUESTCOLOURS);
         }   }
     acase 3:
         for (x = 0; x < n4; x++)
         {   if (!colltable[0][x])
-            {   changefgpixel(x, 0, dmascreen[0]);
+            {   changefgpixel_slow(x, 0, dmascreen[0]);
         }   }
         for (x = 49; x < 227; x++)
         {   if (!colltable[n1][x])
-            {   changefgpixel(x, n1, dmascreen[n1]);
+            {   changefgpixel_slow(x, n1, dmascreen[n1]);
         }   }
         for (y = n1 + 1; y < n3; y++)
         {   for (x = 0; x < n4; x++)
             {   if (!colltable[y][x])
-                {   changefgpixel(x, y, dmascreen[y]);
+                {   changefgpixel_slow(x, y, dmascreen[y]);
             }   }
             for (x = 49; x < 227; x++)
             {   if (!colltable[y][x])
-                {   changefgpixel(x, y, dmascreen[y]);
+                {   changefgpixel_slow(x, y, dmascreen[y]);
 }   }   }   }   }
 
 MODULE __inline void onepixel(void)
@@ -1464,95 +1464,198 @@ MODULE __inline void do_sprites(void)
      && cpux <= endsprx[0]
      && cpuy >= spr[spriteflip][0].y
      && cpuy <= endspry[0]
-     && (sprimagedata[0] & (0x80 >> (cpux - spr[spriteflip][0].x)))
     )
-    {   sprpixel   |= 1;
-        sprcolours |= spr[spriteflip][0].colour;
-        colltable[cpuy][cpux] |= 1;
-    }
+    {
+#ifndef GAMER
+        if (log_sprites)
+        {   if (cpux == spr[spriteflip][0].x && cpuy == spr[spriteflip][0].y)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: First pixel of sprite #0.\n",
+                    cpux, cpuy
+                );
+                set_pause(TYPE_LOG);
+            } elif (cpux == endsprx[0] && cpuy == endspry[0])
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: Last pixel of sprite #0.\n",
+                    cpux, cpuy
+                );
+                set_pause(TYPE_LOG);
+        }   }
+#endif
+        if (sprimagedata[0] & (0x80 >> (cpux - spr[spriteflip][0].x)))
+        {   sprpixel   |= 1;
+            sprcolours |= spr[spriteflip][0].colour;
+            colltable[cpuy][cpux] |= 1;
+    }   }
+
     if
     (   cpux >= spr[spriteflip][1].x
      && cpux <= endsprx[1]
      && cpuy >= spr[spriteflip][1].y
      && cpuy <= endspry[1]
-     && (sprimagedata[1] & (0x80 >> (cpux - spr[spriteflip][1].x)))
     )
-    {   sprpixel   |= 2;
-        sprcolours |= spr[spriteflip][1].colour;
-        colltable[cpuy][cpux] |= 2;
-    }
+    {
+#ifndef GAMER
+        if (log_sprites)
+        {   if (cpux == spr[spriteflip][1].x && cpuy == spr[spriteflip][1].y)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: First pixel of sprite #1.\n",
+                    cpux, cpuy
+                );
+                set_pause(TYPE_LOG);
+            } elif (cpux == endsprx[1] && cpuy == endspry[1])
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: Last pixel of sprite #1.\n",
+                    cpux, cpuy
+                );
+                set_pause(TYPE_LOG);
+        }   }
+#endif
+        if (sprimagedata[1] & (0x80 >> (cpux - spr[spriteflip][1].x)))
+        {   sprpixel   |= 2;
+            sprcolours |= spr[spriteflip][1].colour;
+            colltable[cpuy][cpux] |= 2;
+    }   }
+
     if
     (   cpux >= spr[spriteflip][2].x
      && cpux <= endsprx[2]
      && cpuy >= spr[spriteflip][2].y
      && cpuy <= endspry[2]
-     && (sprimagedata[2] & (0x80 >> (cpux - spr[spriteflip][2].x)))
     )
-    {   sprpixel   |= 4;
-        sprcolours |= spr[spriteflip][2].colour;
-        colltable[cpuy][cpux] |= 4;
-    }
+    {
+#ifndef GAMER
+        if (log_sprites)
+        {   if (cpux == spr[spriteflip][2].x && cpuy == spr[spriteflip][2].y)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: First pixel of sprite #2.\n",
+                    cpux, cpuy
+                );
+                set_pause(TYPE_LOG);
+            } elif (cpux == endsprx[2] && cpuy == endspry[2])
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: Last pixel of sprite #2.\n",
+                    cpux, cpuy
+                );
+                set_pause(TYPE_LOG);
+        }   }
+#endif
+        if (sprimagedata[2] & (0x80 >> (cpux - spr[spriteflip][2].x)))
+        {   sprpixel   |= 4;
+            sprcolours |= spr[spriteflip][2].colour;
+            colltable[cpuy][cpux] |= 4;
+    }   }
+
     if
     (   cpux >= spr[spriteflip][3].x
      && cpux <= endsprx[3]
      && cpuy >= spr[spriteflip][3].y
      && cpuy <= endspry[3]
-     && (sprimagedata[3] & (0x80 >> (cpux - spr[spriteflip][3].x)))
     )
-    {   sprpixel   |= 8;
-        sprcolours |= spr[spriteflip][3].colour;
-        colltable[cpuy][cpux] |= 8;
-    }
+    {
+#ifndef GAMER
+        if (log_sprites)
+        {   if (cpux == spr[spriteflip][3].x && cpuy == spr[spriteflip][3].y)
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: First pixel of sprite #3.\n",
+                    cpux, cpuy
+                );
+                set_pause(TYPE_LOG);
+            } elif (cpux == endsprx[3] && cpuy == endspry[3])
+            {   zprintf
+                (   TEXTPEN_LOG,
+                    "%d,%d: Last pixel of sprite #3.\n",
+                    cpux, cpuy
+                );
+                set_pause(TYPE_LOG);
+        }   }
+#endif
+        if (sprimagedata[3] & (0x80 >> (cpux - spr[spriteflip][3].x)))
+        {   sprpixel   |= 8;
+            sprcolours |= spr[spriteflip][3].colour;
+            colltable[cpuy][cpux] |= 8;
+    }   }
 
     if (sprpixel)
     {   if (collisions)
         {   sprcollisions = 0;
-            if ((sprpixel & 3) == 3) // %0011 #0 & #1
+
+            if ((sprpixel & 3) == 3) // %0011
             {   sprcollisions |= 1;
                 if (p1sprcol[0]) p1rumble = p1sprcol[0];
                 if (p2sprcol[0]) p2rumble = p2sprcol[0];
-#ifdef LOGSPRITECOLLISIONS
-                zprintf(TEXTPEN_VERBOSE, "Sprites #0 & #1 have collided!\n");
+#ifndef GAMER
+                if (log_sprites)
+                {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #0 & #1 have collided!\n", cpux, cpuy);
+                    set_pause(TYPE_LOG);
+                }
 #endif
             }
-            if ((sprpixel & 5) == 5) // %0101 #0 & #2
+
+            if ((sprpixel & 5) == 5) // %0101
             {   sprcollisions |= 2;
                 if (p1sprcol[1]) p1rumble = p1sprcol[1];
                 if (p2sprcol[1]) p2rumble = p2sprcol[1];
-#ifdef LOGSPRITECOLLISIONS
-                zprintf(TEXTPEN_VERBOSE, "Sprites #0 & #2 have collided!\n");
+#ifndef GAMER
+                if (log_sprites)
+                {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #0 & #2 have collided!\n", cpux, cpuy);
+                    set_pause(TYPE_LOG);
+                }
 #endif
             }
-            if ((sprpixel & 9) == 9) // %1001 #0 & #3
+
+            if ((sprpixel & 9) == 9) // %1001
             {   sprcollisions |= 4;
                 if (p1sprcol[2]) p1rumble = p1sprcol[2];
                 if (p2sprcol[2]) p2rumble = p2sprcol[2];
-#ifdef LOGSPRITECOLLISIONS
-                zprintf(TEXTPEN_VERBOSE, "Sprites #0 & #3 have collided!\n");
+#ifndef GAMER
+                if (log_sprites)
+                {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #0 & #3 have collided!\n", cpux, cpuy);
+                    set_pause(TYPE_LOG);
+                }
 #endif
             }
-            if ((sprpixel & 6) == 6) // %0110 #1 & #2
+
+            if ((sprpixel & 6) == 6) // %0110
             {   sprcollisions |= 8;
                 if (p1sprcol[3]) p1rumble = p1sprcol[3];
                 if (p2sprcol[3]) p2rumble = p2sprcol[3];
-#ifdef LOGSPRITECOLLISIONS
-                zprintf(TEXTPEN_VERBOSE, "Sprites #1 & #2 have collided!\n");
+#ifndef GAMER
+                if (log_sprites)
+                {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #1 & #2 have collided!\n", cpux, cpuy);
+                    set_pause(TYPE_LOG);
+                }
 #endif
             }
-            if ((sprpixel & 10) == 10) // %1010 #1 & #3
+
+            if ((sprpixel & 10) == 10) // %1010
             {   sprcollisions |= 16;
                 if (p1sprcol[4]) p1rumble = p1sprcol[4];
                 if (p2sprcol[4]) p2rumble = p2sprcol[4];
-#ifdef LOGSPRITECOLLISIONS
-                zprintf(TEXTPEN_VERBOSE, "Sprites #1 & #3 have collided!\n");
+#ifndef GAMER
+                if (log_sprites)
+                {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #1 & #3 have collided!\n", cpux, cpuy);
+                    set_pause(TYPE_LOG);
+                }
 #endif
             }
-            if ((sprpixel & 12) == 12) // %1100 #2 & #3
+
+            if ((sprpixel & 12) == 12) // %1100
             {   sprcollisions |= 32;
                 if (p1sprcol[5]) p1rumble = p1sprcol[5];
                 if (p2sprcol[5]) p2rumble = p2sprcol[5];
-#ifdef LOGSPRITECOLLISIONS
-                zprintf(TEXTPEN_VERBOSE, "Sprites #2 & #3 have collided!\n");
+#ifndef GAMER
+                if (log_sprites)
+                {   zprintf(TEXTPEN_LOG, "%d,%d: Sprites #2 & #3 have collided!\n", cpux, cpuy);
+                    set_pause(TYPE_LOG);
+                }
 #endif
             }
 
@@ -1577,7 +1680,14 @@ MODULE __inline void do_sprites(void)
                                 // zprintf(TEXTPEN_VERBOSE, "p2 background rumble!\n");
                             } elif (p2bgcol[whichsprite] < 0)
                             {   p2rumble = -p2bgcol[whichsprite];
-        }   }   }   }   }   }
+                        }   }
+#ifndef GAMER
+                        if (log_sprites)
+                        {   zprintf(TEXTPEN_LOG, "%d,%d: Sprite #%d has collided with background!\n", cpux, cpuy, whichsprite);
+                            set_pause(TYPE_LOG);
+                        }
+#endif
+        }   }   }   }
 
         changethisfgpixel_slow(from_a[flag_cacheable][sprcolours]);
 }   }
@@ -1617,6 +1727,13 @@ MODULE void vblank(void)
 {   psu |= PSU_S;
 
     uviwrite((UWORD) A_CHARLINE, 0xFD);
+
+#ifndef GAMER
+    if (log_sprites)
+    {   zprintf(TEXTPEN_LOG, "%d,%d: Entered vertical blank.\n", cpux, cpuy);
+        set_pause(TYPE_LOG);
+    }
+#endif
 }
 
 MODULE void unvblank(void)
@@ -1690,7 +1807,15 @@ MODULE void unvblank(void)
     for (whichsprite = 0; whichsprite < 4; whichsprite++)
     {   for (y = 0; y < 8; y++)
         {   spr[spriteflip][whichsprite].imagery[y] = memory[A_OFFSET_SPRITES + (whichsprite * 8) + y];
-}   }   }
+    }   }
+
+#ifndef GAMER
+    if (log_sprites)
+    {   zprintf(TEXTPEN_LOG, "%d,%d: Vertical blank has ended.\n", cpux, cpuy);
+        set_pause(TYPE_LOG);
+    }
+#endif
+}
 
 MODULE void drawfakesprites(void)
 {   FAST FLAG  localflagging;
@@ -1883,7 +2008,9 @@ MODULE void drawfakeudgs(void)
 }   }   }   }   }   }   }   }   }
 
 MODULE void newraster(void)
-{   uviy  = cpuy - n1;
+{   FAST int whichsprite;
+
+    uviy  = cpuy - n1;
     uviy2 = uviy - voffset;
     if (uviy >= voffset && uviy <= voffsetend && uviy2 % hiresnum == 0)
     {   newdma();
@@ -1908,6 +2035,26 @@ MODULE void newraster(void)
         sprimagedata[2] = spr[spriteflip][2].imagery[(cpuy - spr[spriteflip][2].y) >> (spr[spriteflip][2].tall ? 1 : 0)];
         sprimagedata[3] = spr[spriteflip][3].imagery[(cpuy - spr[spriteflip][3].y) >> (spr[spriteflip][3].tall ? 1 : 0)];
     }
+#ifndef GAMER
+    if (log_sprites)
+    {   for (whichsprite = 0; whichsprite < 4; whichsprite++)
+        {   if
+            (   cpuy >= spr[spriteflip][whichsprite].y
+             && cpuy <= endspry[whichsprite]
+            )
+            {   getimgbits(sprimagedata[whichsprite]);
+                zprintf
+                (   consolecolours[spr[spriteflip][whichsprite].colour],
+                    "%d,%d: Sprite #%d, major row #%d, minor row #%d: %%%s\n",
+                    cpux, cpuy,
+                    whichsprite,
+                    (cpuy - spr[spriteflip][whichsprite].y) >> (spr[spriteflip][whichsprite].tall ? 1 : 0),
+                    (spr[spriteflip][whichsprite].tall ? (((cpuy - spr[spriteflip][whichsprite].y) % 2) + 1) : 1),
+                    imgbits
+                );
+                set_pause(TYPE_LOG);
+    }   }   }
+#endif
 
     if (dejitter)
     {   if (whichgame != -1)

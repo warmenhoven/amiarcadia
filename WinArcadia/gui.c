@@ -248,7 +248,7 @@ EXPORT const struct MenuStruct menuinfo1[MENUITEMS] = {
 { "SETTINGS.EMULATOR.SENSEGAME"    , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUITEM_SENSEGAME
 { "SETTINGS.EMULATOR.SHOWTIPS"     , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUITEM_SHOWTOD
 { "SETTINGS.EMULATOR.STUBS"        , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUITEM_USESTUBS
-{ ""                               , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     spare
+{ ""                               , MSG_MENUHELP_L_P         , "Log sprites on/off"                             , "L"       , ""     , ""   , 1, 1,                 -1, ""                                                              , IN_DEBUG_LOG     }, //     MENUITEM_L_P
 { ""                               , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUFAKE_LOGTOFILE
 { "SETTINGS.EMULATOR.PATHS"        , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUITEM_PATHS
 { ""                               , 0                        , ""                                               , ""        , ""     , ""   , 0, 0,                 -1, ""                                                              ,               -1 }, //     MENUFAKE_FILTER
@@ -601,6 +601,7 @@ IMPORT     int                        aifffile,
                                       loginefficient,
                                       log_illegal,
                                       log_interrupts,
+                                      log_sprites,
                                       logsubroutines,
                                       loop,
                                       lowercase,
@@ -1115,6 +1116,9 @@ EXPORT void updatemenu(int which)
     acase MENUITEM_L_N:
         ghost(which, !allowable(FALSE));
         tick(which, log_interrupts);
+    acase MENUITEM_L_P:
+        ghost(which, (machine != ARCADIA && machine != INTERTON && machine != ELEKTOR));
+        tick(which, log_sprites);
     acase MENUITEM_L_S:
         ghost(which, !allowable(FALSE));
         tick(which, logsubroutines);
@@ -3016,6 +3020,7 @@ EXPORT void handle_menu(int command)
     acase MENUITEM_L_C:        debugger_full(   "L C"       );
     acase MENUITEM_L_I:        debugger_full(   "L I"       );
     acase MENUITEM_L_N:        debugger_full(   "L N"       );
+    acase MENUITEM_L_P:        debugger_full(   "L P"       );
     acase MENUITEM_L_S:        debugger_full(   "L S"       );
     acase MENUITEM_PL:         debugger_full(   "PL"        );
     acase MENUITEM_T:          debugger_full(   "T"         );

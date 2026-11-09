@@ -307,12 +307,13 @@ IMPORT       int                      binbug_baudrate,
                                       cd2650_biosver,
                                       cd2650_dosver,
                                       connected,
-                                      cpuy,
+                                      cpux, cpuy,
                                       fastcd2650,
                                       logbios,
                                       loginefficient,
                                       log_illegal,
                                       log_interrupts,
+                                      log_sprites,
                                       logsubroutines,
                                       logreadwrites,
                                       machine,
@@ -863,9 +864,7 @@ MODULE __inline void cpu_emu(void)
         {   // assert(machine == PHUNSY);
             playsound(FALSE);
         }
-
         CHECKCOMI(opcode & 3);
-
         GET_RR;
         WRITEREGCC(rr, OPERAND);
         TWO_BYTES;
@@ -1032,6 +1031,7 @@ MODULE __inline void cpu_emu(void)
                     friendly,
                     (int) opcode
                 );
+                set_pause(TYPE_LOG);
             }
 #endif
             if (machine == INTERTON)
@@ -1065,6 +1065,7 @@ MODULE __inline void cpu_emu(void)
                     friendly,
                     (int) opcode
                 );
+                set_pause(TYPE_LOG);
             }
 #endif
             ONE_BYTE; // tested on Arcadia and Interton
@@ -1217,6 +1218,7 @@ MODULE __inline void cpu_emu(void)
                 friendly,
                 opcodes[style][opcode].name
             );
+            set_pause(TYPE_LOG);
         }
 #endif
         GET_RR;
@@ -1238,34 +1240,37 @@ MODULE __inline void cpu_emu(void)
                 friendly,
                 opcodes[style][opcode].name
             );
+            set_pause(TYPE_LOG);
         }
 #endif
         if (BRANCHCODE == CCFIELD)
         {
 #ifndef GAMER
-            if (log_interrupts && (psu & PSU_II))
+            if (LOGSPRITEINTERRUPTS && (psu & PSU_II))
             {   DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
                 zprintf
                 (   TEXTPEN_LOG,
                     LLL(
                         MSG_INTERRUPTSENABLED,
-                        "%s at %s (rastline %d): interrupts are now disinhibited (enabled)."
+                        "%d,%d: %s at %s: interrupts are now disinhibited (enabled)."
                     ),
+                    cpux, cpuy,
                     opcodes[style][opcode].name,
-                    friendly,
-                    cpuy
+                    friendly
                 );
                 zprintf(TEXTPEN_LOG, " ");
                 if (interrupt_2650)
-                {   zprintf(TEXTPEN_LOG, LLL(MSG_ANINTERRUPTPENDING, "An interrupt is pending!\n\n"));
+                {   zprintf(TEXTPEN_LOG, LLL(MSG_ANINTERRUPTPENDING, "An interrupt is pending!\n"));
                 } else
-                {   zprintf(TEXTPEN_LOG, LLL(MSG_NOINTERRUPTPENDING, "No interrupt is pending.\n\n"));
-            }   }
+                {   zprintf(TEXTPEN_LOG, LLL(MSG_NOINTERRUPTPENDING, "No interrupt is pending.\n"));
+                }
+                set_pause(TYPE_LOG);
+            }
 #endif
             psu &= ~(PSU_II); // clear II bit (PSU &= %11011111)
             pullras();
 #ifndef GAMER
-            if (log_interrupts)
+            if (LOGSPRITEINTERRUPTS)
             {   check_handler();
             }
 #endif
@@ -1288,30 +1293,33 @@ MODULE __inline void cpu_emu(void)
                 friendly,
                 opcodes[style][opcode].name
             );
+            set_pause(TYPE_LOG);
         }
-        if (log_interrupts && (psu & PSU_II))
+        if (LOGSPRITEINTERRUPTS && (psu & PSU_II))
         {   DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
             zprintf
             (   TEXTPEN_LOG,
                 LLL(
                     MSG_INTERRUPTSENABLED,
-                    "%s at %s (rastline %d): interrupts are now disinhibited (enabled)."
+                    "%d,%d: %s at %s: interrupts are now disinhibited (enabled)."
                 ),
+                cpux, cpuy,
                 opcodes[style][opcode].name,
-                friendly,
-                cpuy
+                friendly
             );
             zprintf(TEXTPEN_LOG, " ");
             if (interrupt_2650)
-            {   zprintf(TEXTPEN_LOG, LLL(MSG_ANINTERRUPTPENDING, "An interrupt is pending!\n\n"));
+            {   zprintf(TEXTPEN_LOG, LLL(MSG_ANINTERRUPTPENDING, "An interrupt is pending!\n"));
             } else
-            {   zprintf(TEXTPEN_LOG, LLL(MSG_NOINTERRUPTPENDING, "No interrupt is pending.\n\n"));
-        }   }
+            {   zprintf(TEXTPEN_LOG, LLL(MSG_NOINTERRUPTPENDING, "No interrupt is pending.\n"));
+            }
+            set_pause(TYPE_LOG);
+        }
 #endif
         psu &= ~(PSU_II); // clear II bit (PSU &= %11011111)
         pullras();
 #ifndef GAMER
-        if (log_interrupts)
+        if (LOGSPRITEINTERRUPTS)
         {   check_handler();
         }
 #endif
@@ -1517,6 +1525,7 @@ MODULE __inline void cpu_emu(void)
                 friendly,
                 opcodes[style][opcode].name
             );
+            set_pause(TYPE_LOG);
         }
 #endif
         GET_RR;
@@ -1639,6 +1648,7 @@ MODULE __inline void cpu_emu(void)
                 friendly,
                 opcodes[style][opcode].name
             );
+            set_pause(TYPE_LOG);
         }
 #endif
         GET_RR;
@@ -1667,24 +1677,26 @@ MODULE __inline void cpu_emu(void)
                 );
                 set_pause(TYPE_LOG);
         }   }
-        if (log_interrupts && (psu & PSU_II) && (OPERAND & PSU_II))
+        if (LOGSPRITEINTERRUPTS && (psu & PSU_II) && (OPERAND & PSU_II))
         {   DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
             zprintf
             (   TEXTPEN_LOG,
                 LLL(
                     MSG_INTERRUPTSENABLED,
-                    "%s at %s (rastline %d): interrupts are now disinhibited (enabled)."
+                    "%d,%d: %s at %s: interrupts are now disinhibited (enabled)."
                 ),
+                cpux, cpuy,
                 opcodes[style][opcode].name,
-                friendly,
-                cpuy
+                friendly
             );
             zprintf(TEXTPEN_LOG, " ");
             if (interrupt_2650)
-            {   zprintf(TEXTPEN_LOG, LLL(MSG_ANINTERRUPTPENDING, "An interrupt is pending!\n\n"));
+            {   zprintf(TEXTPEN_LOG, LLL(MSG_ANINTERRUPTPENDING, "An interrupt is pending!\n"));
             } else
-            {   zprintf(TEXTPEN_LOG, LLL(MSG_NOINTERRUPTPENDING, "No interrupt is pending.\n\n"));
-        }   }
+            {   zprintf(TEXTPEN_LOG, LLL(MSG_NOINTERRUPTPENDING, "No interrupt is pending.\n"));
+            }
+            set_pause(TYPE_LOG);
+        }
 #endif
         if (supercpu)
         {   psu &= (~(OPERAND & PSU_WRITABLE_B));
@@ -1741,7 +1753,6 @@ MODULE __inline void cpu_emu(void)
             zprintf(TEXTPEN_LOG, LLL(MSG_MODIFYINGSP, "%s is modifying the SP at %s.\n\n"), opcodes[style][opcode].name, friendly);
             set_pause(TYPE_LOG);
         }
-
         if (loginefficient)
         {   if
             (   (!supercpu && (OPERAND & PSU_WRITABLE_A) == 0)
@@ -1756,26 +1767,21 @@ MODULE __inline void cpu_emu(void)
                 );
                 set_pause(TYPE_LOG);
         }   }
-#endif
-
-        if (!(psu & PSU_II) && (OPERAND & PSU_II))
-        {   interrupt_2650 = FALSE; // any pending interrupts are cleared
-#ifndef GAMER
-            if (log_interrupts)
-            {   DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
-                zprintf
-                (   TEXTPEN_LOG,
-                    LLL(
-                        MSG_INTERRUPTSDISABLED,
-                        "%s at %s (rastline %d): interrupts are now inhibited (disabled).\n\n"
-                    ),
-                    opcodes[style][opcode].name,
-                    friendly,
-                    cpuy
-                );
-            }
-#endif
+        if (LOGSPRITEINTERRUPTS && !(psu & PSU_II) && (OPERAND & PSU_II))
+        {   DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
+            zprintf
+            (   TEXTPEN_LOG,
+                LLL(
+                    MSG_INTERRUPTSDISABLED,
+                    "%d,%d: %s at %s: interrupts are now inhibited (disabled).\n"
+                ),
+                cpux, cpuy,
+                opcodes[style][opcode].name,
+                friendly
+            );
+            set_pause(TYPE_LOG);
         }
+#endif
 
         if (supercpu)
         {   psu |= (OPERAND & PSU_WRITABLE_B);
@@ -1966,46 +1972,43 @@ MODULE __inline void cpu_emu(void)
             zprintf(TEXTPEN_LOG, LLL(MSG_MODIFYINGSP, "%s is modifying the SP at %s.\n\n"), opcodes[style][opcode].name, friendly);
             set_pause(TYPE_LOG);
         }
-#endif
-
-        if (!(psu & PSU_II))
-        {   if (r[0] & PSU_II)
-            {   if (log_interrupts && interrupt_2650)
-                {   zprintf(TEXTPEN_LOG, "Cleared pending interrupt!\n");
-                }
-                interrupt_2650 = FALSE; // any pending interrupts are cleared
-                if (log_interrupts)
-                {   DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
-                    zprintf
-                    (   TEXTPEN_LOG,
-                        LLL(
-                            MSG_INTERRUPTSDISABLED,
-                            "%s at %s (rastline %d): interrupts are now inhibited (disabled).\n\n"
-                        ),
-                        opcodes[style][opcode].name,
-                        friendly,
-                        cpuy
-                    );
-        }   }   }
+        if (LOGSPRITEINTERRUPTS)
+        {   if (!(psu & PSU_II) && (r[0] & PSU_II))
+            {   DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
+                zprintf
+                (   TEXTPEN_LOG,
+                    LLL(
+                        MSG_INTERRUPTSDISABLED,
+                        "%d,%d: %s at %s: interrupts are now inhibited (disabled).\n"
+                    ),
+                    cpux, cpuy,
+                    opcodes[style][opcode].name,
+                    friendly
+                );
+                set_pause(TYPE_LOG);
+        }   }
         else
-        {   if (log_interrupts && !(r[0] & PSU_II))
+        {   if ((psu & PSU_II) && !(r[0] & PSU_II))
             {   DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
                 zprintf
                 (   TEXTPEN_LOG,
                     LLL(
                         MSG_INTERRUPTSENABLED,
-                        "%s at %s (rastline %d): interrupts are now disinhibited (enabled)."
+                        "%d,%d: %s at %s: interrupts are now disinhibited (enabled)."
                     ),
+                    cpux, cpuy,
                     opcodes[style][opcode].name,
-                    friendly,
-                    cpuy
+                    friendly
                 );
                 zprintf(TEXTPEN_LOG, " ");
                 if (interrupt_2650)
-                {   zprintf(TEXTPEN_LOG, LLL(MSG_ANINTERRUPTPENDING, "An interrupt is pending!\n\n"));
+                {   zprintf(TEXTPEN_LOG, LLL(MSG_ANINTERRUPTPENDING, "An interrupt is pending!\n"));
                 } else
-                {   zprintf(TEXTPEN_LOG, LLL(MSG_NOINTERRUPTPENDING, "No interrupt is pending.\n\n"));
-        }   }   }
+                {   zprintf(TEXTPEN_LOG, LLL(MSG_NOINTERRUPTPENDING, "No interrupt is pending.\n"));
+                }
+                set_pause(TYPE_LOG);
+        }   }
+#endif
 
         psu &= 0x80; // clear all except Sense bit
         if (supercpu)
@@ -2226,6 +2229,7 @@ MODULE __inline void cpu_emu(void)
                 friendly,
                 opcodes[style][opcode].name
             );
+            set_pause(TYPE_LOG);
         }
 #endif
         GET_RR;
@@ -2417,6 +2421,7 @@ MODULE __inline void cpu_emu(void)
                 friendly,
                 opcodes[style][opcode].name
             );
+            set_pause(TYPE_LOG);
         }
 #endif
         GET_RR;
@@ -2537,6 +2542,7 @@ MODULE __inline void cpu_emu(void)
                 friendly,
                 opcodes[style][opcode].name
             );
+            set_pause(TYPE_LOG);
         }
 #endif
         GET_RR;
@@ -3090,7 +3096,7 @@ EXPORT void checkinterrupt(void)
         }   }
 
 #ifndef GAMER
-        if (trace || runtointerrupt || logsubroutines || log_interrupts)
+        if (trace || runtointerrupt || logsubroutines || LOGSPRITEINTERRUPTS)
         {   if (logsubroutines)
             {   sp = (psu & PSU_SP);
                 // zprintf(TEXTPEN_TRACE, "%d: ", sp);
@@ -3100,7 +3106,7 @@ EXPORT void checkinterrupt(void)
                 }   }
                 set_pause(TYPE_LOG);
             }
-            if (logsubroutines || log_interrupts)
+            if (logsubroutines || LOGSPRITEINTERRUPTS)
             {   set_pause(TYPE_LOG);
             }
 
@@ -3121,13 +3127,13 @@ EXPORT void checkinterrupt(void)
                 (   TEXTPEN_LOG,
                     LLL
                     (   MSG_CPU_INTERRUPT,
-                        "Handling interrupt at rastline %d (%u %s). Interrupts are now inhibited (disabled).\n"
+                        "%d,%d: Handling interrupt at %u %s. Interrupts are now inhibited (disabled).\n"
                     ),
-                    cpuy,
+                    cpux, cpuy,
                     scale_time(cycles_2650),
                     timeunitstr2
                 );
-                if (!log_interrupts)
+                if (!LOGSPRITEINTERRUPTS)
                 {   zprintf(TEXTPEN_LOG, "\n");
             }   }
             if (runtointerrupt)
@@ -3204,13 +3210,15 @@ EXPORT void checkinterrupt(void)
         if ((psu & PSU_SP) == 7) // overflow
         {   psu &= ~(PSU_SP); // set SP to 0
 
-            if (log_illegal || log_interrupts)
+            if (log_illegal || LOGSPRITEINTERRUPTS)
             {   zprintf
                 (   TEXTPEN_LOG,
                     LLL(
                         MSG_CPU_INTERRUPTOVERFLOW,
-                        "Interrupt has caused a stack overflow!\n\n"
-                )   );
+                        "%d,%d: Interrupt has caused a stack overflow!\n"
+                    ),
+                    cpux, cpuy
+                );
                 set_pause(TYPE_LOG);
         }   }
         else
@@ -4025,14 +4033,14 @@ MODULE void check_handler(void)
 {   FAST FLAG done;
     FAST int  i;
 
-    // assert(log_interrupts);
+    // assert(LOGSPRITEINTERRUPTS);
 
-    // Ideally this would use CALM notation when appropriate
+    // Ideally this would use CALM/IEEE-694 notation when appropriate
     done = FALSE;
     if ((oldpsu & 0x7F) != (psu & 0x7F))
     {   done = TRUE;
         DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
-        zprintf(TEXTPEN_LOG, "PSU has not been restored correctly at %s (old $%02X vs. new $%02X):\n", friendly, oldpsu, psu);
+        zprintf(TEXTPEN_LOG, "%d,%d: PSU has not been restored correctly at %s (old $%02X vs. new $%02X):\n", cpux, cpuy, friendly, oldpsu, psu);
         // game cannot set Sense bit
         if ((oldpsu & 0x40) != (psu & 0x40)) zprintf(TEXTPEN_LOG, " F (Flag) bit is different.\n");
         // II bit will always be clear in both
@@ -4043,7 +4051,7 @@ MODULE void check_handler(void)
     if (oldpsl != psl)
     {   done = TRUE;
         DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
-        zprintf(TEXTPEN_LOG, "PSL has not been restored correctly at %s (old $%02X vs. new $%02X):\n", friendly, oldpsl, psl);
+        zprintf(TEXTPEN_LOG, "%d,%d: PSL has not been restored correctly at %s (old $%02X vs. new $%02X):\n", cpux, cpuy, friendly, oldpsl, psl);
         if ((oldpsl & 0xC0) != (psl & 0xC0)) zprintf(TEXTPEN_LOG, " CC (Condition Code) is different.\n");
         if ((oldpsl & 0x20) != (psl & 0x20)) zprintf(TEXTPEN_LOG, " IDC (Inter-Digit Carry) bit is different.\n");
         if ((oldpsl & 0x10) != (psl & 0x10)) zprintf(TEXTPEN_LOG, " RS (Register Select) bit is different.\n");
@@ -4056,7 +4064,15 @@ MODULE void check_handler(void)
     {   if (oldr[i] != r[i])
         {   done = TRUE;
             DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
-            zprintf(TEXTPEN_LOG, "R%d has not been restored correctly at %s (old $%02X vs. new $%02X)!\n", i, friendly, oldr[i], r[i]);
+            zprintf
+            (   TEXTPEN_LOG,
+                "%d,%d: r%d has not been restored correctly at %s (old $%02X vs. new $%02X)!\n",
+                cpux, cpuy,
+                i,
+                friendly,
+                oldr[i],
+                r[i]
+            );
     }   }
     // We could also check for corruption of the Return Address Stack
 

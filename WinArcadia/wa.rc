@@ -221,6 +221,7 @@ BEGIN
             MENUITEM "L C",                         ID_DEBUG_L_C
             MENUITEM "L I",                         ID_DEBUG_L_I
             MENUITEM "L N",                         ID_DEBUG_L_N
+            MENUITEM "L P",                         ID_DEBUG_L_P
             MENUITEM "L S",                         ID_DEBUG_L_S
             MENUITEM SEPARATOR
             MENUITEM "PL",                          ID_DEBUG_PL
@@ -852,6 +853,7 @@ BEGIN
                 MENUITEM "L C",                         ID_DEBUG_L_C
                 MENUITEM "L I",                         ID_DEBUG_L_I
                 MENUITEM "L N",                         ID_DEBUG_L_N
+                MENUITEM "L P",                         ID_DEBUG_L_P
                 MENUITEM "L S",                         ID_DEBUG_L_S
                 MENUITEM SEPARATOR
                 MENUITEM "PL",                          ID_DEBUG_PL
@@ -1536,6 +1538,7 @@ BEGIN
             MENUITEM "L C",                         ID_DEBUG_L_C
             MENUITEM "L I",                         ID_DEBUG_L_I
             MENUITEM "L N",                         ID_DEBUG_L_N
+            MENUITEM "L P",                         ID_DEBUG_L_P
             MENUITEM "L S",                         ID_DEBUG_L_S
             MENUITEM SEPARATOR
             MENUITEM "PL",                          ID_DEBUG_PL
@@ -2178,6 +2181,7 @@ BEGIN
                 MENUITEM "L C",                         ID_DEBUG_L_C
                 MENUITEM "L I",                         ID_DEBUG_L_I
                 MENUITEM "L N",                         ID_DEBUG_L_N
+                MENUITEM "L P",                         ID_DEBUG_L_P
                 MENUITEM "L S",                         ID_DEBUG_L_S
                 MENUITEM SEPARATOR
                 MENUITEM "PL",                          ID_DEBUG_PL
@@ -2879,6 +2883,7 @@ BEGIN
             MENUITEM "L C",                         ID_DEBUG_L_C
             MENUITEM "L I",                         ID_DEBUG_L_I
             MENUITEM "L N",                         ID_DEBUG_L_N
+            MENUITEM "L P",                         ID_DEBUG_L_P
             MENUITEM "L S",                         ID_DEBUG_L_S
             MENUITEM SEPARATOR
             MENUITEM "PL",                          ID_DEBUG_PL
@@ -3509,6 +3514,7 @@ BEGIN
                 MENUITEM "L C",                         ID_DEBUG_L_C
                 MENUITEM "L I",                         ID_DEBUG_L_I
                 MENUITEM "L N",                         ID_DEBUG_L_N
+                MENUITEM "L P",                         ID_DEBUG_L_P
                 MENUITEM "L S",                         ID_DEBUG_L_S
                 MENUITEM SEPARATOR
                 MENUITEM "PL",                          ID_DEBUG_PL
@@ -4340,6 +4346,7 @@ BEGIN
             MENUITEM "L C",                         ID_DEBUG_L_C
             MENUITEM "L I",                         ID_DEBUG_L_I
             MENUITEM "L N",                         ID_DEBUG_L_N
+            MENUITEM "L P",                         ID_DEBUG_L_P
             MENUITEM "L S",                         ID_DEBUG_L_S
             MENUITEM SEPARATOR
             MENUITEM "PL",                          ID_DEBUG_PL
@@ -4977,6 +4984,7 @@ BEGIN
                 MENUITEM "L C",                         ID_DEBUG_L_C
                 MENUITEM "L I",                         ID_DEBUG_L_I
                 MENUITEM "L N",                         ID_DEBUG_L_N
+                MENUITEM "L P",                         ID_DEBUG_L_P
                 MENUITEM "L S",                         ID_DEBUG_L_S
                 MENUITEM SEPARATOR
                 MENUITEM "PL",                          ID_DEBUG_PL
@@ -5678,6 +5686,7 @@ BEGIN
             MENUITEM "L C",                         ID_DEBUG_L_C
             MENUITEM "L I",                         ID_DEBUG_L_I
             MENUITEM "L N",                         ID_DEBUG_L_N
+            MENUITEM "L P",                         ID_DEBUG_L_P
             MENUITEM "L S",                         ID_DEBUG_L_S
             MENUITEM SEPARATOR
             MENUITEM "PL",                          ID_DEBUG_PL
@@ -6314,6 +6323,7 @@ BEGIN
                 MENUITEM "L C",                         ID_DEBUG_L_C
                 MENUITEM "L I",                         ID_DEBUG_L_I
                 MENUITEM "L N",                         ID_DEBUG_L_N
+                MENUITEM "L P",                         ID_DEBUG_L_P
                 MENUITEM "L S",                         ID_DEBUG_L_S
                 MENUITEM SEPARATOR
                 MENUITEM "PL",                          ID_DEBUG_PL
@@ -7010,6 +7020,7 @@ BEGIN
             MENUITEM "L C",                         ID_DEBUG_L_C
             MENUITEM "L I",                         ID_DEBUG_L_I
             MENUITEM "L N",                         ID_DEBUG_L_N
+            MENUITEM "L P",                         ID_DEBUG_L_P
             MENUITEM "L S",                         ID_DEBUG_L_S
             MENUITEM SEPARATOR
             MENUITEM "PL",                          ID_DEBUG_PL
@@ -7644,6 +7655,7 @@ BEGIN
                 MENUITEM "L C",                         ID_DEBUG_L_C
                 MENUITEM "L I",                         ID_DEBUG_L_I
                 MENUITEM "L N",                         ID_DEBUG_L_N
+                MENUITEM "L P",                         ID_DEBUG_L_P
                 MENUITEM "L S",                         ID_DEBUG_L_S
                 MENUITEM SEPARATOR
                 MENUITEM "PL",                          ID_DEBUG_PL
@@ -8320,6 +8332,7 @@ BEGIN
                 MENUITEM "L C",                         ID_DEBUG_L_C
                 MENUITEM "L I",                         ID_DEBUG_L_I
                 MENUITEM "L N",                         ID_DEBUG_L_N
+                MENUITEM "L P",                         ID_DEBUG_L_P
                 MENUITEM "L S",                         ID_DEBUG_L_S
                 MENUITEM SEPARATOR
                 MENUITEM "PL",                          ID_DEBUG_PL
@@ -8975,6 +8988,7 @@ BEGIN
             MENUITEM "L C",                         ID_DEBUG_L_C
             MENUITEM "L I",                         ID_DEBUG_L_I
             MENUITEM "L N",                         ID_DEBUG_L_N
+            MENUITEM "L P",                         ID_DEBUG_L_P
             MENUITEM "L S",                         ID_DEBUG_L_S
             MENUITEM SEPARATOR
             MENUITEM "PL",                          ID_DEBUG_PL
@@ -9609,6 +9623,7 @@ IDB_BOX_JOURNEY         BITMAP  DISCARDABLE     "box-Journey.bmp"
 IDB_BOX_KOTONOHATOWER   BITMAP  DISCARDABLE     "box-KotonohaTower.bmp"
 IDB_BOX_WINDWORLD       BITMAP  DISCARDABLE     "box-Windworld.bmp"
 IDB_BOX_50              BITMAP  DISCARDABLE     "box-50.bmp"
+IDB_BOX_49              BITMAP  DISCARDABLE     "box-49.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -19394,7 +19409,8 @@ IDI_E_MAZES             ICON    DISCARDABLE     "e-mazes.ico"
 IDI_WINDWORLD           ICON    DISCARDABLE     "windworl.ico"
 IDI_PSYMANSION          ICON    DISCARDABLE     "psymansi.ico"
 IDI_KEDAMAKI            ICON    DISCARDABLE     "kedamaki.ico"
-IDI_I_MOLE              ICON    DISCARDABLE     "i_mole.ico"
+IDI_I_MOLE              ICON    DISCARDABLE     "i-mole.ico"
+IDI_I_GRID              ICON    DISCARDABLE     "i-grid.ico"
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -19403,8 +19419,8 @@ IDI_I_MOLE              ICON    DISCARDABLE     "i_mole.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 36,7,5,0
- PRODUCTVERSION 36,7,5,0
+ FILEVERSION 36,8,0,2
+ PRODUCTVERSION 36,8,0,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -19422,14 +19438,14 @@ BEGIN
             VALUE "Comments", "Think Signetics. Sig 'em! We want you to have the best.\0"
             VALUE "CompanyName", "Amigan Software\0"
             VALUE "FileDescription", "WinArcadia multi-emulator\0"
-            VALUE "FileVersion", "36.75\0"
+            VALUE "FileVersion", "36.8\0"
             VALUE "InternalName", "WinArcadia\0"
             VALUE "LegalCopyright", "Copyright © 2006-2026 James Jacobs\0"
             VALUE "LegalTrademarks", "WinArcadia\0"
             VALUE "OriginalFilename", "WinArcadia.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "WinArcadia\0"
-            VALUE "ProductVersion", "36.75\0"
+            VALUE "ProductVersion", "36.8\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -19725,6 +19741,7 @@ BEGIN
             MENUITEM "L C",                         ID_DEBUG_L_C
             MENUITEM "L I",                         ID_DEBUG_L_I
             MENUITEM "L N",                         ID_DEBUG_L_N
+            MENUITEM "L P",                         ID_DEBUG_L_P
             MENUITEM "L S",                         ID_DEBUG_L_S
             MENUITEM SEPARATOR
             MENUITEM "PL",                          ID_DEBUG_PL
@@ -20368,6 +20385,7 @@ BEGIN
                 MENUITEM "L C",                         ID_DEBUG_L_C
                 MENUITEM "L I",                         ID_DEBUG_L_I
                 MENUITEM "L N",                         ID_DEBUG_L_N
+                MENUITEM "L P",                         ID_DEBUG_L_P
                 MENUITEM "L S",                         ID_DEBUG_L_S
                 MENUITEM SEPARATOR
                 MENUITEM "PL",                          ID_DEBUG_PL
@@ -21073,6 +21091,7 @@ BEGIN
             MENUITEM "L C",                         ID_DEBUG_L_C
             MENUITEM "L I",                         ID_DEBUG_L_I
             MENUITEM "L N",                         ID_DEBUG_L_N
+            MENUITEM "L P",                         ID_DEBUG_L_P
             MENUITEM "L S",                         ID_DEBUG_L_S
             MENUITEM SEPARATOR
             MENUITEM "PL",                          ID_DEBUG_PL
@@ -21735,6 +21754,7 @@ BEGIN
                 MENUITEM "L C",                         ID_DEBUG_L_C
                 MENUITEM "L I",                         ID_DEBUG_L_I
                 MENUITEM "L N",                         ID_DEBUG_L_N
+                MENUITEM "L P",                         ID_DEBUG_L_P
                 MENUITEM "L S",                         ID_DEBUG_L_S
                 MENUITEM SEPARATOR
                 MENUITEM "PL",                          ID_DEBUG_PL

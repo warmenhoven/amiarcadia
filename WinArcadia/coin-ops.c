@@ -538,22 +538,26 @@ MODULE void oldspritedone(int whichpvi, int whichsprite)
     pviwrite(PVI_BGCOLLIDE_M4, (UBYTE) (pviread(PVI_BGCOLLIDE_M4) | (8 >> whichsprite)), TRUE);
 
     interrupt_2650 = TRUE;
+#ifndef GAMER
     if (log_interrupts)
     {   if (psu & PSU_II)
         {   zprintf
             (   TEXTPEN_LOG,
-                "Pended sprite #%d display complete interrupt at rastline %d.\n",
-                (whichpvi * 4) + whichsprite,
-                cpuy
+                "%d,%d: Pended sprite #%d display complete interrupt.\n",
+                cpux, cpuy,
+                (whichpvi * 4) + whichsprite
             );
         } else
         {   zprintf
             (   TEXTPEN_LOG,
-                "Generated sprite #%d display complete interrupt at rastline %d.\n",
-                (whichpvi * 4) + whichsprite,
-                cpuy
+                "%d,%d: Generated sprite #%d display complete interrupt.\n",
+                cpux, cpuy,
+                (whichpvi * 4) + whichsprite
             );
-    }   }
+        }
+        set_pause(TYPE_LOG);
+    }
+#endif
     checkinterrupt();
 }
 

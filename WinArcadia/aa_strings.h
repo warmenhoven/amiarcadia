@@ -1430,6 +1430,8 @@
 #define MSG_WHEELMOTORS 1395
 #define MSG_ROBOTMOTION 1396
 #define MSG_UNASSIGNEDPADTIP2 1397
+#define MSG_ENGINE_LOGSPRITES 1398
+#define MSG_MENUHELP_L_P 1399
 
 #endif /* CATCOMP_NUMBERS */
 
@@ -1678,7 +1680,7 @@
 #define MSG_ADDBP_STR "Added code breakpoint at %s.\n\n"
 #define MSG_ADDWP_STR "Added data watchpoint at %s.\n\n"
 #define MSG_ENGINE_LOGMONITOR_STR "Log BIOS calls"
-#define MSG_CPU_INTERRUPT_STR "Handling interrupt at rastline %d (%u %s). Interrupts are now inhibited (disabled).\n\n"
+#define MSG_CPU_INTERRUPT_STR "%d,%d: Handling interrupt at %u %s. Interrupts are now inhibited (disabled).\n"
 #define MSG_CPU_LOGMONITOR_STR "BIOS code at %s was called by game code at %s.\n"
 #define MSG_SERVER_STR "server"
 #define MSG_CLIENT_STR "client"
@@ -1688,7 +1690,7 @@
 #define MSG_ENGINE_LOGSUBROUTINES_STR "Log subroutine calls/returns"
 #define MSG_CPU_CALLING_STR "Calling subroutine %s from $%X...\n\n"
 #define MSG_CPU_RETURNING_STR "Returning to %s from subroutine or interrupt at %s.\n\n"
-#define MSG_CPU_INTERRUPTOVERFLOW_STR "Interrupt has caused a stack overflow!\n\n"
+#define MSG_CPU_INTERRUPTOVERFLOW_STR "%d,%d: Interrupt has caused a stack overflow!\n"
 #define MSG_CPU_SUBROUTINEOVERFLOW_STR "Stack overflow at %s!\n\n"
 #define MSG_CPU_UNDERFLOW_STR "Stack underflow at %s!\n\n"
 #define MSG_HELP_GAMINGGUIDE_STR "Gaming Guide..."
@@ -2675,10 +2677,10 @@
 #define MSG_TSB_STR "Track: %d\nSector: %d\nByte: $%X"
 #define MSG_TCSB_STR "Track: %d\nCluster: %s\nSector: %d\nByte: $%X"
 #define MSG_FILENAME_STR "Filename:"
-#define MSG_ANINTERRUPTPENDING_STR "An interrupt is pending!\n\n"
-#define MSG_NOINTERRUPTPENDING_STR "No interrupt is pending.\n\n"
-#define MSG_INTERRUPTSENABLED_STR "%s at %s (rastline %d): interrupts are now disinhibited (enabled)."
-#define MSG_INTERRUPTSDISABLED_STR "%s at %s (rastline %d): interrupts are now inhibited (disabled).\n\n"
+#define MSG_ANINTERRUPTPENDING_STR "An interrupt is pending!\n"
+#define MSG_NOINTERRUPTPENDING_STR "No interrupt is pending.\n"
+#define MSG_INTERRUPTSENABLED_STR "%d,%d: %s at %s: interrupts are now disinhibited (enabled)."
+#define MSG_INTERRUPTSDISABLED_STR "%d,%d: %s at %s: interrupts are now inhibited (disabled).\n"
 #define MSG_TABTOACTIVATE_STR "Tab to activate main window"
 #define MSG_MENUHELP_DRAW_0_STR "Draw normally"
 #define MSG_MENUHELP_DRAW_1_STR "Show grid (most machines) or Teletext grid (Malzak)"
@@ -2837,6 +2839,8 @@
 #define MSG_WHEELMOTORS_STR "Wheel Motors"
 #define MSG_ROBOTMOTION_STR "Robot Motion"
 #define MSG_UNASSIGNEDPADTIP2_STR "Plug in a host gamepad, then use the\n\"Peripherals|Left/right controller »\" submenu(s)\nto assign this host gamepad to a guest player."
+#define MSG_ENGINE_LOGSPRITES_STR "Log sprites"
+#define MSG_MENUHELP_L_P_STR "Log sprites on/off"
 
 #endif /* CATCOMP_STRINGS */
 
@@ -4252,6 +4256,8 @@ static const struct CatCompArrayType CatCompArray[] =
     {MSG_WHEELMOTORS,(STRPTR)MSG_WHEELMOTORS_STR},
     {MSG_ROBOTMOTION,(STRPTR)MSG_ROBOTMOTION_STR},
     {MSG_UNASSIGNEDPADTIP2,(STRPTR)MSG_UNASSIGNEDPADTIP2_STR},
+    {MSG_ENGINE_LOGSPRITES,(STRPTR)MSG_ENGINE_LOGSPRITES_STR},
+    {MSG_MENUHELP_L_P,(STRPTR)MSG_MENUHELP_L_P_STR},
 };
 
 #endif /* CATCOMP_ARRAY */

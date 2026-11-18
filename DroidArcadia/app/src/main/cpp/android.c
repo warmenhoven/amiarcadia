@@ -83,7 +83,7 @@ EXPORT int        absxmin, absxmax,
                   cpux,
                   cpuy,
                   dejitter                 = FALSE,
-                  demultiplex              = 2, // opaque
+                  demultiplex              = 1, // transparent
                   drawcorners              = FALSE,
                   elektor_biosver          = ELEKTOR_PHILIPS,
                   firstrow                 = 26,
@@ -4799,6 +4799,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     acase HYPERSPACEPOS:     rc = 59 + 36;
     acase SUPERSPACEPOS:     rc = 59 + 37;
     acase MOLEPOS:           rc = 59 + 38;
+    acase GRIDPOS:           rc = 59 + 39;
 
     // Elektor
     acase 255:   // Keyboard Painting aka Play with the PVI               ESS-003-1
@@ -4809,7 +4810,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     case  260:   // Steam Engine aka Locomotive aka Demonstration Program ESS-003-6
     case  262:   // PVI Programming                                       ESS-006-2
     case  263:   // Rocket Shooting                                       ESS-006-3
-                             rc = 59 + 38 + 1;
+                             rc = 59 + 39 + 1;
 
     acase 236:   // Mazes                         ESS-011-4
     case  237:   // Circledrive                   ESS-009-3
@@ -4884,7 +4885,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     case  385:   // Piano (song #4) (dump #2)    (ESS-007-B)
     case  450:   // Aggressor (dump #1)           ESS-009-1
     case  451:   // Aggressor (dump #2)           ESS-009-1
-                             rc = 59 + 38 + 2;
+                             rc = 59 + 39 + 2;
 
     acase 313:   // Figure 26                     Pages 88-89
     case  314:   // Figure 27                     Pages 88-90
@@ -4921,7 +4922,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     case  346:   // Table 29                      Pages 127-128
     case  347:   // Table 30                      Page 128
     case  348:   // Wedding March                 Pages 183-184
-                             rc = 59 + 38 + 3;
+                             rc = 59 + 39 + 3;
 
     acase 349:   // Reverse                       Hocosoft #27. File $2
     case  350:   // Solitaire (A)                 Hocosoft #22. File $1
@@ -4934,7 +4935,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     case  376:   // Towers of Hanoi               Hocosoft #28. File $8
     case  377:   // Hunting (Jagen)               Hocosoft #9.  File $9
     case  446:   // Solitaire (B)                 Hocosoft #22. File $2
-                             rc = 59 + 38 + 4;
+                             rc = 59 + 39 + 4;
 
     acase 404:   // Example 2 (Joystick Control, etc. aka Hamish 1)    Radofin
     case  439:   // Example 1 (Setting Up Objects and Background)      Radofin
@@ -4942,7 +4943,7 @@ JNIEXPORT jint JNICALL Java_com_amigan_droidarcadia_GameInfoActivity_getbox(JNIE
     case  441:   // Example 4 (Survival)                               Radofin
     case  442:   // Example 5 (PVI Art)                                Radofin
     case  443:   // Decimal Adjust Example                             Radofin
-                             rc = 59 + 38 + 5;
+                             rc = 59 + 39 + 5;
 
     // all
     adefault:                rc = -1;

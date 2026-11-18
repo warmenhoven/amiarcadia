@@ -575,9 +575,6 @@ EXPORT void one_instruction(void)
         TWO_BYTES;
         NINE_CYCLES;
     acase 118:                                              // PPSU
-        if (!(psu & PSU_II) && (OPERAND & PSU_II))
-        {   interrupt_2650 = FALSE; // any pending interrupts are cleared
-        }
         psu |= (OPERAND & PSU_WRITABLE_A);
         TWO_BYTES;
         NINE_CYCLES;
@@ -672,9 +669,6 @@ EXPORT void one_instruction(void)
         }
         THREE_BYTES;
     acase 146:                                              // LPSU
-        if (!(psu & PSU_II) && (r[0] & PSU_II))
-        {   interrupt_2650 = FALSE; // any pending interrupts are cleared
-        }
         psu &= 0x80; // clear all except Sense bit
         psu |= (r[0] & PSU_WRITABLE_A);
         ONE_BYTE;

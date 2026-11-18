@@ -97,8 +97,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                             SPEED_16QUARTERS   =    7,
                             SPEED_32QUARTERS   =    8,
                             SPEED_TURBO        =    9,
-                            TEXTX              =    8,
-                            TEXTY              =   25,
+                            TEXTX              =    5,
+                            TEXTY              =    5 + 12,
                             TOTALCHANNELS      =   16 + 6,
                             WAYS_0             =    0,
                             WAYS_2H            =    1,
@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                             availwidth,
                             availheight,
                             colours           = COLOURS_PURE,
-                            demultiplex       = 2, // opaque
+                            demultiplex       = 1, // transparent
                             hardxdelta        = 0,
                             hardydelta        = 0,
                             destwidth, destheight,
@@ -357,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         mp = new Paint(Paint.ANTI_ALIAS_FLAG);
         mp.setColor(Color.BLACK);
         tp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        tp.setTextSize(20);
+        tp.setTextSize(dp(12));
         tp.setTextAlign(Paint.Align.LEFT); // probably not needed?
         grect = new Rect();
         tp.getTextBounds("#", 0, 1, grect);
@@ -410,7 +410,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         }   }
 
         button_load.setOnClickListener((view) ->
-        {   ff_cancel();
+        {   rumbling = oldrumbling = 0;
+            ff_cancel();
             jsoundoff();
             csoundoff();
             semipaused = true;
@@ -432,6 +433,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             {   paused = true;
                 button_pause.setBackgroundColor(Color.parseColor("#00ffff"));
                 button_pause.setText(R.string.unpause); // not enough room for "Unpause"
+                rumbling = oldrumbling = 0;
                 ff_cancel();
                 jsoundoff();
                 csoundoff();
@@ -441,13 +443,15 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         button_options.setOnClickListener((view) ->
         {   saveconfig();
             savehs();
-            ff_cancel(); // this doesn't seem to be effective
+            rumbling = oldrumbling = 0;
+            ff_cancel();
             Intent myIntent = new Intent(MainActivity.this, OptionsActivity.class);
             MainActivity.this.startActivity(myIntent);
         });
 
         button_quit.setOnClickListener((view) ->
-        {   ff_cancel();
+        {   rumbling = oldrumbling = 0;
+            ff_cancel();
             jsoundoff();
             csoundoff();
             jshutdownraclient();
@@ -600,7 +604,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @Override
     public void onBackPressed()
-    {   ff_cancel();
+    {   rumbling = oldrumbling = 0;
+        ff_cancel();
         jsoundoff();
         csoundoff();
         jsavecos(0);
@@ -690,7 +695,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @Override
     public void onConfigurationChanged(Configuration newConfig)
-    {   ff_cancel();
+    {   rumbling = oldrumbling = 0;
+        ff_cancel();
         jsoundoff();
         csoundoff();
         for (int i = 0; i < TOTALCHANNELS; i++)
@@ -717,7 +723,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private final Runnable thethread = new Runnable()
     {   public void run()
         {   if (paused || semipaused)
-            {   ff_cancel();
+            {   rumbling = oldrumbling = 0;
+                ff_cancel();
                 if (cheevos)
                 {   clientidle(); // only needs to be done about once per second, not ten times per second
                 }
@@ -888,15 +895,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             {   rumbling = rumble;
             }
             if (oldrumbling == 0 && rumbling > 0)
-            {   final VibrationEffect ve = VibrationEffect.createOneShot(999999999, VibrationEffect.DEFAULT_AMPLITUDE); // about 1 million seconds
-                ff_cancel();
-                if (android.os.Build.VERSION.SDK_INT >= 31) // Android 12+
-                {   CombinedVibration cv = CombinedVibration.createParallel(ve);
-                    vm.vibrate(cv);
-                } else
-                {   vibrator.vibrate(ve);
-            }   }
-            else if (oldrumbling > 0 && rumbling == 0)
+            {   ff_cancel();
+                final VibrationEffect ve = VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE);
+                vibrator.vibrate(ve);
+            } else if (oldrumbling > 0 && rumbling == 0)
             {   ff_cancel();
             }
                     
@@ -1117,9 +1119,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     
     private void shadowtext(String thetext)
     {   tp.setColor(Color.argb(192,   0,   0, 0));
-        canvas.drawText(thetext, TEXTX + 2, TEXTY + 2, tp);
+        canvas.drawText(thetext, dp(TEXTX + 1), dp(TEXTY + 1), tp);
         tp.setColor(Color.argb(192, 255, 192, 0)); // orange
-        canvas.drawText(thetext, TEXTX    , TEXTY    , tp);
+        canvas.drawText(thetext, dp(TEXTX    ), dp(TEXTY    ), tp);
     }
 
     private void jsoundoff()
@@ -1651,6 +1653,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         // Toast.makeText(MainActivity.this, "Scale by " + String.valueOf(scaleby) + " with size method " + String.valueOf(sizemethod) + "!", Toast.LENGTH_LONG).show();
     }
 
+    private float dp(float value)
+    {   return value * getResources().getDisplayMetrics().density;
+    }
+
     @SuppressWarnings("deprecation")
     private void getsizes()
     {   if (android.os.Build.VERSION.SDK_INT >= 30) // Android 11+
@@ -1673,17 +1679,19 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @SuppressWarnings("deprecation")
     private void ff_init()
-    {   if (android.os.Build.VERSION.SDK_INT >= 31) // Android 12+
-        {   vm       = (VibratorManager) getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
+    {   if (android.os.Build.VERSION.SDK_INT >= 31)
+        {   vm = (VibratorManager) getApplicationContext().getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
+            vibrator = vm.getDefaultVibrator();
         } else
-        {   vibrator = (Vibrator       ) getSystemService(Context.VIBRATOR_SERVICE        );
+        {   vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
     }   }
-    
+
+    @SuppressWarnings("deprecation")
     private void ff_cancel()
-    {   if (android.os.Build.VERSION.SDK_INT >= 31) // Android 12+
+    {   if (android.os.Build.VERSION.SDK_INT >= 31)
         {   vm.cancel();
         } else
-        {   vibrator.cancel(); // it is safe to cancel other vibrations currently taking place
+        {   vibrator.cancel();
     }   }
     
     @SuppressWarnings("deprecation")

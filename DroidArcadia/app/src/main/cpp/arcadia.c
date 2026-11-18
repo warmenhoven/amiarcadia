@@ -279,6 +279,7 @@ EXPORT void uvi(void)
             {   flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
             }
             changethisbgpixel(from_a[flag_cacheable][bgc_cached & 0x07]);
+            colltable[cpuy][cpux] = 0;
             do_cpu();
         }
         vblank();
@@ -312,6 +313,7 @@ EXPORT void uvi(void)
                 {   flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
                 }
                 changethisbgpixel(from_a[flag_cacheable][bgc_cached & 0x07]);
+                colltable[cpuy][cpux] = 0;
                 do_cpu();
             }
             if (cpuy == n2) // ie. USG_YMARGIN + ((n3 - USGMARGIN) / 2). "Conversion takes place during the active scan".
@@ -691,12 +693,15 @@ MODULE __inline void onepixel(void)
         {   if (imagedata & (0x80 >> x))
             {   t = from_a[flag_cacheable][(thechar & 0x40) ? fgc2 : fgc1];
                 changethisabspixel(t);
+                colltable[cpuy][cpux] = 0x10;
             } elif (thechar & 0x80)
             {   t = from_a[flag_cacheable][innerbgc];
                 changethisabspixel(t);
+                colltable[cpuy][cpux] = 0x10;
             } else
             {   t = from_a[flag_cacheable][outerbgc];
                 changethisbgpixel(t);
+                colltable[cpuy][cpux] = 0;
         }   }
         else
         {   if (imagedata & (0x80 >> x))
@@ -714,9 +719,11 @@ MODULE __inline void onepixel(void)
                 }   }
                 else
                 {   changethisabspixel(t);
-            }   }
-            else
+                }
+                colltable[cpuy][cpux] = 0x10;
+            } else
             {   changethisbgpixel(bgc);
+                colltable[cpuy][cpux] = 0;
     }   }   }
 
     do_sprites1();

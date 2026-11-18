@@ -1088,10 +1088,10 @@ EXPORT void fixextension(STRPTR extension, STRPTR passedfn, FLAG force, STRPTR s
         strcat(passedfn, suffix);
         strcat(passedfn, extension);
     } else // loading
-    {   for (i = 0; i < KINDS; i++) // this is why filekind[].extension needs to be fully populated
+    {   for (i = 0; i < KINDS; i++) // this is why filekind[].extension[0] needs to be fully populated
         {   if
-            (   length > strlen(filekind[i].extension)
-             && !stricmp(&passedfn[length - strlen(filekind[i].extension)], filekind[i].extension)
+            (   length > strlen(filekind[i].extension[0])
+             && !stricmp(&passedfn[length - strlen(filekind[i].extension[0])], filekind[i].extension[0])
             )
             {   found = TRUE;
                 break; // for speed
@@ -1408,9 +1408,9 @@ EXPORT void project_open(void)
     {   switch (machine)
         {
         case ELEKTOR:
-            fixextension(filekind[KIND_TVC].extension, (STRPTR) fn_game, FALSE, "");
+            fixextension(filekind[KIND_TVC].extension[0], (STRPTR) fn_game, FALSE, "");
             if (!((rc = engine_load(FALSE))))
-            {   fixextension(filekind[KIND_ZIP].extension, (STRPTR) fn_game, TRUE, "");
+            {   fixextension(filekind[KIND_ZIP].extension[0], (STRPTR) fn_game, TRUE, "");
                 if (!engine_load(FALSE))
                 {   beep();
                     return;
@@ -1420,17 +1420,17 @@ EXPORT void project_open(void)
         case CD2650:
         case MIKIT:
         case SELBST:
-            fixextension(filekind[KIND_AOF].extension, (STRPTR) fn_game, FALSE, "");
+            fixextension(filekind[KIND_AOF].extension[0], (STRPTR) fn_game, FALSE, "");
             if (!((rc = engine_load(FALSE))))
-            {   fixextension(filekind[KIND_ZIP].extension, (STRPTR) fn_game, TRUE, "");
+            {   fixextension(filekind[KIND_ZIP].extension[0], (STRPTR) fn_game, TRUE, "");
                 if (!engine_load(FALSE))
                 {   beep();
                     return;
             }   }
         adefault: // eg. ARCADIA, INTERTON, INSTRUCTOR, coin-ops, PHUNSY
-            fixextension(filekind[KIND_BIN].extension, (STRPTR) fn_game, FALSE, "");
+            fixextension(filekind[KIND_BIN].extension[0], (STRPTR) fn_game, FALSE, "");
             if (!((rc = engine_load(FALSE))))
-            {   fixextension(filekind[KIND_ZIP].extension, (STRPTR) fn_game, TRUE, "");
+            {   fixextension(filekind[KIND_ZIP].extension[0], (STRPTR) fn_game, TRUE, "");
                 if (!engine_load(FALSE))
                 {   beep();
                     return;

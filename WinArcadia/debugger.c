@@ -1290,7 +1290,7 @@ EXPORT FLAG debug_command(void)
         }   }
     acase MENUITEM_EDIT:
         if (!Exists((STRPTR) thearg[1]))
-        {   fixextension(filekind[KIND_ASM].extension, (STRPTR) thearg[1], FALSE, "");
+        {   fixextension(filekind[KIND_ASM].extension[0], (STRPTR) thearg[1], FALSE, "");
             // we should check whether it exists, and if it doesn't, we should tell the user so
         }
         if (strlen((const char*) thearg[1]) > MAX_PATH)
@@ -2130,7 +2130,7 @@ EXPORT FLAG debug_command(void)
                 address2 = parse_expression((STRPTR) thearg[2], MAX_ADDR, FALSE);
                 if (check_range(address1, address2))
                 {   cd_projects();
-                    fixextension(filekind[KIND_ASM].extension, (STRPTR) thearg[3], TRUE, "");
+                    fixextension(filekind[KIND_ASM].extension[0], (STRPTR) thearg[3], TRUE, "");
                     if ((TheLocalHandle = fopen((const char*) thearg[3], "wt")))
                     {   view_imagery(address1, address2, TheLocalHandle);
                         DISCARD fclose(TheLocalHandle);
@@ -2148,7 +2148,7 @@ EXPORT FLAG debug_command(void)
             }   }
             elif (thearg[1][0]) // <filename>
             {   cd_projects();
-                fixextension(filekind[KIND_ASM].extension, (STRPTR) thearg[3], TRUE, "");
+                fixextension(filekind[KIND_ASM].extension[0], (STRPTR) thearg[3], TRUE, "");
                 if ((TheLocalHandle = fopen((const char*) thearg[3], "wt")))
                 {   view_imagery(0, 32767, TheLocalHandle);
                     DISCARD fclose(TheLocalHandle);
@@ -2316,14 +2316,22 @@ EXPORT FLAG debug_command(void)
                 )   );
                 fliplog(&log_interrupts);
             } elif (!stricmp((const char*) thearg[1], "P"))
-            {   zprintf
-                (   TEXTPEN_CLIOUTPUT,
-                    LLL(
-                        MSG_ENGINE_LOGSPRITES,
-                        "Log sprites"
-                )   );
-                fliplog(&log_sprites);
-            } elif (!stricmp((const char*) thearg[1], "S"))
+            {   if
+                (   machine == ARCADIA
+                 || machine == INTERTON
+                 || machine == ELEKTOR
+                )
+                {   zprintf
+                    (   TEXTPEN_CLIOUTPUT,
+                        LLL(
+                            MSG_ENGINE_LOGSPRITES,
+                            "Log sprites"
+                    )   );
+                    fliplog(&log_sprites);
+                } else
+                {   zprintf(TEXTPEN_CLIOUTPUT, "%s\n\n", LLL(MSG_WRONGGUEST, "Wrong guest machine!"));
+            }   }
+            elif (!stricmp((const char*) thearg[1], "S"))
             {   zprintf
                 (   TEXTPEN_CLIOUTPUT,
                     LLL(
@@ -2499,7 +2507,7 @@ EXPORT FLAG debug_command(void)
             } else
             {   cd_projects();
                 if (getsize((STRPTR) thearg[2]) == 0)
-                {   fixextension(filekind[KIND_BIN].extension, (STRPTR) thearg[2], FALSE, "");
+                {   fixextension(filekind[KIND_BIN].extension[0], (STRPTR) thearg[2], FALSE, "");
                 }
                 localsize = (int) getsize((STRPTR) thearg[2]);
                 if (localsize + address1 > MAX_ADDR + 1)
@@ -2895,7 +2903,7 @@ EXPORT FLAG debug_command(void)
             address2 = parse_expression((STRPTR) thearg[2], MAX_ADDR, FALSE);
             if (check_range(address1, address2))
             {   cd_projects();
-                fixextension(filekind[KIND_BIN].extension, (STRPTR) thearg[3], TRUE, "");
+                fixextension(filekind[KIND_BIN].extension[0], (STRPTR) thearg[3], TRUE, "");
                 if ((TheLocalHandle = fopen((const char*) thearg[3], "wb")))
                 {   DISCARD fwrite(&memory[address1], (size_t) (address2 - address1 + 1), 1, TheLocalHandle);
                     DISCARD fclose(TheLocalHandle);
@@ -2959,14 +2967,14 @@ EXPORT FLAG debug_command(void)
                     } else
                     {   cd_projects(); // or perhaps cd_games()?
                         if (machine == ELEKTOR)
-                        {   fixextension(filekind[KIND_EOF].extension, (STRPTR) thearg[3], TRUE, "");
+                        {   fixextension(filekind[KIND_EOF].extension[0], (STRPTR) thearg[3], TRUE, "");
                             if (save_eof((STRPTR) thearg[3], address1, address2, address3, preferredsize))
                             {   zprintf(TEXTPEN_CLIOUTPUT, "%s.\n\n", LLL(MSG_OK, "OK"));
                             } else
                             {   zprintf(TEXTPEN_CLIOUTPUT, LLL(MSG_FAILED, "Failed!\n\n"));
                         }   }
                         else
-                        {   fixextension(filekind[KIND_AOF].extension, (STRPTR) thearg[3], TRUE, "");
+                        {   fixextension(filekind[KIND_AOF].extension[0], (STRPTR) thearg[3], TRUE, "");
                             if (save_aof((STRPTR) thearg[3], address1, address2, address3, preferredsize))
                             {   zprintf(TEXTPEN_CLIOUTPUT, "%s.\n\n", LLL(MSG_OK, "OK"));
                             } else
@@ -2980,7 +2988,7 @@ EXPORT FLAG debug_command(void)
             address2 = parse_expression((STRPTR) thearg[2], MAX_ADDR, FALSE);
             if (check_range(address1, address2))
             {   cd_projects();
-                fixextension(filekind[KIND_BPNF].extension, (STRPTR) thearg[3], TRUE, "");
+                fixextension(filekind[KIND_BPNF].extension[0], (STRPTR) thearg[3], TRUE, "");
                 if (save_bpnf((STRPTR) thearg[3], address1, address2))
                 {   zprintf(TEXTPEN_CLIOUTPUT, "%s.\n\n", LLL(MSG_OK, "OK"));
                 } else
@@ -2993,7 +3001,7 @@ EXPORT FLAG debug_command(void)
         {   address1 = parse_expression((STRPTR) thearg[1], MAX_ADDR, FALSE);
             if (check_range(0, address1))
             {   cd_projects();
-                fixextension(filekind[KIND_SMS].extension, (STRPTR) thearg[3], TRUE, "");
+                fixextension(filekind[KIND_SMS].extension[0], (STRPTR) thearg[3], TRUE, "");
                 if (save_sms((STRPTR) thearg[2], address1))
                 {   zprintf(TEXTPEN_CLIOUTPUT, "%s.\n\n", LLL(MSG_OK, "OK"));
                 } else
@@ -3045,13 +3053,13 @@ EXPORT FLAG debug_command(void)
                 switch (machine)
                 {
                 case BINBUG:
-                    fixextension(filekind[KIND_CMD].extension, (STRPTR) thearg[3], TRUE, "");
+                    fixextension(filekind[KIND_CMD].extension[0], (STRPTR) thearg[3], TRUE, "");
                     ok = save_cmd((STRPTR) thearg[3], address1, address2, address3);
                 acase TWIN:
-                    fixextension(filekind[KIND_MOD].extension, (STRPTR) thearg[3], TRUE, "");
+                    fixextension(filekind[KIND_MOD].extension[0], (STRPTR) thearg[3], TRUE, "");
                     ok = save_mod((STRPTR) thearg[3], address1, address2, address3);
                 acase CD2650:
-                    fixextension(filekind[KIND_IMAG].extension, (STRPTR) thearg[3], TRUE, "");
+                    fixextension(filekind[KIND_IMAG].extension[0], (STRPTR) thearg[3], TRUE, "");
                     ok = save_imag((STRPTR) thearg[3], address1, address2, address3);
                 adefault:
                     ok = FALSE; // to avoid a spurious SAS/C warning
@@ -3069,7 +3077,7 @@ EXPORT FLAG debug_command(void)
             address2 = parse_expression((STRPTR) thearg[2], MAX_ADDR, FALSE);
             if (check_range(address1, address2))
             {   cd_projects();
-                fixextension(filekind[KIND_HEX].extension, (STRPTR) thearg[3], TRUE, "");
+                fixextension(filekind[KIND_HEX].extension[0], (STRPTR) thearg[3], TRUE, "");
                 if (save_iof((STRPTR) thearg[3], address1, address2))
                 {   zprintf(TEXTPEN_CLIOUTPUT, "%s.\n\n", LLL(MSG_OK, "OK"));
                 } else
@@ -3080,7 +3088,7 @@ EXPORT FLAG debug_command(void)
     acase MENUITEM_SAVESYM:
         if (allowable(TRUE))
         {   cd_projects();
-            fixextension(filekind[KIND_SYM].extension, (STRPTR) thearg[1], TRUE, "");
+            fixextension(filekind[KIND_SYM].extension[0], (STRPTR) thearg[1], TRUE, "");
             if ((TheLocalHandle = fopen((const char*) thearg[1], "wb")))
             {   savesym(TheLocalHandle);
                 DISCARD fclose(TheLocalHandle);
@@ -3126,7 +3134,7 @@ EXPORT FLAG debug_command(void)
                     );
                 } else
                 {   cd_projects(); // or perhaps cd_games()?
-                    fixextension(filekind[KIND_TVC].extension, (STRPTR) thearg[3], TRUE, "");
+                    fixextension(filekind[KIND_TVC].extension[0], (STRPTR) thearg[3], TRUE, "");
                     if ((TheLocalHandle = fopen((const char*) thearg[3], "wb")))
                     {   tempdata[0] = 2;
                         tempdata[1] = address1 / 256;
@@ -7283,7 +7291,7 @@ EXPORT void loadsym_full(STRPTR symfilename)
 
     cd_projects();
     if (getsize((STRPTR) symfilename) == 0)
-    {   fixextension(filekind[KIND_SYM].extension, (STRPTR) symfilename, FALSE, "");
+    {   fixextension(filekind[KIND_SYM].extension[0], (STRPTR) symfilename, FALSE, "");
     }
     symsize = (int) getsize((STRPTR) symfilename);
     if ((TheLocalHandle = fopen((const char*) symfilename, "rb")))

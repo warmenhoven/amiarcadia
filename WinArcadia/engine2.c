@@ -2562,7 +2562,7 @@ EXPORT void makeaudittext(STRPTR outputstring)
         "%d known AOF/BIN/TVC file(s).\n" \
         "%d unknown AOF/BIN/TVC file(s).\n" \
         "%d state(s)/recording(s).\n" \
-        "%d ASM/BPNF/CMD/EOF/HEX/IMAG/MOD/SMS/SYM file(s).\n" \
+        "%d ASM/BPNF/CMD/EOF/HEX/IMAG/INC/MOD/SMS/SYM file(s).\n" \
         "%d IMG/RAW/TWIN file(s).\n" \
         "%d 8SVX/16SV/AIFF/MDCR/WAV file(s).\n" \
         "%d screenshot/animation/MIDI/PSG/SMUS/TXT/YM file(s).\n" \
@@ -4627,19 +4627,18 @@ EXPORT void reset_fps(void)
 }
 
 MODULE int identify(STRPTR passedname)
-{   FAST int i,
+{   FAST int i, j,
              length1,
              length2;
 
     length1 = strlen((const char*) passedname);
     for (i = 0; i < KINDS; i++)
-    {   length2 = strlen(filekind[i].extension);
-        if (length1 >= length2 && !stricmp(&passedname[length1 - length2], filekind[i].extension))
-        {   return i;
-        }
-        if (filekind[i].extension2)
-        {   length2 = strlen(filekind[i].extension2);
-            if (length1 >= length2 && !stricmp(&passedname[length1 - length2], filekind[i].extension2))
+    {   for (j = 0; j < 3; j++)
+        {   if (!filekind[i].extension[j])
+            {   continue;
+            }
+            length2 = strlen(filekind[i].extension[j]);
+            if (length1 >= length2 && !stricmp(&passedname[length1 - length2], filekind[i].extension[j]))
             {   return i;
     }   }   }
 

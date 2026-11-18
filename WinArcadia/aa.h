@@ -1,10 +1,10 @@
-#define DECIMALVERSION       "36.8"
-#define INTEGERVERSION       "36.80"
+#define DECIMALVERSION       "36.81"
+#define INTEGERVERSION       "36.81"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x80
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (7.11.2026)" // d.m.yyyy format
-#define RELEASEDATE          "07-11-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "7 November 2026" // full month and year
+#define MINORVERSION         0x81
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (17.11.2026)" // d.m.yyyy format
+#define RELEASEDATE          "17-11-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "17 November 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
 #define NEWCONFIGVERSION     "36.8"  // V36.8       +
@@ -3518,8 +3518,7 @@ EXPORT struct KeyNameStruct
 };
 
 EXPORT struct KindStruct
-{   const STRPTR extension,
-                 extension2,
+{   const STRPTR extension[3],
                  pattern;
     const FLAG   auditable;
 #ifdef WIN32

@@ -2693,6 +2693,7 @@ EXPORT void arcadia_anypixel(void)
             {   flag_cacheable = (flagline && (psu & PSU_F)) ? 1 : 0;
             }
             changethisbgpixel_slow(from_a[flag_cacheable][bgc_cached & 0x07]);
+            colltable[cpuy][cpux] = 0;
         } elif (cpux == n4)
         {   vblank();
     }   }

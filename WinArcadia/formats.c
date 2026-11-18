@@ -772,7 +772,7 @@ PERSIST UBYTE anim_header[12] =
         } else
         {   fn_screenshot[0] = EOS;
         }
-        fixextension(filekind[kind].extension, (STRPTR) fn_screenshot, TRUE, ""); // so we have extension in ASL requester
+        fixextension(filekind[kind].extension[0], (STRPTR) fn_screenshot, TRUE, ""); // so we have extension in ASL requester
         if (asl
         (   filekind[kind].hail,
             filekind[kind].pattern,
@@ -783,7 +783,7 @@ PERSIST UBYTE anim_header[12] =
         ) != EXIT_SUCCESS)
         {   return;
         }
-        fixextension(filekind[kind].extension, (STRPTR) fn_screenshot, TRUE, ""); // so we have extension even if user overtypes it in ASL requester
+        fixextension(filekind[kind].extension[0], (STRPTR) fn_screenshot, TRUE, ""); // so we have extension even if user overtypes it in ASL requester
 #ifdef SETPATHS
         break_pathname((STRPTR) fn_screenshot, (STRPTR) path_screenshots, NULL);
 #endif
@@ -1946,7 +1946,7 @@ EXPORT void finalize_anim(FILE* filehandle)
     if (esvxfile && bitrate == 8) // because probably only 8SVX (not 16SV) are supported in ANIMs
     {   ok = FALSE;
         strcpy((char*) fn_save, (const char*) fn_game);
-        fixextension(filekind[KIND_8SVX].extension, (STRPTR) fn_save, TRUE, "");
+        fixextension(filekind[KIND_8SVX].extension[0], (STRPTR) fn_save, TRUE, "");
         esvxsize = getsize((STRPTR) fn_save);
         if (esvxsize && (ESVXBuffer = malloc(esvxsize)))
         {   if ((LocalHandle = fopen((const char*) fn_save, "rb")))
@@ -1958,7 +1958,7 @@ EXPORT void finalize_anim(FILE* filehandle)
             if (ok)
             {   ok = FALSE;
                 strcpy((char*) fn_save, (const char*) fn_game);
-                fixextension(filekind[KIND_IFFANIM].extension, (STRPTR) fn_save, TRUE, "");
+                fixextension(filekind[KIND_IFFANIM].extension[0], (STRPTR) fn_save, TRUE, "");
                 animsize = getsize((STRPTR) fn_save);
                 if (animsize && (ANIMBuffer = malloc(animsize)))
                 {   if ((LocalHandle = fopen((const char*) fn_save, "rb")))
@@ -2586,9 +2586,9 @@ MODULE void combine(int kind, ULONG smallest)
 
     strcpy((char*) fn_save, (const char*) fn_game);
     if (bitrate == 16 && kind == KIND_8SVX)
-    {   fixextension(filekind[KIND_16SV].extension, (STRPTR) fn_save, TRUE, "");
+    {   fixextension(filekind[KIND_16SV].extension[0], (STRPTR) fn_save, TRUE, "");
     } else
-    {   fixextension(filekind[kind     ].extension, (STRPTR) fn_save, TRUE, "");
+    {   fixextension(filekind[kind     ].extension[0], (STRPTR) fn_save, TRUE, "");
     }
     if (!(CombinedHandle = fopen((const char*) fn_save, "wb")))
     {   say("Can't open file for output!");
@@ -2996,7 +2996,7 @@ EXPORT void create_papertape(int whichunit)
     } else
     {   fn_tape[2 + whichunit][0] = EOS;
     }
-    fixextension(filekind[KIND_PAP].extension, (STRPTR) fn_tape[2 + whichunit], TRUE, ""); // so we have extension in ASL requester
+    fixextension(filekind[KIND_PAP].extension[0], (STRPTR) fn_tape[2 + whichunit], TRUE, ""); // so we have extension in ASL requester
 
     if (asl
     (   filekind[KIND_PAP].hail,
@@ -3008,7 +3008,7 @@ EXPORT void create_papertape(int whichunit)
     ) != EXIT_SUCCESS)
     {   return;
     }
-    fixextension(filekind[KIND_PAP].extension, (STRPTR) fn_tape[2 + whichunit], TRUE, ""); // so we have extension even if user overtypes it in ASL requester
+    fixextension(filekind[KIND_PAP].extension[0], (STRPTR) fn_tape[2 + whichunit], TRUE, ""); // so we have extension even if user overtypes it in ASL requester
 #ifdef SETPATHS
     break_pathname((STRPTR) fn_tape[2 + whichunit], (STRPTR) path_tapes, NULL);
 #endif
@@ -3033,7 +3033,7 @@ EXPORT void create_tape(void)
     } else
     {   fn_tape[0][0] = EOS;
     }
-    fixextension(filekind[tapekind].extension, (STRPTR) fn_tape[0], TRUE, ""); // so we have extension in ASL requester
+    fixextension(filekind[tapekind].extension[0], (STRPTR) fn_tape[0], TRUE, ""); // so we have extension in ASL requester
 
     if (asl
     (   filekind[tapekind].hail,
@@ -3045,7 +3045,7 @@ EXPORT void create_tape(void)
     ) != EXIT_SUCCESS)
     {   return;
     }
-    fixextension(filekind[tapekind].extension, (STRPTR) fn_tape[0], TRUE, ""); // so we have extension even if user overtypes it in ASL requester
+    fixextension(filekind[tapekind].extension[0], (STRPTR) fn_tape[0], TRUE, ""); // so we have extension even if user overtypes it in ASL requester
 #ifdef SETPATHS
     break_pathname((STRPTR) fn_tape[0], (STRPTR) path_tapes, NULL);
 #endif
@@ -3659,7 +3659,7 @@ PERSIST UBYTE MIDIHeader[14] =
     // assert(midifile);
 
     strcpy((char*) fn_save, (const char*) fn_game);
-    fixextension(filekind[KIND_MIDI].extension, (STRPTR) fn_save, TRUE, "");
+    fixextension(filekind[KIND_MIDI].extension[0], (STRPTR) fn_save, TRUE, "");
     length = strlen((const char*) fn_save);
     MIDIHeader[11] = 0;
     for (i = 0; i < GUESTCHANNELS; i++)
@@ -3694,7 +3694,7 @@ EXPORT void finalize_midi(void)
     // assert(MIDIHandle);
 
     strcpy((char*) fn_save, (const char*) fn_game);
-    fixextension(filekind[KIND_MIDI].extension, (STRPTR) fn_save, TRUE, "");
+    fixextension(filekind[KIND_MIDI].extension[0], (STRPTR) fn_save, TRUE, "");
     length = strlen((const char*) fn_save);
 
     for (i = 0; i < GUESTCHANNELS; i++)
@@ -3752,7 +3752,7 @@ PERSIST UBYTE SMUSHeader[24] =
     // assert(smusfile);
 
     strcpy((char*) fn_save, (const char*) fn_game);
-    fixextension(filekind[KIND_SMUS].extension, (STRPTR) fn_save, TRUE, "");
+    fixextension(filekind[KIND_SMUS].extension[0], (STRPTR) fn_save, TRUE, "");
     length = strlen((const char*) fn_save);
 
     if (region == REGION_NTSC)
@@ -3824,7 +3824,7 @@ EXPORT void finalize_smus(void)
     }   }   }
 
     strcpy((char*) fn_save, (const char*) fn_game);
-    fixextension(filekind[KIND_SMUS].extension, (STRPTR) fn_save, TRUE, "");
+    fixextension(filekind[KIND_SMUS].extension[0], (STRPTR) fn_save, TRUE, "");
     length = strlen((const char*) fn_save);
 
     totalsize = 24;
@@ -4062,7 +4062,7 @@ PERSIST UBYTE prtbmp_header[78] =
             } else
             {   fn_screenshot[0] = EOS;
             }
-            fixextension(filekind[kind].extension, (STRPTR) fn_screenshot, TRUE, ""); // so we have extension in ASL requester
+            fixextension(filekind[kind].extension[0], (STRPTR) fn_screenshot, TRUE, ""); // so we have extension in ASL requester
             if (asl
             (   filekind[kind].hail,
                 filekind[kind].pattern,
@@ -4073,7 +4073,7 @@ PERSIST UBYTE prtbmp_header[78] =
             ) != EXIT_SUCCESS)
             {   return;
             }
-            fixextension(filekind[kind].extension, (STRPTR) fn_screenshot, TRUE, ""); // so we have extension even if user overtypes it in ASL requester
+            fixextension(filekind[kind].extension[0], (STRPTR) fn_screenshot, TRUE, ""); // so we have extension even if user overtypes it in ASL requester
 #ifdef SETPATHS
             break_pathname((STRPTR) fn_screenshot, (STRPTR) path_screenshots, NULL);
 #endif
@@ -4089,7 +4089,7 @@ PERSIST UBYTE prtbmp_header[78] =
             }   }
             suffix[0] = '-';
             sprintf(&suffix[1], "%d", printer[whichprinter].page);
-            fixextension(filekind[kind].extension, fn_screenshot, TRUE, suffix);
+            fixextension(filekind[kind].extension[0], fn_screenshot, TRUE, suffix);
             cd_screenshots();
         }
 
@@ -4560,7 +4560,7 @@ DONE:
             } else
             {   fn_project[0] = EOS;
             }
-            fixextension(filekind[KIND_ASCII].extension, (STRPTR) fn_project, TRUE, ""); // so we have extension in ASL requester
+            fixextension(filekind[KIND_ASCII].extension[0], (STRPTR) fn_project, TRUE, ""); // so we have extension in ASL requester
             if (asl
             (   filekind[KIND_ASCII].hail,
                 filekind[KIND_ASCII].pattern,
@@ -4571,7 +4571,7 @@ DONE:
             ) != EXIT_SUCCESS)
             {   return;
             }
-            fixextension(filekind[KIND_ASCII].extension, (STRPTR) fn_project, TRUE, ""); // so we have extension even if user overtypes it in ASL requester
+            fixextension(filekind[KIND_ASCII].extension[0], (STRPTR) fn_project, TRUE, ""); // so we have extension even if user overtypes it in ASL requester
 #ifdef SETPATHS
             break_pathname((STRPTR) fn_project, (STRPTR) path_projects, NULL);
 #endif
@@ -4589,7 +4589,7 @@ DONE:
                 } else
                 {                          strcpy(fn_project, "Printer");
             }   }
-            fixextension(filekind[KIND_ASCII].extension, fn_project, TRUE, "");
+            fixextension(filekind[KIND_ASCII].extension[0], fn_project, TRUE, "");
             cd_projects();
             if (printer[whichprinter].page == 1)
             {   if (!((TheLocalHandle = fopen((const char*) fn_project, "wb"))))
@@ -4636,7 +4636,7 @@ EXPORT void saveasmscrnshot(void)
     } else
     {   fn_project[0] = EOS;
     }
-    fixextension(filekind[KIND_ASM].extension, (STRPTR) fn_project, TRUE, ""); // so we have extension in ASL requester
+    fixextension(filekind[KIND_ASM].extension[0], (STRPTR) fn_project, TRUE, ""); // so we have extension in ASL requester
     if (asl
     (   filekind[KIND_ASM].hail,
         filekind[KIND_ASM].pattern,
@@ -4647,7 +4647,7 @@ EXPORT void saveasmscrnshot(void)
     ) != EXIT_SUCCESS)
     {   return;
     }
-    fixextension(filekind[KIND_ASM].extension, (STRPTR) fn_project, TRUE, ""); // so we have extension even if user overtypes it in ASL requester
+    fixextension(filekind[KIND_ASM].extension[0], (STRPTR) fn_project, TRUE, ""); // so we have extension even if user overtypes it in ASL requester
 #ifdef SETPATHS
     break_pathname((STRPTR) fn_project, (STRPTR) path_projects, NULL);
 #endif
@@ -5143,7 +5143,7 @@ EXPORT void project_save(int kind)
     }
 
     strcpy((char*) fn_oldgame, (const char*) fn_game);
-    fixextension(filekind[kind].extension, (STRPTR) fn_game, TRUE, "");
+    fixextension(filekind[kind].extension[0], (STRPTR) fn_game, TRUE, "");
     break_pathname((STRPTR) fn_game, (STRPTR) path_games, (STRPTR) file_game);
     if (asl
     (   filekind[kind].hail,
@@ -5158,7 +5158,7 @@ EXPORT void project_save(int kind)
         updatesmlgad(GADPOS_STOP,   0, TRUE);
         return;
     }
-    fixextension(filekind[kind].extension, (STRPTR) fn_game, FALSE, "");
+    fixextension(filekind[kind].extension[0], (STRPTR) fn_game, FALSE, "");
     break_pathname((STRPTR) fn_game, (STRPTR) path_games, (STRPTR) file_game);
     engine_save(kind, TRUE);
     add_recent();
@@ -5373,20 +5373,20 @@ EXPORT void macro_start(void)
             PSGBuffer[16] = 0xFF;
 
             strcpy((char*) fn_save, (const char*) fn_game);
-            fixextension(filekind[KIND_PSG].extension, (STRPTR) fn_save, TRUE, "-1");
+            fixextension(filekind[KIND_PSG].extension[0], (STRPTR) fn_save, TRUE, "-1");
             if ((PSGHandle[0] = fopen((const char*) fn_save, "wb")))
             {   DISCARD fwrite(PSGBuffer, 17, 1, PSGHandle[0]);
             }
 
             strcpy((char*) fn_save, (const char*) fn_game);
-            fixextension(filekind[KIND_PSG].extension, (STRPTR) fn_save, TRUE, "-2");
+            fixextension(filekind[KIND_PSG].extension[0], (STRPTR) fn_save, TRUE, "-2");
             if ((PSGHandle[1] = fopen((const char*) fn_save, "wb")))
             {   DISCARD fwrite(PSGBuffer, 17, 1, PSGHandle[1]);
         }   }
 
         if (ymfile)
         {   strcpy((char*) fn_save, (const char*) fn_game);
-            fixextension(filekind[KIND_YM].extension,  (STRPTR) fn_save, TRUE, "-1");
+            fixextension(filekind[KIND_YM].extension[0],  (STRPTR) fn_save, TRUE, "-1");
             if ((YMHandle[0] = fopen((const char*) fn_save, "w+b")))
             {   DISCARD fwrite(YMHeader,                                                                              34, 1, YMHandle[0]); // header
                 DISCARD fwrite(autotext[AUTOLINE_GAMENAME]       , strlen((const char*) autotext[AUTOLINE_GAMENAME]) + 1, 1, YMHandle[0]); // song
@@ -5398,7 +5398,7 @@ EXPORT void macro_start(void)
             datastart = ftell(YMHandle[0]); // this will be the same for both YM files
 
             strcpy((char*) fn_save, (const char*) fn_game);
-            fixextension(filekind[KIND_YM].extension,  (STRPTR) fn_save, TRUE, "-2");
+            fixextension(filekind[KIND_YM].extension[0],  (STRPTR) fn_save, TRUE, "-2");
             if ((YMHandle[1] = fopen((const char*) fn_save, "w+b")))
             {   DISCARD fwrite(YMHeader,                                                                              34, 1, YMHandle[1]); // header
                 DISCARD fwrite(autotext[AUTOLINE_GAMENAME]       , strlen((const char*) autotext[AUTOLINE_GAMENAME]) + 1, 1, YMHandle[1]); // song
@@ -5422,22 +5422,22 @@ EXPORT void macro_start(void)
     }
     if (mnganims)
     {   strcpy((char*) fn_screenshot, (const char*) fn_game);
-        fixextension(filekind[KIND_MNG].extension, (STRPTR) fn_screenshot, TRUE, "");
+        fixextension(filekind[KIND_MNG].extension[0], (STRPTR) fn_screenshot, TRUE, "");
         savescreenshot(KIND_MNG, FALSE, FALSE, TRUE);
     }
     if (apnganims)
     {   strcpy((char*) fn_screenshot, (const char*) fn_game);
-        fixextension(filekind[KIND_PNG].extension, (STRPTR) fn_screenshot, TRUE, "");
+        fixextension(filekind[KIND_PNG].extension[0], (STRPTR) fn_screenshot, TRUE, "");
         savescreenshot(KIND_PNG, FALSE, FALSE, TRUE);
     }
     if (gifanims)
     {   strcpy((char*) fn_screenshot, (const char*) fn_game);
-        fixextension(filekind[KIND_GIF].extension, (STRPTR) fn_screenshot, TRUE, "");
+        fixextension(filekind[KIND_GIF].extension[0], (STRPTR) fn_screenshot, TRUE, "");
         savescreenshot(KIND_GIF, FALSE, FALSE, TRUE);
     }
     if (iffanims)
     {   strcpy((char*) fn_screenshot, (const char*) fn_game);
-        fixextension(filekind[KIND_IFFANIM].extension, (STRPTR) fn_screenshot, TRUE, "");
+        fixextension(filekind[KIND_IFFANIM].extension[0], (STRPTR) fn_screenshot, TRUE, "");
         savescreenshot(KIND_IFFANIM, FALSE, FALSE, TRUE);
     }
     if (mnganims || apnganims || gifanims || iffanims)

@@ -181,7 +181,7 @@ typedef void*               APTR;
                         "Tapes (8SV,8SVX,AIF,AIFF,PAP,WAV,MDCR)\0*.8SV;*.8SVX;*.AIF;*.AIFF;*.PAP;*.WAV;*.MDCR\0" \
                         "Disks (IMG,RAW,TWIN)\0*.IMG;*.RAW;*.TWIN\0" \
                         "PROM burner files (BPNF,BNPF,SMS,ZIP)\0*.BPNF;*.BNPF;*.SMS;*.ZIP\0" \
-                        "Assembler source code (ASM,2650)\0*.ASM;*.2650\0" \
+                        "Assembler source code (ASM,2650,INC)\0*.ASM;*.2650;*.INC\0" \
                         "Symbols (SYM)\0*.SYM\0" \
                         "ZIP Archives (ZIP)\0*.ZIP\0" \
                         "Bitmaps (BMP)\0*.BMP\0" \

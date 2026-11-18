@@ -172,7 +172,7 @@ BOOL CALLBACK DIEnumDevicesProc(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef)
     unit[joys] = TRUE;
     joys++;
     if (joys == 2)
-    {   return DIENUM_STOP; // Two is enough.
+    {   return DIENUM_STOP; // two is enough
     } else
     {   // assert(joys == 1);
         return DIENUM_CONTINUE;
@@ -186,6 +186,11 @@ EXPORT void ff_initjoy(int joy)
     DIDEVCAPS       devcaps;
     DIEFFECT        eff;
     DIPROPDWORD     DIPropAutoCenter;
+
+    // assert(MainWindowPtr);
+#ifdef FFVERBOSE
+    zprintf(TEXTPEN_VERBOSE, "No window handle!\n");
+#endif
 
     // set game data format
     hr = ffjoy2[joy]->lpVtbl->SetDataFormat(ffjoy2[joy], &c_dfDIJoystick);
@@ -239,10 +244,11 @@ EXPORT void ff_initjoy(int joy)
 #ifdef FFVERBOSE
         switch (hr)
         {
-        case  DI_OK:                zprintf(TEXTPEN_VERBOSE, "Set cooperative level to exclusive.\n");
-        acase DIERR_INVALIDPARAM:   zprintf(TEXTPEN_ERROR,   "SetCooperativeLevel() to exclusive: Invalid parameter!\n");
-        acase DIERR_NOTINITIALIZED: zprintf(TEXTPEN_ERROR,   "SetCooperativeLevel() to exclusive: Not initialized!\n");
-        adefault:                   zprintf(TEXTPEN_ERROR,   "SetCooperativeLevel() to exclusive: Unknown error!\n");
+        case  DI_OK:                                    zprintf(TEXTPEN_VERBOSE, "Set cooperative level to exclusive.\n");
+        acase DIERR_INVALIDPARAM:                       zprintf(TEXTPEN_ERROR,   "SetCooperativeLevel() to exclusive: Invalid parameter!\n");
+        acase DIERR_NOTINITIALIZED:                     zprintf(TEXTPEN_ERROR,   "SetCooperativeLevel() to exclusive: Not initialized!\n");
+        acase HRESULT_FROM_WIN32(ERROR_INVALID_HANDLE): zprintf(TEXTPEN_ERROR,   "SetCooperativeLevel() to exclusive: No window handle!\n");
+        adefault:                                       zprintf(TEXTPEN_ERROR,   "SetCooperativeLevel() to exclusive: Error $%08X!\n", hr);
         }
 #endif
         if (hr != DI_OK)
@@ -326,7 +332,13 @@ EXPORT void ff_initjoy(int joy)
 
     if (rumblable[joy])
     {   joySetForcesXY(joy, 5000, 5000); // half power
-}   }
+    }
+#ifdef FFVERBOSE
+    else
+    {   zprintf(TEXTPEN_VERBOSE, "Joystick %d is not rumblable!\n", joy);
+    }
+#endif
+}
 
 EXPORT void ff_ReadJoystick(UWORD joynum)
 {   HRESULT    hr;
@@ -344,16 +356,16 @@ EXPORT void ff_ReadJoystick(UWORD joynum)
         switch (hr)
         {
         case DI_OK:
-#ifdef FFVERBOSE
+/* #ifdef FFVERBOSE
             zprintf(TEXTPEN_VERBOSE, "Polled data for unit %d.\n", joynum);
-#endif
+#endif */
             hr = ffjoy2[joynum]->lpVtbl->GetDeviceState(ffjoy2[joynum], sizeof(DIJOYSTATE), &js);
             switch (hr)
             {
             case  DI_OK:
                 ok = TRUE;
 #ifdef FFVERBOSE
-                zprintf(TEXTPEN_VERBOSE, "Read data for unit %d.\n", joynum);
+                // zprintf(TEXTPEN_VERBOSE, "Read data for unit %d.\n", joynum);
             acase DIERR_INPUTLOST:      zprintf(TEXTPEN_ERROR,   "GetDeviceState(%d): Input lost!\n"               , joynum);
             acase E_PENDING:            zprintf(TEXTPEN_ERROR,   "GetDeviceState(%d): Data is not yet available.\n", joynum);
             acase DIERR_INVALIDPARAM:   zprintf(TEXTPEN_ERROR,   "GetDeviceState(%d): Invalid parameter!\n"        , joynum);
@@ -363,14 +375,10 @@ EXPORT void ff_ReadJoystick(UWORD joynum)
 #endif
             }
 #ifdef FFVERBOSE
-        acase DIERR_INPUTLOST:
-            zprintf(TEXTPEN_ERROR,   "Poll(%d): Input lost!\n"     , joynum);
-        acase DIERR_NOTACQUIRED:
-            zprintf(TEXTPEN_ERROR,   "Poll(%d): Not acquired!\n"   , joynum);
-        acase DIERR_NOTINITIALIZED:
-            zprintf(TEXTPEN_ERROR,   "Poll(%d): Not initialized!\n", joynum);
-        adefault:
-            zprintf(TEXTPEN_ERROR,   "Poll(%d): Unknown error!\n"  , joynum);
+        acase DIERR_INPUTLOST:          zprintf(TEXTPEN_ERROR,   "Poll(%d): Input lost!\n"     , joynum);
+        acase DIERR_NOTACQUIRED:        zprintf(TEXTPEN_ERROR,   "Poll(%d): Not acquired!\n"   , joynum);
+        acase DIERR_NOTINITIALIZED:     zprintf(TEXTPEN_ERROR,   "Poll(%d): Not initialized!\n", joynum);
+        adefault:                       zprintf(TEXTPEN_ERROR,   "Poll(%d): Unknown error!\n"  , joynum);
 #endif
         }
 
@@ -525,8 +533,19 @@ EXPORT void ff_die(void)
 EXPORT void ff_on(int joy, int amount)
 {   HRESULT hr;
 
-    if (!ffeffect[joy] || rumbling[joy])
-    {   return;
+    if (!ffeffect[joy])
+    {
+#ifdef FFVERBOSE
+        zprintf(TEXTPEN_VERBOSE, "No IDirectInputEffect pointer for joystick %d!\n", joy);
+#endif
+        return;
+    }
+    if (rumbling[joy])
+    {
+#ifdef FFVERBOSE
+        zprintf(TEXTPEN_VERBOSE, "Joystick %d is not rumbling!\n", joy);
+#endif
+        return;
     }
 
     hr = ffeffect[joy]->lpVtbl->Start(ffeffect[joy], 1, 0);

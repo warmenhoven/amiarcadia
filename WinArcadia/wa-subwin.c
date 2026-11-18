@@ -176,6 +176,7 @@ IMPORT       FLAG                      capslock,
                                        PSGSoundOpened[GUESTCHANNELS],
                                        reghost,
                                        resetdisabled,
+                                       quitting,
                                        SampleOpened[SAMPLES];                                       
 IMPORT       TEXT                      controltip[5][64 + 1],
                                        fn_game[MAX_PATH + 1], // the entire pathname (path and file)
@@ -1022,13 +1023,15 @@ EXPORT void open_subwindow(int which, LPCTSTR dialog, DLGPROC function)
 
     opening = TRUE;
     if (which == SUBWINDOW_OUTPUT)
-    {   subwin[which].hwnd = CreateDialog
-        (   InstancePtr,
-            dialog,
-            NULL,
-            function
-        );
-    } else
+    {   if (!quitting) // no point doing it while quitting as all text output will be suppressed by zprintf() so it will be empty
+        {   subwin[which].hwnd = CreateDialog
+            (   InstancePtr,
+                dialog,
+                NULL,
+                function
+            );
+    }   }
+    else
     {   subwin[which].hwnd = CreateDialog
         (   InstancePtr,
             dialog,
@@ -1039,7 +1042,7 @@ EXPORT void open_subwindow(int which, LPCTSTR dialog, DLGPROC function)
     opening = FALSE;
 
     updatemenu(subwin[which].menuitem);
-    if (which != SUBWINDOW_MEMORY && which != SUBWINDOW_OUTPUT)
+    if (which != SUBWINDOW_MEMORY)
     {   DISCARD SetActiveWindow(MainWindowPtr);
     }
 

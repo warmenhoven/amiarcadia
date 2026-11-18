@@ -1154,7 +1154,7 @@ EXPORT void create_mdcr(void)
     } else
     {   fn_tape[1][0] = EOS;
     }
-    fixextension(filekind[KIND_MDCR].extension, (STRPTR) fn_tape[1], TRUE, ""); // so we have extension in ASL requester
+    fixextension(filekind[KIND_MDCR].extension[0], (STRPTR) fn_tape[1], TRUE, ""); // so we have extension in ASL requester
 
     if (asl
     (   filekind[KIND_MDCR].hail,
@@ -1166,7 +1166,7 @@ EXPORT void create_mdcr(void)
     ) != EXIT_SUCCESS)
     {   return;
     }
-    fixextension(filekind[KIND_MDCR].extension, (STRPTR) fn_tape[1], TRUE, ""); // so we have extension even if user overtypes it in ASL requester
+    fixextension(filekind[KIND_MDCR].extension[0], (STRPTR) fn_tape[1], TRUE, ""); // so we have extension even if user overtypes it in ASL requester
 #ifdef SETPATHS
     break_pathname((STRPTR) fn_tape[1], (STRPTR) path_tapes, NULL);
 #endif

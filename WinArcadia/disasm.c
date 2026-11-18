@@ -4604,7 +4604,7 @@ EXPORT void disgame(int address1, int address2, STRPTR filename)
     }   }   }
 
     if (filename[0])
-    {   fixextension(filekind[KIND_ASM].extension, filename, TRUE, "");
+    {   fixextension(filekind[KIND_ASM].extension[0], filename, TRUE, "");
         cd_projects();
         if (!(DisHandle = fopen(filename, "wt")))
         {   zprintf(TEXTPEN_ERROR, "Can't open %s for output!\n", filename);

@@ -103,6 +103,9 @@ IMPORT       ASCREEN              screen[BOXWIDTH][BOXHEIGHT];
 #ifdef AMIGA
     IMPORT   int                  throb;
 #endif
+#ifdef SHOWRUMBLE
+    IMPORT   int                  rumbling[2];
+#endif
 
 /* MODULE VARIABLES-------------------------------------------------------
 

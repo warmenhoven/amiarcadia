@@ -27,6 +27,10 @@
 
 #define ENDMARKER ";END INCLUDE "
 
+// CPU can be a directive or an instruction
+// #define CPU_DIRECTIVE
+#define CPU_INSTRUCTION
+
 // EXPORTED VARIABLES-----------------------------------------------------
 
 EXPORT       FLAG                     assembling     = FALSE;
@@ -180,13 +184,15 @@ EXPORT void assemble(void)
     cd_projects();
 
     if (!Exists(fn_asm))
-    {   fixextension(filekind[KIND_ASM].extension, (STRPTR) fn_asm, FALSE, "");
+    {   fixextension(filekind[KIND_ASM].extension[0], (STRPTR) fn_asm, FALSE, "");
         if (!Exists(fn_asm))
-        {   fixextension(".2650", (STRPTR) fn_asm, TRUE, "");
+        {   fixextension(filekind[KIND_ASM].extension[1], (STRPTR) fn_asm, TRUE, "");
             if (!Exists(fn_asm))
-            {   zprintf(TEXTPEN_CLIOUTPUT, "File doesn't exist!\n");
-                goto ASMDONE;
-    }   }   }
+            {   fixextension(filekind[KIND_ASM].extension[2], (STRPTR) fn_asm, TRUE, "");
+                if (!Exists(fn_asm))
+                {   zprintf(TEXTPEN_CLIOUTPUT, "File doesn't exist!\n");
+                    goto ASMDONE;
+    }   }   }   }
 
     asmsize1 = (int) getsize((STRPTR) fn_asm);
     if (!(AsmBuffer = malloc(asmsize1)))
@@ -220,7 +226,7 @@ EXPORT void assemble(void)
     adefault:      // eg. ARCADIA, INTERTON, INSTRUCTOR, PHUNSY, coin-ops
                    thekind = KIND_BIN;
     }
-    fixextension(filekind[thekind].extension, (STRPTR) fn_lstbin, TRUE, "");
+    fixextension(filekind[thekind].extension[0], (STRPTR) fn_lstbin, TRUE, "");
     if (thekind == KIND_BIN || thekind == KIND_TVC)
     {   if (!(BinHandle = fopen((const char*) fn_lstbin, "wb")))
         {   zprintf(TEXTPEN_CLIOUTPUT, "Can't open %s for output!\n", fn_lstbin);
@@ -644,9 +650,13 @@ START:
      || compareit(".DBYTE", TRUE) // X2650 cross-asm
      || compareit("WORD"  , TRUE) // AS2650
      || compareit("FDB"   , TRUE) // AS2650
+     || compareit("DWBE"  , TRUE) // "Macroassembler AS" (which is different to AS2650)
     )
     {   getimmediatewords(FALSE);
-    } elif (compareit(".ADDR", TRUE)) // X2650 cross-asm
+    } elif
+    (   compareit(".ADDR" , TRUE) // X2650 cross-asm
+     || compareit("DWLE"  , TRUE) // "Macroassembler AS" (which is different to AS2650)
+    )
     {   getimmediatewords(TRUE);
         asmwarning("wrong endianness");
     } elif (compareit("DFLT", TRUE)) // MicroByte, asm2650
@@ -748,6 +758,25 @@ START:
     {   skipblanks(TRUE);
         ocursor += parsenumber(&LineBuffer[linecursor]);
     }
+#ifdef CPU_DIRECTIVE
+    elif (compareit("CPU", TRUE)) // from "Macroassembler AS" (which is different to AS2650)
+    {   skipblanks(TRUE);
+        if (!compareit("2650", TRUE) || !compareit("2650A", TRUE))
+        {   if (supercpu)
+            {   supercpu = FALSE;
+                asmwarning("switching to 2650/2650A CPU");
+                updatemenu(MENUFAKE_CPU);
+        }   }
+        elif (!compareit("2650B", TRUE))
+        {   if (!supercpu)
+            {   supercpu = TRUE;
+                asmwarning("switching to 2650B CPU");
+                updatemenu(MENUFAKE_CPU);
+        }   }
+        else
+        {   asmerror("unsupported CPU");
+    }   }
+#endif
 
     // Instructions-------------------------------------------------------
 
@@ -900,7 +929,11 @@ START:
     {   getabsolute_nonbranch_signetics(0x6C, 0);
     } elif (compareit("REDD,",   FALSE) || compareit("RDD,",    FALSE)) // $70..$73
     {   emit(0x70 + getreg_signetics(2, TRUE));
-    } elif (compareit("CPSU",    TRUE ) || compareit("CPU",     TRUE )) // $74
+    } elif (compareit("CPSU",    TRUE )
+#ifdef CPU_INSTRUCTION
+                                        || compareit("CPU",     TRUE )
+#endif
+                                                                      ) // $74
     {   emit(0x74);
         getimmediate(TRUE);
     } elif (compareit("CPSL",    TRUE ) || compareit("CPL",     TRUE )) // $75
@@ -1090,7 +1123,7 @@ START:
     // Labels and Equates-------------------------------------------------
 
     elif (equstring[0] || linecursor != 0)
-    {   asmerror("syntax error");
+    {   asmerror("syntax error - fatal");
         return FALSE;
     } else
     {   i = 0;
@@ -1714,7 +1747,7 @@ START:
     // Labels and Equates-------------------------------------------------
 
     elif (equstring[0] || linecursor != 0)
-    {   asmerror("syntax error");
+    {   asmerror("syntax error - fatal");
         return FALSE;
     } else
     {   i = 0;
@@ -2924,7 +2957,7 @@ START:
     // Labels and Equates-------------------------------------------------
 
     elif (equstring[0] || linecursor != 0)
-    {   asmerror("syntax error");
+    {   asmerror("syntax error - fatal");
         return FALSE;
     } else
     {   i = 0;
@@ -5224,7 +5257,7 @@ START:
     // Labels and Equates-------------------------------------------------
 
     elif (equstring[0] || linecursor != 0)
-    {   asmerror("syntax error");
+    {   asmerror("syntax error - fatal");
         return FALSE;
     } else
     {   i = 0;

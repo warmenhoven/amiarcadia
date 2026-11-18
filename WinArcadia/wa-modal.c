@@ -53,235 +53,235 @@ EXPORT struct AssociationStruct assoc[ASSOCIATIONS] = {
 };
 
 EXPORT struct KindStruct filekind[KINDS] =
-{ { ".ilbm", ".lbm",
+{ { { ".ilbm", ".lbm", NULL },
     "IFF ILBM (*.ILBM, *.LBM)\0*.ILBM;*.LBM\0All files (*.*)\0*.*\0",
     FALSE,
     NULL,
     NULL
   },
-  { ".acbm", NULL,
+  { { ".acbm", NULL, NULL },
     "IFF ACBM (*.ACBM)\0*.ACBM\0All files (*.*)\0*.*\0",
     FALSE,
     NULL,
     NULL
   },
-  { ".bmp", NULL,
+  { { ".bmp", NULL, NULL },
     "BMP (*.BMP)\0*.BMP\0All files (*.*)\0*.*\0",
     FALSE,
     "bmp_ext",
     "Bitmap",
   },
-  { ".pcx", NULL,
+  { { ".pcx", NULL, NULL },
     "PCX (*.PCX)\0*.PCX\0All files (*.*)\0*.*\0",
     FALSE,
     NULL,
     NULL
   },
-  { ".gif", NULL,
+  { { ".gif", NULL, NULL },
     "GIF (*.GIF)\0*.GIF\0All files (*.*)\0*.*\0",
     FALSE,
     NULL,
     NULL
   },
-  { ".tif", ".tiff",
+  { { ".tif", ".tiff", NULL },
     "TIFF (*.TIF, *.TIFF)\0*.TIF;*.TIFF\0All files (*.*)\0*.*\0",
     FALSE,
     NULL,
     NULL
   },
-  { ".png", ".apng",
+  { { ".png", ".apng", NULL },
     "PNG (*.PNG, *.APNG)\0*.PNG;*.APNG\0All files (*.*)\0*.*\0",
     FALSE,
     NULL,
     NULL
   },
-  { ".bin", ".rom",
+  { { ".bin", ".rom", NULL },
     "Arcadia/Interton/SI50/PHUNSY Program (*.BIN, *.ROM)\0*.BIN;*.ROM\0All files (*.*)\0*.*\0",
     TRUE,
     "bin_ext",
     "Program"
   },
-  { ".cos", NULL,
+  { { ".cos", NULL, NULL },
     "Saved State (*.COS)\0*.COS\0All files (*.*)\0*.*\0",
     TRUE,
     "cos_ext",
     "COmmon State format"
   },
-  { ".cor", NULL,
+  { { ".cor", NULL, NULL },
     "Recording (*.COR)\0*.COR\0All files (*.*)\0*.*\0",
     TRUE,
     "cor_ext",
     "COmmon Recording format"
   },
-  { ".anim", NULL,
+  { { ".anim", NULL, NULL },
     "IFF ANIM (*.ANIM)\0*.ANIM\0All files (*.*)\0*.*\0",
     FALSE,
     NULL,
     NULL
   },
-  { ".zip", NULL,
+  { { ".zip", NULL, NULL },
     "ZIP Archive (*.ZIP)\0*.ZIP\0All files (*.*)\0*.*\0",
     TRUE,
     "zip_ext",
     "ZIP archived Signetics-based game"
   },
-  { ".aof", ".obj",
+  { { ".aof", ".obj", NULL },
     "Absolute Object Format (*.AOF, *.OBJ)\0*.AOF;*.OBJ\0All files (*.*)\0*.*\0",
     TRUE,
     "aof_ext",
     "Signetics Absolute Object Format"
   },
-  { ".eof", NULL,
+  { { ".eof", NULL, NULL },
     "Elektor Object Format (*.EOF)\0*.EOF\0All files (*.*)\0*.*\0",
     TRUE,
     "eof_ext",
     "Elektor Object Format"
   },
-  { ".hex", NULL,
+  { { ".hex", NULL, NULL },
     "Intel Hex Format (*.HEX)\0*.HEX\0All files (*.*)\0*.*\0",
     TRUE,
     "hex_ext",
     "Intel Hex Format"
   },
-  { ".wav", NULL,
+  { { ".wav", NULL, NULL },
     "RIFF WAVe (*.WAV)\0*.WAV\0All files (*.*)\0*.*\0",
     FALSE,
     "wav_ext",
     "RIFF WAVe"
   },
-  { ".psg", NULL,
+  { { ".psg", NULL, NULL },
     "Programmable Sound Generator output (*.PSG)\0*.PSG\0All files (*.*)\0*.*\0",
     FALSE,
     "psg_ext",
     "AY-3-8910 Programmable Sound Generator output"
   },
-  { ".ym", NULL,
+  { { ".ym", NULL, NULL },
     "Programmable Sound Generator output (*.YM)\0*.YM\0All files (*.*)\0*.*\0",
     FALSE,
     "ym_ext",
     "AY-3-8910 Yamaha Music"
   },
-  { ".asm", ".2650",
-    "Assembler source code (*.ASM, *.2650)\0*.ASM;*.2650\0All files (*.*)\0*.*\0",
+  { { ".asm", ".2650", ".inc" },
+    "Assembler source code (*.ASM, *.2650, *.INC)\0*.ASM;*.2650;*.INC\0All files (*.*)\0*.*\0",
     FALSE,
     "asm_ext",
     "2650 assembler source code"
   },
-  { ".8svx", ".8sv",
+  { { ".8svx", ".8sv", NULL },
     "IFF 8SVX (*.8SVX, *.8SV)\0*.8SVX;*.8SV\0All files (*.*)\0*.*\0",
     FALSE,
     "8svx_ext",
     "8-bit sampled sound",
   },
-  { ".aiff", ".aif",
+  { { ".aiff", ".aif", NULL },
     "Audio IFF (*.AIFF, *.AIF)\0*.AIFF;*.AIF\0All files (*.*)\0*.*\0",
     FALSE,
     "aiff_ext",
     "Audio IFF sampled sound",
   },
-  { ".mng", NULL,
+  { { ".mng", NULL, NULL },
     "MNG (*.MNG)\0*.MNG\0All files (*.*)\0*.*\0",
     FALSE,
     NULL,
     NULL
   },
-  { ".mid", ".midi",
+  { { ".mid", ".midi", NULL },
     "Musical Instrument Digital Interface (*.MID, *.MIDI)\0*.MID;*.MIDI\0All files (*.*)\0*.*\0",
     FALSE,
     NULL,
     NULL
   },
-  { ".smus", NULL,
+  { { ".smus", NULL, NULL },
     "IFF SMUS (*.SMUS)\0*.SMUS\0All files (*.*)\0*.*\0",
     FALSE,
     NULL,
     NULL
   },
-  { ".txt", NULL,
+  { { ".txt", NULL, NULL },
     "ASCII text (*.TXT)\0*.TXT\0All files (*.*)\0*.*\0",
     FALSE,
     NULL,
     NULL
   },
-  { ".tvc", NULL,
+  { { ".tvc", NULL, NULL },
     "Elektor Program (*.TVC)\0*.TVC\0All files (*.*)\0*.*\0",
     TRUE,
     "tvc_ext",
     "Elektor TV Games Computer program"
   },
-  { ".mdcr", NULL,
+  { { ".mdcr", NULL, NULL },
     "Mini Digital Cassette Recorder tape (*.MDCR)\0*.MDCR\0All files (*.*)\0*.*\0",
     FALSE,
     "mdcr_ext",
     "Philips Mini Digital Cassette Recorder tape"
   },
-  { ".raw", NULL,
+  { { ".raw", NULL, NULL },
     "BINBUG/CD2650 floppy disk (*.RAW)\0*.RAW\0All files (*.*)\0*.*\0",
     FALSE,
     "raw_ext",
     "BINBUG/CD2650 floppy disk"
   },
-  { ".cmd", NULL,
+  { { ".cmd", NULL, NULL },
     "BINBUG command (*.CMD)\0*.CMD\0All files (*.*)\0*.*\0",
     FALSE,
     "cmd_ext",
     "BINBUG command"
   },
-  { ".img", NULL,
+  { { ".img", NULL, NULL },
     "TWIN floppy disk (*.IMG)\0*.IMG\0All files (*.*)\0*.*\0",
     FALSE,
     "img_ext",
     "TWIN floppy disk"
   },
-  { ".twin", NULL,
+  { { ".twin", NULL, NULL },
     "TWIN floppy disk (*.TWIN)\0*.TWIN\0All files (*.*)\0*.*\0",
     FALSE,
     "twin_ext",
     "TWIN floppy disk"
   },
-  { ".mod", NULL,
+  { { ".mod", NULL, NULL },
     "TWIN command (*.MOD)\0*.MOD\0All files (*.*)\0*.*\0",
     FALSE,
     "mod_ext",
     "TWIN command"
   },
-  { ".sym", NULL,
+  { { ".sym", NULL, NULL },
     "Symbol table (*.SYM)\0*.SYM\0All files (*.*)\0*.*\0",
     FALSE,
     "sym_ext",
     "Symbol table"
   },
-  { ".imag", NULL,
+  { { ".imag", NULL, NULL },
     "CD2650 command (*.IMAG)\0*.SYM\0All files (*.*)\0*.*\0",
     FALSE,
     "imag_ext",
     "CD2650 command"
   },
-  { ".ico", ".info",
+  { { ".ico", ".info", NULL },
     "Icon (*.ICO, *.INFO)\0*.ICO;*.INFO\0All files (*.*)\0*.*\0",
     FALSE,
     "ico_ext",
     "Icon"
   },
-  { ".16sv", NULL,
+  { { ".16sv", NULL, NULL },
     "IFF 16SV (*.16SV)\0*.16SV\0All files (*.*)\0*.*\0",
     FALSE,
     "16sv_ext",
     "16-bit sampled sound",
   },
-  { ".bpnf", ".bnpf",
+  { { ".bpnf", ".bnpf", NULL },
     "Begin Plus Negative Finish (*.BPNF, *.BNPF)\0*.BPNF;*.BNPF\0All files (*.*)\0*.*\0",
     FALSE,
     "bpnf_ext",
     "Begin Plus Negative Finish file"
   },
-  { ".sms", NULL,
+  { { ".sms", NULL, NULL },
     "PROM burner file (*.SMS)\0*.SMS\0All files (*.*)\0*.*\0",
     FALSE,
     "sms_ext",
     "PROM burner file",
   },
-  { ".pap", NULL,
+  { { ".pap", NULL, NULL },
     "Papertape (*.PAP)\0*.PAP\0All files (*.*)\0*.*\0",
     FALSE,
     "pap_ext",
@@ -766,25 +766,19 @@ EXPORT FLAG associate(int kind)
 {   TRANSIENT HKEY   hKey;
     TRANSIENT DWORD* lRtn;
     TRANSIENT LONG   rc;
-    TRANSIENT STRPTR extension[2];
-    TRANSIENT int    extensions,
-                     i;
+    TRANSIENT int    i;
     PERSIST   TEXT   errormsg[256 + 1],
                      tempstring[MAX_PATH + 7 + 1]; // both PERSISTent so as not to blow the stack
 
-    extension[0] = filekind[kind].extension;
-    if (filekind[kind].extension2)
-    {   extensions = 2;
-        extension[1] = filekind[kind].extension2;
-    } else
-    {   extensions = 1;
-    }
+    for (i = 0; i < 3; i++)
+    {   if (!filekind[kind].extension[i])
+        {   continue;
+        }
 
-    for (i = 0; i < extensions; i++)
-    {   // create the new registry key for the file extension
+        // create the new registry key for the file extension
         rc = RegCreateKeyEx
         (   HKEY_CLASSES_ROOT,
-            extension[i],
+            filekind[kind].extension[i],
             0,
             NULL,
             REG_OPTION_NON_VOLATILE,
@@ -795,7 +789,7 @@ EXPORT FLAG associate(int kind)
         );
         if (rc != ERROR_SUCCESS)
         {   FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, rc, 0, errormsg, 80, NULL);
-            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", extension[i], errormsg);
+            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", filekind[kind].extension[i], errormsg);
             return FALSE;
         }
         // set "(default)" string value to identifier
@@ -809,7 +803,7 @@ EXPORT FLAG associate(int kind)
         );
         if (rc != ERROR_SUCCESS)
         {   FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, rc, 0, errormsg, 80, NULL);
-            zprintf(TEXTPEN_ERROR, "RegSetValueEx(%s) error: %s", extension[i], errormsg);
+            zprintf(TEXTPEN_ERROR, "RegSetValueEx(%s) error: %s", filekind[kind].extension[i], errormsg);
             DISCARD RegCloseKey(hKey);
             return FALSE;
         }
@@ -829,7 +823,7 @@ EXPORT FLAG associate(int kind)
         );
         if (rc != ERROR_SUCCESS)
         {   FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, rc, 0, errormsg, 80, NULL);
-            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", extension[i], errormsg);
+            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", filekind[kind].extension[i], errormsg);
             return FALSE;
         }
         // set "(default)" string value to description of the file type
@@ -843,7 +837,7 @@ EXPORT FLAG associate(int kind)
         );
         if (rc != ERROR_SUCCESS)
         {   FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, rc, 0, errormsg, 80, NULL);
-            zprintf(TEXTPEN_ERROR, "RegSetValueEx(%s) error: %s", extension[i], errormsg);
+            zprintf(TEXTPEN_ERROR, "RegSetValueEx(%s) error: %s", filekind[kind].extension[i], errormsg);
             DISCARD RegCloseKey(hKey);
             return FALSE;
         }
@@ -865,7 +859,7 @@ EXPORT FLAG associate(int kind)
         );
         if (rc != ERROR_SUCCESS)
         {   FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, rc, 0, errormsg, 80, NULL);
-            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", extension[i], errormsg);
+            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", filekind[kind].extension[i], errormsg);
             return FALSE;
         }
         strcpy(tempstring, ProgName);
@@ -881,7 +875,7 @@ EXPORT FLAG associate(int kind)
         );
         if (rc != ERROR_SUCCESS)
         {   FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, rc, 0, errormsg, 80, NULL);
-            zprintf(TEXTPEN_ERROR, "RegSetValueEx(%s) error: %s", extension[i], errormsg);
+            zprintf(TEXTPEN_ERROR, "RegSetValueEx(%s) error: %s", filekind[kind].extension[i], errormsg);
             DISCARD RegCloseKey(hKey);
             return FALSE;
         }
@@ -903,7 +897,7 @@ EXPORT FLAG associate(int kind)
         );
         if (rc != ERROR_SUCCESS)
         {   FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, rc, 0, errormsg, 80, NULL);
-            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", extension[i], errormsg);
+            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", filekind[kind].extension[i], errormsg);
             return FALSE;
         }
         DISCARD RegCloseKey(hKey);
@@ -924,7 +918,7 @@ EXPORT FLAG associate(int kind)
         );
         if (rc != ERROR_SUCCESS)
         {   FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, rc, 0, errormsg, 80, NULL);
-            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", extension[i], errormsg);
+            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", filekind[kind].extension[i], errormsg);
             return FALSE;
         }
         DISCARD RegCloseKey(hKey);
@@ -945,7 +939,7 @@ EXPORT FLAG associate(int kind)
         );
         if (rc != ERROR_SUCCESS)
         {   FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, rc, 0, errormsg, 80, NULL);
-            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", extension[i], errormsg);
+            zprintf(TEXTPEN_ERROR, "RegCreateKeyEx(%s) error: %s", filekind[kind].extension[i], errormsg);
             return FALSE;
         }
         strcpy(tempstring, "\"");        // now "
@@ -963,13 +957,13 @@ EXPORT FLAG associate(int kind)
         );
         if (rc != ERROR_SUCCESS)
         {   FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, rc, 0, errormsg, 80, NULL);
-            zprintf(TEXTPEN_ERROR, "RegSetValueEx(%s) error: %s", extension[i], errormsg);
+            zprintf(TEXTPEN_ERROR, "RegSetValueEx(%s) error: %s", filekind[kind].extension[i], errormsg);
             DISCARD RegCloseKey(hKey);
             return FALSE;
         }
         DISCARD RegCloseKey(hKey);
 
-        zprintf(TEXTPEN_CLIOUTPUT, "Associated %s.\n", extension[i]);
+        zprintf(TEXTPEN_CLIOUTPUT, "Associated %s.\n", filekind[kind].extension[i]);
     }
 
     return TRUE;

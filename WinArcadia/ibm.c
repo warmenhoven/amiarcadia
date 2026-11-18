@@ -2797,7 +2797,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     sound_reset();
     speech_setrate((int) (speech_rate - 10));
     ff_init();
-    ff_initjoys();
+    openwindow(TRUE);
+    ff_initjoys(); // requires the window to be already open
     if (joys >= 1)
     {   // Gameware USB Rumble Control pads are just "USB Gamepad"
         if (!strcmp(joyname[0], "Logitech Dual Action"))
@@ -2806,7 +2807,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         if (joys == 2 && !strcmp(joyname[1], "Logitech Dual Action"))
         {   viewpadsas2[1] = 1;
     }   }
-    openwindow(TRUE);
     if (gotfilename)
     {   add_recent(); // must not be done until after opening the window
     }
@@ -4289,7 +4289,6 @@ EXPORT void openwindow(FLAG reopen)
     }
     PopUpMenuPtr = GetSubMenu(PopUpMenuPtr, 0);
 
-    update_joynames();
     make_statusbar();
 
     if (MenuPtr)

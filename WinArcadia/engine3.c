@@ -4090,7 +4090,7 @@ EXPORT void update_disk(int whichdrive)
     {   if (game)
         {   strcpy((char*) drive[whichdrive].fn_disk, (const char*) file_game);
         }
-        fixextension(filekind[thekind].extension, (STRPTR) drive[whichdrive].fn_disk, TRUE, ""); // so we have extension in ASL requester
+        fixextension(filekind[thekind].extension[0], (STRPTR) drive[whichdrive].fn_disk, TRUE, ""); // so we have extension in ASL requester
 
         if (asl
         (   filekind[thekind].hail,
@@ -4103,13 +4103,13 @@ EXPORT void update_disk(int whichdrive)
         {   drive[whichdrive].fn_disk[0] = EOS;
             return;
         }
-        fixextension(filekind[thekind].extension, (STRPTR) drive[whichdrive].fn_disk, TRUE, ""); // so we have extension even if user overtypes it in ASL requester
+        fixextension(filekind[thekind].extension[0], (STRPTR) drive[whichdrive].fn_disk, TRUE, ""); // so we have extension even if user overtypes it in ASL requester
 /* #ifdef SETPATHS
         break_pathname(drive[whichdrive].fn_disk, path_disks, NULL);
         audit(FALSE); // assuming path_disks == path_games
 #endif */
     } else
-    {   fixextension(filekind[thekind].extension, (STRPTR) drive[whichdrive].fn_disk, TRUE, ""); // so eg. .TWIN changes to .IMG
+    {   fixextension(filekind[thekind].extension[0], (STRPTR) drive[whichdrive].fn_disk, TRUE, ""); // so eg. .TWIN changes to .IMG
     }
 
     if (!(DiskHandle = fopen((const char*) drive[whichdrive].fn_disk, "wb")))

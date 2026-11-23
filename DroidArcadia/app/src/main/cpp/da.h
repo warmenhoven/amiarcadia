@@ -1,8 +1,8 @@
 // INCLUDES---------------------------------------------------------------
 
 #define MAJORVERSION   0x04
-#define MINORVERSION   0x77
-#define INTEGERVERSION "4.77" // for RetroAchievements
+#define MINORVERSION   0x78
+#define INTEGERVERSION "4.78" // for RetroAchievements
 
 #include <jni.h>
 

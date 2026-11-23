@@ -203,11 +203,11 @@ public class LeftTouchView extends View
 
                 if (MainActivity.onebutton)
                 {   // assert(qi == MainActivity.key1);
-                    tp.setTextSize((float) MainActivity.scaleby * (50 - (MainActivity.keystring[qi].length() * 2))); // 50..40 for lengths 1..6
+                    tp.setTextSize((float) MainActivity.scaleby * (MainActivity.dp(50 - (MainActivity.keystring[qi].length() * 2))));
                     centrex = width  / 2;
                     centrey = height / 2;
                 } else
-                {   tp.setTextSize((float) MainActivity.scaleby *  25);
+                {   tp.setTextSize((float) MainActivity.scaleby * (MainActivity.dp(25 - (MainActivity.keystring[qi].length() * 2))));
                     centrex = widthpart  * (((qi % 3) * 2) + 1);
                     centrey = heightpart * (((qi / 3) * 2) + 1);
                 }

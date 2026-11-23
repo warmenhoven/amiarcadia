@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -1653,8 +1654,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         // Toast.makeText(MainActivity.this, "Scale by " + String.valueOf(scaleby) + " with size method " + String.valueOf(sizemethod) + "!", Toast.LENGTH_LONG).show();
     }
 
-    private float dp(float value)
-    {   return value * getResources().getDisplayMetrics().density;
+    public static float dp(float value)
+    {   return value * Resources.getSystem().getDisplayMetrics().density;
     }
 
     @SuppressWarnings("deprecation")

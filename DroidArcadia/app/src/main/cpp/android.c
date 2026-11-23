@@ -2841,7 +2841,10 @@ EXPORT void patchrom(void)
 
             memory[ 0xBC3] = trainer_invincibility ? 0x1B : 0x9A; // BCFR,lt $BCA          -> BCTR,un $BCA
             memory[ 0xCF7] = trainer_invincibility ? 0x00 : 0x12; // BCTR,un $D0A          -> BCTR,un $CF8
-        acase GUNDAMPOS:
+     /* acase GRIDPOS:
+            Since only one attempt is allowed, a wrong attempt will cause the game to effectively hang.
+            memory[ 0x7F8] = trainer_time          ? 0xC0 : 0xA1; // SUBZ    r1            -> NOP
+     */ acase GUNDAMPOS:
             memory[ 0x5C2] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
             memory[ 0xC00] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
         acase HEADONPOS:

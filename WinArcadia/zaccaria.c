@@ -319,7 +319,7 @@ EXPORT void astrowars_setmemmap(void)
     key1 =
     key2 =
     key3 =
-    key4 = 2;
+    key4 = GUESTKEY_2;
     machines[machine].keys = 6;
     whichkeyrect = KEYRECT_ASTROWARS;
     keynames_from_overlay();
@@ -410,7 +410,7 @@ EXPORT void galaxia_setmemmap(void)
     key1 =
     key2 =
     key3 =
-    key4 = 2;
+    key4 = GUESTKEY_2;
     machines[machine].keys = 6;
     whichkeyrect = KEYRECT_GALAXIA;
     keynames_from_overlay();
@@ -494,10 +494,10 @@ EXPORT void lb_setmemmap(void)
 #ifdef AMIGA
     hostmachines[machine].controls = IMAGE_CON_LASERBATTLE;
 #endif
-    key1 = 7;
-    key2 = 8;
-    key3 = 9;
-    key4 = 5;
+    key1 = GUESTKEY_7;
+    key2 = GUESTKEY_8;
+    key3 = GUESTKEY_9;
+    key4 = GUESTKEY_5;
     machines[machine].keys = 11;
     whichkeyrect = KEYRECT_LASERBATTLE;
     keynames_from_overlay();

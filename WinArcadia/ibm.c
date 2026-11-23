@@ -1213,7 +1213,6 @@ IMPORT       TEXT                        thearg[7][MAX_PATH + 80 + 1],
                                          usermsg[80 + 1];
 IMPORT       UWORD                       hostkey,
                                          console[4],
-                                         keypads[2][NUMKEYS],
                                          loadaddress,
                                          mirror_r[32768],
                                          mirror_w[32768],
@@ -1331,6 +1330,7 @@ IMPORT       FILE*                       DisHandle;
 IMPORT       struct AuditStruct          auditlist[FOUNDGAMES_MAX];
 IMPORT       struct CanvasStruct         canvas[CANVASES];
 IMPORT       struct KeyNameStruct        keyname[SCANCODES];
+IMPORT       struct KeyTableStruct       keytable[NUMKEYS];
 IMPORT       struct KindStruct           filekind[KINDS];
 IMPORT       struct MachineStruct        machines[MACHINES];
 IMPORT       struct HiScoreStruct        hiscore[HISCORES];
@@ -3072,7 +3072,11 @@ EXPORT void wa_checkinput(void)
             {   handle_keyup(scancode);
             }
         acase WM_RBUTTONUP:
-            if (!guestrmb && GetActiveWindow() != subwin[SUBWINDOW_MUSIC].hwnd)
+            if
+            (   !guestrmb
+             && GetActiveWindow() != subwin[SUBWINDOW_MUSIC].hwnd
+             && GetActiveWindow() != subwin[SUBWINDOW_MONITOR_XVI].hwnd
+            )
             {   SetCursor(hArrow);
                 if (!showpointers[wsm])
                 {   showpointers[wsm] = TRUE;
@@ -5116,7 +5120,7 @@ EXPORT void process_code(void)
                 if (!found)
                 {   for (j = 0; j < 2; j++)
                     {   for (k = 0; k < NUMKEYS; k++)
-                        {   if (keypads[j][k] == SCAN_P && keyexists(k))
+                        {   if (keytable[k].keypads[j] == SCAN_P && memmapinfo[memmap].keyused[k])
                             {   found = TRUE;
                                 break; // for speed
                     }   }   }

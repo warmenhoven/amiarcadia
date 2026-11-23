@@ -571,7 +571,7 @@ EXPORT void malzak_setmemmap(void)
     key1             =
     key2             =
     key3             =
-    key4             = 2;
+    key4             = GUESTKEY_2;
     bgcoll           = 0;
     analog           =
     swapped          = FALSE;

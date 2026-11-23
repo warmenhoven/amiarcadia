@@ -99,10 +99,10 @@ EXPORT       int                      base                     = BASE_HEX,
                                       cpl,
                                       filesize,
                                       found_dirs,
-                                      key1                     =  2,
-                                      key2                     =  1,
-                                      key3                     =  3,
-                                      key4                     =  0,
+                                      key1                     =  GUESTKEY_2,
+                                      key2                     =  GUESTKEY_1,
+                                      key3                     =  GUESTKEY_3,
+                                      key4                     =  GUESTKEY_0,
                                       nextinst,
                                       ppc,
                                       runtoframe               = FALSE,
@@ -125,6 +125,7 @@ EXPORT const int consolecolours[8] =
 // IMPORTED VARIABLES-----------------------------------------------------
 
 IMPORT       FLAG                     allglyphs,
+                                      axes[2],
                                       bangercharging,
                                       inframe,
                                       halted;
@@ -173,7 +174,6 @@ IMPORT       UBYTE                    abeff1, abeff2,
                                       vdu[MAX_VDUCOLUMNS][MAX_VDUROWS];
 IMPORT       UBYTE*                   IOBuffer;
 IMPORT       UWORD                    iar,
-                                      keypads[2][NUMKEYS],
                                       mirror_r[32768],
                                       mirror_w[32768],
                                       ras[8];
@@ -196,6 +196,8 @@ IMPORT       ULONG                    arcadia_viewcontrolsas,
                                       paused,
                                       pencolours[COLOURSETS][PENS],
                                       region,
+                                      showpalladiumkeys1,
+                                      showpalladiumkeys2,
                                       sound,
                                       tt_kybdtill,
                                       turbo,
@@ -332,6 +334,7 @@ IMPORT       struct HiScoreStruct     hiscore[HISCORES];
 IMPORT       struct HostMachineStruct hostmachines[MACHINES];
 IMPORT       struct IOPortStruct      ioport[258];
 IMPORT       struct KeyNameStruct     keyname[SCANCODES];
+IMPORT       struct KeyTableStruct    keytable[NUMKEYS];
 IMPORT       struct KindStruct        filekind[KINDS];
 IMPORT       struct MachineStruct     machines[MACHINES];
 IMPORT       struct MemMapInfoStruct  memmapinfo[MEMMAPS];
@@ -349,7 +352,8 @@ IMPORT const struct KnownStruct       known[KNOWNGAMES];
     IMPORT       struct Catalog*      CatalogPtr;
     IMPORT       struct Library*      SocketBase;
     IMPORT       struct Gadget*       gadgets[GIDS];
-    IMPORT       struct Window*       MainWindowPtr;
+    IMPORT       struct Window       *MainWindowPtr,
+                                     *RedefineWindowPtr;
     IMPORT       Object*              images[IMAGES];
     IMPORT const int                  memmap_to_smlimage[MEMMAPS];
 #endif
@@ -374,6 +378,7 @@ IMPORT const struct KnownStruct       known[KNOWNGAMES];
     IMPORT       HICON                smlicon;
     IMPORT       HWND                 hStatusBar,
                                       MainWindowPtr,
+                                      RedefineWindowPtr,
                                       RichTextGadget;
     IMPORT       UBYTE*               pixelubyte;
     IMPORT       ULONG*               pixelulong;
@@ -435,6 +440,13 @@ MODULE const int textpen_to_rgb[] =
   RGB( 64,  64,  64), // 9+TEXTPENS dark grey
 };
 #endif
+
+MODULE const int consolegads[4] = // in "redefine keys" modal subwindow
+{ IDC_KEY_START,
+  IDC_KEY_A,
+  IDC_KEY_B,
+  IDC_KEY_RESET,
+};
 
 /* MODULE STRUCTURES------------------------------------------------------
 
@@ -2958,10 +2970,10 @@ EXPORT void make_overlaytip(int i, STRPTR stringptr)
     {   i = 1;
     }
 
-    if   (keyhelp[i].seq == key1) extrakey = keypads[keyhelp[i].player][GUESTKEY_1ST];
-    elif (keyhelp[i].seq == key2) extrakey = keypads[keyhelp[i].player][GUESTKEY_2ND];
-    elif (keyhelp[i].seq == key3) extrakey = keypads[keyhelp[i].player][GUESTKEY_3RD];
-    elif (keyhelp[i].seq == key4) extrakey = keypads[keyhelp[i].player][GUESTKEY_4TH];
+    if   (keyhelp[i].seq == key1) extrakey = keytable[GUESTKEY_1ST].keypads[keyhelp[i].player];
+    elif (keyhelp[i].seq == key2) extrakey = keytable[GUESTKEY_2ND].keypads[keyhelp[i].player];
+    elif (keyhelp[i].seq == key3) extrakey = keytable[GUESTKEY_3RD].keypads[keyhelp[i].player];
+    elif (keyhelp[i].seq == key4) extrakey = keytable[GUESTKEY_4TH].keypads[keyhelp[i].player];
     else                          extrakey = -1;
 
     if (extrakey == -1)
@@ -2975,7 +2987,7 @@ EXPORT void make_overlaytip(int i, STRPTR stringptr)
             ),
             overlays[whichoverlay][i],
             overlays[memmapinfo[memmap].overlay][i],
-            keyname[keypads[keyhelp[i].player][keyhelp[i].seq]].name
+            keyname[keytable[keyhelp[i].seq].keypads[keyhelp[i].player]].name
         );
     } else
     {   sprintf
@@ -2988,13 +3000,19 @@ EXPORT void make_overlaytip(int i, STRPTR stringptr)
             ),
             overlays[whichoverlay][i],
             overlays[memmapinfo[memmap].overlay][i],
-            keyname[keypads[keyhelp[i].player][keyhelp[i].seq]].name,
+            keyname[keytable[keyhelp[i].seq].keypads[keyhelp[i].player]].name,
             keyname[extrakey].name
         );
 }   }
 
 EXPORT void make_overlayspecialtip(int left, int right, int id, STRPTR stringptr)
-{   sprintf
+{   if (id == 32)
+    {   id = GUESTKEY_1ST;
+    } else
+    {   id -= 33;
+        id += GUESTKEY_2ND;
+    }
+    sprintf
     (   stringptr,
         LLL
         (   MSG_OVERLAYTIP3,
@@ -3007,24 +3025,51 @@ EXPORT void make_overlayspecialtip(int left, int right, int id, STRPTR stringptr
             "Host keys: %s, %s"
         ),
         overlays[memmapinfo[memmap].overlay][left],
-        overlays[              whichoverlay][left],
-        keyname[keypads[keyhelp[left].player][keyhelp[left].seq]].name,
-        id == 32 ? keyname[keypads[0][0]].name : keyname[keypads[0][id - 12]].name, // 32 -> 0, 33..35 -> 21..23
+        overlays[whichoverlay][left],
+        keyname[keytable[keyhelp[left].seq].keypads[keyhelp[left].player]].name,
+        keyname[keytable[id].keypads[0]].name,
         overlays[whichoverlay][right],
-        keyname[keypads[keyhelp[right].player][keyhelp[right].seq]].name,
-        id == 32 ? keyname[keypads[1][0]].name : keyname[keypads[1][id - 12]].name  // 32 -> 0, 33..35 -> 21..23
+        keyname[keytable[keyhelp[right].seq].keypads[keyhelp[right].player]].name,
+        keyname[keytable[id].keypads[1]].name
     );
 }
 
 EXPORT void enablegads(void)
-{   int i;
+{   int i, j;
 
-    for (i = 0; i < ALLREDEFINEGADS; i++)
-    {   if (memmapinfo[memmap].gadenabled[i])
-        {   enablegad(i, TRUE);
-        } else
-        {   enablegad(i, FALSE);
-}   }   }
+    if (RedefineWindowPtr)
+    {   for (i = 0; i < 4; i++)
+        {
+#ifdef WIN32
+            EnableWindow(GetDlgItem(RedefineWindowPtr, consolegads[i]), memmapinfo[memmap].consoleenabled[i] ? TRUE : FALSE);
+#endif
+#ifdef AMIGA
+            SetGadgetAttrs(gadgets[consolegads[i]], RedefineWindowPtr, NULL, GA_Disabled, memmapinfo[memmap].consoleenabled[i] ? FALSE : TRUE, TAG_DONE); // this autorefreshes
+#endif
+    }   }
+
+    for (i = 0; i < NUMKEYS; i++)
+    {   if (RedefineWindowPtr && (showpalladiumkeys2 || i < GUESTKEY_X1 || i > GUESTKEY_X4))
+        {   for (j = 0; j < 2; j++)
+            {
+#ifdef WIN32
+                EnableWindow(GetDlgItem(RedefineWindowPtr, keytable[i].redef[j]), memmapinfo[memmap].keyused[i] ? TRUE : FALSE);
+#endif
+#ifdef AMIGA
+                SetGadgetAttrs(gadgets[keytable[i].redef[j]], RedefineWindowPtr, NULL, GA_Disabled, memmapinfo[memmap].keyused[i] ? FALSE : TRUE, TAG_DONE); // this autorefreshes
+#endif
+        }   }
+
+        if (subwin[SUBWINDOW_GAMEINFO].hwnd && (showpalladiumkeys1 || i < GUESTKEY_X1 || i > GUESTKEY_X4))
+        {   for (j = 0; j < 2; j++)
+            {
+#ifdef WIN32
+                EnableWindow(GetDlgItem(subwin[SUBWINDOW_GAMEINFO].hwnd, keytable[i].gameinfo[j]), memmapinfo[memmap].keyused[i] ? TRUE : FALSE);
+#endif
+#ifdef AMIGA
+                SetGadgetAttrs(gadgets[keytable[i].gameinfo[j]], subwin[SUBWINDOW_GAMEINFO].hwnd, NULL, GA_Disabled, memmapinfo[memmap].keyused[i] ? FALSE : TRUE, TAG_DONE); // this autorefreshes
+#endif
+}   }   }   }
 
 EXPORT void patchrom(void)
 {   int i;
@@ -3334,7 +3379,10 @@ EXPORT void patchrom(void)
 
             memory[ 0xBC3] = trainer_invincibility ? 0x1B : 0x9A; // BCFR,lt $BCA          -> BCTR,un $BCA
             memory[ 0xCF7] = trainer_invincibility ? 0x00 : 0x12; // BCTR,un $D0A          -> BCTR,un $CF8
-        acase GUNDAMPOS:
+     /* acase GRIDPOS:
+            Since only one attempt is allowed, a wrong attempt will cause the game to effectively hang.
+            memory[ 0x7F8] = trainer_time          ? 0xC0 : 0xA1; // SUBZ    r1            -> NOP
+     */ acase GUNDAMPOS:
             memory[ 0x5C2] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
             memory[ 0xC00] = trainer_lives         ? 0x00 : 0x01; // SUBI,r0 1             -> SUBI,r0 0
         acase HEADONPOS:
@@ -4695,4 +4743,48 @@ EXPORT void getimgbits(UBYTE data)
         {   imgbits[i] = '.';
     }   }
     imgbits[8] = EOS;
+}
+
+EXPORT void axes_mousedown(int side, int mousex, int mousey)
+{
+#ifdef WIN32
+    FAST POINT thepoint;
+    FAST RECT  therect;
+#endif
+
+    if
+    (   recmode == RECMODE_PLAY
+     || (   machine != ARCADIA
+         && machine != INTERTON
+         && machine != ELEKTOR
+         && machine != PONG
+         && machine != BINBUG
+    )   )
+    {   return;
+    }
+
+    // assert(subwin[SUBWINDOW_MONITOR_XVI].hwnd);
+    // assert(machine == ARCADIA || machines[machine].pvis || machine == BINBUG || machine == PONG);
+
+#ifdef WIN32
+    thepoint.x = mousex;
+    thepoint.y = mousey;
+    ClientToScreen(subwin[SUBWINDOW_MONITOR_XVI].hwnd, &thepoint);
+    DISCARD GetWindowRect(GetDlgItem(subwin[SUBWINDOW_MONITOR_XVI].hwnd, IDC_AXES), &therect);
+    mousex = thepoint.x - therect.left;
+    mousey = thepoint.y - therect.top;
+#endif
+
+    if (mousex < 0 || mousey < 0 || mousex >= AXESWIDTH || mousey >= AXESHEIGHT)
+    {   return;
+    }
+
+    mousex *= 256;
+    mousex /= AXESWIDTH;
+    mousey *= 256;
+    mousey /= AXESHEIGHT;
+
+    ax[side] = mousex;
+    ay[side] = mousey;
+    axes[side] = TRUE;
 }

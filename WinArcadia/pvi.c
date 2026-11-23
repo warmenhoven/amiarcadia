@@ -205,7 +205,6 @@ IMPORT       UBYTE                 cc,
                                    OutputBuffer[18];
 IMPORT       UWORD                 console[4],
                                    iar,
-                                   keypads[2][NUMKEYS],
                                    mirror_r[32768],
                                    mirror_w[32768],
                                    screen_iar[BOXWIDTH][BOXHEIGHT];
@@ -231,7 +230,7 @@ IMPORT const int                   consolecolours[8],
                                    from_galaxia_spr[8],
                                    from_malzak_spr[8],
                                    guest_to_ansi_colour[8];
-IMPORT const struct KeyTableStruct keytable[NUMKEYS];
+IMPORT       struct KeyTableStruct keytable[NUMKEYS];
 IMPORT const struct KnownStruct    known[KNOWNGAMES];
 
 #ifdef WIN32
@@ -1266,11 +1265,11 @@ EXPORT void pviwrite(signed int address, UBYTE data, FLAG ispvi)
         DISCARD number_to_friendly(address, (STRPTR) friendly, TRUE, 0, 15, TRUE);
         zprintf
         (   TEXTPEN_DEBUG,
-            LLL(MSG_PVI_HITWP, "PVI is writing $%X%s to %s at raster %ld!\n\n"),
-                       data,
-                       stringchar,
-            (char*)    friendly,
-            (long int) cpuy
+            LLL(MSG_PVI_HITWP, "%d,%d: PVI is writing $%X%s to %s!\n\n"),
+                    cpux, cpuy,
+                    data,
+                    stringchar,
+            (char*) friendly
         );
         set_pause(TYPE_BP);
     }
@@ -1315,10 +1314,10 @@ MODULE UBYTE pviread(int address)
     {   DISCARD number_to_friendly(address, (STRPTR) friendly, TRUE, 0, 15);
         zprintf
         (   TEXTPEN_DEBUG,
-            LLL(MSG_PVIREADING, "PVI is reading $%02X from address %s at raster %ld!\n"),
+            LLL(MSG_PVIREADING, "%d,%d: PVI is reading $%02X from address %s!\n"),
+            cpux, cpuy,
             memory[address],
-            (char*) friendly,
-            (long int) cpuy
+            (char*) friendly
         );
         set_pause(TYPE_BP);
     }
@@ -1392,7 +1391,7 @@ MODULE void ie_playerinput(int source, int dest)
         {   if
             (   (   !requirebutton[source]
                  || (jg & (JOYFIRE1 | keytable[key1].dapter))
-                 || KeyDown(keypads[source][0])
+                 || KeyDown(keytable[GUESTKEY_1ST].keypads[source])
                  || (   hostcontroller[source] == CONTROLLER_TRACKBALL
                      && lmb
                 )   )
@@ -1404,7 +1403,7 @@ MODULE void ie_playerinput(int source, int dest)
         else
         {   if
             (   (jg & (JOYFIRE1 | keytable[key1].dapter))
-             || KeyDown(keypads[source][0])
+             || KeyDown(keytable[GUESTKEY_1ST].keypads[source])
              || (hostcontroller[source] == CONTROLLER_TRACKBALL && lmb)
             )
             {   // 1st firebutton
@@ -1412,7 +1411,7 @@ MODULE void ie_playerinput(int source, int dest)
         }   }
         if
         (   (jg & JOYFIRE2)
-         || (KeyDown(keypads[source][21]))
+         || (KeyDown(keytable[GUESTKEY_2ND].keypads[source]))
          || (hostcontroller[source] == CONTROLLER_TRACKBALL && mmb)
         )
         {   // 2nd firebutton
@@ -1420,7 +1419,7 @@ MODULE void ie_playerinput(int source, int dest)
         }
         if
         (   (jg & JOYFIRE3)
-         || (KeyDown(keypads[source][22]))
+         || (KeyDown(keytable[GUESTKEY_3RD].keypads[source]))
          || (hostcontroller[source] == CONTROLLER_TRACKBALL && rmb)
         )
         {   // 3rd firebutton
@@ -1428,7 +1427,7 @@ MODULE void ie_playerinput(int source, int dest)
         }
         if
         (   (jg & JOYFIRE4)
-         || (KeyDown(keypads[source][23]))
+         || (KeyDown(keytable[GUESTKEY_4TH].keypads[source]))
         )
         {   // 4th firebutton
             memory[keytable[key4].ie_address + (dest * 4)] |= keytable[key4].ie_mask;
@@ -1436,10 +1435,10 @@ MODULE void ie_playerinput(int source, int dest)
 
         // left column
         t =  memory[IE_P1LEFTKEYS + (dest * 4)];
-        t |= (UBYTE) (0x80 * KeyDown(keypads[source][GUESTKEY_1 ])); // "1"  key (Interton) or "RCAS"  key (Elektor)
-        t |= (UBYTE) (0x40 * KeyDown(keypads[source][GUESTKEY_4 ])); // "4"  key (Interton) or "BP1/2" key (Elektor)
-        t |= (UBYTE) (0x20 * KeyDown(keypads[source][GUESTKEY_7 ])); // "7"  key (Interton) or "PC"    key (Elektor)
-        t |= (UBYTE) (0x10 * KeyDown(keypads[source][GUESTKEY_CL])); // "Cl" key (Interton) or "-"     key (Elektor)
+        t |= (UBYTE) (0x80 * KeyDown(keytable[GUESTKEY_1 ].keypads[source])); // "1"  key (Interton) or "RCAS"  key (Elektor)
+        t |= (UBYTE) (0x40 * KeyDown(keytable[GUESTKEY_4 ].keypads[source])); // "4"  key (Interton) or "BP1/2" key (Elektor)
+        t |= (UBYTE) (0x20 * KeyDown(keytable[GUESTKEY_7 ].keypads[source])); // "7"  key (Interton) or "PC"    key (Elektor)
+        t |= (UBYTE) (0x10 * KeyDown(keytable[GUESTKEY_CL].keypads[source])); // "Cl" key (Interton) or "-"     key (Elektor)
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_1) && (jf[source] & DAPTER_1)) t |= 8;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_4) && (jf[source] & DAPTER_4)) t |= 4;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_7) && (jf[source] & DAPTER_7)) t |= 2;
@@ -1471,10 +1470,10 @@ MODULE void ie_playerinput(int source, int dest)
 
         // middle column
         t =  memory[IE_P1MIDDLEKEYS + (dest * 4)];
-        t |= (UBYTE) (0x80 * KeyDown(keypads[source][ 2])); // "2"  key (Interton) or "WCAS" key (Elektor)
-        t |= (UBYTE) (0x40 * KeyDown(keypads[source][ 5])); // "5"  key (Interton) or "REG"  key (Elektor)
-        t |= (UBYTE) (0x20 * KeyDown(keypads[source][ 8])); // "8"  key (Interton) or "MEM"  key (Elektor)
-        t |= (UBYTE) (0x10 * KeyDown(keypads[source][11])); // "0"  key (Interton) or "+"    key (Elektor)
+        t |= (UBYTE) (0x80 * KeyDown(keytable[GUESTKEY_2].keypads[source])); // "2"  key (Interton) or "WCAS" key (Elektor)
+        t |= (UBYTE) (0x40 * KeyDown(keytable[GUESTKEY_5].keypads[source])); // "5"  key (Interton) or "REG"  key (Elektor)
+        t |= (UBYTE) (0x20 * KeyDown(keytable[GUESTKEY_8].keypads[source])); // "8"  key (Interton) or "MEM"  key (Elektor)
+        t |= (UBYTE) (0x10 * KeyDown(keytable[GUESTKEY_0].keypads[source])); // "0"  key (Interton) or "+"    key (Elektor)
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_2) && (jf[source] & DAPTER_2)) t |= 8;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_5) && (jf[source] & DAPTER_5)) t |= 4;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_8) && (jf[source] & DAPTER_8)) t |= 2;
@@ -1506,10 +1505,10 @@ MODULE void ie_playerinput(int source, int dest)
 
         // right column
         t =  memory[IE_P1RIGHTKEYS + (dest * 4)];
-        t |= (UBYTE) (0x80 * KeyDown(keypads[source][ 3])); // "3"  key (Interton) or "C" key (Elektor)
-        t |= (UBYTE) (0x40 * KeyDown(keypads[source][ 6])); // "6"  key (Interton) or "8" key (Elektor)
-        t |= (UBYTE) (0x20 * KeyDown(keypads[source][ 9])); // "9"  key (Interton) or "4" key (Elektor)
-        t |= (UBYTE) (0x10 * KeyDown(keypads[source][12])); // "En" key (Interton) or "0" key (Elektor)
+        t |= (UBYTE) (0x80 * KeyDown(keytable[GUESTKEY_3 ].keypads[source])); // "3"  key (Interton) or "C" key (Elektor)
+        t |= (UBYTE) (0x40 * KeyDown(keytable[GUESTKEY_6 ].keypads[source])); // "6"  key (Interton) or "8" key (Elektor)
+        t |= (UBYTE) (0x20 * KeyDown(keytable[GUESTKEY_9 ].keypads[source])); // "9"  key (Interton) or "4" key (Elektor)
+        t |= (UBYTE) (0x10 * KeyDown(keytable[GUESTKEY_EN].keypads[source])); // "En" key (Interton) or "0" key (Elektor)
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_3) && (jf[source] & DAPTER_3)) t |= 8;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_6) && (jf[source] & DAPTER_6)) t |= 4;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_9) && (jf[source] & DAPTER_9)) t |= 2;
@@ -1555,9 +1554,9 @@ MODULE void ie_emuinput(void)
 
 #ifdef DEBUGPSU
     if (psu & PSU_F) // paddle interpolation bit
-    {   zprintf(TEXTPEN_VERBOSE, "Reading vertical   axis at frame %d, raster %d!\n", frames, cpuy);
+    {   zprintf(TEXTPEN_VERBOSE, "%d,%d: Reading vertical   axis on frame %d!\n", cpux, cpuy, frames);
     } else
-    {   zprintf(TEXTPEN_VERBOSE, "Reading horizontal axis at frame %d, raster %d!\n", frames, cpuy);
+    {   zprintf(TEXTPEN_VERBOSE, "%d,%d: Reading horizontal axis on frame %d!\n", cpux, cpuy, frames);
     }
 #endif
 

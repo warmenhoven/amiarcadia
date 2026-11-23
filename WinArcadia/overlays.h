@@ -2698,14 +2698,14 @@ Colours, Horizontal Scroll, Music, Show Text, 8 Sprites, Target 1 and 2 */
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
 "-----","-----","-----","-----","-----","-----",
-"-----","Up",   "-----","-----","Up",   "-----",
-"-----","Dn",   "-----","-----","Dn",   "-----",
+"-----","Up2",  "-----","-----","Up2",  "-----",
+"-----","Dn2",  "-----","-----","Dn2",  "-----",
 "F2: select game variant\n" \
 "F4: toggle short/tall bats\n" \
 "F1: start game\n" \
 "F3: serve\n" \
 "Paddle directions: move primary bat(s)/reticle\n" \
-"Up/Dn: move secondary bat(s) (in 3/4-player mode)\n" \
+"Up2/Dn2: move secondary bat(s) (in 3/4-player mode)\n" \
 "Fire: shoot rifle"
 },
 { // 196. Noise Explosion

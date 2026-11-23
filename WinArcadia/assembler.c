@@ -163,6 +163,8 @@ MODULE int expr(void);
 MODULE int factor(void);
 MODULE FLAG isterminator(TEXT thechar);
 MODULE void cd_include(void);
+MODULE void check_nonbranch(UBYTE byte1st, int value);
+MODULE void check_branch(UBYTE byte1st, int value);
 
 // CODE-------------------------------------------------------------------
 
@@ -3175,6 +3177,8 @@ MODULE void getabsolute_nonbranch_signetics(UBYTE firstopcode, int reg)
     emit(firstopcode + reg);
     emit(byte1st);
     emit(byte2nd);
+
+    check_nonbranch(byte1st, value);
 }
 
 MODULE void getabsolute_branch(void)
@@ -3205,6 +3209,8 @@ MODULE void getabsolute_branch(void)
     byte2nd =  (value % 256);
     emit(byte1st);
     emit(byte2nd);
+
+    check_branch(byte1st, value);
 }
 
 MODULE void getabsolute_indexed_signetics(UBYTE firstopcode) // "BXA $1234,r3"
@@ -3274,6 +3280,8 @@ MODULE void getabsolute_nonbranch_oldcalm(UBYTE firstopcode)
     emit(firstopcode);
     emit(byte1st);
     emit(byte2nd);
+
+    check_nonbranch(byte1st, value);
 }
 
 MODULE FLAG ganb_newcalm(FLAG allpages) // GANB means get absolute non-branch
@@ -3350,6 +3358,10 @@ MODULE FLAG ganb_newcalm(FLAG allpages) // GANB means get absolute non-branch
     gbyte1st |= value / 256;
     gbyte2nd =  value % 256;
 
+    if (!allpages)
+    {   check_nonbranch(gbyte1st, value);
+    }
+
     return rc;
 }
 
@@ -3386,6 +3398,8 @@ MODULE void getabsolute_nonbranch_ieee(UBYTE firstopcode, int thereg)
     emit(firstopcode + thereg);
     emit(byte1st);
     emit(byte2nd);
+
+    check_nonbranch(byte1st, value);
 }
 
 MODULE int fiximmediate(int value)
@@ -5353,3 +5367,23 @@ MODULE void cd_include(void)
     DISCARD SetCurrentDirectory(path_include);
 #endif
 }
+
+MODULE void check_nonbranch(UBYTE byte1st, int value)
+{   if (!(byte1st & 0xE0)) // ie. no indirection or indexing
+    {   value = (value - ocursor) & 0x1FFF;
+        if (value & 0x1000)
+        {   value -= 0x2000;
+        }
+        if (value >= -64 && value <= 63)
+        {   asmwarning("absolute access when relative was possible");
+}   }   }
+
+MODULE void check_branch(UBYTE byte1st, int value)
+{   if (!(byte1st & 0x80)) // ie. no indirection
+    {   value = (value - ocursor) & 0x1FFF;
+        if (value & 0x1000)
+        {   value -= 0x2000;
+        }
+        if (value >= -64 && value <= 63)
+        {   asmwarning("absolute branch when relative was possible");
+}   }   }

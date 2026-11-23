@@ -18,35 +18,35 @@ EXPORT const STRPTR pongvarname[VARIANTS] =
   "AY-3-8600: 2 Player Target"
 };
 
-EXPORT const struct KeyTableStruct keytable[NUMKEYS] =
-{   { 0             , 0   , 0              ,    0, { -1, -1 },        0 }, //  0 GUESTKEY_1ST
-    { A_P1LEFTKEYS,   0x08, IE_P1LEFTKEYS,   0x80, {  8, 11 }, DAPTER_1 }, //  1 GUESTKEY_1
-    { A_P1MIDDLEKEYS, 0x08, IE_P1MIDDLEKEYS, 0x80, {  0,  1 }, DAPTER_2 }, //  2 GUESTKEY_2
-    { A_P1RIGHTKEYS,  0x08, IE_P1RIGHTKEYS,  0x80, { 10, 13 }, DAPTER_3 }, //  3 GUESTKEY_3
-    { A_P1LEFTKEYS,   0x04, IE_P1LEFTKEYS,   0x40, { 14, 17 }, DAPTER_4 }, //  4 GUESTKEY_4
-    { A_P1MIDDLEKEYS, 0x04, IE_P1MIDDLEKEYS, 0x40, { 15, 18 }, DAPTER_5 }, //  5 GUESTKEY_5
-    { A_P1RIGHTKEYS,  0x04, IE_P1RIGHTKEYS,  0x40, { 16, 19 }, DAPTER_6 }, //  6 GUESTKEY_6
-    { A_P1LEFTKEYS,   0x02, IE_P1LEFTKEYS,   0x20, { 20, 23 }, DAPTER_7 }, //  7 GUESTKEY_7
-    { A_P1MIDDLEKEYS, 0x02, IE_P1MIDDLEKEYS, 0x20, { 21, 24 }, DAPTER_8 }, //  8 GUESTKEY_8
-    { A_P1RIGHTKEYS,  0x02, IE_P1RIGHTKEYS,  0x20, { 22, 25 }, DAPTER_9 }, //  9 GUESTKEY_9
-    { A_P1LEFTKEYS,   0x01, IE_P1LEFTKEYS,   0x10, { 26, 29 }, DAPTER_C }, // 10 GUESTKEY_CL
-    { A_P1MIDDLEKEYS, 0x01, IE_P1MIDDLEKEYS, 0x10, { 27, 30 }, DAPTER_0 }, // 11 GUESTKEY_0
-    { A_P1RIGHTKEYS,  0x01, IE_P1RIGHTKEYS,  0x10, { 28, 31 }, DAPTER_E }, // 12 GUESTKEY_EN
-    { A_P1PALLADIUM,  0x01, 0,                  0, {  2,  5 },        0 }, // 13 GUESTKEY_X1
-    { A_P1PALLADIUM,  0x02, 0,                  0, {  3,  6 },        0 }, // 14 GUESTKEY_X2
-    { A_P1PALLADIUM,  0x04, 0,                  0, {  4,  7 },        0 }, // 15 GUESTKEY_X3
-    { A_P1PALLADIUM,  0x08, 0,                  0, {  9, 12 },        0 }, // 16 GUESTKEY_X4
-    { 0             , 0   , 0              ,    0, { -1, -1 },        0 }, // 17 GUESTKEY_2ND
-    { 0             , 0   , 0,                  0, { -1, -1 },        0 }, // 18 GUESTKEY_3RD
-    { 0             , 0   , 0,                  0, { -1, -1 },        0 }, // 19 GUESTKEY_4TH
-    { 0             , 0   , 0,                  0, { -1, -1 },        0 }, // 20 GUESTKEY_UP
-    { 0             , 0   , 0,                  0, { -1, -1 },        0 }, // 21 GUESTKEY_DN
-    { 0             , 0   , 0,                  0, { -1, -1 },        0 }, // 22 GUESTKEY_LT
-    { 0             , 0   , 0,                  0, { -1, -1 },        0 }, // 23 GUESTKEY_RT
-    { 0             , 0   , 0,                  0, { -1, -1 },        0 }, // 24 GUESTKEY_UPLT
-    { 0             , 0   , 0,                  0, { -1, -1 },        0 }, // 25 GUESTKEY_UPRT
-    { 0             , 0   , 0,                  0, { -1, -1 },        0 }, // 26 GUESTKEY_DNLT
-    { 0             , 0   , 0,                  0, { -1, -1 },        0 }, // 27 GUESTKEY_DNRT
+EXPORT struct KeyTableStruct keytable[NUMKEYS] =
+{   { 0             , 0   , 0              ,    0, { -1, -1 },        0, { IDC_P1_1ST      , IDC_P2_1ST      }, { -1       , -1        } }, //  0 GUESTKEY_1ST
+    { A_P1LEFTKEYS,   0x08, IE_P1LEFTKEYS,   0x80, {  8, 11 }, DAPTER_1, { IDC_P1_1        , IDC_P2_1        }, { IDC_LT_1 , IDC_RT_1  } }, //  1 GUESTKEY_1
+    { A_P1MIDDLEKEYS, 0x08, IE_P1MIDDLEKEYS, 0x80, {  0,  1 }, DAPTER_2, { IDC_P1_2        , IDC_P2_2        }, { IDC_LT_2 , IDC_RT_2  } }, //  2 GUESTKEY_2
+    { A_P1RIGHTKEYS,  0x08, IE_P1RIGHTKEYS,  0x80, { 10, 13 }, DAPTER_3, { IDC_P1_3        , IDC_P2_3        }, { IDC_LT_3 , IDC_RT_3  } }, //  3 GUESTKEY_3
+    { A_P1LEFTKEYS,   0x04, IE_P1LEFTKEYS,   0x40, { 14, 17 }, DAPTER_4, { IDC_P1_4        , IDC_P2_4        }, { IDC_LT_4 , IDC_RT_4  } }, //  4 GUESTKEY_4
+    { A_P1MIDDLEKEYS, 0x04, IE_P1MIDDLEKEYS, 0x40, { 15, 18 }, DAPTER_5, { IDC_P1_5        , IDC_P2_5        }, { IDC_LT_5 , IDC_RT_5  } }, //  5 GUESTKEY_5
+    { A_P1RIGHTKEYS,  0x04, IE_P1RIGHTKEYS,  0x40, { 16, 19 }, DAPTER_6, { IDC_P1_6        , IDC_P2_6        }, { IDC_LT_6 , IDC_RT_6  } }, //  6 GUESTKEY_6
+    { A_P1LEFTKEYS,   0x02, IE_P1LEFTKEYS,   0x20, { 20, 23 }, DAPTER_7, { IDC_P1_7        , IDC_P2_7        }, { IDC_LT_7 , IDC_RT_7  } }, //  7 GUESTKEY_7
+    { A_P1MIDDLEKEYS, 0x02, IE_P1MIDDLEKEYS, 0x20, { 21, 24 }, DAPTER_8, { IDC_P1_8        , IDC_P2_8        }, { IDC_LT_8 , IDC_RT_8  } }, //  8 GUESTKEY_8
+    { A_P1RIGHTKEYS,  0x02, IE_P1RIGHTKEYS,  0x20, { 22, 25 }, DAPTER_9, { IDC_P1_9        , IDC_P2_9        }, { IDC_LT_9 , IDC_RT_9  } }, //  9 GUESTKEY_9
+    { A_P1LEFTKEYS,   0x01, IE_P1LEFTKEYS,   0x10, { 26, 29 }, DAPTER_C, { IDC_P1_C        , IDC_P2_C        }, { IDC_LT_CL, IDC_RT_CL } }, // 10 GUESTKEY_CL
+    { A_P1MIDDLEKEYS, 0x01, IE_P1MIDDLEKEYS, 0x10, { 27, 30 }, DAPTER_0, { IDC_P1_0        , IDC_P2_0        }, { IDC_LT_0 , IDC_RT_0  } }, // 11 GUESTKEY_0
+    { A_P1RIGHTKEYS,  0x01, IE_P1RIGHTKEYS,  0x10, { 28, 31 }, DAPTER_E, { IDC_P1_E        , IDC_P2_E        }, { IDC_LT_EN, IDC_RT_EN } }, // 12 GUESTKEY_EN
+    { A_P1PALLADIUM,  0x01, 0,                  0, {  2,  5 },        0, { IDC_P1_X1       , IDC_P2_X1       }, { IDC_LT_X1, IDC_RT_X1 } }, // 13 GUESTKEY_X1
+    { A_P1PALLADIUM,  0x02, 0,                  0, {  3,  6 },        0, { IDC_P1_X2       , IDC_P2_X2       }, { IDC_LT_X2, IDC_RT_X2 } }, // 14 GUESTKEY_X2
+    { A_P1PALLADIUM,  0x04, 0,                  0, {  4,  7 },        0, { IDC_P1_X3       , IDC_P2_X3       }, { IDC_LT_X3, IDC_RT_X3 } }, // 15 GUESTKEY_X3
+    { A_P1PALLADIUM,  0x08, 0,                  0, {  9, 12 },        0, { IDC_P1_X4       , IDC_P2_X4       }, { IDC_LT_X4, IDC_RT_X4 } }, // 16 GUESTKEY_X4
+    { 0             , 0   , 0,                  0, { -1, -1 },        0, { IDC_P1_UP       , IDC_P2_UP       }, { -1       , -1        } }, // 17 GUESTKEY_UP
+    { 0             , 0   , 0,                  0, { -1, -1 },        0, { IDC_P1_DOWN     , IDC_P2_DOWN     }, { -1       , -1        } }, // 18 GUESTKEY_DN
+    { 0             , 0   , 0,                  0, { -1, -1 },        0, { IDC_P1_LEFT     , IDC_P2_LEFT     }, { -1       , -1        } }, // 19 GUESTKEY_LT
+    { 0             , 0   , 0,                  0, { -1, -1 },        0, { IDC_P1_RIGHT    , IDC_P2_RIGHT    }, { -1       , -1        } }, // 20 GUESTKEY_RT
+    { 0             , 0   , 0              ,    0, { -1, -1 },        0, { IDC_P1_2ND      , IDC_P2_2ND      }, { -1       , -1        } }, // 21 GUESTKEY_2ND
+    { 0             , 0   , 0,                  0, { -1, -1 },        0, { IDC_P1_3RD      , IDC_P2_3RD      }, { -1       , -1        } }, // 22 GUESTKEY_3RD
+    { 0             , 0   , 0,                  0, { -1, -1 },        0, { IDC_P1_4TH      , IDC_P2_4TH      }, { -1       , -1        } }, // 23 GUESTKEY_4TH
+    { 0             , 0   , 0,                  0, { -1, -1 },        0, { IDC_P1_UPLEFT   , IDC_P2_UPLEFT   }, { -1       , -1        } }, // 24 GUESTKEY_UPLT
+    { 0             , 0   , 0,                  0, { -1, -1 },        0, { IDC_P1_UPRIGHT  , IDC_P2_UPRIGHT  }, { -1       , -1        } }, // 25 GUESTKEY_UPRT
+    { 0             , 0   , 0,                  0, { -1, -1 },        0, { IDC_P1_DOWNLEFT , IDC_P2_DOWNLEFT }, { -1       , -1        } }, // 26 GUESTKEY_DNLT
+    { 0             , 0   , 0,                  0, { -1, -1 },        0, { IDC_P1_DOWNRIGHT, IDC_P2_DOWNRIGHT}, { -1       , -1        } }, // 27 GUESTKEY_DNRT
 };
 
 /* Codes are:

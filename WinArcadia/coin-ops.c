@@ -40,7 +40,6 @@ IMPORT       UBYTE                awga_collide,
                                   memory[32768],
                                   psu,
                                   squeal;
-IMPORT       UWORD                keypads[2][NUMKEYS];
 IMPORT       ULONG                autofire[2],
                                   collisions,
                                   cycles_2650,
@@ -98,6 +97,7 @@ IMPORT const int                  from_astrowars_spr[8],
                                   from_malzak_spr[8];
 IMPORT       MEMFLAG              memflags[ALLTOKENS];
 IMPORT       struct IOPortStruct  ioport[258];
+IMPORT       struct KeyTableStruct keytable[NUMKEYS];
 IMPORT       struct MachineStruct machines[MACHINES];
 IMPORT       ASCREEN              screen[BOXWIDTH][BOXHEIGHT];
 #ifdef AMIGA
@@ -684,10 +684,10 @@ MODULE UBYTE pviread(int address)
     {   DISCARD number_to_friendly(address, (STRPTR) friendly, TRUE, 0, 15);
         zprintf
         (   TEXTPEN_DEBUG,
-            LLL(MSG_PVIREADING, "PVI is reading $%02X from address %s at raster %ld!\n"),
+            LLL(MSG_PVIREADING, "%d,%d: PVI is reading $%02X from address %s!\n"),
+            cpux, cpuy,
             memory[address],
-            (char*) friendly,
-            (long int) cpuy
+            (char*) friendly
         );
         set_pause(TYPE_BP);
     }
@@ -723,7 +723,7 @@ EXPORT void coinop_playerinput(int source, int dest)
              || (jg & JOYFIRE1)
              || ((memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN) && (jg & DAPTER_5  ))
              || ( memmap != MEMMAP_LASERBATTLE && memmap != MEMMAP_LAZARIAN  && (jg & DAPTER_TOP))
-             || KeyDown(keypads[source][0])
+             || KeyDown(keytable[GUESTKEY_1ST].keypads[source])
              || (   hostcontroller[source] == CONTROLLER_TRACKBALL
                  && lmb
             )   )
@@ -755,9 +755,9 @@ EXPORT void coinop_playerinput(int source, int dest)
     else
     {   if
         (   (jg & JOYFIRE1)
-         || KeyDown(keypads[source][0])
-         || KeyDown(keypads[source][2])
-         || ((memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN) && (KeyDown(keypads[source][7]) || (jg & DAPTER_7))) // guest "7" key (host "A")
+         || KeyDown(keytable[GUESTKEY_1ST].keypads[source])
+         || KeyDown(keytable[GUESTKEY_2  ].keypads[source]) // guest "2" key (host "alphanumeric 2")
+         || ((memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN) && (KeyDown(keytable[GUESTKEY_7].keypads[source]) || (jg & DAPTER_7))) // guest "7" key (host "A")
          || (hostcontroller[source] == CONTROLLER_TRACKBALL && lmb)
         )
         {   // 1st firebutton ("left")
@@ -781,8 +781,10 @@ EXPORT void coinop_playerinput(int source, int dest)
 
     if
     (   (jg & JOYFIRE2)
-     || KeyDown(keypads[source][21])
-     || ((memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN) && (KeyDown(keypads[source][8]) || (jg & DAPTER_8))) // guest "8" key (host "S")
+     || KeyDown(keytable[GUESTKEY_2ND].keypads[source])
+     || (   (memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN)
+         && (KeyDown(keytable[GUESTKEY_8].keypads[source]) || (jg & DAPTER_8)) // guest "8" key (host "S")
+        )
      || (hostcontroller[source] == CONTROLLER_TRACKBALL && mmb)
     )
     {   // 2nd firebutton ("down")
@@ -806,8 +808,10 @@ EXPORT void coinop_playerinput(int source, int dest)
 
     if
     (   (jg & JOYFIRE3)
-     || KeyDown(keypads[source][22])
-     || ((memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN) && (KeyDown(keypads[source][9]) || (jg & DAPTER_9))) // guest "9" key (host "D")
+     || KeyDown(keytable[GUESTKEY_3RD].keypads[source])
+     || (   (memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN)
+         && (KeyDown(keytable[GUESTKEY_9].keypads[source]) || (jg & DAPTER_9)) // guest "9" key (host "D")
+        )
      || (hostcontroller[source] == CONTROLLER_TRACKBALL && rmb)
     )
     {   // 3rd firebutton ("right")
@@ -831,9 +835,10 @@ EXPORT void coinop_playerinput(int source, int dest)
 
     if
     (   (jg & JOYFIRE4)
-     || (KeyDown(keypads[source][23]))
-     || ((memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN) && (KeyDown(keypads[source][5]) || (!autofire[source] && (jg & DAPTER_5)))) // guest "5" key (host "W")
-    )
+     || (KeyDown(keytable[GUESTKEY_4TH].keypads[source]))
+     || (   (memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN)
+         && (KeyDown(keytable[GUESTKEY_5].keypads[source]) || (!autofire[source] && (jg & DAPTER_5))) // guest "5" key (host "W")
+    )   )
     {   // 4th firebutton ("up")
         switch (memmap)
         {

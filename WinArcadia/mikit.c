@@ -39,7 +39,6 @@ IMPORT UBYTE                      digitleds[DIGITLEDS],
                                   tone;
 IMPORT UWORD                      console[4],
                                   iar,
-                                  keypads[2][NUMKEYS],
                                   mirror_r[32768],
                                   mirror_w[32768];
 IMPORT ULONG                      cycles_2650,
@@ -58,6 +57,7 @@ IMPORT UBYTE*                     IOBuffer;
 IMPORT FILE*                      MacroHandle;
 IMPORT const TEXT                 led_chars[128 + 1];
 IMPORT const struct CodeCommentStruct codecomment[];
+IMPORT       struct KeyTableStruct    keytable[NUMKEYS];
 IMPORT       struct MachineStruct machines[MACHINES];
 #ifdef AMIGA
     IMPORT struct Catalog*        CatalogPtr;
@@ -110,45 +110,45 @@ MODULE void mikit_emuinput(void)
     {   // assert(recmode == RECMODE_NORMAL || recmode == RECMODE_RECORD);
 
         t = 0;
-        t |= (UBYTE) (0x1 * KeyDown(keypads[0][ 1])); // BLANK
-        t |= (UBYTE) (0x2 * KeyDown(keypads[0][ 4])); // +
-        t |= (UBYTE) (0x4 * KeyDown(keypads[0][ 7])); // H
-        t |= (UBYTE) (0x8 * KeyDown(keypads[0][10])); // L
+        t |= (UBYTE) (0x1 * KeyDown(keytable[GUESTKEY_1 ].keypads[0])); // BLANK
+        t |= (UBYTE) (0x2 * KeyDown(keytable[GUESTKEY_4 ].keypads[0])); // +
+        t |= (UBYTE) (0x4 * KeyDown(keytable[GUESTKEY_7 ].keypads[0])); // H
+        t |= (UBYTE) (0x8 * KeyDown(keytable[GUESTKEY_CL].keypads[0])); // L
         keys_column[0] = t;
 
         t = 0;
-        t |= (UBYTE) (0x1 * KeyDown(keypads[0][ 2])); // R
-        t |= (UBYTE) (0x2 * KeyDown(keypads[0][ 5])); // G
-        t |= (UBYTE) (0x4 * KeyDown(keypads[0][ 8])); // P
-        t |= (UBYTE) (0x8 * KeyDown(keypads[0][11])); // S
+        t |= (UBYTE) (0x1 * KeyDown(keytable[GUESTKEY_2 ].keypads[0])); // R
+        t |= (UBYTE) (0x2 * KeyDown(keytable[GUESTKEY_5 ].keypads[0])); // G
+        t |= (UBYTE) (0x4 * KeyDown(keytable[GUESTKEY_8 ].keypads[0])); // P
+        t |= (UBYTE) (0x8 * KeyDown(keytable[GUESTKEY_0 ].keypads[0])); // S
         keys_column[1] = t;
 
         t = 0;
-        t |= (UBYTE) (0x1 * KeyDown(keypads[0][ 3])); // C
-        t |= (UBYTE) (0x2 * KeyDown(keypads[0][ 6])); // 8
-        t |= (UBYTE) (0x4 * KeyDown(keypads[0][ 9])); // 4
-        t |= (UBYTE) (0x8 * KeyDown(keypads[0][12])); // 0
+        t |= (UBYTE) (0x1 * KeyDown(keytable[GUESTKEY_3 ].keypads[0])); // C
+        t |= (UBYTE) (0x2 * KeyDown(keytable[GUESTKEY_6 ].keypads[0])); // 8
+        t |= (UBYTE) (0x4 * KeyDown(keytable[GUESTKEY_9 ].keypads[0])); // 4
+        t |= (UBYTE) (0x8 * KeyDown(keytable[GUESTKEY_EN].keypads[0])); // 0
         keys_column[2] = t;
 
         t = 0;
-        t |= (UBYTE) (0x1 * KeyDown(keypads[1][ 1])); // D
-        t |= (UBYTE) (0x2 * KeyDown(keypads[1][ 4])); // 9
-        t |= (UBYTE) (0x4 * KeyDown(keypads[1][ 7])); // 5
-        t |= (UBYTE) (0x8 * KeyDown(keypads[1][10])); // 1
+        t |= (UBYTE) (0x1 * KeyDown(keytable[GUESTKEY_1 ].keypads[1])); // D
+        t |= (UBYTE) (0x2 * KeyDown(keytable[GUESTKEY_4 ].keypads[1])); // 9
+        t |= (UBYTE) (0x4 * KeyDown(keytable[GUESTKEY_7 ].keypads[1])); // 5
+        t |= (UBYTE) (0x8 * KeyDown(keytable[GUESTKEY_CL].keypads[1])); // 1
         keys_column[3] = t;
 
         t = 0;
-        t |= (UBYTE) (0x1 * KeyDown(keypads[1][ 2])); // E
-        t |= (UBYTE) (0x2 * KeyDown(keypads[1][ 5])); // A
-        t |= (UBYTE) (0x4 * KeyDown(keypads[1][ 8])); // 6
-        t |= (UBYTE) (0x8 * KeyDown(keypads[1][11])); // 2
+        t |= (UBYTE) (0x1 * KeyDown(keytable[GUESTKEY_2 ].keypads[1])); // E
+        t |= (UBYTE) (0x2 * KeyDown(keytable[GUESTKEY_5 ].keypads[1])); // A
+        t |= (UBYTE) (0x4 * KeyDown(keytable[GUESTKEY_8 ].keypads[1])); // 6
+        t |= (UBYTE) (0x8 * KeyDown(keytable[GUESTKEY_0 ].keypads[1])); // 2
         keys_column[4] = t;
 
         t = 0;
-        t |= (UBYTE) (0x1 * KeyDown(keypads[1][ 3])); // F
-        t |= (UBYTE) (0x2 * KeyDown(keypads[1][ 6])); // B
-        t |= (UBYTE) (0x4 * KeyDown(keypads[1][ 9])); // 7
-        t |= (UBYTE) (0x8 * KeyDown(keypads[1][12])); // 3
+        t |= (UBYTE) (0x1 * KeyDown(keytable[GUESTKEY_3 ].keypads[1])); // F
+        t |= (UBYTE) (0x2 * KeyDown(keytable[GUESTKEY_6 ].keypads[1])); // B
+        t |= (UBYTE) (0x4 * KeyDown(keytable[GUESTKEY_9 ].keypads[1])); // 7
+        t |= (UBYTE) (0x8 * KeyDown(keytable[GUESTKEY_EN].keypads[1])); // 3
         keys_column[5] = t;
 
         domouse();

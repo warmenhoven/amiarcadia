@@ -48,7 +48,7 @@ IMPORT ULONG                cycles_2650,
                             verbosedisk;
 IMPORT int                  ambient,
                             cd2650_dosver,
-                            cpuy,
+                            cpux, cpuy,
                             drive_mode,
                             log_illegal,
                             machine,
@@ -374,10 +374,10 @@ EXPORT UBYTE fd1771_read_datareg(void)
             (   TEXTPEN_LOG,
                 LLL
                 (   MSG_READFLOPPY,
-                    "Instruction at %s (raster %d) read $%02X [%s] from floppy byte $%X. Previous IAR/PC was %s.\n\n"
+                    "%d,%d: Instruction at %s read $%02X [%s] from floppy byte $%X. Previous IAR/PC was %s.\n\n"
                 ),
+                cpux, cpuy,
                 friendly,
-                (int) cpuy,
                 (int) t,
                 asciiname_short[t],
                 diskbyte,
@@ -483,10 +483,10 @@ EXPORT void fd1771_write_datareg(UBYTE data)
             (   TEXTPEN_LOG,
                 LLL
                 (   MSG_WROTEFLOPPY,
-                    "Instruction at %s (raster %d) wrote $%02X [%s] to floppy byte $%X. Previous IAR/PC was %s.\n\n"
+                    "%d,%d: Instruction at %s wrote $%02X [%s] to floppy byte $%X. Previous IAR/PC was %s.\n\n"
                 ),
+                cpux, cpuy,
                 friendly,
-                (int) cpuy,
                 (int) data,
                 asciiname_short[data],
                 diskbyte,

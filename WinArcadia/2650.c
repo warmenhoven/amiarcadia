@@ -1705,7 +1705,7 @@ MODULE __inline void cpu_emu(void)
         }
 #ifdef DEBUGPSU
         DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
-        zprintf(TEXTPEN_VERBOSE, "Code at %s wrote $%X to PSU at clock %d (frame %d, raster %d)!\n", friendly, psu, cycles_2650, frames, cpuy);
+        zprintf(TEXTPEN_VERBOSE, "%d,%d: Code at %s wrote $%X to PSU at clock %d (frame %d)!\n", cpux, cpuy, friendly, psu, cycles_2650, frames);
         zprintf(TEXTPEN_VERBOSE, "Active axis is now %s!\n", (psu & PSU_F) ? "vertical" : "horizontal");
 #endif
         TWO_BYTES;
@@ -1790,7 +1790,7 @@ MODULE __inline void cpu_emu(void)
         }
 #ifdef DEBUGPSU
         DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
-        zprintf(TEXTPEN_VERBOSE, "Code at %s wrote $%X to PSU at clock %d (frame %d, raster %d)!\n", friendly, psu, cycles_2650, frames, cpuy);
+        zprintf(TEXTPEN_VERBOSE, "%d,%d: Code at %s wrote $%X to PSU at clock %d (frame %d)!\n", cpux, cpuy, friendly, psu, cycles_2650, frames);
         zprintf(TEXTPEN_VERBOSE, "Active axis is now %s!\n", (psu & PSU_F) ? "vertical" : "horizontal");
 #endif
         TWO_BYTES;
@@ -2018,7 +2018,7 @@ MODULE __inline void cpu_emu(void)
         }
 #ifdef DEBUGPSU
         DISCARD number_to_friendly(iar, (STRPTR) friendly, TRUE, 0, 15, TRUE);
-        zprintf(TEXTPEN_VERBOSE, "Code at %s wrote $%X to PSU at clock %d (frame %d, raster %d)!\n", friendly, psu, cycles_2650, frames, cpuy);
+        zprintf(TEXTPEN_VERBOSE, "%d,%d: Code at %s wrote $%X to PSU at clock %d (frame %d)!\n", cpux, cpuy, friendly, psu, cycles_2650, frames);
         zprintf(TEXTPEN_VERBOSE, "Active axis is now %s!\n", (psu & PSU_F) ? "vertical" : "horizontal");
 #endif
         ONE_BYTE;
@@ -3263,10 +3263,10 @@ MODULE UBYTE cpuread_2650(int address)
             (   TEXTPEN_LOG,
                 LLL(
                     MSG_ENGINE_READMIRROR,
-                    "Instruction at %s (raster %d) read from mirrored address %s (resolves to %s)!\n\n"
+                    "%d,%d: Instruction at %s read from mirrored address %s (resolves to %s)!\n\n"
                 ),
+                cpux, cpuy,
                 friendly,
-                (long int) cpuy,
                 friendly2,
                 friendly3
             );
@@ -3379,9 +3379,9 @@ MODULE UBYTE cpuread_2650(int address)
                 DISCARD number_to_friendly((int) address, friendly2, TRUE, 0, 15, TRUE);
                 zprintf
                 (   TEXTPEN_LOG,
-                    LLL(MSG_READDURINGREDRAW, "Instruction at %s (raster %d) read from UVI address %s during redraw!\n\n"),
+                    LLL(MSG_READDURINGREDRAW, "%d,%d: Instruction at %s read from UVI address %s during redraw!\n\n"),
+                    cpux, cpuy,
                     friendly,
-                    (long int) cpuy,
                     friendly2
                 );
                 set_pause(TYPE_LOG);
@@ -3396,9 +3396,9 @@ MODULE UBYTE cpuread_2650(int address)
                 DISCARD number_to_friendly((int) address, friendly2, TRUE, 0, 15, TRUE);
                 zprintf
                 (   TEXTPEN_LOG,
-                    LLL(MSG_READDURINGREDRAW2, "Instruction at %s (raster %d) read from PVI address %s during redraw!\n\n"), // redraw is the opposite of retrace
+                    LLL(MSG_READDURINGREDRAW2, "%d,%d: Instruction at %s read from PVI address %s during redraw!\n\n"), // redraw is the opposite of retrace
+                    cpux, cpuy,
                     friendly,
-                    (long int) cpuy,
                     friendly2
                 );
                 set_pause(TYPE_LOG);
@@ -3476,10 +3476,10 @@ MODULE UBYTE cpuread_2650(int address)
             (   TEXTPEN_LOG,
                 LLL(
                     MSG_ENGINE_ILLEGALREAD,
-                    "Instruction at %s (raster %d) is reading $%02X from unreadable address %s!\n\n"
+                    "%d,%d: Instruction at %s is reading $%02X from unreadable address %s!\n\n"
                 ),
+                cpux, cpuy,
                 friendly,
-                cpuy,
                 (int) t,
                 friendly2
             );
@@ -3559,10 +3559,10 @@ MODULE UBYTE cpuread_2650(int address)
             (   TEXTPEN_LOG,
                 LLL(
                     MSG_ENGINE_HITWP,
-                    "Instruction at %s (raster %d) is reading $%X%s from %s! Previous IAR/PC was %s.\n" // yes, just one \n
+                    "%d,%d: Instruction at %s is reading $%X%s from %s! Previous IAR/PC was %s.\n" // yes, just one \n
                 ),
+                cpux, cpuy,
                 friendly,
-                (long int) cpuy,
                 t,
                 stringchar,
                 friendly2,
@@ -3629,10 +3629,10 @@ MODULE __inline void cpuwrite_2650(int address, UBYTE data)
             (   TEXTPEN_LOG,
                 LLL(
                     MSG_CPU_WRITEMIRROR,
-                    "Instruction at %s (raster %d) is writing $%02X to mirrored address %s (resolves to %s)!\n\n"
+                    "%d,%d: Instruction at %s is writing $%02X to mirrored address %s (resolves to %s)!\n\n"
                 ),
+                cpux, cpuy,
                 friendly,
-                (long int) cpuy,
                 data,
                 friendly2,
                 friendly3
@@ -3734,9 +3734,9 @@ MODULE __inline void cpuwrite_2650(int address, UBYTE data)
         DISCARD number_to_friendly((int) address, (STRPTR) friendly2, TRUE, 0, 15, TRUE);
         zprintf
         (   TEXTPEN_LOG,
-            LLL(MSG_WROTEDURINGREDRAW, "Instruction at %s (raster %d) wrote $%02X to UVI address %s during redraw!\n\n"),
+            LLL(MSG_WROTEDURINGREDRAW, "%d,%d: Instruction at %s wrote $%02X to UVI address %s during redraw!\n\n"),
+            cpux, cpuy,
             friendly,
-            (long int) cpuy,
             data,
             friendly2
         );
@@ -3754,10 +3754,10 @@ MODULE __inline void cpuwrite_2650(int address, UBYTE data)
             (   TEXTPEN_LOG,
                 LLL(
                     MSG_CPU_ILLEGALWRITE,
-                    "Instruction at %s (raster %d) is attempting to write $%02X to unwritable address %s!\n\n"
+                    "%d,%d: Instruction at %s is attempting to write $%02X to unwritable address %s!\n\n"
                 ),
+                cpux, cpuy,
                 friendly,
-                (int) cpuy,
                 data,
                 friendly2
             );
@@ -3793,10 +3793,10 @@ MODULE __inline void cpuwrite_2650(int address, UBYTE data)
         (   TEXTPEN_LOG,
             LLL
             (   MSG_CPU_HITWP,
-                "Instruction at %s (raster %d) is writing $%X%s to %s! Previous IAR/PC was %s.\n\n"
+                "%d,%d: Instruction at %s is writing $%X%s to %s! Previous IAR/PC was %s.\n\n"
             ),
+            cpux, cpuy,
             friendly,
-            (int) cpuy,
             data,
             stringchar,
             friendly2,
@@ -4104,10 +4104,10 @@ MODULE __inline UBYTE readreg(int whichreg)
             (   TEXTPEN_LOG,
                 LLL(
                     MSG_ENGINE_HITWP,
-                    "Instruction at %s (raster %d) is reading $%X%s from %s! Previous IAR/PC was %s.\n" // yes, just one \n
+                    "%d,%d: Instruction at %s is reading $%X%s from %s! Previous IAR/PC was %s.\n" // yes, just one \n
                 ),
+                cpux, cpuy,
                 friendly,
-                (long int) cpuy,
                 t,
                 stringchar,
                 tokenname[whichreg][style], // this only works if registers are the first tokens
@@ -4143,10 +4143,10 @@ MODULE __inline void writereg(int whichreg, UBYTE data)
         (   TEXTPEN_LOG,
             LLL
             (   MSG_CPU_HITWP,
-                "Instruction at %s (raster %d) is writing $%X%s to %s! Previous IAR/PC was %s.\n\n"
+                "%d,%d: Instruction at %s is writing $%X%s to %s! Previous IAR/PC was %s.\n\n"
             ),
+            cpux,cpuy,
             friendly,
-            (int) cpuy,
             data,
             stringchar,
             tokenname[whichreg][style], // this only works if registers are the first tokens

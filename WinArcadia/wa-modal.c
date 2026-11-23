@@ -15,15 +15,16 @@
 #define CATCOMP_BLOCK
 #include "aa_strings.h"
 
-// DEFINES----------------------------------------------------------------
+/* DEFINES----------------------------------------------------------------
 
-#define SOMEREDEFINEGADS 8
+(None)
 
-// EXPORTED VARIABLES-----------------------------------------------------
+EXPORTED VARIABLES----------------------------------------------------- */
 
 EXPORT FLAG  preserve;
 EXPORT TEXT  temppath_games[MAX_PATH + 1];
 EXPORT WCHAR voicename[80 + 1] = L"";
+EXPORT HWND  RedefineWindowPtr = NULL;
 
 EXPORT struct AssociationStruct assoc[ASSOCIATIONS] = {
 { TRUE , IDC_8SVX, KIND_8SVX }, //  0 8SV,8SVX
@@ -316,7 +317,6 @@ IMPORT       TEXT                      bpnf_string[LABELLIMIT + 1],
                                        tostr[17 + 1 + 1];
 IMPORT       UBYTE                     button[2][8];
 IMPORT       UWORD                     console[4],
-                                       keypads[2][NUMKEYS],
                                        temp_console[4],
                                        temp_keypads[2][NUMKEYS];
 IMPORT       ULONG                     confirmable,
@@ -358,12 +358,13 @@ IMPORT       struct HostMachineStruct  hostmachines[MACHINES];
 IMPORT       struct KeyNameStruct      keyname[SCANCODES];
 IMPORT       struct LangStruct         langs[LANGUAGES];
 IMPORT       struct MachineStruct      machines[MACHINES];
+IMPORT       struct MemMapInfoStruct   memmapinfo[MEMMAPS];
 IMPORT       struct SubWindowStruct    subwin[SUBWINDOWS];
 IMPORT       UBYTE*                    pixelubyte;
 IMPORT       ULONG*                    pixelulong;
 IMPORT const UWORD                     default_console[4],
                                        default_keypads[2][NUMKEYS];
-IMPORT const struct KeyTableStruct     keytable[NUMKEYS];
+IMPORT       struct KeyTableStruct     keytable[NUMKEYS];
 IMPORT const struct KnownStruct        known[KNOWNGAMES];
 IMPORT const struct MemMapToStruct     memmap_to[MEMMAPS];
 IMPORT const struct TODStruct          tods[TIPSOFDAYS];
@@ -391,8 +392,7 @@ MODULE       int                       gplayer,
                                        newusespeech,
                                        newvolume;
 MODULE       STRPTR                    editstring;
-MODULE       HWND                      ModalWindowPtr    = NULL,
-                                       RedefineWindowPtr = NULL;
+MODULE       HWND                      ModalWindowPtr    = NULL;
 #ifdef WIN32
     MODULE   TEXT                      tempfile_bkgrnd[MAX_PATH + 1],
                                        temppath_bkgrnd[MAX_PATH + 1];
@@ -450,72 +450,6 @@ MODULE const struct
 { { 8,6,7,5 }, { IDC_1STRA8675, IDC_2NDRA8675 } },
 { { 8,7,5,6 }, { IDC_1STRA8756, IDC_2NDRA8756 } },
 { { 8,7,6,5 }, { IDC_1STRA8765, IDC_2NDRA8765 } }
-};
-
-MODULE struct
-{   const int redef[2],
-              gameinfo[2];
-} ctrlgads[ALLREDEFINEGADS] = {
-{ { IDC_KEY_START   , IDC_KEY_START   }, { -1       , -1        } },
-{ { IDC_KEY_A       , IDC_KEY_A       }, { -1       , -1        } },
-{ { IDC_KEY_B       , IDC_KEY_B       }, { -1       , -1        } },
-{ { IDC_KEY_RESET   , IDC_KEY_RESET   }, { -1       , -1        } },
-{ { -1              , IDC_P1_X1       }, { -1       , IDC_LT_X1 } },
-{ { -1              , IDC_P1_X2       }, { -1       , IDC_LT_X2 } },
-{ { -1              , IDC_P1_X3       }, { -1       , IDC_LT_X3 } },
-{ { -1              , IDC_P1_X4       }, { -1       , IDC_LT_X4 } },
-{ { -1              , IDC_P2_X1       }, { -1       , IDC_RT_X1 } },
-{ { -1              , IDC_P2_X2       }, { -1       , IDC_RT_X2 } },
-{ { -1              , IDC_P2_X3       }, { -1       , IDC_RT_X3 } },
-{ { -1              , IDC_P2_X4       }, { -1       , IDC_RT_X4 } },
-{ { IDC_P1_1ST      , IDC_P1_1ST      }, { -1       , -1        } },
-{ { IDC_P1_2ND      , IDC_P1_2ND      }, { -1       , -1        } },
-{ { IDC_P1_3RD      , IDC_P1_3RD      }, { -1       , -1        } },
-{ { IDC_P1_4TH      , IDC_P1_4TH      }, { -1       , -1        } },
-{ { IDC_P2_1ST      , IDC_P2_1ST      }, { -1       , -1        } },
-{ { IDC_P2_2ND      , IDC_P2_2ND      }, { -1       , -1        } },
-{ { IDC_P2_3RD      , IDC_P2_3RD      }, { -1       , -1        } },
-{ { IDC_P2_4TH      , IDC_P2_4TH      }, { -1       , -1        } },
-{ { IDC_P1_LEFT     , IDC_P1_LEFT     }, { -1       , -1        } },
-{ { IDC_P1_RIGHT    , IDC_P1_RIGHT    }, { -1       , -1        } },
-{ { IDC_P1_UP       , IDC_P1_UP       }, { -1       , -1        } },
-{ { IDC_P1_DOWN     , IDC_P1_DOWN     }, { -1       , -1        } },
-{ { IDC_P1_UPLEFT   , IDC_P1_UPLEFT   }, { -1       , -1        } },
-{ { IDC_P1_UPRIGHT  , IDC_P1_UPRIGHT  }, { -1       , -1        } },
-{ { IDC_P1_DOWNLEFT , IDC_P1_DOWNLEFT }, { -1       , -1        } },
-{ { IDC_P1_DOWNRIGHT, IDC_P1_DOWNRIGHT}, { -1       , -1        } },
-{ { IDC_P2_LEFT     , IDC_P2_LEFT     }, { -1       , -1        } },
-{ { IDC_P2_RIGHT    , IDC_P2_RIGHT    }, { -1       , -1        } },
-{ { IDC_P2_UP       , IDC_P2_UP       }, { -1       , -1        } },
-{ { IDC_P2_DOWN     , IDC_P2_DOWN     }, { -1       , -1        } },
-{ { IDC_P2_UPLEFT   , IDC_P2_UPLEFT   }, { -1       , -1        } },
-{ { IDC_P2_UPRIGHT  , IDC_P2_UPRIGHT  }, { -1       , -1        } },
-{ { IDC_P2_DOWNLEFT , IDC_P2_DOWNLEFT }, { -1       , -1        } },
-{ { IDC_P2_DOWNRIGHT, IDC_P2_DOWNRIGHT}, { -1       , -1        } },
-{ { IDC_P1_1        , IDC_P1_1        }, { IDC_LT_1 , IDC_LT_1  } },
-{ { IDC_P1_2        , IDC_P1_2        }, { IDC_LT_2 , IDC_LT_2  } },
-{ { IDC_P1_3        , IDC_P1_3        }, { IDC_LT_3 , IDC_LT_3  } },
-{ { IDC_P1_4        , IDC_P1_4        }, { IDC_LT_4 , IDC_LT_4  } },
-{ { IDC_P1_5        , IDC_P1_5        }, { IDC_LT_5 , IDC_LT_5  } },
-{ { IDC_P1_6        , IDC_P1_6        }, { IDC_LT_6 , IDC_LT_6  } },
-{ { IDC_P1_7        , IDC_P1_7        }, { IDC_LT_7 , IDC_LT_7  } },
-{ { IDC_P1_8        , IDC_P1_8        }, { IDC_LT_8 , IDC_LT_8  } },
-{ { IDC_P1_9        , IDC_P1_9        }, { IDC_LT_9 , IDC_LT_9  } },
-{ { IDC_P1_C        , IDC_P1_C        }, { IDC_LT_CL, IDC_LT_CL } },
-{ { IDC_P1_0        , IDC_P1_0        }, { IDC_LT_0 , IDC_LT_0  } },
-{ { IDC_P1_E        , IDC_P1_E        }, { IDC_LT_EN, IDC_LT_EN } },
-{ { IDC_P2_1        , IDC_P2_1        }, { IDC_RT_1 , IDC_RT_1  } },
-{ { IDC_P2_2        , IDC_P2_2        }, { IDC_RT_2 , IDC_RT_2  } },
-{ { IDC_P2_3        , IDC_P2_3        }, { IDC_RT_3 , IDC_RT_3  } },
-{ { IDC_P2_4        , IDC_P2_4        }, { IDC_RT_4 , IDC_RT_4  } },
-{ { IDC_P2_5        , IDC_P2_5        }, { IDC_RT_5 , IDC_RT_5  } },
-{ { IDC_P2_6        , IDC_P2_6        }, { IDC_RT_6 , IDC_RT_6  } },
-{ { IDC_P2_7        , IDC_P2_7        }, { IDC_RT_7 , IDC_RT_7  } },
-{ { IDC_P2_8        , IDC_P2_8        }, { IDC_RT_8 , IDC_RT_8  } },
-{ { IDC_P2_9        , IDC_P2_9        }, { IDC_RT_9 , IDC_RT_9  } },
-{ { IDC_P2_C        , IDC_P2_C        }, { IDC_RT_CL, IDC_RT_CL } },
-{ { IDC_P2_0        , IDC_P2_0        }, { IDC_RT_0 , IDC_RT_0  } },
-{ { IDC_P2_E        , IDC_P2_E        }, { IDC_RT_EN, IDC_RT_EN } }
 };
 
 // MODULE FUNCTIONS-------------------------------------------------------
@@ -1563,8 +1497,7 @@ EXPORT BOOL CALLBACK RedefineDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
     PERSIST   int   redef_x   = -1,
                     redef_y   = -1;
     PERSIST   POINT thepoint;
-    PERSIST   RECT  localrect,
-                    redefinerect[SOMEREDEFINEGADS];
+    PERSIST   RECT  localrect;
     PERSIST   HICON localhicon;
 
     switch (Message)
@@ -1582,9 +1515,10 @@ EXPORT BOOL CALLBACK RedefineDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
         setfont(hwnd, IDC_F2);
         setfont(hwnd, IDC_F3);
         setfont(hwnd, IDC_F4);
-        for (i = 0; i < ALLREDEFINEGADS; i++)
-        {   if (ctrlgads[i].redef[showpalladiumkeys2 ? 1 : 0] != -1)
-            {   setfont(hwnd, ctrlgads[i].redef[showpalladiumkeys2 ? 1 : 0]);
+        for (i = 0; i < NUMKEYS; i++)
+        {   if (showpalladiumkeys2 || i < GUESTKEY_X1 || i > GUESTKEY_X4)
+            {   setfont(hwnd, keytable[i].redef[0]);
+                setfont(hwnd, keytable[i].redef[1]);
         }   }
 
         setdlgtext(hwnd, IDC_RESETREDEFINE,      MSG_RESETTODEFAULTS2,  "&Reset to defaults");
@@ -1609,7 +1543,7 @@ EXPORT BOOL CALLBACK RedefineDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
         if (!preserve)
         {   for (i = 0; i < 2; i++)
             {   for (j = 0; j < NUMKEYS; j++)
-                {   temp_keypads[i][j] = keypads[i][j];
+                {   temp_keypads[i][j] = keytable[j].keypads[i];
             }   }
             for (i = 0; i < 4; i++)
             {   temp_console[i] = console[i];
@@ -1618,20 +1552,38 @@ EXPORT BOOL CALLBACK RedefineDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
         enablegads();
         refreshkeys();
 
-        for (i = 0; i < SOMEREDEFINEGADS; i++)
-        {   GetWindowRect(GetDlgItem(hwnd, IDC_P1_1ST + i), &localrect);
-            thepoint.x             = localrect.left;
-            thepoint.y             = localrect.top;
-            DISCARD ScreenToClient(hwnd, &thepoint);
-            redefinerect[i].left   = thepoint.x;
-            redefinerect[i].top    = thepoint.y;
-            thepoint.x             = localrect.right;
-            thepoint.y             = localrect.bottom;
-            DISCARD ScreenToClient(hwnd, &thepoint);
-            redefinerect[i].right  = thepoint.x;
-            redefinerect[i].bottom = thepoint.y;
-        }
-        // If they move the subwindow later, it doesn't matter.
+        for (i = 0; i < NUMKEYS; i++)
+        {   if (memmapinfo[memmap].keyused[i] && (showpalladiumkeys2 || i < GUESTKEY_X1 || i > GUESTKEY_X4))
+            {   for (j = 0; j < 2; j++)
+                {   if (keytable[i].redef[j] == -1)
+                    {   keytable[i].redefinerect[j].left   =
+                        keytable[i].redefinerect[j].right  =
+                        keytable[i].redefinerect[j].top    =
+                        keytable[i].redefinerect[j].bottom = -1;
+                    } else
+                    {   GetWindowRect(GetDlgItem(hwnd, keytable[i].redef[j]), &localrect);
+                        thepoint.x                         = localrect.left;
+                        thepoint.y                         = localrect.top;
+                        DISCARD ScreenToClient(hwnd, &thepoint);
+                        keytable[i].redefinerect[j].left   = thepoint.x;
+                        keytable[i].redefinerect[j].top    = thepoint.y;
+                        thepoint.x             = localrect.right;
+                        thepoint.y             = localrect.bottom;
+                        DISCARD ScreenToClient(hwnd, &thepoint);
+                        keytable[i].redefinerect[j].right  = thepoint.x;
+                        keytable[i].redefinerect[j].bottom = thepoint.y;
+                        // If they move the subwindow later, it doesn't matter.
+            }   }   }
+            else
+            {   keytable[i].redefinerect[0].left   =
+                keytable[i].redefinerect[0].right  =
+                keytable[i].redefinerect[0].top    =
+                keytable[i].redefinerect[0].bottom =
+                keytable[i].redefinerect[1].left   =
+                keytable[i].redefinerect[1].right  =
+                keytable[i].redefinerect[1].top    =
+                keytable[i].redefinerect[1].bottom = -1;
+        }   }
 
         DISCARD SendMessage
         (   GetDlgItem(hwnd, IDC_SHOWPALLADIUMKEYS2),
@@ -1660,107 +1612,23 @@ EXPORT BOOL CALLBACK RedefineDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
     case WM_LBUTTONDOWN:
         mousex = (int) LOWORD(lParam); // pixels -> dialog units
         mousey = (int) HIWORD(lParam); // pixels -> dialog units
-
 #ifdef VERBOSE
         zprintf(TEXTPEN_VERBOSE, "X: %d, Y: %d.\n", mousex, mousey);
 #endif
 
-        j = SOMEREDEFINEGADS;
-        for (i = 0; i < SOMEREDEFINEGADS; i++)
-        {   if
-            (   mousex >= redefinerect[i].left
-             && mousex <= redefinerect[i].right
-             && mousey >= redefinerect[i].top
-             && mousey <= redefinerect[i].bottom
-            )
-            {   j = i;
-                break;
-        }   }
-
-        switch (j)
-        {
-        case 0:
-            if
-            (   machine == ARCADIA
-             || machines[machine].pvis
-             || machine == PONG
-            ) // excludes INSTRUCTOR, PHUNSY, SELBST, MIKIT, TYPERIGHT
-            {   subreq(GUESTKEY_1ST, 0);
-                refreshkeys(); // this is overkill
-            }
-        acase 1:
-            if
-            (   machine == ARCADIA
-             || machine == INTERTON
-             || machine == ELEKTOR
-             || memmap == MEMMAP_LASERBATTLE
-             || memmap == MEMMAP_LAZARIAN
-            ) // excludes INSTRUCTOR, Astro Wars, Galaxia, MALZAK, PONG, PHUNSY, SELBST, MIKIT, TYPERIGHT
-            {   subreq(GUESTKEY_2ND, 0);
-                refreshkeys(); // this is overkill
-            }
-        acase 2:
-            if
-            (   machine == ARCADIA
-             || machine == INTERTON
-             || machine == ELEKTOR
-             || memmap == MEMMAP_LASERBATTLE
-             || memmap == MEMMAP_LAZARIAN
-            ) // excludes INSTRUCTOR, Astro Wars, Galaxia, MALZAK, PONG, PHUNSY, SELBST, MIKIT, TYPERIGHT
-            {   subreq(GUESTKEY_3RD, 0);
-                refreshkeys(); // this is overkill
-            }
-        acase 3:
-            if
-            (   machine == ARCADIA
-             || machine == INTERTON
-             || machine == ELEKTOR
-             || memmap == MEMMAP_LASERBATTLE
-             || memmap == MEMMAP_LAZARIAN
-            ) // excludes INSTRUCTOR, Astro Wars, Galaxia, MALZAK, PONG, PHUNSY, SELBST, MIKIT, TYPERIGHT
-            {   subreq(GUESTKEY_4TH, 0);
-                refreshkeys(); // this is overkill
-            }
-        acase 4:
-            if
-            (   machine == ARCADIA
-             || machine == INTERTON
-             || machine == ELEKTOR
-             || memmap  == MEMMAP_ASTROWARS
-             || memmap  == MEMMAP_GALAXIA
-             || machine == MALZAK
-             || machine == PONG
-            ) // excludes INSTRUCTOR, Laser Battle, PHUNSY, SELBST, MIKIT, TYPERIGHT
-            {   subreq(GUESTKEY_1ST, 1);
-                refreshkeys(); // this is overkill
-            }
-        acase 5:
-            if
-            (   machine == ARCADIA
-             || machine == INTERTON
-             || machine == ELEKTOR
-            ) // excludes INSTRUCTOR, coin-ops, PONG, PHUNSY, SELBST, MIKIT, TYPERIGHT
-            {   subreq(GUESTKEY_2ND, 1);
-                refreshkeys(); // this is overkill
-            }
-        acase 6:
-            if
-            (   machine == ARCADIA
-             || machine == INTERTON
-             || machine == ELEKTOR
-            ) // excludes INSTRUCTOR, coin-ops, PONG, PHUNSY, SELBST, MIKIT, TYPERIGHT
-            {   subreq(GUESTKEY_3RD, 1);
-                refreshkeys(); // this is overkill
-            }
-        acase 7:
-            if
-            (   machine == ARCADIA
-             || machine == INTERTON
-             || machine == ELEKTOR
-            ) // excludes INSTRUCTOR, coin-ops, PONG, PHUNSY, SELBST, MIKIT, TYPERIGHT
-            {   subreq(GUESTKEY_4TH, 1);
-                refreshkeys(); // this is overkill
-        }   }
+        for (i = 0; i < NUMKEYS; i++)
+        {   if (memmapinfo[memmap].keyused[i] && (showpalladiumkeys2 || i < GUESTKEY_X1 || i > GUESTKEY_X4))
+            {   for (j = 0; j < 2; j++)
+                {   if
+                    (   mousex >= keytable[i].redefinerect[j].left
+                     && mousex <= keytable[i].redefinerect[j].right
+                     && mousey >= keytable[i].redefinerect[j].top
+                     && mousey <= keytable[i].redefinerect[j].bottom
+                    )
+                    {   subreq(i, j);
+                        refreshkeys(); // overkill
+                        break; // for speed
+        }   }   }   }
     acase WM_CTLCOLORSTATIC:
         gid = GetWindowLong((HWND) lParam, GWL_ID);
 
@@ -1772,7 +1640,7 @@ EXPORT BOOL CALLBACK RedefineDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
     case WM_CLOSE: // no need for acase
         for (i = 0; i < 2; i++)
         {   for (j = 0; j < NUMKEYS; j++)
-            {   keypads[i][j] = temp_keypads[i][j];
+            {   keytable[j].keypads[i] = temp_keypads[i][j];
         }   }
         for (i = 0; i < 4; i++)
         {   console[i] = temp_console[i];
@@ -1797,7 +1665,7 @@ EXPORT BOOL CALLBACK RedefineDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
         case IDOK:
             for (i = 0; i < 2; i++)
             {   for (j = 0; j < NUMKEYS; j++)
-                {   keypads[i][j] = temp_keypads[i][j];
+                {   keytable[j].keypads[i] = temp_keypads[i][j];
             }   }
             for (i = 0; i < 4; i++)
             {   console[i] = temp_console[i];
@@ -2561,14 +2429,6 @@ EXPORT void subreq(int whichkey, int player)
     DISCARD DialogBox(InstancePtr, MAKEINTRESOURCE(IDD_REDEFINESUB), RedefineWindowPtr, RedefineSubDlgProc);
     opening = FALSE;
 }
-
-EXPORT void enablegad(int whichgad, int enabled)
-{   if (RedefineWindowPtr && ctrlgads[whichgad].redef[showpalladiumkeys2 ? 1 : 0] != -1)
-    {   EnableWindow(GetDlgItem(RedefineWindowPtr, ctrlgads[whichgad].redef[showpalladiumkeys2 ? 1 : 0]), enabled);
-    }
-    if (subwin[SUBWINDOW_GAMEINFO].hwnd && ctrlgads[whichgad].gameinfo[showpalladiumkeys1 ? 1 : 0] != -1)
-    {   EnableWindow(GetDlgItem(subwin[SUBWINDOW_GAMEINFO].hwnd, ctrlgads[whichgad].gameinfo[showpalladiumkeys1 ? 1 : 0]), enabled);
-}   }
 
 EXPORT void help_about(void)
 {   sound_off(FALSE);

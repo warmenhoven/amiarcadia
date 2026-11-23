@@ -30,7 +30,6 @@ EXPORT       int                   viewpadsas2[2] = { 0, 0 };
 EXPORT       HDC                   ControlsRastPtr1,
                                    ControlsRastPtr2;
 EXPORT const DWORD                 joyfires[8] = { JOYFIRE1, JOYFIRE2, JOYFIRE3, JOYFIRE4, JOYA, JOYB, JOYAUTOFIRE, JOYPAUSE };
-EXPORT const struct KeyTableStruct keytable[NUMKEYS];
 
 /* Keys we don't hear: both Windows keys, both Alt keys, F10.
 Also Power, Sleep, Wake, Fn, PrtSc.
@@ -77,7 +76,7 @@ EXPORT struct KeyNameStruct keyname[SCANCODES] = {
 { "H",     { 'h' , 'h' ,  'h' }, { 'H' , 'H' , 'H' }, { 'H', 'H' , 'H' }, 0x08, 0x08, 'h' , 'H' , FALSE, IDC_KYBD_H        , TRUE , TRUE , 32 }, // $23
 { "J",     { 'j' , 'j' ,  'j' }, { 'J' , 'J' , 'J' }, { 'J', 'J' , 'J' }, 0x0A, 0x0A, 'j' , 'J' , FALSE, IDC_KYBD_J        , TRUE , TRUE , 33 }, // $24
 { "K",     { 'k' , 'k' ,  'k' }, { 'K' , 'K' , 'K' }, { 'K', 'K' , 'K' }, 0x0B, 0x0B, 'k' , 'K' , FALSE, IDC_KYBD_K        , TRUE , TRUE , 34 }, // $25
-{ "L",     { 'l' , 'l' ,  'l' }, { 'L' , 'L' , 'L' }, { 'L', 'L', 'L' }, 0x0C, 0x0C, 'l' , 'L' , FALSE, IDC_KYBD_L        , TRUE , TRUE , 35 }, // $26
+{ "L",     { 'l' , 'l' ,  'l' }, { 'L' , 'L' , 'L' }, { 'L', 'L' , 'L' }, 0x0C, 0x0C, 'l' , 'L' , FALSE, IDC_KYBD_L        , TRUE , TRUE , 35 }, // $26
 { ";",     { ';' , ';' ,  ';' }, { ';' , ';' , ';' }, { ':', '+' , '+' },   NC,   NC, ';' , ':' , FALSE, IDC_KYBD_SEMICOLON, TRUE , TRUE , 36 }, // $27
 { "'",     {QUOTE, ':' , QUOTE}, {QUOTE, ':' , BS  }, { '"', '*' , BS  },   NC,   NC, BS  , '"' , FALSE, IDC_KYBD_QUOTE    , TRUE , TRUE , 37 }, // $28
 { "`",     { '`' , DEL ,  NC  }, { '`' , DEL , '`' }, { '~', DEL , '~' },   NC, 0x1A, '`' , NC  , FALSE, IDC_KYBD_BACKTICK , TRUE , TRUE , -1 }, // $29 ctrl-shift code assumes guest layout
@@ -569,7 +568,6 @@ IMPORT       TEXT                      autotext[GAMEINFOLINES][80 + 1],
                                        pgmtext[6 * KILOBYTE],
                                        joyname[2][MAX_PATH];
 IMPORT       UWORD                     console[4],
-                                       keypads[2][NUMKEYS],
                                        temp_console[4],
                                        temp_keypads[2][NUMKEYS];
 IMPORT       ULONG                     arcadia_bigctrls,
@@ -621,6 +619,7 @@ IMPORT       int                       candy[CANDIES],
                                        whosemouse;
 IMPORT       struct HostMachineStruct  hostmachines[MACHINES];
 IMPORT const struct KeyInfoStruct      keyinfo[KEYINFOS][KEYS];
+IMPORT       struct KeyTableStruct     keytable[NUMKEYS];
 IMPORT       struct MachineStruct      machines[MACHINES];
 IMPORT const struct MemMapToStruct     memmap_to[MEMMAPS];
 IMPORT       struct OpcodeStruct       opcodes[3][256];
@@ -839,7 +838,7 @@ EXPORT void help_hostpads(void)
 EXPORT void help_hostkybd(void)
 {   open_subwindow(SUBWINDOW_HOSTKYBD, MAKEINTRESOURCE(viewkybdas2 ? IDD_LAPTOP : IDD_DESKTOP), KybdDlgProc);
     make_tips(SUBWINDOW_HOSTKYBD, SCANCODES, 0);
-    updatekeynames(subwin[SUBWINDOW_HOSTKYBD].hwnd);
+    update_hostkybd();
 }
 
 EXPORT void update_opcodes(void)
@@ -1126,7 +1125,7 @@ MODULE BOOL CALLBACK KybdDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM 
                 IDC_VIEWKYBDAS_OVERLAYS,
                 IDC_VIEWKYBDAS_GUEST + viewkybdas
             );
-            updatekeynames(hwnd);
+            update_hostkybd();
         } elif (gid >= IDC_VIEWKYBDAS_DESKTOP && gid <= IDC_VIEWKYBDAS_LAPTOP)
         {   viewkybdas2 = gid - IDC_VIEWKYBDAS_DESKTOP;
             DISCARD CheckRadioButton
@@ -1958,9 +1957,9 @@ MODULE BOOL CALLBACK ControlsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPA
                 temp_console[keyinfo[whichkeyrect][whichkey].to_keypad];
             } else
             {   temp_keypads[keyinfo[whichkeyrect][whichkey].player][keyinfo[whichkeyrect][whichkey].to_keypad] =
-                     keypads[keyinfo[whichkeyrect][whichkey].player][keyinfo[whichkeyrect][whichkey].to_keypad];
+                keytable[keyinfo[whichkeyrect][whichkey].to_keypad].keypads[keyinfo[whichkeyrect][whichkey].player];
                 subreq(keyinfo[whichkeyrect][whichkey].to_keypad, keyinfo[whichkeyrect][whichkey].player);
-                     keypads[keyinfo[whichkeyrect][whichkey].player][keyinfo[whichkeyrect][whichkey].to_keypad] =
+                keytable[keyinfo[whichkeyrect][whichkey].to_keypad].keypads[keyinfo[whichkeyrect][whichkey].player] =
                 temp_keypads[keyinfo[whichkeyrect][whichkey].player][keyinfo[whichkeyrect][whichkey].to_keypad];
             }
             update_controlstip(TRUE);

@@ -64,7 +64,7 @@ EXPORT struct VariantStruct variantinfo[VARIANTS] = {
 // AY-3-8500/8550
 { DARKGREEN, YELLOW,   PURPLE,    BLUE   , 2, { { 23, 27, 27, 60, 0,FACE_RT, 43, 6},                                                                                                               { 97, 62, 95, 95, 1,FACE_LT, 79, 6} } }, // VARIANT_8550_TENNIS
 { BLUE,      CYANBLUE, DARKBLUE,  RED    , 4, { { 23, 27, 27, 27, 0,FACE_RT, 61, 3}, { 40, 27, 43, 95,1,FACE_LF, 61, 3},                                      { 82, 27, 79, 95, 0,FACE_RF, 61, 3}, { 97, 95, 95, 95, 1,FACE_LT, 61, 3} } }, // VARIANT_8550_SOCCER
-{ DARKRED,   ORANGE,   DARKGREEN, PINK   , 5, { { 23, 27, 27, 27, 0,FACE_RT, 61, 3}, { 40, 27, 43, 95,1,FACE_LT, 61, 3}, { 80, 27, 77, 95, 1,FACE_LT, 61, 3}, { 82, 27, 79, 95, 0,FACE_RT, 61, 3}, { 97, 95, 95, 95, 1,FACE_LT, 61, 3} } }, // VARIANT_8550_HANDICAP (arbitrary colours)
+{ DARKRED,   ORANGE,   DARKGREEN, PINK   , 5, { { 23, 27, 27, 27, 0,FACE_RT, 61, 3}, { 40, 27, 43, 95,1,FACE_LT, 61, 3}, { 80, 77, 77, 77, 1,FACE_LT, 61, 3}, { 82, 27, 79, 95, 0,FACE_RT, 61, 3}, { 97, 95, 95, 95, 1,FACE_LT, 61, 3} } }, // VARIANT_8550_HANDICAP (arbitrary colours)
 { PURPLE,    PINK,     BLUE,      YELLOW , 2, {                                                                          { 80, 27, 77, 95, 0,FACE_LT, 61, 3}, { 82, 27, 79, 95, 1,FACE_LT, 61, 3}                                      } }, // VARIANT_8550_SQUASH
 { CYANGREEN, GREEN,    BROWN,     BLUE   , 1, {                                                                                                               { 82, 27, 79, 95, 0,FACE_LT, 61, 3}                                      } }, // VARIANT_8550_PRACTICE
 { BROWN,     PINK,     DARKRED,   ORANGE , 0, { {  0,  0,  0,  0, 0,      0,  0, 0}                                                                                                                                                    } }, // VARIANT_8550_RIFLE1   (arbitrary colours)
@@ -165,8 +165,7 @@ EXPORT const STRPTR varianthelp[VARIANTS] = {
 IMPORT       FLAG                 inframe,
                                   lmb;
 IMPORT       ASCREEN              screen[BOXWIDTH][BOXHEIGHT];
-IMPORT       UWORD                console[4],
-                                  keypads[2][NUMKEYS];
+IMPORT       UWORD                console[4];
 IMPORT       UBYTE                OutputBuffer[18];
 IMPORT       UBYTE*               IOBuffer;
 IMPORT       ULONG                analog,
@@ -207,6 +206,7 @@ IMPORT       int                  ax[2],
                                   wheremouse,
                                   whichgame;
 IMPORT       FILE*                    MacroHandle;
+IMPORT       struct KeyTableStruct    keytable[NUMKEYS];
 IMPORT       struct MachineStruct     machines[MACHINES];
 IMPORT       struct HostMachineStruct hostmachines[MACHINES];
 IMPORT       struct SubWindowStruct   subwin[SUBWINDOWS];
@@ -1085,7 +1085,7 @@ MODULE void pong_playerinput(int source, int dest)
             {   if
                 (   (   !requirebutton[source]
                      || (jg & (JOYFIRE1 | DAPTER_TOP))
-                     || KeyDown(keypads[source][0])
+                     || KeyDown(keytable[GUESTKEY_1ST].keypads[source])
                      || (hostcontroller[source] == CONTROLLER_TRACKBALL && lmb)
                     )
                  && ((frames % DEF_TO) < DEF_DN)
@@ -1095,8 +1095,8 @@ MODULE void pong_playerinput(int source, int dest)
             }   }
             elif
             (   (jg & (JOYFIRE1 | DAPTER_TOP))
-             || KeyDown(keypads[source][0])
-             || KeyDown(keypads[source][2])
+             || KeyDown(keytable[GUESTKEY_1ST].keypads[source])
+             || KeyDown(keytable[GUESTKEY_2  ].keypads[source])
              || (hostcontroller[source] == CONTROLLER_TRACKBALL && lmb)
             )
             {   // 1st firebutton
@@ -1105,13 +1105,23 @@ MODULE void pong_playerinput(int source, int dest)
 
             if (teamleft && dest == 0)
             {   moved = FALSE;
-                if ((jg & JOYFIRE4) || KeyDown(keypads[source][ 8]) || (jf[source] & DAPTER_8)) // "8"
+                if
+                (   (jg & JOYFIRE4)
+                 || KeyDown(keytable[GUESTKEY_8  ].keypads[source])
+                 || KeyDown(keytable[GUESTKEY_4TH].keypads[source])
+                 || (jf[source] & DAPTER_8)
+                )
                 {   moved = TRUE;
                     ay[2] -= sensitivity[source];
                     if (ay[2] < 0)
                     {   ay[2] = 0;
                 }   }
-                if ((jg & (JOYFIRE2 | JOYFIRE3)) || KeyDown(keypads[source][11]) || (jf[source] & DAPTER_0)) // "0"
+                if
+                (   (jg & (JOYFIRE2 | JOYFIRE3))
+                 || KeyDown(keytable[GUESTKEY_0  ].keypads[source])
+                 || KeyDown(keytable[GUESTKEY_2ND].keypads[source])
+                 || KeyDown(keytable[GUESTKEY_3RD].keypads[source])
+                 || (jf[source] & DAPTER_0))
                 {   moved = TRUE;
                     ay[2] += sensitivity[source];
                     if (ay[2] > 255)
@@ -1122,13 +1132,24 @@ MODULE void pong_playerinput(int source, int dest)
             }   }
             if (teamright && dest == 1)
             {   moved = FALSE;
-                if ((jg & JOYFIRE4) || KeyDown(keypads[source][ 8]) || (jf[source] & DAPTER_8)) // "8"
+                if
+                (   (jg & JOYFIRE4)
+                 || KeyDown(keytable[GUESTKEY_8  ].keypads[source])
+                 || KeyDown(keytable[GUESTKEY_4TH].keypads[source])
+                 || (jf[source] & DAPTER_8)
+                )
                 {   moved = TRUE;
                     ay[3] -= sensitivity[source];
                     if (ay[3] < 0)
                     {   ay[3] = 0;
                 }   }
-                if ((jg & (JOYFIRE2 | JOYFIRE3)) || KeyDown(keypads[source][11]) || (jf[source] & DAPTER_0)) // "0"
+                if
+                (   (jg & (JOYFIRE2 | JOYFIRE3))
+                 || KeyDown(keytable[GUESTKEY_0  ].keypads[source])
+                 || KeyDown(keytable[GUESTKEY_2ND].keypads[source])
+                 || KeyDown(keytable[GUESTKEY_3RD].keypads[source])
+                 || (jf[source] & DAPTER_0)
+                )
                 {   moved = TRUE;
                     ay[3] += sensitivity[source];
                     if (ay[3] > 255)
@@ -1901,8 +1922,8 @@ EXPORT void pong_setmemmap(void)
 
     if (memmap == MEMMAP_8550)
     {   key2              =
-        key3              = 0; // down
-        key4              = 8; // up
+        key3              = GUESTKEY_0; // down
+        key4              = GUESTKEY_8; // up
         if (pong_variant < 0 || pong_variant > 6)
         {   pong_variant = VARIANT_8550_PRACTICE;
         }
@@ -1913,7 +1934,7 @@ EXPORT void pong_setmemmap(void)
     {   // assert(memmap == MEMMAP_8600);
         key2              =
         key3              =
-        key4              = 2; // fire rifle
+        key4              = GUESTKEY_2; // fire rifle
         if (pong_variant < 7 || pong_variant > 16)
         {   pong_variant = VARIANT_8600_PRACTICE;
         }

@@ -70,7 +70,6 @@ IMPORT       UBYTE                    cosversion,
                                       tt_kybdcode;
 IMPORT       UWORD                    guestpitch[GUESTCHANNELS],
                                       iar,
-                                      keypads[2][NUMKEYS],
                                       mirror_r[32768],
                                       mirror_w[32768],
                                       oldiar;
@@ -125,6 +124,7 @@ IMPORT       int                      ambient,
                                       whichkeyrect;
 IMPORT       struct DriveStruct       drive[DRIVES_MAX];
 IMPORT       struct IOPortStruct      ioport[258];
+IMPORT       struct KeyTableStruct    keytable[NUMKEYS];
 IMPORT       struct KindStruct        filekind[KINDS];
 IMPORT       struct KnownStruct       known[KNOWNGAMES];
 IMPORT       struct MachineStruct     machines[MACHINES];
@@ -1061,7 +1061,7 @@ MODULE void binbug_playerinput(int source, int dest)
     {   if
         (   (   !requirebutton[source]
              || (jg & (JOYFIRE1 | DAPTER_1))
-             || KeyDown(keypads[source][0])
+             || KeyDown(keytable[GUESTKEY_1ST].keypads[source])
              || (hostcontroller[source] == CONTROLLER_TRACKBALL && lmb)
             )
          && ((frames % totalframes) < downframes)
@@ -1071,28 +1071,28 @@ MODULE void binbug_playerinput(int source, int dest)
     }   }
     elif
     (   (jg & (JOYFIRE1 | DAPTER_1))
-     || KeyDown(keypads[source][ 0]) // 1st firebutton
+     || KeyDown(keytable[GUESTKEY_1ST].keypads[source])
      || (hostcontroller[source] == CONTROLLER_TRACKBALL && lmb)
     )
     {   // 1st firebutton
         playerfire[dest] = 1;
     } elif
     (   (jg & (JOYFIRE2 | DAPTER_2))
-     || KeyDown(keypads[source][21]) // 2nd firebutton
+     || KeyDown(keytable[GUESTKEY_2ND].keypads[source])
      || (hostcontroller[source] == CONTROLLER_TRACKBALL && mmb)
     )
     {   // 2nd firebutton
         playerfire[dest] = 2;
     } elif
     (   (jg & (JOYFIRE3 | DAPTER_3))
-     || KeyDown(keypads[source][22]) // 3rd firebutton
+     || KeyDown(keytable[GUESTKEY_3RD].keypads[source])
      || (hostcontroller[source] == CONTROLLER_TRACKBALL && rmb)
     )
     {   // 3rd firebutton
         playerfire[dest] = 3;
     } elif
     (   (jg & (JOYFIRE4 | DAPTER_4))
-     || KeyDown(keypads[source][23]) // 4th firebutton
+     || KeyDown(keytable[GUESTKEY_4TH].keypads[source])
     )
     {   // 4th firebutton
         playerfire[dest] = 4;

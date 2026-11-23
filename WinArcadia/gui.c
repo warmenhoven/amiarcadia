@@ -4769,10 +4769,10 @@ EXPORT void update_toolbar(void)
     DISCARD SendMessage(hToolbar, TB_CHANGEBITMAP, (UINT) ID_CONSOLE_B,     machines[machine].consolekeyimage[2]);
     DISCARD SendMessage(hToolbar, TB_CHANGEBITMAP, (UINT) ID_CONSOLE_RESET, machines[machine].consolekeyimage[3]);
 
-    DISCARD SendMessage(hToolbar, TB_SETSTATE    , (UINT) ID_CONSOLE_START, (recmode != RECMODE_PLAY && memmapinfo[memmap].gadenabled[0]) ? TBSTATE_ENABLED : 0);
-    DISCARD SendMessage(hToolbar, TB_SETSTATE    , (UINT) ID_CONSOLE_A    , (recmode != RECMODE_PLAY && memmapinfo[memmap].gadenabled[1]) ? TBSTATE_ENABLED : 0);
-    DISCARD SendMessage(hToolbar, TB_SETSTATE    , (UINT) ID_CONSOLE_B    , (recmode != RECMODE_PLAY && memmapinfo[memmap].gadenabled[2]) ? TBSTATE_ENABLED : 0);
-    DISCARD SendMessage(hToolbar, TB_SETSTATE    , (UINT) ID_CONSOLE_RESET, (recmode != RECMODE_PLAY && memmapinfo[memmap].gadenabled[3]) ? TBSTATE_ENABLED : 0);
+    DISCARD SendMessage(hToolbar, TB_SETSTATE    , (UINT) ID_CONSOLE_START, (recmode != RECMODE_PLAY && memmapinfo[memmap].consoleenabled[0]) ? TBSTATE_ENABLED : 0);
+    DISCARD SendMessage(hToolbar, TB_SETSTATE    , (UINT) ID_CONSOLE_A    , (recmode != RECMODE_PLAY && memmapinfo[memmap].consoleenabled[1]) ? TBSTATE_ENABLED : 0);
+    DISCARD SendMessage(hToolbar, TB_SETSTATE    , (UINT) ID_CONSOLE_B    , (recmode != RECMODE_PLAY && memmapinfo[memmap].consoleenabled[2]) ? TBSTATE_ENABLED : 0);
+    DISCARD SendMessage(hToolbar, TB_SETSTATE    , (UINT) ID_CONSOLE_RESET, (recmode != RECMODE_PLAY && memmapinfo[memmap].consoleenabled[3]) ? TBSTATE_ENABLED : 0); 
 #endif
 #ifdef AMIGA
     SetSpeedButtonNodeAttrs(SmallSpeedBarNodePtr[GADPOS_START], SBNA_Image, images[machines[machine].consolekeyimage[0]], TAG_DONE);
@@ -4780,10 +4780,10 @@ EXPORT void update_toolbar(void)
     SetSpeedButtonNodeAttrs(SmallSpeedBarNodePtr[GADPOS_B    ], SBNA_Image, images[machines[machine].consolekeyimage[2]], TAG_DONE);
     SetSpeedButtonNodeAttrs(SmallSpeedBarNodePtr[GADPOS_RESET], SBNA_Image, images[machines[machine].consolekeyimage[3]], TAG_DONE);
 
-    SetSpeedButtonNodeAttrs(SmallSpeedBarNodePtr[GADPOS_START], SBNA_Disabled, (recmode != RECMODE_PLAY && memmapinfo[memmap].gadenabled[0]) ? FALSE : TRUE, TAG_DONE);
-    SetSpeedButtonNodeAttrs(SmallSpeedBarNodePtr[GADPOS_A    ], SBNA_Disabled, (recmode != RECMODE_PLAY && memmapinfo[memmap].gadenabled[1]) ? FALSE : TRUE, TAG_DONE);
-    SetSpeedButtonNodeAttrs(SmallSpeedBarNodePtr[GADPOS_B    ], SBNA_Disabled, (recmode != RECMODE_PLAY && memmapinfo[memmap].gadenabled[2]) ? FALSE : TRUE, TAG_DONE);
-    SetSpeedButtonNodeAttrs(SmallSpeedBarNodePtr[GADPOS_RESET], SBNA_Disabled, (recmode != RECMODE_PLAY && memmapinfo[memmap].gadenabled[3]) ? FALSE : TRUE, TAG_DONE);
+    SetSpeedButtonNodeAttrs(SmallSpeedBarNodePtr[GADPOS_START], SBNA_Disabled, (recmode != RECMODE_PLAY && memmapinfo[memmap].consoleenabled[0]) ? FALSE : TRUE, TAG_DONE);
+    SetSpeedButtonNodeAttrs(SmallSpeedBarNodePtr[GADPOS_A    ], SBNA_Disabled, (recmode != RECMODE_PLAY && memmapinfo[memmap].consoleenabled[1]) ? FALSE : TRUE, TAG_DONE);
+    SetSpeedButtonNodeAttrs(SmallSpeedBarNodePtr[GADPOS_B    ], SBNA_Disabled, (recmode != RECMODE_PLAY && memmapinfo[memmap].consoleenabled[2]) ? FALSE : TRUE, TAG_DONE);
+    SetSpeedButtonNodeAttrs(SmallSpeedBarNodePtr[GADPOS_RESET], SBNA_Disabled, (recmode != RECMODE_PLAY && memmapinfo[memmap].consoleenabled[3]) ? FALSE : TRUE, TAG_DONE);
 
     attachsmlgads();
 #endif

@@ -121,7 +121,6 @@ IMPORT       UBYTE                 memory[32768],
                                    psu;
 IMPORT       UWORD                 console[4],
                                    iar,
-                                   keypads[2][NUMKEYS],
                                    mirror_r[32768],
                                    mirror_w[32768],
                                    screen_iar[BOXWIDTH][BOXHEIGHT];
@@ -132,7 +131,7 @@ IMPORT const int                   consolecolours[8],
 IMPORT       struct ConditionalStruct wp[ALLTOKENS];
 IMPORT       struct IdealStruct       idealfreq_ntsc[256],
                                       idealfreq_pal[256];
-IMPORT const struct KeyTableStruct    keytable[NUMKEYS];
+IMPORT       struct KeyTableStruct    keytable[NUMKEYS];
 IMPORT const struct KindStruct        filekind[KINDS];
 IMPORT const struct KnownStruct       known[KNOWNGAMES];
 IMPORT       struct MachineStruct     machines[MACHINES];
@@ -492,7 +491,7 @@ MODULE void a_playerinput(int source, int dest)
         memory[A_P1PALLADIUM  + (dest * 4)] = 0;
         if
         (   (jg & (JOYFIRE1 | keytable[key1].dapter))
-         || KeyDown(keypads[source][0])
+         || KeyDown(keytable[GUESTKEY_1ST].keypads[source])
          || (   hostcontroller[source] == CONTROLLER_TRACKBALL
              && lmb
         )   )
@@ -510,7 +509,7 @@ MODULE void a_playerinput(int source, int dest)
         }   }
         if
         (   (jg & JOYFIRE2)
-         || (KeyDown(keypads[source][21]))
+         || KeyDown(keytable[GUESTKEY_2ND].keypads[source])
          || (hostcontroller[source] == CONTROLLER_TRACKBALL && mmb)
         )
         {   // 2nd firebutton
@@ -518,7 +517,7 @@ MODULE void a_playerinput(int source, int dest)
         }
         if
         (   (jg & JOYFIRE3)
-         || (KeyDown(keypads[source][22]))
+         || KeyDown(keytable[GUESTKEY_3RD].keypads[source])
          || (hostcontroller[source] == CONTROLLER_TRACKBALL && rmb)
         )
         {   // 3rd firebutton
@@ -526,7 +525,7 @@ MODULE void a_playerinput(int source, int dest)
         }
         if
         (   (jg & JOYFIRE4)
-         || (KeyDown(keypads[source][23]))
+         || KeyDown(keytable[GUESTKEY_4TH].keypads[source])
         )
         {   // 4th firebutton
             memory[keytable[key4].a_address + (dest * 4)] |= keytable[key4].a_mask;
@@ -534,10 +533,10 @@ MODULE void a_playerinput(int source, int dest)
 
         // left column
         t =  memory[A_P1LEFTKEYS + (dest * 4)];
-        t |= (UBYTE) (0x08 * KeyDown(keypads[source][ 1])); // "1"  key (Arcadia)
-        t |= (UBYTE) (0x04 * KeyDown(keypads[source][ 4])); // "4"  key (Arcadia)
-        t |= (UBYTE) (0x02 * KeyDown(keypads[source][ 7])); // "7"  key (Arcadia)
-        t |= (UBYTE) (0x01 * KeyDown(keypads[source][10])); // "Cl" key (Arcadia)
+        t |= (UBYTE) (0x08 * KeyDown(keytable[GUESTKEY_1 ].keypads[source]));
+        t |= (UBYTE) (0x04 * KeyDown(keytable[GUESTKEY_4 ].keypads[source]));
+        t |= (UBYTE) (0x02 * KeyDown(keytable[GUESTKEY_7 ].keypads[source]));
+        t |= (UBYTE) (0x01 * KeyDown(keytable[GUESTKEY_CL].keypads[source]));
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_1) && (jf[source] & DAPTER_1)) t |= 8;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_4) && (jf[source] & DAPTER_4)) t |= 4;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_7) && (jf[source] & DAPTER_7)) t |= 2;
@@ -569,10 +568,10 @@ MODULE void a_playerinput(int source, int dest)
 
         // middle column
         t =  memory[A_P1MIDDLEKEYS + (dest * 4)];
-        t |= (UBYTE) (0x08 * KeyDown(keypads[source][ 2])); // "2"  key (Arcadia)
-        t |= (UBYTE) (0x04 * KeyDown(keypads[source][ 5])); // "5"  key (Arcadia)
-        t |= (UBYTE) (0x02 * KeyDown(keypads[source][ 8])); // "8"  key (Arcadia)
-        t |= (UBYTE) (0x01 * KeyDown(keypads[source][11])); // "0"  key (Arcadia)
+        t |= (UBYTE) (0x08 * KeyDown(keytable[GUESTKEY_2].keypads[source]));
+        t |= (UBYTE) (0x04 * KeyDown(keytable[GUESTKEY_5].keypads[source]));
+        t |= (UBYTE) (0x02 * KeyDown(keytable[GUESTKEY_8].keypads[source]));
+        t |= (UBYTE) (0x01 * KeyDown(keytable[GUESTKEY_0].keypads[source]));
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_2) && (jf[source] & DAPTER_2)) t |= 8;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_5) && (jf[source] & DAPTER_5)) t |= 4;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_8) && (jf[source] & DAPTER_8)) t |= 2;
@@ -604,10 +603,10 @@ MODULE void a_playerinput(int source, int dest)
 
         // right column
         t =  memory[A_P1RIGHTKEYS + (dest * 4)];
-        t |= (UBYTE) (0x08 * KeyDown(keypads[source][ 3])); // "3"  key (Arcadia)
-        t |= (UBYTE) (0x04 * KeyDown(keypads[source][ 6])); // "6"  key (Arcadia)
-        t |= (UBYTE) (0x02 * KeyDown(keypads[source][ 9])); // "9"  key (Arcadia)
-        t |= (UBYTE) (0x01 * KeyDown(keypads[source][12])); // "En" key (Arcadia)
+        t |= (UBYTE) (0x08 * KeyDown(keytable[GUESTKEY_3 ].keypads[source]));
+        t |= (UBYTE) (0x04 * KeyDown(keytable[GUESTKEY_6 ].keypads[source]));
+        t |= (UBYTE) (0x02 * KeyDown(keytable[GUESTKEY_9 ].keypads[source]));
+        t |= (UBYTE) (0x01 * KeyDown(keytable[GUESTKEY_EN].keypads[source]));
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_3) && (jf[source] & DAPTER_3)) t |= 8;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_6) && (jf[source] & DAPTER_6)) t |= 4;
         if ((!autofire[source] || keytable[key1].dapter != DAPTER_9) && (jf[source] & DAPTER_9)) t |= 2;
@@ -639,10 +638,10 @@ MODULE void a_playerinput(int source, int dest)
 
         // Palladium "column"
         t =  memory[A_P1PALLADIUM + (dest * 4)];
-        t |= (UBYTE) (0x08 * KeyDown(keypads[source][16])); // "x4" key (Arcadia)
-        t |= (UBYTE) (0x04 * KeyDown(keypads[source][15])); // "x3" key (Arcadia)
-        t |= (UBYTE) (0x02 * KeyDown(keypads[source][14])); // "x2" key (Arcadia)
-        t |= (UBYTE) (0x01 * KeyDown(keypads[source][13])); // "x1" key (Arcadia)
+        t |= (UBYTE) (0x08 * KeyDown(keytable[GUESTKEY_X4].keypads[source]));
+        t |= (UBYTE) (0x04 * KeyDown(keytable[GUESTKEY_X3].keypads[source]));
+        t |= (UBYTE) (0x02 * KeyDown(keytable[GUESTKEY_X2].keypads[source]));
+        t |= (UBYTE) (0x01 * KeyDown(keytable[GUESTKEY_X1].keypads[source]));
         if (whichgame != -1)
         {   if (ay[dest] <= 64)
             {   if   (known[whichgame].paddleup    == GUESTKEY_X1) t |= 1;
@@ -827,11 +826,11 @@ EXPORT void uviwrite(UWORD address, UBYTE data)
         DISCARD number_to_friendly((int) address, (STRPTR) friendly, TRUE, 0, 15, TRUE);
         zprintf
         (   TEXTPEN_DEBUG,
-            LLL(MSG_UVI_HITWP, "UVI is writing $%X%s to %s at raster %ld!\n\n"),
-                       data,
-                       stringchar,
-            (char*)    friendly,
-            (long int) cpuy
+            LLL(MSG_UVI_HITWP, "%d,%d: UVI is writing $%X%s to %s!\n\n"),
+                    cpux, cpuy,
+                    data,
+                    stringchar,
+            (char*) friendly
         );
         set_pause(TYPE_BP);
     }

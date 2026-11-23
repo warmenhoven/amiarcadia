@@ -304,7 +304,6 @@ IMPORT       UBYTE                blank,
                                   PapertapeBuffer[2][PAPERTAPEMAX],
                                   psu;
 IMPORT       UWORD                console[4],
-                                  keypads[2][NUMKEYS],
                                   ras[8];
 IMPORT       ULONG                arcadia_bigctrls,
                                   arcadia_viewcontrolsas,
@@ -320,7 +319,8 @@ IMPORT       ULONG               *display,
 IMPORT       ASCREEN              screen[BOXWIDTH][BOXHEIGHT];
 IMPORT       struct CanvasStruct  canvas[CANVASES];
 IMPORT       struct KeyNameStruct keyname[SCANCODES];
-IMPORT       struct MachineStruct machines[MACHINES];
+IMPORT       struct KeyTableStruct   keytable[NUMKEYS];
+IMPORT       struct MachineStruct    machines[MACHINES];
 IMPORT       struct MemMapInfoStruct memmapinfo[MEMMAPS];
 IMPORT       struct SubWindowStruct  subwin[SUBWINDOWS];
 IMPORT const int                  gridline[220];
@@ -2569,7 +2569,7 @@ EXPORT ULONG setkybdcolour(int gid)
             }   }
             for (j = 0; j < 2; j++)
             {   for (k = 0; k < NUMKEYS; k++)
-                {   if (keypads[j][k] == i && keyexists(k))
+                {   if (keytable[k].keypads[j] == i && memmapinfo[memmap].keyused[k])
                     {   found++;
             }   }   }
             if (found == 0)
@@ -2584,10 +2584,10 @@ EXPORT ULONG setkybdcolour(int gid)
                 {   return EMUPEN_GREEN;
             }   }
             for (j = 0; j < NUMKEYS; j++)
-            {   if (keypads[0][j] == i && keyexists(j))
+            {   if (keytable[j].keypads[0] == i && memmapinfo[memmap].keyused[j])
                 {   return (ULONG) (maybeswapped ? EMUPEN_BLUE : EMUPEN_RED);
                 }
-                if (keypads[1][j] == i && keyexists(j))
+                if (keytable[j].keypads[1] == i && memmapinfo[memmap].keyused[j])
                 {   return (ULONG) (maybeswapped ? EMUPEN_RED : EMUPEN_BLUE);
     }   }   }   }
 

@@ -373,9 +373,9 @@ EXPORT UBYTE  blank,
 EXPORT UWORD  console[4],
               guestpitch[GUESTCHANNELS],
               joystate,
-              keypads[2][NUMKEYS],
               netport                  = 6666;
 EXPORT FLAG   aborting                 = FALSE,
+              axes[2]                  = { FALSE, FALSE },
               bangercharging           = FALSE,
               forcepause               = FALSE,
               ignore_cout,
@@ -427,47 +427,46 @@ EXPORT struct MachineStruct machines[MACHINES] =                                
   { "TYPERIGHT" ,  TYPERIGHT_BOXWIDTH,  TYPERIGHT_BOXHEIGHT, MEMMAP_TYPERIGHT,   REGION_PAL,  {  0.0            , 50.0             }, 1,  -1,   -1, 52,    0, 33,     1.0, 0,  0, 0, { 0,   0,   0 },      0, FALSE,  -1,   -1,  -1,  -1, { "Class" , "Game"  , "Speed" , "Accuracy" }, { IMAGE_CLASS, IMAGE_GAME, IMAGE_START, IMAGE_A       }, TYPERIGHT_FIRSTHISCORE, TYPERIGHT_HISCORES, FALSE, FALSE, 0,               0,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }, // TYPERIGHT
 };
 
-                                                                                                                       // - - - - L L L L R R R R L L L L R R R R L L L L L L L L R R R R R R R R L L L L L L L L L L L L R R R R R R R R R R R R
-                                                                                                                       // S A B Rx1x2x3x4x1x2x3x4#1#2#3#4#1#2#3#4LtRtUpDnULURDLDRLtRtUpDnULURDLDR 1 2 3 4 5 6 7 8 9 C 0 E 1 2 3 4 5 6 7 8 9 C 0 E                                 ------tones------  ----noises--- -----samples----
-EXPORT struct MemMapInfoStruct memmapinfo[MEMMAPS] = {                                                                 // 0 1 2 3 4 5 6 7 8 91011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859   rotate                        0 1 2 3 4 5 6 7 8  9101112131415 16171819202122232425
-{ INTERTON  , "Interton VC 4000, type \"A\" (2K ROM + 0K RAM)",     0,    INTERTON_OVERLAY, ""                         , {1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_INTERTON    , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 1,0,0,0,0,1,0,0,0,0} }, //  0 MEMMAP_A
-{ INTERTON  , "Interton VC 4000, type \"B\" (4K ROM + 0K RAM)",     0,    INTERTON_OVERLAY, ""                         , {1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_INTERTON    , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 1,0,0,0,0,1,0,0,0,0} }, //  1 MEMMAP_B
-{ INTERTON  , "Interton VC 4000, type \"C\" (4K ROM + 1K RAM)",     0,    INTERTON_OVERLAY, ""                         , {1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_INTERTON    , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 1,0,0,0,0,1,0,0,0,0} }, //  2 MEMMAP_C
-{ INTERTON  , "Interton VC 4000, type \"D\" (6K ROM + 1K RAM)",     0,    INTERTON_OVERLAY, ""                         , {1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_INTERTON    , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 1,0,0,0,0,1,0,0,0,0} }, //  3 MEMMAP_D
-{ ELEKTOR   , "Elektor TV Games Computer (basic)"             ,     0,     ELEKTOR_OVERLAY, ""                         , {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_ELEKTOR     , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, //  4 MEMMAP_E
-{ ELEKTOR   , "Elektor TV Games Computer (expanded)"          ,     0,     ELEKTOR_OVERLAY, ""                         , {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_ELEKTOR     , {1,0,0,1,1,1,1,1,1, 1,1,1,1,1,1,1, 1,0,0,0,0,1,0,0,0,0} }, //  5 MEMMAP_F
-{ ARCADIA   , "Emerson Arcadia 2001, type \"G\" (Emerson)"    ,     0,     ARCADIA_OVERLAY, ""                         , {1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_ARCADIA     , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, //  6 MEMMAP_G
-{ ARCADIA   , "Emerson Arcadia 2001, type \"H\" (Tele-Fever)" ,     0,     ARCADIA_OVERLAY, ""                         , {1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_ARCADIA     , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, //  7 MEMMAP_H
-{ ARCADIA   , "Emerson Arcadia 2001, type \"I\" (Palladium)"  ,     0,     ARCADIA_OVERLAY, ""                         , {1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_ARCADIA     , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, //  8 MEMMAP_I
+                                                                                                                       // S A B R                                 ------tones------  ----noises--- -----samples----
+EXPORT struct MemMapInfoStruct memmapinfo[MEMMAPS] = {                                                                 // 0 1 2 3   rotate                        0 1 2 3 4 5 6 7 8  9101112131415 16171819202122232425     1s1 2 3 4 5 6 7 8 9 Cl0 EnX1X2X3X4UpDnLtRt2n3r4tULURDLDR
+{ INTERTON  , "Interton VC 4000, type \"A\" (2K ROM + 0K RAM)",     0,    INTERTON_OVERLAY, ""                         , {1,1,0,0}, FALSE, MENUOPT_INTERTON    , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 1,0,0,0,0,1,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1 } }, //  0 MEMMAP_A
+{ INTERTON  , "Interton VC 4000, type \"B\" (4K ROM + 0K RAM)",     0,    INTERTON_OVERLAY, ""                         , {1,1,0,0}, FALSE, MENUOPT_INTERTON    , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 1,0,0,0,0,1,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1 } }, //  1 MEMMAP_B
+{ INTERTON  , "Interton VC 4000, type \"C\" (4K ROM + 1K RAM)",     0,    INTERTON_OVERLAY, ""                         , {1,1,0,0}, FALSE, MENUOPT_INTERTON    , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 1,0,0,0,0,1,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1 } }, //  2 MEMMAP_C
+{ INTERTON  , "Interton VC 4000, type \"D\" (6K ROM + 1K RAM)",     0,    INTERTON_OVERLAY, ""                         , {1,1,0,0}, FALSE, MENUOPT_INTERTON    , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 1,0,0,0,0,1,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1 } }, //  3 MEMMAP_D
+{ ELEKTOR   , "Elektor TV Games Computer (basic)"             ,     0,     ELEKTOR_OVERLAY, ""                         , {1,1,1,1}, FALSE, MENUOPT_ELEKTOR     , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1 } }, //  4 MEMMAP_E
+{ ELEKTOR   , "Elektor TV Games Computer (expanded)"          ,     0,     ELEKTOR_OVERLAY, ""                         , {1,1,1,1}, FALSE, MENUOPT_ELEKTOR     , {1,0,0,1,1,1,1,1,1, 1,1,1,1,1,1,1, 1,0,0,0,0,1,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1 } }, //  5 MEMMAP_F
+{ ARCADIA   , "Emerson Arcadia 2001, type \"G\" (Emerson)"    ,     0,     ARCADIA_OVERLAY, ""                         , {1,1,1,0}, FALSE, MENUOPT_ARCADIA     , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 } }, //  6 MEMMAP_G
+{ ARCADIA   , "Emerson Arcadia 2001, type \"H\" (Tele-Fever)" ,     0,     ARCADIA_OVERLAY, ""                         , {1,1,1,0}, FALSE, MENUOPT_ARCADIA     , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 } }, //  7 MEMMAP_H
+{ ARCADIA   , "Emerson Arcadia 2001, type \"I\" (Palladium)"  ,     0,     ARCADIA_OVERLAY, ""                         , {1,1,1,0}, FALSE, MENUOPT_ARCADIA     , {1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 } }, //  8 MEMMAP_I
 #ifdef KEYCLICKS
-{ PIPBUG    , "PIPBUG 1-based machine"                        ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {1,1,1,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,1,0,0,0,1} }, //  9 MEMMAP_PIPBUG1
-{ PIPBUG    , "PIPBUG 2-based machine (modified ABC1500)"     ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {0,1,1,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,1,0,0,0,1} }, // 10 MEMMAP_PIPBUG2
-{ BINBUG    , "BINBUG-based machine"                          ,     0,      BINBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_BINBUG      , {0,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,1,0,1,1,1} }, // 11 MEMMAP_BINBUG
+{ PIPBUG    , "PIPBUG 1-based machine"                        ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {1,1,1,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,1,0,0,0,1}, { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, //  9 MEMMAP_PIPBUG1
+{ PIPBUG    , "PIPBUG 2-based machine (modified ABC1500)"     ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {0,1,1,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,1,0,0,0,1}, { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 10 MEMMAP_PIPBUG2
+{ BINBUG    , "BINBUG-based machine"                          ,     0,      BINBUG_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_BINBUG      , {0,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,1,0,1,1,1}, { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1 } }, // 11 MEMMAP_BINBUG
 #else
-{ PIPBUG    , "PIPBUG 1-based machine"                        ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {1,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0,0,1} }, //  9 MEMMAP_PIPBUG1
-{ PIPBUG    , "PIPBUG 2-based machine (modified ABC1500)"     ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {0,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0,0,1} }, // 10 MEMMAP_PIPBUG2
-{ BINBUG    , "BINBUG-based machine"                          ,     0,      BINBUG_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_BINBUG      , {0,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,0,1,1,1} }, // 11 MEMMAP_BINBUG
+{ PIPBUG    , "PIPBUG 1-based machine"                        ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {1,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0,0,1}, { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, //  9 MEMMAP_PIPBUG1
+{ PIPBUG    , "PIPBUG 2-based machine (modified ABC1500)"     ,     0,      PIPBUG_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {0,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0,0,1}, { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 10 MEMMAP_PIPBUG2
+{ BINBUG    , "BINBUG-based machine"                          ,     0,      BINBUG_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_BINBUG      , {0,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,0,1,1,1}, { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1 } }, // 11 MEMMAP_BINBUG
 #endif
-{ TWIN      , "Signetics TWIN"                                ,     0,      QWERTY_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_TWIN        , {0,1,1,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,1,1,1,1} }, // 12 MEMMAP_TWIN
-{ PIPBUG    , "Artemis"                                       ,     0,      QWERTY_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {0,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0,0,1} }, // 13 MEMMAP_ARTEMIS
-{ INSTRUCTOR, "Signetics Instructor 50 (basic)"               ,     0,        SI50_OVERLAY, ""                         , {1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_INSTRUCTOR  , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, // 14 MEMMAP_N
-{ INSTRUCTOR, "Signetics Instructor 50 (expanded)"            ,     0,        SI50_OVERLAY, ""                         , {1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_INSTRUCTOR  , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, // 15 MEMMAP_O
-{ CD2650    , "Central Data 2650"                             ,     0,      CD2650_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_CD2650      , {1,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,0,1,1,0} }, // 16 MEMMAP_CD2650
-{ 0         , ""                                              ,     0,                   0, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, 0                   , {0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, // 17 spare
-{ 0         , ""                                              ,     0,                   0, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, 0                   , {0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, // 18 spare
-{ PHUNSY    , "PHUNSY"                                        ,     0,      PHUNSY_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_PHUNSY      , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, // 19 MEMMAP_PHUNSY
-{ SELBST    , "Selbstbaucomputer"                             ,     0,      SELBST_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_SELBST      , {0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, // 20 MEMMAP_SELBST
-{ MIKIT     , "MIKIT 2650"                                    ,     0,       MIKIT_OVERLAY, ""                         , {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, FALSE, MENUOPT_MIKIT       , {0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, // 21 MEMMAP_MIKIT
-{ ZACCARIA  , "Coin-op (Astro Wars)"                          , 12800,   ASTROWARS_OVERLAY, "Zaccaria, 1980"           , {1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0}, TRUE , MENUOPT_ASTROWARS   , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,1,1,1,0,0,0,0,0,0} }, // 22 MEMMAP_ASTROWARS
-{ ZACCARIA  , "Coin-op (Galaxia)"                             , 12800,     GALAXIA_OVERLAY, "Zaccaria, 1979"           , {1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0}, TRUE , MENUOPT_GALAXIA     , {1,1,1,1,1,0,0,0,0, 0,0,0,0,0,0,0, 0,1,1,1,0,0,0,0,0,0} }, // 23 MEMMAP_GALAXIA
-{ ZACCARIA  , "Coin-op (Laser Battle)"                        , 20480, LASERBATTLE_OVERLAY, "Zaccaria, 1981"           , {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_LASERBATTLE , {1,1,1,1,1,1,1,0,0, 0,0,0,0,0,0,0, 0,0,0,1,0,0,0,0,0,0} }, // 24 MEMMAP_LASERBATTLE
-{ ZACCARIA  , "Coin-op (Lazarian)"                            , 22528, LASERBATTLE_OVERLAY, "Zaccaria/Midway, 1981"    , {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_LAZARIAN    , {1,1,1,1,1,1,1,0,0, 0,0,0,0,0,0,0, 0,0,0,1,0,0,0,0,0,0} }, // 25 MEMMAP_LAZARIAN
-{ MALZAK    , "Coin-op (Malzak 1)"                            ,  8704,     MALZAK1_OVERLAY, "Kitronix, 1981?"          , {1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_MALZAK1     , {1,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,1,0,0,0,0,0,0} }, // 26 MEMMAP_MALZAK1
-{ MALZAK    , "Coin-op (Malzak 2)"                            ,  8192,     MALZAK2_OVERLAY, "Kitronix, 1981?"          , {1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_MALZAK2     , {1,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,1,0,0,0,0,0,0} }, // 27 MEMMAP_MALZAK2
-{ PONG      , "AY-3-8500/8550/8550-1 + AY-3-8515"             ,     0,      AY8550_OVERLAY, "General Instrument, 1975?", {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0}, FALSE, MENUOPT_8550        , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, // 28 MEMMAP_8550 (Tennis/Soccer/Squash/Practice/Handicap/Rifle.)
-{ PONG      , "AY-3-8600/AY-3-8600-1 + AY-3-8615"             ,     0,      AY8600_OVERLAY, "General Instrument, 1976?", {1,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_8600        , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, // 29 MEMMAP_8600 (Tns/Hcky/Scr/Sqsh/Prctce/Grdbl/Bsktbl/BsktblPrctce/Trgt.)
-{ TYPERIGHT , "VTech Type-right"                              ,     0,   TYPERIGHT_OVERLAY, "VTech, 1985"              , {1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, FALSE, MENUOPT_TYPERIGHT   , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0} }, // 30 MEMMAP_TYPERIGHT
-}; // There is no "s" at the end of "General Instrument"
+{ TWIN      , "Signetics TWIN"                                ,     0,      QWERTY_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_TWIN        , {0,1,1,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,1,1,1,1}, { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 12 MEMMAP_TWIN
+{ PIPBUG    , "Artemis"                                       ,     0,      QWERTY_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_PIPBUG      , {0,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0,0,1}, { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 13 MEMMAP_ARTEMIS
+{ INSTRUCTOR, "Signetics Instructor 50 (basic)"               ,     0,        SI50_OVERLAY, ""                         , {1,1,1,1}, FALSE, MENUOPT_INSTRUCTOR  , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 14 MEMMAP_N
+{ INSTRUCTOR, "Signetics Instructor 50 (expanded)"            ,     0,        SI50_OVERLAY, ""                         , {1,1,1,1}, FALSE, MENUOPT_INSTRUCTOR  , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 15 MEMMAP_O
+{ CD2650    , "Central Data 2650"                             ,     0,      CD2650_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_CD2650      , {1,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,1,0,0,1,1,0}, { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 16 MEMMAP_CD2650
+{ 0         , ""                                              ,     0,                   0, ""                         , {0,0,0,0}, FALSE, 0                   , {0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 17 spare
+{ 0         , ""                                              ,     0,                   0, ""                         , {0,0,0,0}, FALSE, 0                   , {0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 18 spare
+{ PHUNSY    , "PHUNSY"                                        ,     0,      PHUNSY_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_PHUNSY      , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 19 MEMMAP_PHUNSY
+{ SELBST    , "Selbstbaucomputer"                             ,     0,      SELBST_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_SELBST      , {0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 20 MEMMAP_SELBST
+{ MIKIT     , "MIKIT 2650"                                    ,     0,       MIKIT_OVERLAY, ""                         , {0,0,0,0}, FALSE, MENUOPT_MIKIT       , {0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 21 MEMMAP_MIKIT
+{ ZACCARIA  , "Coin-op (Astro Wars)"                          , 12800,   ASTROWARS_OVERLAY, "Zaccaria, 1980"           , {1,1,1,1}, TRUE , MENUOPT_ASTROWARS   , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,1,1,1,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0 } }, // 22 MEMMAP_ASTROWARS
+{ ZACCARIA  , "Coin-op (Galaxia)"                             , 12800,     GALAXIA_OVERLAY, "Zaccaria, 1979"           , {1,1,1,1}, TRUE , MENUOPT_GALAXIA     , {1,1,1,1,1,0,0,0,0, 0,0,0,0,0,0,0, 0,1,1,1,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0 } }, // 23 MEMMAP_GALAXIA
+{ ZACCARIA  , "Coin-op (Laser Battle)"                        , 20480, LASERBATTLE_OVERLAY, "Zaccaria, 1981"           , {1,1,1,1}, FALSE, MENUOPT_LASERBATTLE , {1,1,1,1,1,1,1,0,0, 0,0,0,0,0,0,0, 0,0,0,1,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1 } }, // 24 MEMMAP_LASERBATTLE
+{ ZACCARIA  , "Coin-op (Lazarian)"                            , 22528, LASERBATTLE_OVERLAY, "Zaccaria/Midway, 1981"    , {1,1,1,1}, FALSE, MENUOPT_LAZARIAN    , {1,1,1,1,1,1,1,0,0, 0,0,0,0,0,0,0, 0,0,0,1,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1 } }, // 25 MEMMAP_LAZARIAN
+{ MALZAK    , "Coin-op (Malzak 1)"                            ,  8704,     MALZAK1_OVERLAY, "Kitronix, 1981?"          , {1,1,1,0}, FALSE, MENUOPT_MALZAK1     , {1,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,1,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1 } }, // 26 MEMMAP_MALZAK1
+{ MALZAK    , "Coin-op (Malzak 2)"                            ,  8192,     MALZAK2_OVERLAY, "Kitronix, 1981?"          , {1,1,1,1}, FALSE, MENUOPT_MALZAK2     , {1,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,1,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1 } }, // 27 MEMMAP_MALZAK2
+{ PONG      , "AY-3-8500/8550/8550-1 + AY-3-8515"             ,     0,      AY8550_OVERLAY, "General Instrument, 1975?", {1,1,1,1}, FALSE, MENUOPT_8550        , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1 } }, // 28 MEMMAP_8550 (Tennis/Soccer/Squash/Practice/Handicap/Rifle.)
+{ PONG      , "AY-3-8600/AY-3-8600-1 + AY-3-8615"             ,     0,      AY8600_OVERLAY, "General Instrument, 1976?", {1,1,0,1}, FALSE, MENUOPT_8600        , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1 } }, // 29 MEMMAP_8600 (Tns/Hcky/Scr/Sqsh/Prctce/Grdbl/Bsktbl/BsktblPrctce/Trgt.)
+{ TYPERIGHT , "VTech Type-right"                              ,     0,   TYPERIGHT_OVERLAY, "VTech, 1985"              , {1,1,1,1}, FALSE, MENUOPT_TYPERIGHT   , {1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0}, { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } }, // 30 MEMMAP_TYPERIGHT
+}; // There is no "s" at the end of "General Instrument"                                                                                                                                                                    1s1 2 3 4 5 6 7 8 9 Cl0 EnX1X2X3X4UpDnLtRt2n3r4tULURDLDR
 
 EXPORT struct CanvasStruct canvas[CANVASES] = {
 {       AXESWIDTH,       AXESHEIGHT, IDC_AXES    , SUBWINDOW_MONITOR_XVI }, //  0
@@ -700,7 +699,7 @@ IMPORT       MEMFLAG                  memflags[ALLTOKENS];
 IMPORT       struct DriveStruct       drive[DRIVES_MAX];
 IMPORT       struct KeyNameStruct     keyname[SCANCODES];
 IMPORT       struct KindStruct        filekind[KINDS];
-IMPORT const struct KeyTableStruct    keytable[NUMKEYS];
+IMPORT       struct KeyTableStruct    keytable[NUMKEYS];
 IMPORT const struct LBNoteStruct      lb_note[13 + 1];
 IMPORT       struct MonitorStruct     monitor[MONITORGADS];
 IMPORT const struct VolumeStruct      volume_3to16[8],
@@ -1245,7 +1244,7 @@ EXPORT void engine_setup(void)
 
     for (i = 0; i < 2; i++)
     {   for (j = 0; j < NUMKEYS; j++)
-        {   keypads[i][j] = default_keypads[i][j];
+        {   keytable[j].keypads[i] = default_keypads[i][j];
     }   }
     for (i = 0; i < 4; i++)
     {   console[i] = default_console[i];
@@ -1468,6 +1467,10 @@ EXPORT void project_open(void)
 EXPORT void engine_dopaddle(int source, int dest)
 {   FLAG kybdonly;
 
+    if (axes[0] || axes[1])
+    {   return;
+    }
+
     // centred value of >= $70 is needed for Interton SUPERINV
     // centred value of <= $6F is needed for Elektor JOYSTICK
     // very low left X-value is needed for Interton INVADERS
@@ -1476,42 +1479,42 @@ EXPORT void engine_dopaddle(int source, int dest)
     dx[dest] = dy[dest] = 0;
     kybdonly = system_dopaddle(source, dest);
     if
-    (    KeyDown(keypads[source][24])
-     && !KeyDown(keypads[source][25])
-     && !KeyDown(keypads[source][26])
-     && !KeyDown(keypads[source][27])
+    (    KeyDown(keytable[GUESTKEY_UPLT].keypads[source])
+     && !KeyDown(keytable[GUESTKEY_UPRT].keypads[source])
+     && !KeyDown(keytable[GUESTKEY_DNLT].keypads[source])
+     && !KeyDown(keytable[GUESTKEY_DNRT].keypads[source])
     )
     {   dx[dest] =
         dy[dest] = -1;
     } elif
-    (   !KeyDown(keypads[source][24])
-     &&  KeyDown(keypads[source][25])
-     && !KeyDown(keypads[source][26])
-     && !KeyDown(keypads[source][27])
+    (   !KeyDown(keytable[GUESTKEY_UPLT].keypads[source])
+     &&  KeyDown(keytable[GUESTKEY_UPRT].keypads[source])
+     && !KeyDown(keytable[GUESTKEY_DNLT].keypads[source])
+     && !KeyDown(keytable[GUESTKEY_DNRT].keypads[source])
     )
     {   dx[dest] =  1;
         dy[dest] = -1;
     } elif
-    (   !KeyDown(keypads[source][24])
-     && !KeyDown(keypads[source][25])
-     &&  KeyDown(keypads[source][26])
-     && !KeyDown(keypads[source][27])
+    (   !KeyDown(keytable[GUESTKEY_UPLT].keypads[source])
+     && !KeyDown(keytable[GUESTKEY_UPRT].keypads[source])
+     &&  KeyDown(keytable[GUESTKEY_DNLT].keypads[source])
+     && !KeyDown(keytable[GUESTKEY_DNRT].keypads[source])
     )
     {   dx[dest] = -1;
         dy[dest] =  1;
     } elif
-    (   !KeyDown(keypads[source][24])
-     && !KeyDown(keypads[source][25])
-     && !KeyDown(keypads[source][26])
-     &&  KeyDown(keypads[source][27])
+    (   !KeyDown(keytable[GUESTKEY_UPLT].keypads[source])
+     && !KeyDown(keytable[GUESTKEY_UPRT].keypads[source])
+     && !KeyDown(keytable[GUESTKEY_DNLT].keypads[source])
+     &&  KeyDown(keytable[GUESTKEY_DNRT].keypads[source])
     )
     {   dx[dest] =
         dy[dest] =  1;
     } else
-    {   if   ( KeyDown(keypads[source][17]) && !KeyDown(keypads[source][18])) dy[dest] = -1;
-        elif (!KeyDown(keypads[source][17]) &&  KeyDown(keypads[source][18])) dy[dest] =  1;
-        if   ( KeyDown(keypads[source][19]) && !KeyDown(keypads[source][20])) dx[dest] = -1;
-        elif (!KeyDown(keypads[source][19]) &&  KeyDown(keypads[source][20])) dx[dest] =  1;
+    {   if   ( KeyDown(keytable[GUESTKEY_UP].keypads[source]) && !KeyDown(keytable[GUESTKEY_DN].keypads[source])) dy[dest] = -1;
+        elif (!KeyDown(keytable[GUESTKEY_UP].keypads[source]) &&  KeyDown(keytable[GUESTKEY_DN].keypads[source])) dy[dest] =  1;
+        if   ( KeyDown(keytable[GUESTKEY_LT].keypads[source]) && !KeyDown(keytable[GUESTKEY_RT].keypads[source])) dx[dest] = -1;
+        elif (!KeyDown(keytable[GUESTKEY_LT].keypads[source]) &&  KeyDown(keytable[GUESTKEY_RT].keypads[source])) dx[dest] =  1;
     }
 
     if   (wheremouse == 28 + (dest * 4)) dy[dest] = -1;
@@ -5079,11 +5082,11 @@ MODULE void serializeconfig(void)
     aserialize_uword("console_reset"      , &console[3]             ,             0, SCANCODES - 1); // host-specific
     for (i = 0; i < 28; i++)
     {   sprintf((char*) tempstring, "left_%02d", i);
-        aserialize_uword((STRPTR) tempstring, &keypads[0][i]        ,             0, SCANCODES - 1); // host-specific
+        aserialize_uword((STRPTR) tempstring, &keytable[i].keypads[0],            0, SCANCODES - 1); // host-specific
     }
     for (i = 0; i < 28; i++)
     {   sprintf((char*) tempstring, "right_%02d", i);
-        aserialize_uword((STRPTR) tempstring, &keypads[1][i]        ,             0, SCANCODES - 1); // host-specific
+        aserialize_uword((STRPTR) tempstring, &keytable[i].keypads[1],            0, SCANCODES - 1); // host-specific
     }
 #ifdef WIN32
     for (i = 0; i < 8; i++)
@@ -5335,10 +5338,11 @@ EXPORT void reopen_subwindow(int which)
         reopen_subwindows();
 }   }
 
-EXPORT void updatekeynames(HWND hwnd)
+EXPORT void update_hostkybd(void)
 {   int   i, j, k,
           matches;
-    ULONG maybeswapped;
+    ULONG finalswapped,
+          maybeswapped;
     TEXT  tempstring[128 + 5 + 1];
 
     if (machines[machine].joystick)
@@ -5356,15 +5360,15 @@ EXPORT void updatekeynames(HWND hwnd)
             {   if (keyname[i].gadget != -1)
                 {   matches = 0;
                     if (i != SCAN_P && i != SCAN_TAB && (keyname[i].reserved || i == SCAN_LSHIFT || i == SCAN_RSHIFT))
-                    {   setkybdtext(i, hwnd, keyname[i].gadget, keyname[i].name);
+                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, keyname[i].name);
                         matches = 1;
                     } elif (keyname[i].unshifted[keymap] == NC)
-                    {   setkybdtext(i, hwnd, keyname[i].gadget, "");
+                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, "");
                         // matches = 0;
                     } else
                     {   if (machine == TYPERIGHT)
                         {   if (keyname[i].tr_unshifted == NC)
-                            {   setkybdtextandtips(i, hwnd, keyname[i].gadget, "", "");
+                            {   setkybdtextandtips(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, "", "");
                                 matches = 0;
                             } else
                             {   sprintf
@@ -5379,7 +5383,7 @@ EXPORT void updatekeynames(HWND hwnd)
                                     asciiname_long[(keymap == KEYMAP_HOST) ? ((keyname[i].shifted[KEYMAP_HOST] == '^') ? '-' : keyname[i].shifted[KEYMAP_HOST])
                                                                            :   keyname[i].tr_shifted]
                                 );
-                                setkybdtextandtips(i, hwnd, keyname[i].gadget, (STRPTR) asciiname_short[(keymap == KEYMAP_HOST) ? keyname[i].unshifted[KEYMAP_HOST] : keyname[i].tr_unshifted], (STRPTR) tempstring);
+                                setkybdtextandtips(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, (STRPTR) asciiname_short[(keymap == KEYMAP_HOST) ? keyname[i].unshifted[KEYMAP_HOST] : keyname[i].tr_unshifted], (STRPTR) tempstring);
                                 matches = 1;
                         }   }
                         else
@@ -5400,7 +5404,7 @@ EXPORT void updatekeynames(HWND hwnd)
                                 asciiname_long[keyname[i].ctrl],
                                 asciiname_long[keyname[i].ctrlshift]
                             );
-                            setkybdtextandtips(j, hwnd, keyname[i].gadget, (STRPTR) asciiname_short[keyname[j].unshifted[keymap]], (STRPTR) tempstring);
+                            setkybdtextandtips(j, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, (STRPTR) asciiname_short[keyname[j].unshifted[keymap]], (STRPTR) tempstring);
                             // matches = 1;
                     }   }
                     if (machine == TYPERIGHT)
@@ -5412,18 +5416,18 @@ EXPORT void updatekeynames(HWND hwnd)
                         }   }
                         if (k != -1)
                         {   if (matches >= 2)
-                            {   setkybdtext(i, hwnd, keyname[i].gadget, "#");
+                            {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, "#");
                             } else
                             {   // assert(matches == 1);
-                                setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].consolekeyname[k]);
+                                setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, machines[machine].consolekeyname[k]);
         }   }   }   }   }   }
         else
         {   for (i = 0; i < SCANCODES; i++)
             {   if (keyname[i].gadget != -1)
                 {   matches = 0;
-                    for (j = 0; j <= 1; j++)
+                    for (j = 0; j < 2; j++)
                     {   for (k = 0; k < NUMKEYS; k++)
-                        {   if (keypads[j][k] == i && keyexists(k))
+                        {   if (keytable[k].keypads[j] == i && memmapinfo[memmap].keyused[k])
                             {   matches++;
                     }   }   }
                     for (j = 0; j < 4; j++)
@@ -5432,120 +5436,90 @@ EXPORT void updatekeynames(HWND hwnd)
                     }   }
 
                     if (matches == 0)
-                    {   setkybdtext(i, hwnd, keyname[i].gadget, keyname[i].reserved ? keyname[i].name : (STRPTR) "");
+                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, keyname[i].reserved ? keyname[i].name : (STRPTR) "");
                     } elif (matches == 1)
                     {   for (j = 0; j < NUMKEYS; j++)
-                        {   if ((keypads[0][j] == i || keypads[1][j] == i) && keyexists(j))
-                            {   switch (j)
+                        {   if ((keytable[j].keypads[0] == i || keytable[j].keypads[1] == i) && memmapinfo[memmap].keyused[j]) // if either the p1 or p2 version of this guest key is assigned to this host key
+                            {   if (keytable[j].keypads[0] == i)
+                                {   finalswapped = maybeswapped ? 1 : 0;
+                                } else
+                                {   // assert(keytable[j].keypads[1] == i);
+                                    finalswapped = maybeswapped ? 0 : 1;
+                                }
+                                switch (j)
                                 {
                                 case GUESTKEY_1ST:
                                     if (viewkybdas == 0)
-                                    {   if (keypads[0][j] == i)
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 1 : 0][key1]);
-                                        } else
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 0 : 1][key1]);
-                                    }   }
-                                    else
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, machines[machine].keynames[finalswapped][key1]);
+                                    } else
                                     {   // assert(viewkybdas == 2);
-                                        if (keypads[0][j] == i)
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key1].overlay[maybeswapped]]);
-                                        } else
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key1].overlay[maybeswapped]]);
-                                    }   }
+                                        setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key1].overlay[finalswapped]]);
+                                    }
                                 acase GUESTKEY_2ND:
                                     if (viewkybdas == 0)
-                                    {   if (keypads[0][j] == i)
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 1 : 0][key2]);
-                                        } else
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 0 : 1][key2]);
-                                    }   }
-                                    else
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, machines[machine].keynames[finalswapped][key2]);
+                                    } else
                                     {   // assert(viewkybdas == 2);
-                                        if (keypads[0][j] == i)
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key2].overlay[maybeswapped]]);
-                                        } else
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key2].overlay[maybeswapped]]);
-                                    }   }
+                                        setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key2].overlay[finalswapped]]);
+                                    }
                                 acase GUESTKEY_3RD:
                                     if (viewkybdas == 0)
-                                    {   if (keypads[0][j] == i)
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 1 : 0][key3]);
-                                        } else
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 0 : 1][key3]);
-                                    }   }
-                                    else
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, machines[machine].keynames[finalswapped][key3]);
+                                    } else
                                     {   // assert(viewkybdas == 2);
-                                        if (keypads[0][j] == i)
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key3].overlay[maybeswapped]]);
-                                        } else
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key3].overlay[maybeswapped]]);
-                                    }   }
+                                        setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key3].overlay[finalswapped]]);
+                                    }
                                 acase GUESTKEY_4TH:
                                     if (viewkybdas == 0)
-                                    {   if (keypads[0][j] == i)
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 1 : 0][key4]);
-                                        } else
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 0 : 1][key4]);
-                                    }   }
-                                    else
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, machines[machine].keynames[finalswapped][key4]);
+                                    } else
                                     {   // assert(viewkybdas == 2);
-                                        if (keypads[0][j] == i)
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key4].overlay[maybeswapped]]);
-                                        } else
-                                        {   setkybdtext(i, hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key4].overlay[maybeswapped]]);
-                                    }   }
+                                        setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[key4].overlay[finalswapped]]);
+                                    }
                                 adefault:
                                     if     (j == GUESTKEY_UP && whichgame != -1 && known[whichgame].paddleup    != -1 && viewkybdas == 0)
-                                    {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 1 : 0][known[whichgame].paddleup   ]);
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, machines[machine].keynames[finalswapped][known[whichgame].paddleup   ]);
                                     } elif (j == GUESTKEY_DN && whichgame != -1 && known[whichgame].paddledown  != -1 && viewkybdas == 0)
-                                    {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 1 : 0][known[whichgame].paddledown ]);
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, machines[machine].keynames[finalswapped][known[whichgame].paddledown ]);
                                     } elif (j == GUESTKEY_LT && whichgame != -1 && known[whichgame].paddleleft  != -1 && viewkybdas == 0)
-                                    {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 1 : 0][known[whichgame].paddleleft ]);
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, machines[machine].keynames[finalswapped][known[whichgame].paddleleft ]);
                                     } elif (j == GUESTKEY_RT && whichgame != -1 && known[whichgame].paddleright != -1 && viewkybdas == 0)
-                                    {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 1 : 0][known[whichgame].paddleright]);
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, machines[machine].keynames[finalswapped][known[whichgame].paddleright]);
                                     }
                                     /* elif (j == GUESTKEY_UPLT && paddleup != -1 && paddleleft != -1)
-                                    {   setkybdtext(i, hwnd, keyname[i].gadget, "#");
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, "#");
                                     } elif (j == GUESTKEY_UPRT && paddleup != -1 && paddleright != -1)
-                                    {   setkybdtext(i, hwnd, keyname[i].gadget, "#");
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, "#");
                                     } elif (j == GUESTKEY_DNLT && paddledown != -1 && paddleleft != -1)
-                                    {   setkybdtext(i, hwnd, keyname[i].gadget, "#");
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, "#");
                                     } elif (j == GUESTKEY_DNRT && paddledown != -1 && paddleright != -1)
-                                    {   setkybdtext(i, hwnd, keyname[i].gadget, "#");
+                                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, "#");
                                     } */ else
                                     {   if (viewkybdas == 0 || keytable[j].overlay[maybeswapped] == -1)
-                                        {   if (keypads[0][j] == i)
-                                            {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 1 : 0][j]);
-                                            } else
-                                            {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].keynames[maybeswapped ? 0 : 1][j]);
-                                        }   }
-                                        else
-                                        {   if (keypads[0][j] == i)
-                                            {   setkybdtext(i, hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[j].overlay[maybeswapped]]);
-                                            } else
-                                            {   // assert(keypads[1][j] == i);
-                                                setkybdtext(i, hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[j].overlay[maybeswapped]]);
-                                    }   }   }
+                                        {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, machines[machine].keynames[finalswapped][j]);
+                                        } else
+                                        {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, overlays[whichoverlay][keytable[j].overlay[finalswapped]]);
+                                    }   }
                                     break; // for speed
                         }   }   }
 
                         for (j = 0; j < 4; j++)
                         {   if (console[j] == i)
-                            {   setkybdtext(i, hwnd, keyname[i].gadget, machines[machine].consolekeyname[j]);
+                            {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, machines[machine].consolekeyname[j]);
                                 break; // for speed
                     }   }   }
                     elif (matches >= 2)
-                    {   setkybdtext(i, hwnd, keyname[i].gadget, "#");
+                    {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, "#");
         }   }   }   }
     acase 1: // host
         for (i = 0; i < SCANCODES; i++)
         {   j = scan_to_scan(i);
             if (keyname[i].gadget != -1)
-            {   setkybdtext(i, hwnd, keyname[i].gadget, keyname[j].name);
+            {   setkybdtext(i, subwin[SUBWINDOW_HOSTKYBD].hwnd, keyname[i].gadget, keyname[j].name);
     }   }   }
 
 #ifdef AMIGA
-    updatekeycolours(hwnd);
+    updatekeycolours(subwin[SUBWINDOW_HOSTKYBD].hwnd);
 #endif
 }
 
@@ -5581,20 +5555,6 @@ EXPORT void changeconsolekeynames(void)
     machines[ZACCARIA  ].consolekeyname[3] = LLL(MSG_COIN_B,   "Coin B");
     machines[MALZAK    ].consolekeyname[3] = LLL(MSG_SWITCH2,  "Test switch");
     machines[PONG      ].consolekeyname[3] = LLL(MSG_BATSIZE2, "Bat size");
-}
-
-EXPORT FLAG keyexists(int thekey)
-{   if
-    (   (thekey >= 1 && thekey <= 12) // the basic 12 keys
-     || machine == ARCADIA // x1..x4, all directions, 1st..4th firebuttons
-     || (   (machine == INTERTON || machine == ELEKTOR || machine == PONG || machine == MALZAK || memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN)
-         && (thekey == 0 || thekey >= 17) // all directions, 1st..4th firebuttons
-        )
-     || (machine == ZACCARIA && (thekey == 0 || (thekey >= 19 && thekey <= 23))) // left, right, 1st..4th firebuttons
-    )
-    {   return TRUE;
-    } // implied else
-    return FALSE;
 }
 
 EXPORT void settitle_engine(void)

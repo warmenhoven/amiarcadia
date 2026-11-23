@@ -291,7 +291,6 @@ IMPORT       UWORD                    console[4],
                                       guestpitch[GUESTCHANNELS],
                                       iar, other_iar,
                                       ix,
-                                      keypads[2][NUMKEYS],
                                       mirror_r[32768],
                                       mirror_w[32768],
                                       oldiar,
@@ -938,10 +937,10 @@ EXPORT void change_machine(int whichmachine, int whichmemmap, FLAG user)
         {   p1bgcol[i]  =
             p2bgcol[i]  = 0;
         }
-        key1            = 2;
-        key2            = 1;
-        key3            = 3;
-        key4            = 0;
+        key1            = GUESTKEY_2;
+        key2            = GUESTKEY_1;
+        key3            = GUESTKEY_3;
+        key4            = GUESTKEY_0;
         sensitivity[0]  =
         sensitivity[1]  = SENSITIVITY_DEFAULT;
         firstrow        = 26;
@@ -3269,7 +3268,7 @@ MODULE void ghost_notes(void)
 }   }   }
 
 EXPORT void do_axes(void)
-{   PERSIST int nx[2] = { 0, 0       },
+{   PERSIST int nx[4] = { 0, 0, 0, 0 },
                 ny[4] = { 0, 0, 0, 0 };
 
     if
@@ -3286,53 +3285,56 @@ EXPORT void do_axes(void)
     drawaxesline(    48, 48, nx[0], ny[0], EMURGBPEN_WHITE);
     drawaxesline(    48, 48, nx[1], ny[1], EMURGBPEN_WHITE);
     if (memmap == MEMMAP_8550)
-    {   drawaxesline(48, 48, nx[0], ny[2], EMURGBPEN_WHITE);
-        drawaxesline(48, 48, nx[1], ny[3], EMURGBPEN_WHITE);
+    {   drawaxesline(48, 48, nx[2], ny[2], EMURGBPEN_WHITE);
+        drawaxesline(48, 48, nx[3], ny[3], EMURGBPEN_WHITE);
     }
 
     nx[0] = ax[0] * 3 / 8; // 0..255 -> 0..95
     nx[1] = ax[1] * 3 / 8; // 0..255 -> 0..95
+    nx[2] = nx[0];
+    nx[3] = nx[1];
     ny[0] = ay[0] * 3 / 8; // 0..255 -> 0..95
     ny[1] = ay[1] * 3 / 8; // 0..255 -> 0..95
     ny[2] = ay[2] * 3 / 8; // 0..255 -> 0..95
     ny[3] = ay[3] * 3 / 8; // 0..255 -> 0..95
 
+
     if
-    (                           nearby(nx[0], ny[0], nx[1], ny[1])
-     || (machine == PONG && (   nearby(nx[0], ny[0], 48,    ny[2])
-                             || nearby(nx[0], ny[0], 48,    ny[3])
-    )   )                   )
-    {   drawaxesline(48, 48, nx[0], ny[0], EMURGBPEN_BLACK);
+    (                                 nearby(nx[0], ny[0], nx[1], ny[1])
+     || (memmap == MEMMAP_8550 && (   nearby(nx[0], ny[0], nx[2], ny[2])
+                                   || nearby(nx[0], ny[0], nx[3], ny[3])
+    )   )                         )
+    {   drawaxesline(48, 48, nx[0], ny[0], EMURGBPEN_DARKPURPLE);
     } else
     {   drawaxesline(48, 48, nx[0], ny[0], EMURGBPEN_DARKRED);
     }
     if
-    (                           nearby(nx[1], ny[1], nx[0], ny[0])
-     || (machine == PONG && (   nearby(nx[1], ny[1], 48,    ny[2])
-                             || nearby(nx[1], ny[1], 48,    ny[3])
-    )   )                   )
-    {   drawaxesline(48, 48, nx[1], ny[1], EMURGBPEN_BLACK);
+    (                                 nearby(nx[1], ny[1], nx[0], ny[0])
+     || (memmap == MEMMAP_8550 && (   nearby(nx[1], ny[1], nx[2], ny[2])
+                                   || nearby(nx[1], ny[1], nx[3], ny[3])
+    )   )                         )
+    {   drawaxesline(48, 48, nx[1], ny[1], EMURGBPEN_DARKPURPLE);
     } else
     {   drawaxesline(48, 48, nx[1], ny[1], EMURGBPEN_DARKBLUE);
     }
     if (memmap == MEMMAP_8550)
     {   if
-        (                       nearby(   48, ny[2], nx[0], ny[0])
-                             || nearby(   48, ny[2], nx[1], ny[1])
-                             || nearby(   48, ny[2], 48,    ny[3])
+        (                       nearby(nx[2], ny[2], nx[0], ny[0])
+                             || nearby(nx[2], ny[2], nx[1], ny[1])
+                             || nearby(nx[2], ny[2], nx[3], ny[3])
         )
-        {   drawaxesline(48, 48, nx[0], ny[2], BLACK);
+        {   drawaxesline(48, 48, nx[2], ny[2], EMURGBPEN_DARKPURPLE);
         } else
-        {   drawaxesline(48, 48, nx[0], ny[2], EMURGBPEN_RED);
+        {   drawaxesline(48, 48, nx[2], ny[2], EMURGBPEN_RED);
         }
         if
-        (                       nearby(   48, ny[3], nx[0], ny[0])
-                             || nearby(   48, ny[3], nx[1], ny[1])
-                             || nearby(   48, ny[3], 48,    ny[2])
+        (                       nearby(nx[3], ny[3], nx[0], ny[0])
+                             || nearby(nx[3], ny[3], nx[1], ny[1])
+                             || nearby(nx[3], ny[3], nx[2], ny[2])
         )
-        {   drawaxesline(48, 48, nx[1], ny[3], BLACK);
+        {   drawaxesline(48, 48, nx[3], ny[3], EMURGBPEN_DARKPURPLE);
         } else
-        {   drawaxesline(48, 48, nx[1], ny[3], EMURGBPEN_BLUE);
+        {   drawaxesline(48, 48, nx[3], ny[3], EMURGBPEN_BLUE);
     }   }
 
     wpa8(CANVAS_AXES, 0, 0);
@@ -3737,7 +3739,7 @@ EXPORT void generate_controlstip(int localkey)
         )
         {   strcpy((char*) controltip[0], LLL(MSG_KEY_UP, "Up"));
             strcpy((char*) controltip[3], LLL(MSG_KEY_UP, "Up"));
-            strcpy((char*) controltip[2], keyname[keypads[whichplayer][thekeypad]].name);
+            strcpy((char*) controltip[2], keyname[keytable[thekeypad].keypads[whichplayer]].name);
         } elif
         (   ((machine == ARCADIA || machine == INTERTON || machine == ELEKTOR) && (localkey == 29 || localkey == 33))
          || (machine == ZACCARIA && localkey == 3)
@@ -3745,7 +3747,7 @@ EXPORT void generate_controlstip(int localkey)
         )
         {   strcpy((char*) controltip[0], LLL(MSG_KEY_LT, "Lt"));
             strcpy((char*) controltip[3], LLL(MSG_KEY_LT, "Lt"));
-            strcpy((char*) controltip[2], keyname[keypads[whichplayer][thekeypad]].name);
+            strcpy((char*) controltip[2], keyname[keytable[thekeypad].keypads[whichplayer]].name);
         } elif
         (   ((machine == ARCADIA || machine == INTERTON || machine == ELEKTOR) && (localkey == 30 || localkey == 34))
          || ((memmap == MEMMAP_LASERBATTLE || memmap == MEMMAP_LAZARIAN) && localkey == 6)
@@ -3753,7 +3755,7 @@ EXPORT void generate_controlstip(int localkey)
         )
         {   strcpy((char*) controltip[0], LLL(MSG_KEY_DN, "Dn"));
             strcpy((char*) controltip[3], LLL(MSG_KEY_DN, "Dn"));
-            strcpy((char*) controltip[2], keyname[keypads[whichplayer][thekeypad]].name);
+            strcpy((char*) controltip[2], keyname[keytable[thekeypad].keypads[whichplayer]].name);
         } elif
         (   ((machine == ARCADIA || machine == INTERTON || machine == ELEKTOR) && (localkey == 31 || localkey == 35))
          || (machine == ZACCARIA && localkey == 4)
@@ -3761,26 +3763,26 @@ EXPORT void generate_controlstip(int localkey)
         )
         {   strcpy((char*) controltip[0], LLL(MSG_KEY_RT, "Rt"));
             strcpy((char*) controltip[3], LLL(MSG_KEY_RT, "Rt"));
-            strcpy((char*) controltip[2], keyname[keypads[whichplayer][thekeypad]].name);
+            strcpy((char*) controltip[2], keyname[keytable[thekeypad].keypads[whichplayer]].name);
         } elif (machine == MALZAK)
         {   switch (localkey)
             {
             case  4:
                 strcpy((char*) controltip[0], LLL(MSG_UPRIGHT, "UpRt"));
                 strcpy((char*) controltip[3], LLL(MSG_UPRIGHT, "UpRt"));
-                strcpy((char*) controltip[2], keyname[keypads[whichplayer][thekeypad]].name);
+                strcpy((char*) controltip[2], keyname[keytable[thekeypad].keypads[whichplayer]].name);
             acase 6:
                 strcpy((char*) controltip[0], LLL(MSG_DOWNRIGHT, "DnRt"));
                 strcpy((char*) controltip[3], LLL(MSG_DOWNRIGHT, "DnRt"));
-                strcpy((char*) controltip[2], keyname[keypads[whichplayer][thekeypad]].name);
+                strcpy((char*) controltip[2], keyname[keytable[thekeypad].keypads[whichplayer]].name);
             acase 8:
                 strcpy((char*) controltip[0], LLL(MSG_DOWNLEFT, "DnLt"));
                 strcpy((char*) controltip[3], LLL(MSG_DOWNLEFT, "DnLt"));
-                strcpy((char*) controltip[2], keyname[keypads[whichplayer][thekeypad]].name);
+                strcpy((char*) controltip[2], keyname[keytable[thekeypad].keypads[whichplayer]].name);
             acase 10:
                 strcpy((char*) controltip[0], LLL(MSG_UPLEFT, "UpLt"));
                 strcpy((char*) controltip[3], LLL(MSG_UPLEFT, "UpLt"));
-                strcpy((char*) controltip[2], keyname[keypads[whichplayer][thekeypad]].name);
+                strcpy((char*) controltip[2], keyname[keytable[thekeypad].keypads[whichplayer]].name);
         }   }
         elif (machine == INSTRUCTOR)
         {   switch (localkey)
@@ -3893,7 +3895,7 @@ EXPORT void generate_controlstip(int localkey)
         if (machine == BINBUG)
         {   strcpy((char*) controltip[2], (const char*) controltip[0]);
         } else
-        {   strcpy((char*) controltip[2], keyname[keypads[whichplayer][thekeypad]].name);
+        {   strcpy((char*) controltip[2], keyname[keytable[thekeypad].keypads[whichplayer]].name);
         }
 
         if
@@ -3939,19 +3941,19 @@ EXPORT void generate_controlstip(int localkey)
 
         if (key1 == thekeypad)
         {   strcat((char*) controltip[2], ", ");
-            strcat((char*) controltip[2], keyname[keypads[whichplayer][ 0]].name);
+            strcat((char*) controltip[2], keyname[keytable[GUESTKEY_1ST].keypads[whichplayer]].name);
         }
         if (key2 == thekeypad)
         {   strcat((char*) controltip[2], ", ");
-            strcat((char*) controltip[2], keyname[keypads[whichplayer][21]].name);
+            strcat((char*) controltip[2], keyname[keytable[GUESTKEY_2ND].keypads[whichplayer]].name);
         }
         if (key3 == thekeypad)
         {   strcat((char*) controltip[2], ", ");
-            strcat((char*) controltip[2], keyname[keypads[whichplayer][22]].name);
+            strcat((char*) controltip[2], keyname[keytable[GUESTKEY_3RD].keypads[whichplayer]].name);
         }
         if (key4 == thekeypad)
         {   strcat((char*) controltip[2], ", ");
-            strcat((char*) controltip[2], keyname[keypads[whichplayer][23]].name);
+            strcat((char*) controltip[2], keyname[keytable[GUESTKEY_4TH].keypads[whichplayer]].name);
         }
 
         controltip[3][0] = EOS;
@@ -4753,7 +4755,7 @@ EXPORT void handle_keydown(UWORD code)
 #endif
 
     if (subwin[SUBWINDOW_HOSTKYBD].hwnd)
-    {   updatekeynames(subwin[SUBWINDOW_HOSTKYBD].hwnd);
+    {   update_hostkybd();
     }
 
 #ifdef AMIGA
@@ -4976,14 +4978,12 @@ EXPORT void handle_keyup(UWORD code)
         hostkey  = (UWORD) -1;
     }
 
+    if (subwin[SUBWINDOW_HOSTKYBD].hwnd)
+    {
 #ifdef AMIGA
-    if (subwin[SUBWINDOW_HOSTKYBD].hwnd)
-    {   SetGadgetAttrs(gadgets[GID_FIRSTKYBDGAD + (code & 0x7F)], subwin[SUBWINDOW_HOSTKYBD].hwnd, NULL, GA_Selected, FALSE, TAG_DONE); // this autorefreshes
-    }
+        SetGadgetAttrs(gadgets[GID_FIRSTKYBDGAD + (code & 0x7F)], subwin[SUBWINDOW_HOSTKYBD].hwnd, NULL, GA_Selected, FALSE, TAG_DONE); // this autorefreshes
 #endif
-
-    if (subwin[SUBWINDOW_HOSTKYBD].hwnd)
-    {   updatekeynames(subwin[SUBWINDOW_HOSTKYBD].hwnd);
+        update_hostkybd();
 }   }
 
 #ifdef AMIGA

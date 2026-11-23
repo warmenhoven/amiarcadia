@@ -169,7 +169,8 @@ IMPORT       int                       autopause,
                                        wsm,
                                        viewingsprite;
 IMPORT const int                       speedupnum[SPEED_MAX - SPEED_MIN + 1];
-IMPORT       FLAG                      capslock,
+IMPORT       FLAG                      axes[2],
+                                       capslock,
                                        consoleopened,
                                        incli,
                                        opening,
@@ -210,6 +211,7 @@ IMPORT       ULONG                     analog,
                                        regionlevel,
                                        showpalladiumkeys1,
                                        sound,
+                                       swapped,
                                        turbo,
                                        viewkybdas2,
                                        viewmemas,
@@ -1998,6 +2000,7 @@ MODULE BOOL CALLBACK XVIMonitorDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
     acase WM_CLOSE:
         DestroyWindow(hwnd);
         subwin[SUBWINDOW_MONITOR_XVI].hwnd = NULL;
+        axes[0] = axes[1] = FALSE;
         for (i = XVI_FIRSTMONGAD; i <= XVI_LASTMONGAD; i++)
         {   monitor[i].used        = FALSE;
             monitor[i].gadget      = NULL;
@@ -2081,7 +2084,9 @@ MODULE BOOL CALLBACK XVIMonitorDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
     // not WM_LBUTTONDBLCLK!
         mousex = (int) LOWORD(lParam);
         mousey = (int) HIWORD(lParam);
-
+#ifdef VERBOSE
+        zprintf(TEXTPEN_VERBOSE, "X: %d, Y: %d.\n", mousex, mousey);
+#endif
         for (i = XVI_FIRSTMONGAD; i <= XVI_LASTMONGAD; i++)
         {   if
             (   monitor[i].used
@@ -2091,9 +2096,34 @@ MODULE BOOL CALLBACK XVIMonitorDlgProc(HWND hwnd, UINT Message, WPARAM wParam, L
              && mousey <= monitor[i].rect.bottom
             )
             {   monchange(i);
-                break; // for speed
+                break;
         }   }
+        axes_mousedown(swapped ? 1 : 0, mousex, mousey);
     return FALSE;
+    case WM_LBUTTONUP:
+        axes[swapped ? 1 : 0] = FALSE;
+    return FALSE;
+    case WM_RBUTTONDOWN:
+        mousex = (int) LOWORD(lParam);
+        mousey = (int) HIWORD(lParam);
+#ifdef VERBOSE
+        zprintf(TEXTPEN_VERBOSE, "X: %d, Y: %d.\n", mousex, mousey);
+#endif
+        axes_mousedown(swapped ? 0 : 1, mousex, mousey);
+    return FALSE;
+    case WM_RBUTTONUP:
+        axes[swapped ? 0 : 1] = FALSE;
+    return FALSE;
+    case WM_MOUSEMOVE:
+        mousex = (int) LOWORD(lParam);
+        mousey = (int) HIWORD(lParam);
+        if (axes[0])
+        {   axes_mousedown(0, mousex, mousey);
+        }
+        if (axes[1])
+        {   axes_mousedown(1, mousex, mousey);
+        }
+    return TRUE;
     case WM_MOVE:
         reset_fps();
     return FALSE;

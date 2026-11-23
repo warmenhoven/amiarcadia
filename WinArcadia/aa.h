@@ -1,10 +1,10 @@
-#define DECIMALVERSION       "36.81"
-#define INTEGERVERSION       "36.81"
+#define DECIMALVERSION       "36.82"
+#define INTEGERVERSION       "36.82"
 #define MAJORVERSION         0x36
-#define MINORVERSION         0x81
-#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (17.11.2026)" // d.m.yyyy format
-#define RELEASEDATE          "17-11-26" // dd-mm-yy format. Year *must* be only 2 digits!
-#define LONGDATE             "17 November 2026" // full month and year
+#define MINORVERSION         0x82
+#define VERSIONSTRING        "\0$VER: AmiArcadia " INTEGERVERSION " (22.11.2026)" // d.m.yyyy format
+#define RELEASEDATE          "22-11-26" // dd-mm-yy format. Year *must* be only 2 digits!
+#define LONGDATE             "22 November 2026" // full month and year
 #define COPYRIGHT            "© 2006-2026 James Jacobs of Amigan Software"
 // VERSIONSTRING needs a leading NUL for OS4 to correctly find it
 #define NEWCONFIGVERSION     "36.8"  // V36.8       +
@@ -397,7 +397,6 @@ aa:
 #define GAMEGLYPHS        (ARCADIAGLYPHS + INTERTONGLYPHS + ELEKTORGLYPHS)
 
 #define MAX_ADDR          32767
-#define ALLREDEFINEGADS      60
 #define CPL_MIN             192
 #define INVALIDRASTER     (-99)
 #define QUEUESIZE         (MAX_VDUROWS * MAX_VDUCOLUMNS * 2)
@@ -3487,12 +3486,21 @@ EXPORT struct MonitorStruct
 #endif
 };
 EXPORT struct KeyTableStruct
-{   const UWORD  a_address;
+{
+// initialized
+    const UWORD  a_address;
     const UBYTE  a_mask;
     const UWORD  ie_address;
     const UBYTE  ie_mask;
     const SBYTE  overlay[2];
     const ULONG  dapter;
+    const int    redef[2],
+                 gameinfo[2];
+// uninitialized
+          UWORD  keypads[2]; // host scancode of assigned host key (SCAN_FOO)
+#ifdef WIN32
+          RECT   redefinerect[2];
+#endif
 };
 
 EXPORT struct KeyNameStruct
@@ -3730,10 +3738,11 @@ EXPORT struct MemMapInfoStruct
     const int    thesize,
                  overlay;
     const STRPTR credits;
-    const UBYTE  gadenabled[ALLREDEFINEGADS];
+    const UBYTE  consoleenabled[4];
     const FLAG   rotate;
     const int    menuopt;
-    const UBYTE  channelused[TOTALCHANNELS];
+    const UBYTE  channelused[TOTALCHANNELS],
+                 keyused[NUMKEYS];
           int    channels;
 };
 EXPORT struct SampleStruct
@@ -3887,7 +3896,6 @@ EXPORT void edit_palette(void);
 EXPORT void edit_pastetext(void);
 EXPORT void emptyclipboard(void);
 EXPORT void enable2(int which, int enabled);
-EXPORT void enablegad(int whichgad, int enabled);
 EXPORT FLAG Exists(STRPTR name);
 EXPORT void fix_paths(void);
 EXPORT void free_display(void);
@@ -4317,7 +4325,6 @@ EXPORT void updatehiscores(int resolved);
 EXPORT void changeconsolekeynames(void);
 EXPORT void engine_dopaddle(int source, int dest);
 EXPORT int guest_to_host_joy(int guestjoy);
-EXPORT FLAG keyexists(int thekey);
 EXPORT int scan_to_scan(int code);
 EXPORT UBYTE get_guest_key(void);
 EXPORT UWORD specialshift(UWORD code);
@@ -4364,7 +4371,7 @@ EXPORT void update_waveform(void);
 EXPORT void update_capslock(void);
 EXPORT void update_controls(void);
 EXPORT void update_controlstip(FLAG force);
-EXPORT void updatekeynames(HWND hwnd);
+EXPORT void update_hostkybd(void);
 EXPORT void update_speed(void);
 // SAS/C emulation
 #ifndef __SASC // eg. __VBCC__, __GNUC__, WIN32
@@ -4420,6 +4427,8 @@ EXPORT void endofframe(UNUSED int newsky);
 // i/o buffer
 EXPORT void alloc_iobuffer(ULONG thesize);
 EXPORT void free_iobuffer(void);
+// mouse
+EXPORT void axes_mousedown(int side, int mousex, int mousey);
 // network
 EXPORT void help_update(FLAG quiet);
 // read/write
